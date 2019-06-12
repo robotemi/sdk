@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.robotemi.sdk">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application>
+
+        <provider
+            android:name=".TemiSdkContentProvider"
+            android:authorities="${applicationId}.com.robotemi.sdk"
+            android:enabled="true"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

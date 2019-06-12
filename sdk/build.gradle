@@ -1,0 +1,58 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        minSdkVersion 22
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 23
+        versionCode 1
+        versionName VERSION_NAME
+        buildConfigField 'String', 'SDK_SERVICE_CLASS_NAME', '\"com.roboteam.teamy.sdk.SdkService\"'
+    }
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled true
+            shrinkResources false
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            shrinkResources false
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "country"
+    productFlavors {
+        usa {
+            dimension "country"
+            versionNameSuffix "-usa"
+            buildConfigField 'String', 'LAUNCHER_APP_ID', '\"com.roboteam.teamy.usa\"'
+        }
+        china {
+            dimension "country"
+            versionNameSuffix "-china"
+            buildConfigField 'String', 'LAUNCHER_APP_ID', '\"com.roboteam.teamy.china\"'
+        }
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+apply from: rootProject.file('gradle/mvn-push.gradle')

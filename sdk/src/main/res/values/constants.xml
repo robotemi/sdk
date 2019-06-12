@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="metadata_actions" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.ACTIONS</string>
+    <string name="metadata_contexts" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.CONTEXTS</string>
+    <string name="metadata_hints" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.HINTS</string>
+    <string name="metadata_skill" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.SKILL</string>
+    <string name="metadata_visibility" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.VISIBILITY</string>
+
+    <integer name="metadata_ui_flag_default">0</integer>
+    <integer name="metadata_ui_flag_hide_top_bar">1</integer>
+    <integer name="metadata_ui_mode_default">0</integer>
+    <integer name="metadata_ui_mode_fullscreen">1</integer>
+    <integer name="metadata_ui_mode_immersive">2</integer>
+    <integer name="metadata_ui_mode_blend">3</integer>
+</resources>
