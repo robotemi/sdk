@@ -4,72 +4,110 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:background="@color/colorPrimaryLight"
         tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/etSaveLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="70dp"
-        android:layout_marginRight="100dp"
-        android:ems="10"
-        android:gravity="center_horizontal"
-        android:hint="@string/enter_location"
-        android:inputType="textPersonName" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnSaveLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="100dp"
-        android:text="@string/save_location" />
+        <EditText
+            android:id="@+id/etSaveLocation"
+            android:layout_width="256dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_location"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btnSaveLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="saveLocation"
+            android:text="@string/save_location" />
 
 
-    <EditText
-        android:id="@+id/etGoTo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginRight="100dp"
-        android:ems="10"
-        android:gravity="center_horizontal"
-        android:hint="@string/go_to_location"
-        android:inputType="textPersonName" />
+        <EditText
+            android:id="@+id/etGoTo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/go_to_location"
+            android:inputType="textPersonName" />
 
-    <Button
-        android:id="@+id/btnGoTo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="100dp"
-        android:text="@string/go_to" />
+        <Button
+            android:id="@+id/btnGoTo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="goTo"
+            android:text="@string/go_to" />
 
-    <EditText
-        android:id="@+id/etSpeak"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginRight="100dp"
-        android:ems="10"
-        android:gravity="center_horizontal"
-        android:hint="@string/enter_speech"
-        android:inputType="textPersonName" />
+        <EditText
+            android:id="@+id/etSpeak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_speech"
+            android:inputType="textPersonName" />
 
-    <Button
-        android:id="@+id/btnSpeak"
+        <Button
+            android:id="@+id/btnSpeak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="speak"
+            android:text="@string/speak" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="100dp"
-        android:text="@string/speak" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnFollow"
+            android:layout_width="256dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="50dp"
+            android:onClick="followMe"
+            android:text="@string/follow_me" />
+
+        <Button
+            android:id="@+id/btnSavedLocations"
+            android:layout_width="256dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="savedLocationsDialog"
+            android:text="@string/saved_locations" />
+
+    </LinearLayout>
 
 </LinearLayout>

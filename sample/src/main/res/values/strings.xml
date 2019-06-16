@@ -6,4 +6,8 @@
     <string name="go_to">Go to</string>
     <string name="enter_speech">Please enter something to say</string>
     <string name="speak">Speak</string>
+    <string name="follow_me">Follow Me</string>
+    <string name="saved_locations">Saved Locations</string>
+
+
 </resources>
