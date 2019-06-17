@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<String> {
@@ -24,7 +23,7 @@ public class CustomAdapter extends ArrayAdapter<String> {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.row, null);
+            convertView = inflater.inflate(R.layout.location_row, null);
         }
 
         String loc = savedLocations.get(position);

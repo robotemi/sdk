@@ -8,6 +8,7 @@
     <string name="speak">Speak</string>
     <string name="follow_me">Follow Me</string>
     <string name="saved_locations">Saved Locations</string>
+    <string name="show_contacts">Show Contacts</string>
 
 
 </resources>
