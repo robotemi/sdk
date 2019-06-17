@@ -1,6 +1,5 @@
 package com.robotemi.sdk.sample;
 
-import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -31,8 +30,6 @@ public class MainActivity extends AppCompatActivity implements
         Robot.ConversationViewAttachesListener,
         Robot.WakeupWordListener,
         Robot.ActivityStreamPublishListener,
-        Robot.MediaButtonListener,
-        Robot.NotificationListener,
         Robot.TtsListener,
         OnBeWithMeStatusChangedListener,
         OnGoToLocationStatusChangedListener,
@@ -41,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements
     private Robot robot;
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
-
 
     /*
         Setting up all the event listeners
@@ -78,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /*
-        onRobotReady establishes if a connection to the robot's navigation is made
-        as well as places the this application in the top bar for a quick access shortcut.
+        Places this application in the top bar for a quick access shortcut.
      */
 
     @Override
@@ -93,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements
      */
 
     public void skidJoy(View view) {
-        robot.skidJoy(1.0F, 1.0F);
+        robot.skidJoy(-1.0F, 1.0F);
     }
 
     public void tiltAngle(View view) {
@@ -170,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void tiltBy(View view) {
-        robot.tiltBy(30, 1.2F);
+        robot.tiltBy(70, 1.2F);
     }
 
     /*
@@ -204,8 +198,6 @@ public class MainActivity extends AppCompatActivity implements
         dialog.show();
     }
 
-
-    // TODO: 2019-06-16 Work on onNlpCompleted. At the moment I couldn't get it to load.
     @Override
     public void onNlpCompleted(NlpResult nlpResult) {
         //do something with nlp result. Base the action on what you get back
@@ -226,14 +218,25 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBeWithMeStatusChanged(String status) {
-      //  When status changes to "lock" you can snap a picture.
+      //  When status changes to "lock" the robot recognizes the user and begin to follow.
         switch(status) {
-            case "lock":
-                // snap a photo
+            case "abort":
+                // do something i.e. speak
                 break;
 
-            case "abort":
-                // close camera and display the image
+            case "calculating":
+                break;
+
+            case "lock":
+                break;
+
+            case "search":
+                break;
+
+            case "start":
+                break;
+
+            case "track":
                 break;
         }
     }
@@ -275,32 +278,6 @@ public class MainActivity extends AppCompatActivity implements
     public void onPublish(ActivityStreamPublishMessage message) {
         //After the activity stream finished publishing (photo or otherwise).
         //Do what you want based on the message returned.
-    }
-
-    //Primarily meant for applications that run in the background
-    @Override
-    public void onPlayButtonClicked(boolean play) {
-        //Event listeners for the media bar on iHeartRadio
-    }
-
-    //Primarily meant for applications that run in the background
-    @Override
-    public void onNextButtonClicked() {
-        //Event listeners for the media bar on iHeartRadio
-    }
-
-    //Primarily meant for applications that run in the background
-    @Override
-    public void onBackButtonClicked() {
-        //Event listeners for the media bar on iHeartRadio
-    }
-
-    @Override
-    public void onTrackBarChanged(int position) {
-    }
-
-    @Override
-    public void onNotificationBtnClicked(int btnNumber) {
     }
 
     @Override
