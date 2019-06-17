@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimaryLight"
+        tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etSaveLocation"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_location"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btnSaveLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="saveLocation"
+            android:text="@string/save_location"
+            android:textSize="18sp" />
+
+
+        <EditText
+            android:id="@+id/etGoTo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/go_to_location"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btnGoTo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="goTo"
+            android:text="@string/go_to"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/etSpeak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_speech"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btnSpeak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="speak"
+            android:text="@string/speak"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnSavedLocations"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="50dp"
+            android:onClick="savedLocationsDialog"
+            android:text="@string/saved_locations"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnFollow"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="followMe"
+            android:text="@string/follow_me"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnskidJoy"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="skidJoy"
+            android:text="skidjoy"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnTiltAngle"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="tiltAngle"
+            android:text="tiltAngle"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnTurnBy"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="turnBy"
+            android:text="turnBy"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnTiltBy"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:onClick="tiltBy"
+            android:text="tiltBy"
+            android:textSize="18sp" />
+
+
+
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,10 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.robotemi.sdk.sample">
 
-    <application android:allowBackup="true"
-                 android:label="@string/app_name"
-                 android:icon="@mipmap/ic_launcher"
-                 android:roundIcon="@mipmap/ic_launcher_round"
-                 android:supportsRtl="true"
-                 android:theme="@style/AppTheme"/>
+    <!--Using SkillTheme (android:theme="@style/SkillTheme") for your app helps the flow with navigating to and
+        from the launcher. It also removes the app's Topbar so it doesn't interfere with temi's.-->
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/app_icon"
+            android:label="@string/app_name"
+            android:roundIcon="@drawable/app_icon"
+            android:supportsRtl="true"
+            android:theme="@style/SkillTheme"
+            tools:ignore="GoogleAppIndexingWarning">
+
+        <!--Adding this meta-data is required in order to
+            display this app in temi's launcher app-->
+        <meta-data
+                android:name="com.robotemi.sdk.metadata.SKILL"
+                android:value="@string/app_name"/>
+
+        <!--This meta-data is telling the launcher which nlp responses should
+            invoke the NlpResponse listener's onNlpResponse method sending it an intent-->
+
+        <meta-data
+                android:name="com.robotemi.sdk.metadata.ACTIONS"
+                android:value="
+            radio.play,
+            radio.search,
+            radio.show.all,
+            radio.next,
+            radio.previous,
+            radio.return,
+            radio.cancel,
+            radio.close,
+            media.play,
+            media.pause" />
+
+        <!--this meta-data tells the laucnher which Nlp context we are in.-->
+
+        <meta-data
+                android:name="com.robotemi.sdk.metadata.CONTEXTS"
+                android:value="
+            radio,
+            media" />
+
+        <activity android:name=".MainActivity"
+                  android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
 </manifest>
