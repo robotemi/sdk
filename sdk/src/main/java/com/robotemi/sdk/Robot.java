@@ -724,6 +724,21 @@ public class Robot {
     }
 
     /**
+     * Request robot to stop following the user around.
+     * See {@link OnBeWithMeStatusChangedListener} to listen for status changes.
+     */
+    public void stopBeWithMe() {
+        Log.d(TAG, "stopBeWithMe()");
+        if (sdkService != null) {
+            try {
+                sdkService.stopBeWithMe();
+            } catch (RemoteException e) {
+                Log.e(TAG, "stopBeWithMe()", e);
+            }
+        }
+    }
+
+    /**
      * Joystick commands.
      *
      * @param x From -1 to 1.

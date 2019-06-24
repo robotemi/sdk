@@ -20,7 +20,7 @@ public interface OnBeWithMeStatusChangedListener {
     String TRACK = "track";
 
     /**
-     * Listen for status changes during 'be with me'.
+     * Listen for status changes during 'beWithMe' and 'stopBeWithMe'.
      * <p>
      * Available statuses:
      * <ul>
