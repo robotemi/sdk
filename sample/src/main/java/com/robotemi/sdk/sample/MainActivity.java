@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
     }
 
-    public void initViews(){
+    public void initViews() {
         etSpeak = findViewById(R.id.etSpeak);
         etSaveLocation = findViewById(R.id.etSaveLocation);
         etGoTo = findViewById(R.id.etGoTo);
@@ -151,17 +151,40 @@ public class MainActivity extends AppCompatActivity implements
         Manually navigate the robot with skidJoy, tiltAngle, turnBy and tiltBy.
      */
 
+    /*
+        skidJoy moves the robot exactly forward for 5 seconds. It controls both
+        the linear and angular velocity. Float numbers must be between -1.0 and 1.0
+     */
+
     public void skidJoy(View view) {
-        robot.skidJoy(-1.0F, 1.0F);
+        long t= System.currentTimeMillis();
+        long end = t+5000;
+        while(System.currentTimeMillis() < end) {
+            robot.skidJoy(1F, 0F);
+        }
     }
+
+    /*
+        tiltAngle controls temi's head by specifying which angle you want
+        to tilt to and at which speed.
+     */
 
     public void tiltAngle(View view) {
         robot.tiltAngle(23, 5.3F);
     }
 
+    /*
+        turbBy allows for turning the robot around in place. You can specify
+        the amount of degrees to turn by and at which speed.
+     */
+
     public void turnBy(View view) {
         robot.turnBy(90, 6.2F);
     }
+
+    /*
+        tiltBy is used to tilt temi's head from its current position.
+     */
 
     public void tiltBy(View view) {
         robot.tiltBy(70, 1.2F);
