@@ -724,6 +724,20 @@ public class Robot {
     }
 
     /**
+     * Request robot to stop any movement.
+     */
+    public void stopMovement() {
+        Log.d(TAG, "stopMovement()");
+        if (sdkService != null) {
+            try {
+                sdkService.stopMovement();
+            } catch (RemoteException e) {
+                Log.e(TAG, "stopMovement()", e);
+            }
+        }
+    }
+
+    /**
      * Joystick commands.
      *
      * @param x From -1 to 1.
