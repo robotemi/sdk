@@ -112,9 +112,9 @@ interface ISdkService {
     void beWithMe();
 
     /**
-     * Request robot to stop following the user.
+     * Request robot to stop any current movement.
      */
-    void stopBeWithMe();
+    void stopMovement();
 
     void skidJoy(in float x, in float y);
 

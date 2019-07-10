@@ -724,16 +724,15 @@ public class Robot {
     }
 
     /**
-     * Request robot to stop following the user around.
-     * See {@link OnBeWithMeStatusChangedListener} to listen for status changes.
+     * Request robot to stop any movement.
      */
-    public void stopBeWithMe() {
-        Log.d(TAG, "stopBeWithMe()");
+    public void stopMovement() {
+        Log.d(TAG, "stopMovement()");
         if (sdkService != null) {
             try {
-                sdkService.stopBeWithMe();
+                sdkService.stopMovement();
             } catch (RemoteException e) {
-                Log.e(TAG, "stopBeWithMe()", e);
+                Log.e(TAG, "stopMovement()", e);
             }
         }
     }
