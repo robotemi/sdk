@@ -147,6 +147,11 @@ public class MainActivity extends AppCompatActivity implements
         hideKeyboard(MainActivity.this);
     }
 
+    public void stopFollow(View view) {
+        robot.stopMovement();
+        hideKeyboard(MainActivity.this);
+    }
+
     /*
         Manually navigate the robot with skidJoy, tiltAngle, turnBy and tiltBy.
      */
@@ -245,21 +250,27 @@ public class MainActivity extends AppCompatActivity implements
         switch(status) {
             case "abort":
                 // do something i.e. speak
+                robot.speak(TtsRequest.create("Abort", false));
                 break;
 
             case "calculating":
+                robot.speak(TtsRequest.create("Calculating", false));
                 break;
 
             case "lock":
+                robot.speak(TtsRequest.create("Lock", false));
                 break;
 
             case "search":
+                robot.speak(TtsRequest.create("search", false));
                 break;
 
             case "start":
+                robot.speak(TtsRequest.create("Start", false));
                 break;
 
             case "track":
+                robot.speak(TtsRequest.create("Track", false));
                 break;
         }
     }
