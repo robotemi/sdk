@@ -147,23 +147,16 @@ public class MainActivity extends AppCompatActivity implements
         hideKeyboard(MainActivity.this);
     }
 
-    public void stopFollow(View view) {
-        robot.stopMovement();
-        hideKeyboard(MainActivity.this);
-    }
-
     /*
         Manually navigate the robot with skidJoy, tiltAngle, turnBy and tiltBy.
-     */
 
-    /*
-        skidJoy moves the robot exactly forward for 5 seconds. It controls both
+        skidJoy moves the robot exactly forward for about a second. It controls both
         the linear and angular velocity. Float numbers must be between -1.0 and 1.0
      */
 
     public void skidJoy(View view) {
         long t= System.currentTimeMillis();
-        long end = t+5000;
+        long end = t+1000;
         while(System.currentTimeMillis() < end) {
             robot.skidJoy(1F, 0F);
         }
@@ -179,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /*
-        turbBy allows for turning the robot around in place. You can specify
+        turnBy allows for turning the robot around in place. You can specify
         the amount of degrees to turn by and at which speed.
      */
 
@@ -228,8 +221,26 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onNlpCompleted(NlpResult nlpResult) {
-        //do something with nlp result. Base the action on what you get back
+        //do something with nlp result. Base the action specified in the AndroidManifest.xml
         Toast.makeText(MainActivity.this, nlpResult.action, Toast.LENGTH_SHORT).show();
+
+        switch (nlpResult.action) {
+            case "home.welcome":
+                robot.tiltAngle(23, 5.3F);
+                break;
+
+            case "home.dance":
+                long t= System.currentTimeMillis();
+                long end = t+5000;
+                while(System.currentTimeMillis() < end) {
+                    robot.skidJoy(0F, 1F);
+                }
+                break;
+
+            case "home.sleep":
+                robot.goTo("home base");
+                break;
+        }
     }
 
     @Override
