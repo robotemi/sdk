@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements
         OnGoToLocationStatusChangedListener,
         OnLocationsUpdatedListener {
 
+    public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
+    public static final String HOME_BASE_LOCATION = "home base";
     private Robot robot;
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
@@ -225,11 +227,11 @@ public class MainActivity extends AppCompatActivity implements
         Toast.makeText(MainActivity.this, nlpResult.action, Toast.LENGTH_SHORT).show();
 
         switch (nlpResult.action) {
-            case "home.welcome":
+            case ACTION_HOME_WELCOME:
                 robot.tiltAngle(23, 5.3F);
                 break;
 
-            case "home.dance":
+            case ACTION_HOME_DANCE:
                 long t = System.currentTimeMillis();
                 long end = t + 5000;
                 while (System.currentTimeMillis() < end) {
@@ -237,8 +239,8 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
 
-            case "home.sleep":
-                robot.goTo("home base");
+            case ACTION_HOME_SLEEP:
+                robot.goTo(HOME_BASE_LOCATION);
                 break;
         }
     }
