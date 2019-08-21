@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements
      */
 
     public void speak(View view) {
-        TtsRequest ttsRequest = TtsRequest.create(etSpeak.getText().toString().trim(),true);
+        TtsRequest ttsRequest = TtsRequest.create(etSpeak.getText().toString().trim(), true);
         robot.speak(ttsRequest);
         hideKeyboard(MainActivity.this);
     }
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements
         This is an example of saving locations.
      */
 
-    public void saveLocation(View view){
+    public void saveLocation(View view) {
         String location = etSaveLocation.getText().toString().toLowerCase().trim();
         robot.saveLocation(location);
         robot.speak(TtsRequest.create("I've successfully saved the " + location + " location.", true));
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements
      */
 
     public void goTo(View view) {
-        for (String location : robot.getLocations()){
+        for (String location : robot.getLocations()) {
             if (location.equals(etGoTo.getText().toString().toLowerCase().trim())) {
                 robot.goTo(etGoTo.getText().toString().toLowerCase().trim());
                 hideKeyboard(MainActivity.this);
@@ -155,9 +155,9 @@ public class MainActivity extends AppCompatActivity implements
      */
 
     public void skidJoy(View view) {
-        long t= System.currentTimeMillis();
-        long end = t+1000;
-        while(System.currentTimeMillis() < end) {
+        long t = System.currentTimeMillis();
+        long end = t + 1000;
+        while (System.currentTimeMillis() < end) {
             robot.skidJoy(1F, 0F);
         }
     }
@@ -230,9 +230,9 @@ public class MainActivity extends AppCompatActivity implements
                 break;
 
             case "home.dance":
-                long t= System.currentTimeMillis();
-                long end = t+5000;
-                while(System.currentTimeMillis() < end) {
+                long t = System.currentTimeMillis();
+                long end = t + 5000;
+                while (System.currentTimeMillis() < end) {
                     robot.skidJoy(0F, 1F);
                 }
                 break;
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onWakeupWord(String wakeupWord) {
-       // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
+        // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
     }
 
     @Override
@@ -257,8 +257,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBeWithMeStatusChanged(String status) {
-      //  When status changes to "lock" the robot recognizes the user and begin to follow.
-        switch(status) {
+        //  When status changes to "lock" the robot recognizes the user and begin to follow.
+        switch (status) {
             case "abort":
                 // do something i.e. speak
                 robot.speak(TtsRequest.create("Abort", false));
