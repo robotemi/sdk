@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
 
-    /*
-        Setting up all the event listeners
+    /**
+     * Setting up all the event listeners
      */
 
     @Override
@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnLocationsUpdatedListener(this);
     }
 
-    /*
-        Removing the event listeners upon leaving the app.
+    /**
+     * Removing the event listeners upon leaving the app.
      */
 
     @Override
@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnLocationsUpdateListener(this);
     }
 
-    /*
-        Places this application in the top bar for a quick access shortcut.
+    /**
+     * Places this application in the top bar for a quick access shortcut.
      */
 
     @Override
@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity implements
         etGoTo = findViewById(R.id.etGoTo);
     }
 
-    /*
-        Have the robot speak while displaying what is being said.
+    /**
+     * Have the robot speak while displaying what is being said.
      */
 
     public void speak(View view) {
@@ -116,8 +116,8 @@ public class MainActivity extends AppCompatActivity implements
         hideKeyboard(MainActivity.this);
     }
 
-    /*
-        This is an example of saving locations.
+    /**
+     * This is an example of saving locations.
      */
 
     public void saveLocation(View view) {
@@ -127,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements
         hideKeyboard(MainActivity.this);
     }
 
-    /*
-        goTo checks that the location sent is saved then goes to that location.
+    /**
+     * goTo checks that the location sent is saved then goes to that location.
      */
 
     public void goTo(View view) {
@@ -140,8 +140,8 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /*
-        Simple follow me example.
+    /**
+     * Simple follow me example.
      */
 
     public void followMe(View view) {
@@ -149,11 +149,10 @@ public class MainActivity extends AppCompatActivity implements
         hideKeyboard(MainActivity.this);
     }
 
-    /*
-        Manually navigate the robot with skidJoy, tiltAngle, turnBy and tiltBy.
-
-        skidJoy moves the robot exactly forward for about a second. It controls both
-        the linear and angular velocity. Float numbers must be between -1.0 and 1.0
+    /**
+     * Manually navigate the robot with skidJoy, tiltAngle, turnBy and tiltBy.
+     * skidJoy moves the robot exactly forward for about a second. It controls both
+     * the linear and angular velocity. Float numbers must be between -1.0 and 1.0
      */
 
     public void skidJoy(View view) {
@@ -164,34 +163,34 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /*
-        tiltAngle controls temi's head by specifying which angle you want
-        to tilt to and at which speed.
+    /**
+     * tiltAngle controls temi's head by specifying which angle you want
+     * to tilt to and at which speed.
      */
 
     public void tiltAngle(View view) {
         robot.tiltAngle(23, 5.3F);
     }
 
-    /*
-        turnBy allows for turning the robot around in place. You can specify
-        the amount of degrees to turn by and at which speed.
+    /**
+     * turnBy allows for turning the robot around in place. You can specify
+     * the amount of degrees to turn by and at which speed.
      */
 
     public void turnBy(View view) {
         robot.turnBy(90, 6.2F);
     }
 
-    /*
-        tiltBy is used to tilt temi's head from its current position.
+    /**
+     * tiltBy is used to tilt temi's head from its current position.
      */
 
     public void tiltBy(View view) {
         robot.tiltBy(70, 1.2F);
     }
 
-    /*
-        Hiding keyboard after every button press
+    /**
+     * Hiding keyboard after every button press
      */
 
     public static void hideKeyboard(Activity activity) {
@@ -205,8 +204,8 @@ public class MainActivity extends AppCompatActivity implements
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    /*
-        Display the saved locations in a dialog
+    /**
+     * Display the saved locations in a dialog
      */
 
     public void savedLocationsDialog(View view) {
