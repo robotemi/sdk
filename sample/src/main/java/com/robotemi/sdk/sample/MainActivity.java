@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Setting up all the event listeners
      */
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Removing the event listeners upon leaving the app.
      */
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -78,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Places this application in the top bar for a quick access shortcut.
      */
-
     @Override
     public void onRobotReady(boolean isReady) {
         if (isReady) {
@@ -109,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Have the robot speak while displaying what is being said.
      */
-
     public void speak(View view) {
         TtsRequest ttsRequest = TtsRequest.create(etSpeak.getText().toString().trim(), true);
         robot.speak(ttsRequest);
@@ -119,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * This is an example of saving locations.
      */
-
     public void saveLocation(View view) {
         String location = etSaveLocation.getText().toString().toLowerCase().trim();
         robot.saveLocation(location);
@@ -130,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * goTo checks that the location sent is saved then goes to that location.
      */
-
     public void goTo(View view) {
         for (String location : robot.getLocations()) {
             if (location.equals(etGoTo.getText().toString().toLowerCase().trim())) {
@@ -143,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Simple follow me example.
      */
-
     public void followMe(View view) {
         robot.beWithMe();
         hideKeyboard(MainActivity.this);
@@ -154,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements
      * skidJoy moves the robot exactly forward for about a second. It controls both
      * the linear and angular velocity. Float numbers must be between -1.0 and 1.0
      */
-
     public void skidJoy(View view) {
         long t = System.currentTimeMillis();
         long end = t + 1000;
@@ -167,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements
      * tiltAngle controls temi's head by specifying which angle you want
      * to tilt to and at which speed.
      */
-
     public void tiltAngle(View view) {
         robot.tiltAngle(23, 5.3F);
     }
@@ -176,7 +167,6 @@ public class MainActivity extends AppCompatActivity implements
      * turnBy allows for turning the robot around in place. You can specify
      * the amount of degrees to turn by and at which speed.
      */
-
     public void turnBy(View view) {
         robot.turnBy(90, 6.2F);
     }
@@ -184,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * tiltBy is used to tilt temi's head from its current position.
      */
-
     public void tiltBy(View view) {
         robot.tiltBy(70, 1.2F);
     }
@@ -192,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Hiding keyboard after every button press
      */
-
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -207,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Display the saved locations in a dialog
      */
-
     public void savedLocationsDialog(View view) {
         hideKeyboard(MainActivity.this);
         locations = robot.getLocations();
