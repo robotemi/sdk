@@ -35,14 +35,15 @@ public class MainActivity extends AppCompatActivity implements
         OnGoToLocationStatusChangedListener,
         OnLocationsUpdatedListener {
 
+    public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
+    public static final String HOME_BASE_LOCATION = "home base";
     private Robot robot;
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
 
-    /*
-        Setting up all the event listeners
+    /**
+     * Setting up all the event listeners
      */
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -56,10 +57,9 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnLocationsUpdatedListener(this);
     }
 
-    /*
-        Removing the event listeners upon leaving the app.
+    /**
+     * Removing the event listeners upon leaving the app.
      */
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -73,10 +73,9 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnLocationsUpdateListener(this);
     }
 
-    /*
-        Places this application in the top bar for a quick access shortcut.
+    /**
+     * Places this application in the top bar for a quick access shortcut.
      */
-
     @Override
     public void onRobotReady(boolean isReady) {
         if (isReady) {
@@ -98,39 +97,36 @@ public class MainActivity extends AppCompatActivity implements
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
     }
 
-    public void initViews(){
+    public void initViews() {
         etSpeak = findViewById(R.id.etSpeak);
         etSaveLocation = findViewById(R.id.etSaveLocation);
         etGoTo = findViewById(R.id.etGoTo);
     }
 
-    /*
-        Have the robot speak while displaying what is being said.
+    /**
+     * Have the robot speak while displaying what is being said.
      */
-
     public void speak(View view) {
-        TtsRequest ttsRequest = TtsRequest.create(etSpeak.getText().toString().trim(),true);
+        TtsRequest ttsRequest = TtsRequest.create(etSpeak.getText().toString().trim(), true);
         robot.speak(ttsRequest);
         hideKeyboard(MainActivity.this);
     }
 
-    /*
-        This is an example of saving locations.
+    /**
+     * This is an example of saving locations.
      */
-
-    public void saveLocation(View view){
+    public void saveLocation(View view) {
         String location = etSaveLocation.getText().toString().toLowerCase().trim();
         robot.saveLocation(location);
         robot.speak(TtsRequest.create("I've successfully saved the " + location + " location.", true));
         hideKeyboard(MainActivity.this);
     }
 
-    /*
-        goTo checks that the location sent is saved then goes to that location.
+    /**
+     * goTo checks that the location sent is saved then goes to that location.
      */
-
     public void goTo(View view) {
-        for (String location : robot.getLocations()){
+        for (String location : robot.getLocations()) {
             if (location.equals(etGoTo.getText().toString().toLowerCase().trim())) {
                 robot.goTo(etGoTo.getText().toString().toLowerCase().trim());
                 hideKeyboard(MainActivity.this);
@@ -138,39 +134,53 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /*
-        Simple follow me example.
+    /**
+     * Simple follow me example.
      */
-
     public void followMe(View view) {
         robot.beWithMe();
         hideKeyboard(MainActivity.this);
     }
 
-    /*
-        Manually navigate the robot with skidJoy, tiltAngle, turnBy and tiltBy.
+    /**
+     * Manually navigate the robot with skidJoy, tiltAngle, turnBy and tiltBy.
+     * skidJoy moves the robot exactly forward for about a second. It controls both
+     * the linear and angular velocity. Float numbers must be between -1.0 and 1.0
      */
-
     public void skidJoy(View view) {
-        robot.skidJoy(-1.0F, 1.0F);
+        long t = System.currentTimeMillis();
+        long end = t + 1000;
+        while (System.currentTimeMillis() < end) {
+            robot.skidJoy(1F, 0F);
+        }
     }
 
+    /**
+     * tiltAngle controls temi's head by specifying which angle you want
+     * to tilt to and at which speed.
+     */
     public void tiltAngle(View view) {
         robot.tiltAngle(23, 5.3F);
     }
 
+    /**
+     * turnBy allows for turning the robot around in place. You can specify
+     * the amount of degrees to turn by and at which speed.
+     */
     public void turnBy(View view) {
         robot.turnBy(90, 6.2F);
     }
 
+    /**
+     * tiltBy is used to tilt temi's head from its current position.
+     */
     public void tiltBy(View view) {
         robot.tiltBy(70, 1.2F);
     }
 
-    /*
-        Hiding keyboard after every button press
+    /**
+     * Hiding keyboard after every button press
      */
-
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -182,10 +192,9 @@ public class MainActivity extends AppCompatActivity implements
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    /*
-        Display the saved locations in a dialog
+    /**
+     * Display the saved locations in a dialog
      */
-
     public void savedLocationsDialog(View view) {
         hideKeyboard(MainActivity.this);
         locations = robot.getLocations();
@@ -200,13 +209,31 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onNlpCompleted(NlpResult nlpResult) {
-        //do something with nlp result. Base the action on what you get back
+        //do something with nlp result. Base the action specified in the AndroidManifest.xml
         Toast.makeText(MainActivity.this, nlpResult.action, Toast.LENGTH_SHORT).show();
+
+        switch (nlpResult.action) {
+            case ACTION_HOME_WELCOME:
+                robot.tiltAngle(23, 5.3F);
+                break;
+
+            case ACTION_HOME_DANCE:
+                long t = System.currentTimeMillis();
+                long end = t + 5000;
+                while (System.currentTimeMillis() < end) {
+                    robot.skidJoy(0F, 1F);
+                }
+                break;
+
+            case ACTION_HOME_SLEEP:
+                robot.goTo(HOME_BASE_LOCATION);
+                break;
+        }
     }
 
     @Override
     public void onWakeupWord(String wakeupWord) {
-       // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
+        // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
     }
 
     @Override
@@ -218,25 +245,31 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBeWithMeStatusChanged(String status) {
-      //  When status changes to "lock" the robot recognizes the user and begin to follow.
-        switch(status) {
+        //  When status changes to "lock" the robot recognizes the user and begin to follow.
+        switch (status) {
             case "abort":
                 // do something i.e. speak
+                robot.speak(TtsRequest.create("Abort", false));
                 break;
 
             case "calculating":
+                robot.speak(TtsRequest.create("Calculating", false));
                 break;
 
             case "lock":
+                robot.speak(TtsRequest.create("Lock", false));
                 break;
 
             case "search":
+                robot.speak(TtsRequest.create("search", false));
                 break;
 
             case "start":
+                robot.speak(TtsRequest.create("Start", false));
                 break;
 
             case "track":
+                robot.speak(TtsRequest.create("Track", false));
                 break;
         }
     }

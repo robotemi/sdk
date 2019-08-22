@@ -22,21 +22,15 @@
                 android:value="@string/app_name"/>
 
         <!--This meta-data is telling the launcher which nlp responses should
-            invoke the NlpResponse listener's onNlpResponse method sending it an intent-->
+            invoke the NlpResponse listener's onNlpResponse method sending it these intents-->
 
         <meta-data
                 android:name="com.robotemi.sdk.metadata.ACTIONS"
                 android:value="
-            radio.play,
-            radio.search,
-            radio.show.all,
-            radio.next,
-            radio.previous,
-            radio.return,
-            radio.cancel,
-            radio.close,
-            media.play,
-            media.pause" />
+                home.welcome,
+                home.dance,
+                home.sleep
+                " />
 
         <!--this meta-data tells the laucnher which Nlp context we are in.-->
 

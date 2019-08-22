@@ -1,14 +1,14 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-ext {
-    p = new Properties()
-    p.load(file('../secrets.properties').newInputStream())
+Properties properties = new Properties()
+def propertiesFile = project.rootProject.file('local.properties')
+if (propertiesFile.exists()) {
+    properties.load(propertiesFile.newDataInputStream())
 }
-
-ext."signing.keyId" = p['signingKeyId']
-ext."signing.password" = p['signingPassword']
-ext."signing.secretKeyRingFile" = p['signingSecretKeyRingFile']
+ext."signing.keyId" = properties['SIGNING_KEY_ID']
+ext."signing.password" = properties['SIGNING_PASSWORD']
+ext."signing.secretKeyRingFile" = properties['SIGNING_SECRET_KEY_RING_FILE']
 
 publishing {
     publications {
@@ -74,16 +74,18 @@ publishing {
                 }
             }
         }
-
     }
+
     repositories {
+
         maven {
+
             def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
             def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
             url = VERSION_NAME.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username = p['username']
-                password = p['password']
+                username = properties.getProperty('USERNAME')
+                password = properties.getProperty('PASSWORD')
             }
         }
     }
