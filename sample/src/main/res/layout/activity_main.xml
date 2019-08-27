@@ -187,6 +187,7 @@
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="70dp"
                 android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
                 android:onClick="getBatteryData"
                 android:text="@string/battery_info"
                 android:textSize="18sp"/>
