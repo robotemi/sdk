@@ -11,6 +11,8 @@ import com.robotemi.sdk.notification.NormalNotification;
 import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
+import com.robotemi.sdk.BatteryData;
+
 
 interface ISdkService {
 
@@ -130,6 +132,8 @@ interface ISdkService {
     String startTelepresence(in String displayName, in String peerId);
 
     UserInfo getAdminInfo();
+
+    BatteryData getBatteryData();
 
     List<UserInfo> getAllContacts();
 

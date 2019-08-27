@@ -133,7 +133,7 @@
                 android:layout_marginRight="50dp"
                 android:background="@color/colorLightTeal"
                 android:onClick="skidJoy"
-                android:text="skidjoy"
+                android:text="@string/skidjoy"
                 android:textSize="18sp"/>
 
         <Button
@@ -145,7 +145,7 @@
                 android:layout_marginRight="50dp"
                 android:background="@color/colorLightTeal"
                 android:onClick="tiltAngle"
-                android:text="tiltAngle"
+                android:text="@string/tiltangle"
                 android:textSize="18sp"/>
 
         <Button
@@ -157,7 +157,7 @@
                 android:layout_marginRight="50dp"
                 android:background="@color/colorLightTeal"
                 android:onClick="turnBy"
-                android:text="turnBy"
+                android:text="@string/turnby"
                 android:textSize="18sp"/>
 
         <Button
@@ -180,7 +180,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
+        <Button
+                android:id="@+id/btnBatteryInfo"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="70dp"
+                android:layout_marginRight="50dp"
+                android:onClick="getBatteryData"
+                android:text="@string/battery_info"
+                android:textSize="18sp"/>
 
     </LinearLayout>
 

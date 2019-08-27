@@ -737,6 +737,23 @@ public class Robot {
         }
     }
 
+
+    /**
+     * Request the robot to provide current battery status.
+     */
+    public BatteryData getBatteryData() {
+        Log.d(TAG, "getBatteryData()");
+        BatteryData batteryData = null;
+        if (sdkService != null) {
+            try {
+                batteryData = sdkService.getBatteryData();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getBatteryData() error.", e);
+            }
+        }
+        return batteryData;
+    }
+
     /**
      * Joystick commands.
      *

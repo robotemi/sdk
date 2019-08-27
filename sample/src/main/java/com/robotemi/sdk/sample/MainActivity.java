@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.TtsRequest;
@@ -176,6 +177,20 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void tiltBy(View view) {
         robot.tiltBy(70, 1.2F);
+    }
+
+    /**
+     * getBatteryData can be used to return the current battery status.
+     */
+    public void getBatteryData(View view) {
+        BatteryData batteryData = robot.getBatteryData();
+        if (batteryData.isCharging()) {
+            TtsRequest ttsRequest = TtsRequest.create(batteryData.getBatteryPercentage() + " percent battery and charging.", true);
+            robot.speak(ttsRequest);
+        } else {
+            TtsRequest ttsRequest = TtsRequest.create(batteryData.getBatteryPercentage() + " percent battery and not charging.", true);
+            robot.speak(ttsRequest);
+        }
     }
 
     /**

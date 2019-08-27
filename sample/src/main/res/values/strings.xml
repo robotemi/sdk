@@ -10,6 +10,10 @@
     <string name="saved_locations">Saved Locations</string>
     <string name="show_contacts">Show Contacts</string>
     <string name="stop_follow">Stop Follow</string>
+    <string name="skidjoy">skidjoy</string>
+    <string name="tiltangle">tiltAngle</string>
+    <string name="turnby">turnBy</string>
+    <string name="battery_info">Battery Info</string>
 
 
 </resources>
