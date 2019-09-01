@@ -1,13 +1,17 @@
 package com.robotemi.sdk.sample;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
+import android.os.Environment;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -18,7 +22,6 @@ import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.MediaObject;
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.Robot;
-import com.robotemi.sdk.SourceObject;
 import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
@@ -28,6 +31,7 @@ import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -41,11 +45,16 @@ public class MainActivity extends AppCompatActivity implements
         OnGoToLocationStatusChangedListener,
         OnLocationsUpdatedListener {
 
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
     private Robot robot;
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
+    ActivityStreamObject activityStreamObject;
 
     /**
      * Setting up all the event listeners
@@ -100,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         initViews();
+        verifyStoragePermissions(this);
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
     }
 
@@ -208,20 +218,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Hiding keyboard after every button press
-     */
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    /**
      * Display the saved locations in a dialog
      */
     public void savedLocationsDialog(View view) {
@@ -236,11 +232,10 @@ public class MainActivity extends AppCompatActivity implements
         dialog.show();
     }
 
-
     /**
      * When adding the Nlp Listener to your project you need to implement this method
      * which will listen for specific intents and allow you to respond accordingly.
-     *
+     * <p>
      * See AndroidManifest.xml for reference on adding each intent.
      */
     @Override
@@ -272,6 +267,34 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void callOwner(View view) {
         robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId());
+    }
+
+    /**
+     * publishToActivityStream takes an image stored in the resources folder
+     * and uploads it to the mobile application under the Activities tab.
+     */
+    public void publishToActivityStream(View view) {
+        if (robot != null) {
+            final String fileName = "puppy.png";
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.puppy);
+            File puppiesFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), fileName);
+            FileOutputStream fileOutputStream = null;
+            try {
+                fileOutputStream = new FileOutputStream(puppiesFile);
+                bm.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                fileOutputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            activityStreamObject = ActivityStreamObject.builder()
+                    .activityType(ActivityStreamObject.ActivityType.PHOTO)
+                    .title("Puppies")
+                    .media(MediaObject.create(MediaObject.MimeType.IMAGE, puppiesFile))
+                    .build();
+
+            robot.shareActivityObject(activityStreamObject);
+            robot.speak(TtsRequest.create("Uploading Image", false));
+        }
     }
 
     @Override
@@ -317,7 +340,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     public void onGoToLocationStatusChanged(String location, String status) {
         switch (status) {
@@ -350,26 +372,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void uploadToActivityStream(View view) {
-        ActivityStreamObject activityStreamObject;
-        if (robot != null) {
-            activityStreamObject = ActivityStreamObject.builder()
-                    .activityType(ActivityStreamObject.ActivityType.PHOTO)
-                    .title("Cool GIF")
-                    .media(MediaObject.create(MediaObject.MimeType.GIF, new File("/storage/emulated/0/Download/tumblr.gif")))
-                    .source(SourceObject.create(getString(R.string.app_name),"https://s3.eu-central-1.amazonaws.com/roboteam-assets/ui/skills/camera/ic_activitystream_photo.png"))
-                    .build();
-
-            robot.shareActivityObject(activityStreamObject);
-        }
-    }
-
     @Override
     public void onPublish(ActivityStreamPublishMessage message) {
         //After the activity stream finished publishing (photo or otherwise).
         //Do what you want based on the message returned.
-        Toast.makeText(this, message.uuid(), Toast.LENGTH_LONG).show();
-
+        robot.speak(TtsRequest.create("Uploaded.", false));
     }
 
     @Override
@@ -378,5 +385,32 @@ public class MainActivity extends AppCompatActivity implements
         //Saving or deleting a location will update the list.
 
         Toast.makeText(this, "Locations updated :\n" + locations, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Hiding keyboard after every button press
+     */
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /**
+     * Checks if the app has permission to write to device storage
+     * If the app does not has permission then the user will be prompted to grant permissions
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
     }
 }
