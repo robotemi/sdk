@@ -192,6 +192,42 @@
                 android:text="@string/battery_info"
                 android:textSize="18sp"/>
 
+        <Button
+                android:id="@+id/btnStopFollow"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="stopMovement"
+                android:text="@string/stop_movement"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnCallOwner"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="callOwner"
+                android:text="@string/call_owner"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnPublishGIF"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="uploadToActivityStream"
+                android:text="Publish"
+                android:textSize="18sp"/>
+
     </LinearLayout>
 
 </LinearLayout>

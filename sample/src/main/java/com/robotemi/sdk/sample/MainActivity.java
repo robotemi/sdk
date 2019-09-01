@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -14,15 +15,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.robotemi.sdk.BatteryData;
+import com.robotemi.sdk.MediaObject;
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.Robot;
+import com.robotemi.sdk.SourceObject;
 import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -136,6 +141,15 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
+     * stopMovement() is used whenever you want the robot to stop any movement
+     * it is currently doing.
+     */
+    public void stopMovement(View view) {
+        robot.stopMovement();
+        robot.speak(TtsRequest.create("And so I have stopped", true));
+    }
+
+    /**
      * Simple follow me example.
      */
     public void followMe(View view) {
@@ -222,6 +236,13 @@ public class MainActivity extends AppCompatActivity implements
         dialog.show();
     }
 
+
+    /**
+     * When adding the Nlp Listener to your project you need to implement this method
+     * which will listen for specific intents and allow you to respond accordingly.
+     *
+     * See AndroidManifest.xml for reference on adding each intent.
+     */
     @Override
     public void onNlpCompleted(NlpResult nlpResult) {
         //do something with nlp result. Base the action specified in the AndroidManifest.xml
@@ -244,6 +265,13 @@ public class MainActivity extends AppCompatActivity implements
                 robot.goTo(HOME_BASE_LOCATION);
                 break;
         }
+    }
+
+    /**
+     * callOwner is an example of how to use telepresence to call an individual.
+     */
+    public void callOwner(View view) {
+        robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId());
     }
 
     @Override
@@ -322,10 +350,26 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    public void uploadToActivityStream(View view) {
+        ActivityStreamObject activityStreamObject;
+        if (robot != null) {
+            activityStreamObject = ActivityStreamObject.builder()
+                    .activityType(ActivityStreamObject.ActivityType.PHOTO)
+                    .title("Cool GIF")
+                    .media(MediaObject.create(MediaObject.MimeType.GIF, new File("/storage/emulated/0/Download/tumblr.gif")))
+                    .source(SourceObject.create(getString(R.string.app_name),"https://s3.eu-central-1.amazonaws.com/roboteam-assets/ui/skills/camera/ic_activitystream_photo.png"))
+                    .build();
+
+            robot.shareActivityObject(activityStreamObject);
+        }
+    }
+
     @Override
     public void onPublish(ActivityStreamPublishMessage message) {
         //After the activity stream finished publishing (photo or otherwise).
         //Do what you want based on the message returned.
+        Toast.makeText(this, message.uuid(), Toast.LENGTH_LONG).show();
+
     }
 
     @Override

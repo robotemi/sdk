@@ -14,6 +14,8 @@
     <string name="tiltangle">tiltAngle</string>
     <string name="turnby">turnBy</string>
     <string name="battery_info">Battery Info</string>
+    <string name="stop_movement">Stop Movement</string>
+    <string name="call_owner">Call Owner</string>
 
 
 </resources>
