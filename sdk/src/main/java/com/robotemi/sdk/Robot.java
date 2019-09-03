@@ -737,6 +737,22 @@ public class Robot {
         }
     }
 
+    /**
+     * Request robot's serial number as a String.
+     */
+    public String getSerialNumber() {
+        Log.d(TAG, "serialNumber()");
+        String serialNumber = null;
+        if (sdkService != null) {
+            try {
+                serialNumber = sdkService.getSerialNumber();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getSerialNumber()", e);
+            }
+        }
+        return serialNumber;
+    }
+
 
     /**
      * Request the robot to provide current battery status.

@@ -217,7 +217,7 @@
                 android:textSize="18sp" />
 
         <Button
-                android:id="@+id/btnPublishGIF"
+                android:id="@+id/btnPublish"
                 android:layout_width="325dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="50dp"

@@ -135,6 +135,8 @@ interface ISdkService {
 
     BatteryData getBatteryData();
 
+    String getSerialNumber();
+
     List<UserInfo> getAllContacts();
 
     void showAppList();
