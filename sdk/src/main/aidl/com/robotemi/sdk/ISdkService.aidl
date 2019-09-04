@@ -113,11 +113,6 @@ interface ISdkService {
      */
     void beWithMe();
 
-    /**
-     * Request robot to stop any current movement.
-     */
-    void stopMovement();
-
     void skidJoy(in float x, in float y);
 
     void turnBy(in int azimuth, in float speed);
@@ -133,10 +128,6 @@ interface ISdkService {
 
     UserInfo getAdminInfo();
 
-    BatteryData getBatteryData();
-
-    String getSerialNumber();
-
     List<UserInfo> getAllContacts();
 
     void showAppList();
@@ -146,4 +137,13 @@ interface ISdkService {
     void showTopBar();
 
     void hideTopBar();
+
+    /**
+     * Request robot to stop any current movement.
+     */
+    void stopMovement();
+
+    BatteryData getBatteryData();
+
+    String getSerialNumber();
 }
