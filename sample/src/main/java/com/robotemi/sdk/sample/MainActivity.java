@@ -304,9 +304,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onTtsStatusChanged(TtsRequest ttsRequest) {
-
         // Do whatever you like upon the status changing. after the robot finishes speaking
-        // Toast.makeText(this, "speech: " + ttsRequest.getSpeech() + "\nstatus:" + ttsRequest.getStatus(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -381,9 +379,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLocationsUpdated(List<String> locations) {
-
         //Saving or deleting a location will update the list.
-
         Toast.makeText(this, "Locations updated :\n" + locations, Toast.LENGTH_LONG).show();
     }
 
