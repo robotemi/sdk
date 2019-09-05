@@ -13,7 +13,6 @@ import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
 
-
 interface ISdkService {
 
     void speak(in TtsRequest ttsRequest);

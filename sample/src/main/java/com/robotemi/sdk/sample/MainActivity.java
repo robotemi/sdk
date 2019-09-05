@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements
     private Robot robot;
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
-    ActivityStreamObject activityStreamObject;
 
     /**
      * Setting up all the event listeners
@@ -274,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements
      * and uploads it to the mobile application under the Activities tab.
      */
     public void publishToActivityStream(View view) {
+        ActivityStreamObject activityStreamObject;
         if (robot != null) {
             final String fileName = "puppy.png";
             Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.puppy);
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             activityStreamObject = ActivityStreamObject.builder()
                     .activityType(ActivityStreamObject.ActivityType.PHOTO)
-                    .title("Puppies")
+                    .title("Puppy")
                     .media(MediaObject.create(MediaObject.MimeType.IMAGE, puppiesFile))
                     .build();
 
