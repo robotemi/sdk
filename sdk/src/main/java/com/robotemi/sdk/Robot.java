@@ -696,16 +696,38 @@ public class Robot {
      * Save location.
      *
      * @param - Location name.
+     *
+     * @return Result of a successful or failed operation.
      */
-    public void saveLocation(@NonNull final String name) {
+    public boolean saveLocation(@NonNull final String name) {
         Log.d(TAG, "saveLocation(String) (name=" + name + ")");
         if (sdkService != null) {
             try {
-                sdkService.saveLocation(name);
+                return sdkService.saveLocation(name);
             } catch (RemoteException e) {
                 Log.e(TAG, "saveLocation(String)", e);
             }
         }
+        return false;
+    }
+
+    /**
+     * Delete location.
+     *
+     * @param name - Location name.
+     *
+     * @return Result of a successful or failed operation.
+     */
+    public boolean deleteLocation(@NonNull final String name) {
+        Log.d(TAG, "deleteLocation(String) (name=" + name + ")");
+        if (sdkService != null) {
+            try {
+                return sdkService.deleteLocation(name);
+            } catch (RemoteException e) {
+                Log.e(TAG, "deleteLocation(String)", e);
+            }
+        }
+        return false;
     }
 
     /**

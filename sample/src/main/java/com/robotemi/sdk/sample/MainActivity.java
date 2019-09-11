@@ -1,17 +1,20 @@
 package com.robotemi.sdk.sample;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.Robot;
@@ -23,6 +26,7 @@ import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements
         Robot.NlpListener,
@@ -117,8 +121,12 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void saveLocation(View view) {
         String location = etSaveLocation.getText().toString().toLowerCase().trim();
-        robot.saveLocation(location);
-        robot.speak(TtsRequest.create("I've successfully saved the " + location + " location.", true));
+        boolean result = robot.saveLocation(location);
+        if (result) {
+            robot.speak(TtsRequest.create("I've successfully saved the " + location + " location.", true));
+        } else {
+            robot.speak(TtsRequest.create("Saved the " + location + " location failed.", true));
+        }
         hideKeyboard(MainActivity.this);
     }
 
@@ -179,6 +187,13 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
+     * deleteLocation is used to delete a specific location via location name.
+     */
+    public void deleteLocation(View view) {
+
+    }
+
+    /**
      * Hiding keyboard after every button press
      */
     public static void hideKeyboard(Activity activity) {
@@ -198,12 +213,44 @@ public class MainActivity extends AppCompatActivity implements
     public void savedLocationsDialog(View view) {
         hideKeyboard(MainActivity.this);
         locations = robot.getLocations();
-        CustomAdapter customAdapter = new CustomAdapter(MainActivity.this, android.R.layout.simple_selectable_list_item, locations);
+        final CustomAdapter customAdapter = new CustomAdapter(MainActivity.this, android.R.layout.simple_selectable_list_item, locations);
         AlertDialog.Builder versionsDialog = new AlertDialog.Builder(MainActivity.this);
-        versionsDialog.setTitle("Saved Locations:");
+        versionsDialog.setTitle("Saved Locations: (Click to delete the location)");
         versionsDialog.setPositiveButton("OK", null);
         versionsDialog.setAdapter(customAdapter, null);
         AlertDialog dialog = versionsDialog.create();
+        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage("Delete location \"" + customAdapter.getItem(position) + "\" ?");
+                builder.setPositiveButton("No thanks", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String location = customAdapter.getItem(position);
+                        if(location == null) {
+                            return;
+                        }
+                        boolean result = robot.deleteLocation(location);
+                        if (result) {
+                            locations.remove(position);
+                            robot.speak(TtsRequest.create(location + "delete successfully!", false));
+                            customAdapter.notifyDataSetChanged();
+                        }else {
+                            robot.speak(TtsRequest.create(location + "delete failed!", false));
+                        }
+                    }
+                });
+                Dialog deleteDialog = builder.create();
+                deleteDialog.show();
+            }
+        });
         dialog.show();
     }
 

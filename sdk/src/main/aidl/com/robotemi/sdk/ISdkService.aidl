@@ -98,8 +98,10 @@ interface ISdkService {
      * Save location.
      *
      * @param - Location name.
+     *
+     * @return Result of a successful or failed operation.
      */
-    void saveLocation(in String name);
+    boolean saveLocation(in String name);
 
     /**
      * Request robot to follow the user.
@@ -140,4 +142,14 @@ interface ISdkService {
     void showTopBar();
 
     void hideTopBar();
+
+    /**
+     * Delete location.
+     *
+     * @param name - Location name.
+     *
+     * @return Result of a successful or failed operation.
+     */
+    boolean deleteLocation(in String name);
+
 }
