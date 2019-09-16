@@ -7,11 +7,13 @@ import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,9 +26,9 @@ import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
+import com.robotemi.sdk.model.RecentCallModel;
 
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements
         Robot.NlpListener,
@@ -187,13 +189,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * deleteLocation is used to delete a specific location via location name.
-     */
-    public void deleteLocation(View view) {
-
-    }
-
-    /**
      * Hiding keyboard after every button press
      */
     public static void hideKeyboard(Activity activity) {
@@ -234,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String location = customAdapter.getItem(position);
-                        if(location == null) {
+                        if (location == null) {
                             return;
                         }
                         boolean result = robot.deleteLocation(location);
@@ -242,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements
                             locations.remove(position);
                             robot.speak(TtsRequest.create(location + "delete successfully!", false));
                             customAdapter.notifyDataSetChanged();
-                        }else {
+                        } else {
                             robot.speak(TtsRequest.create(location + "delete failed!", false));
                         }
                     }
@@ -323,7 +318,8 @@ public class MainActivity extends AppCompatActivity implements
 
 
     @Override
-    public void onGoToLocationStatusChanged(String location, String status) {
+    public void onGoToLocationStatusChanged(String location, String status, int descriptionId, String description) {
+        Log.d("GoToStatusChanged", "descriptionId=" + descriptionId + ", description=" + description);
         switch (status) {
             case "start":
                 robot.speak(TtsRequest.create("Starting", false));
