@@ -288,7 +288,8 @@ public class Robot {
         @Override
         public boolean onGoToLocationStatusChanged(@NonNull final String location, @NonNull final String status,
                                                    final int descriptionId, @NonNull final String description) {
-            Log.d(TAG, "onGoToLocationStatusChanged(String, String) (location=" + location + ", status=" + status + ")");
+            Log.d(TAG, "onGoToLocationStatusChanged(String, String, int, String) (location=" + location + ", status=" + status +
+                    ", descriptionId=" + descriptionId + ", description=" + description + ")");
             if (!onGoToLocationStatusChangeListeners.isEmpty()) {
                 uiHandler.post(new Runnable() {
                     @Override
