@@ -34,7 +34,7 @@ interface ISdkServiceCallback {
 
     boolean onBeWithMeStatusChanged(in String status);
 
-    boolean onGoToLocationStatusChanged(in String location, in String status);
+    boolean onGoToLocationStatusChanged(in String location, in String status, in int descriptionId, in String description);
 
     boolean onTelepresenceStatusChanged(in CallState callState);
 

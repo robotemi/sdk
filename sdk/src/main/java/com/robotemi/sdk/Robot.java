@@ -286,14 +286,15 @@ public class Robot {
         }
 
         @Override
-        public boolean onGoToLocationStatusChanged(@NonNull final String location, @NonNull final String status) {
+        public boolean onGoToLocationStatusChanged(@NonNull final String location, @NonNull final String status,
+                                                   final int descriptionId, @NonNull final String description) {
             Log.d(TAG, "onGoToLocationStatusChanged(String, String) (location=" + location + ", status=" + status + ")");
             if (!onGoToLocationStatusChangeListeners.isEmpty()) {
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         for (OnGoToLocationStatusChangedListener listener : onGoToLocationStatusChangeListeners) {
-                            listener.onGoToLocationStatusChanged(location, status);
+                            listener.onGoToLocationStatusChanged(location, status, descriptionId, description);
                         }
                     }
                 });
