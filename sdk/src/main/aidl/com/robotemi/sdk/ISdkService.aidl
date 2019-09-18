@@ -99,8 +99,10 @@ interface ISdkService {
      * Save location.
      *
      * @param - Location name.
+     *
+     * @return Result of a successful or failed operation.
      */
-    void saveLocation(in String name);
+    boolean saveLocation(in String name);
 
     /**
      * Request robot to follow the user.
@@ -137,7 +139,7 @@ interface ISdkService {
 
     void hideTopBar();
 
-    /**
+    /*
      * Request robot to stop any current movement.
      */
     void stopMovement();
@@ -149,10 +151,18 @@ interface ISdkService {
     /**
      * Request robot to toggle the wakeup trigger
      */
-     void toggleWakeup(boolean enable);
+     void toggleWakeup(in boolean enable);
 
      /**
      * Request robot to show/hide navigation billboards
      */
-     void toggleNavigationBillboard(boolean show);
+     void toggleNavigationBillboard(in boolean show);
+
+     /** Delete location.
+     *
+     * @param name - Location name.
+     *
+     * @return Result of a successful or failed operation.
+     */
+    boolean deleteLocation(in String name);
 }
