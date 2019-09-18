@@ -172,6 +172,54 @@
                 android:text="tiltBy"
                 android:textSize="18sp"/>
 
+        <Button
+                android:id="@+id/btnDisableWakeup"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="disableWakeup"
+                android:text="Disable Wakeup"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnEnableWakeup"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="enableWakeup"
+                android:text="Enable Wakeup"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnHideNavBillboard"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="hideBillboard"
+                android:text="Hide navigation billboard"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnShowNavBillboard"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="showBillboard"
+                android:text="Show navigation billboard"
+                android:textSize="18sp"/>
+
 
     </LinearLayout>
 

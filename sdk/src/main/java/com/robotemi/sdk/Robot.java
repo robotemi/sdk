@@ -11,9 +11,15 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.UiThread;
+
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.activitystream.ActivityStreamUtils;
+import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
@@ -35,11 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.UiThread;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
@@ -363,6 +364,7 @@ public class Robot {
             return false;
         }
     };
+    private ActivityInfo activityInfo;
 
     private Robot(@NonNull final Context context) {
         final Context appContext = context.getApplicationContext();
@@ -394,6 +396,7 @@ public class Robot {
     @UiThread
     public void onStart(@NonNull final ActivityInfo activityInfo) {
         Log.d(TAG, "onStart(ActivityInfo) (activityInfo=" + activityInfo + ")");
+        this.activityInfo = activityInfo;
         if (sdkService != null) {
             try {
                 sdkService.onStart(activityInfo);
@@ -897,6 +900,36 @@ public class Robot {
         }
     }
 
+    public void toggleWakeup(boolean enable) {
+        Log.d(TAG, "toggleWakeup() - " + enable);
+        if (sdkService != null) {
+            if (isMetaDataKiosk()) {
+                try {
+                    sdkService.toggleWakeup(enable);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "toggleWakeup() error.", e);
+                }
+            } else {
+                Log.e(TAG, "toggleWakeup() Wakeup can only be toggled in Kiosk Mode");
+            }
+        }
+    }
+
+    public void toggleNavigationBillboard(boolean show) {
+        Log.d(TAG, "toggleNavigationBillboard() - " + show);
+        if (sdkService != null) {
+            if (isMetaDataKiosk()) {
+                try {
+                    sdkService.toggleNavigationBillboard(show);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "toggleNavigationBillboard() error.", e);
+                }
+            } else {
+                Log.e(TAG, "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode");
+            }
+        }
+    }
+
     public interface WakeupWordListener {
         void onWakeupWord(String wakeupWord);
     }
@@ -930,5 +963,9 @@ public class Robot {
 
     public interface ConversationViewAttachesListener {
         void onConversationAttaches(boolean isAttached);
+    }
+
+    private boolean isMetaDataKiosk() {
+        return activityInfo.metaData != null && activityInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false);
     }
 }

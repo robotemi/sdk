@@ -140,4 +140,14 @@ interface ISdkService {
     void showTopBar();
 
     void hideTopBar();
+
+    /**
+     * Request robot to toggle the wakeup trigger
+     */
+     void toggleWakeup(boolean enable);
+
+     /**
+     * Request robot to show/hide navigation billboards
+     */
+     void toggleNavigationBillboard(boolean show);
 }

@@ -1,7 +1,5 @@
 package com.robotemi.sdk.sample;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
@@ -12,6 +10,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.Robot;
@@ -37,9 +37,23 @@ public class MainActivity extends AppCompatActivity implements
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
-    private Robot robot;
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
+    private Robot robot;
+
+    /**
+     * Hiding keyboard after every button press
+     */
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     /**
      * Setting up all the event listeners
@@ -179,20 +193,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Hiding keyboard after every button press
-     */
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    /**
      * Display the saved locations in a dialog
      */
     public void savedLocationsDialog(View view) {
@@ -319,5 +319,21 @@ public class MainActivity extends AppCompatActivity implements
         //Saving or deleting a location will update the list.
 
         Toast.makeText(this, "Locations updated :\n" + locations, Toast.LENGTH_LONG).show();
+    }
+
+    public void disableWakeup(View view) {
+        robot.toggleWakeup(false);
+    }
+
+    public void enableWakeup(View view) {
+        robot.toggleWakeup(true);
+    }
+
+    public void showBillboard(View view) {
+        robot.toggleNavigationBillboard(true);
+    }
+
+    public void hideBillboard(View view) {
+        robot.toggleNavigationBillboard(false);
     }
 }
