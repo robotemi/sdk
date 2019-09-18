@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.robotemi.sdk.sample">
+        xmlns:tools="http://schemas.android.com/tools"
+        package="com.robotemi.sdk.sample">
 
     <!--Using SkillTheme (android:theme="@style/SkillTheme") for your app helps the flow with navigating to and
         from the launcher. It also removes the app's Topbar so it doesn't interfere with temi's.-->
@@ -19,7 +19,7 @@
             display this app in temi's launcher app-->
         <meta-data
                 android:name="com.robotemi.sdk.metadata.SKILL"
-                android:value="@string/app_name"/>
+                android:value="@string/app_name" />
 
         <!--This meta-data is telling the launcher which nlp responses should
             invoke the NlpResponse listener's onNlpResponse method sending it these intents-->
@@ -40,8 +40,13 @@
             radio,
             media" />
 
-        <activity android:name=".MainActivity"
-                  android:screenOrientation="landscape">
+        <!--        <meta-data
+                        android:name="com.robotemi.sdk.metadata.KIOSK"
+                        android:value="TRUE"/>-->
+
+        <activity
+                android:name=".MainActivity"
+                android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
