@@ -1,27 +1,38 @@
 package com.robotemi.sdk.sample;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.RemoteException;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.robotemi.sdk.BatteryData;
+import com.robotemi.sdk.MediaObject;
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -37,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     public EditText etSpeak, etSaveLocation, etGoTo;
     List<String> locations;
     private Robot robot;
@@ -53,6 +67,19 @@ public class MainActivity extends AppCompatActivity implements
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /**
+     * Checks if the app has permission to write to device storage
+     * If the app does not has permission then the user will be prompted to grant permissions
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
     }
 
     /**
@@ -108,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         initViews();
+        verifyStoragePermissions(this);
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
     }
 
@@ -146,6 +174,15 @@ public class MainActivity extends AppCompatActivity implements
                 hideKeyboard(MainActivity.this);
             }
         }
+    }
+
+    /**
+     * stopMovement() is used whenever you want the robot to stop any movement
+     * it is currently doing.
+     */
+    public void stopMovement(View view) {
+        robot.stopMovement();
+        robot.speak(TtsRequest.create("And so I have stopped", true));
     }
 
     /**
@@ -193,6 +230,23 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
+     * <<<<<<< HEAD
+     * =======
+     * getBatteryData can be used to return the current battery status.
+     */
+    public void getBatteryData(View view) {
+        BatteryData batteryData = robot.getBatteryData();
+        if (batteryData.isCharging()) {
+            TtsRequest ttsRequest = TtsRequest.create(batteryData.getBatteryPercentage() + " percent battery and charging.", true);
+            robot.speak(ttsRequest);
+        } else {
+            TtsRequest ttsRequest = TtsRequest.create(batteryData.getBatteryPercentage() + " percent battery and not charging.", true);
+            robot.speak(ttsRequest);
+        }
+    }
+
+    /**
+     * >>>>>>> dd8ec77a84712186abcea0cfef3233d872c96386
      * Display the saved locations in a dialog
      */
     public void savedLocationsDialog(View view) {
@@ -207,6 +261,12 @@ public class MainActivity extends AppCompatActivity implements
         dialog.show();
     }
 
+    /**
+     * When adding the Nlp Listener to your project you need to implement this method
+     * which will listen for specific intents and allow you to respond accordingly.
+     * <p>
+     * See AndroidManifest.xml for reference on adding each intent.
+     */
     @Override
     public void onNlpCompleted(NlpResult nlpResult) {
         //do something with nlp result. Base the action specified in the AndroidManifest.xml
@@ -231,6 +291,46 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * callOwner is an example of how to use telepresence to call an individual.
+     */
+    public void callOwner(View view) {
+        robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId());
+    }
+
+    /**
+     * publishToActivityStream takes an image stored in the resources folder
+     * and uploads it to the mobile application under the Activities tab.
+     */
+    public void publishToActivityStream(View view) {
+        ActivityStreamObject activityStreamObject;
+        if (robot != null) {
+            final String fileName = "puppy.png";
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.puppy);
+            File puppiesFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), fileName);
+            FileOutputStream fileOutputStream = null;
+            try {
+                fileOutputStream = new FileOutputStream(puppiesFile);
+                bm.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                fileOutputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            activityStreamObject = ActivityStreamObject.builder()
+                    .activityType(ActivityStreamObject.ActivityType.PHOTO)
+                    .title("Puppy")
+                    .media(MediaObject.create(MediaObject.MimeType.IMAGE, puppiesFile))
+                    .build();
+
+            try {
+                robot.shareActivityObject(activityStreamObject);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            robot.speak(TtsRequest.create("Uploading Image", false));
+        }
+    }
+
     @Override
     public void onWakeupWord(String wakeupWord) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
@@ -238,9 +338,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onTtsStatusChanged(TtsRequest ttsRequest) {
-
         // Do whatever you like upon the status changing. after the robot finishes speaking
-        // Toast.makeText(this, "speech: " + ttsRequest.getSpeech() + "\nstatus:" + ttsRequest.getStatus(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -273,7 +371,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
     }
-
 
     @Override
     public void onGoToLocationStatusChanged(String location, String status) {
@@ -311,29 +408,28 @@ public class MainActivity extends AppCompatActivity implements
     public void onPublish(ActivityStreamPublishMessage message) {
         //After the activity stream finished publishing (photo or otherwise).
         //Do what you want based on the message returned.
+        robot.speak(TtsRequest.create("Uploaded.", false));
     }
 
     @Override
     public void onLocationsUpdated(List<String> locations) {
-
         //Saving or deleting a location will update the list.
-
         Toast.makeText(this, "Locations updated :\n" + locations, Toast.LENGTH_LONG).show();
     }
 
     public void disableWakeup(View view) {
-        robot.toggleWakeup(false);
-    }
-
-    public void enableWakeup(View view) {
         robot.toggleWakeup(true);
     }
 
+    public void enableWakeup(View view) {
+        robot.toggleWakeup(false);
+    }
+
     public void showBillboard(View view) {
-        robot.toggleNavigationBillboard(true);
+        robot.toggleNavigationBillboard(false);
     }
 
     public void hideBillboard(View view) {
-        robot.toggleNavigationBillboard(false);
+        robot.toggleNavigationBillboard(true);
     }
 }

@@ -364,7 +364,6 @@ public class Robot {
             return false;
         }
     };
-    private ActivityInfo activityInfo;
 
     private Robot(@NonNull final Context context) {
         final Context appContext = context.getApplicationContext();
@@ -396,7 +395,6 @@ public class Robot {
     @UiThread
     public void onStart(@NonNull final ActivityInfo activityInfo) {
         Log.d(TAG, "onStart(ActivityInfo) (activityInfo=" + activityInfo + ")");
-        this.activityInfo = activityInfo;
         if (sdkService != null) {
             try {
                 sdkService.onStart(activityInfo);
@@ -741,6 +739,39 @@ public class Robot {
     }
 
     /**
+     * Request robot's serial number as a String.
+     */
+    public String getSerialNumber() {
+        Log.d(TAG, "serialNumber()");
+        String serialNumber = null;
+        if (sdkService != null) {
+            try {
+                serialNumber = sdkService.getSerialNumber();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getSerialNumber()", e);
+            }
+        }
+        return serialNumber;
+    }
+
+
+    /**
+     * Request the robot to provide current battery status.
+     */
+    public BatteryData getBatteryData() {
+        Log.d(TAG, "getBatteryData()");
+        BatteryData batteryData = null;
+        if (sdkService != null) {
+            try {
+                batteryData = sdkService.getBatteryData();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getBatteryData() error.", e);
+            }
+        }
+        return batteryData;
+    }
+
+    /**
      * Joystick commands.
      *
      * @param x From -1 to 1.
@@ -900,12 +931,12 @@ public class Robot {
         }
     }
 
-    public void toggleWakeup(boolean enable) {
-        Log.d(TAG, "toggleWakeup() - " + enable);
+    public void toggleWakeup(boolean disable) {
+        Log.d(TAG, "toggleWakeup() - disable = " + disable);
         if (sdkService != null) {
             if (isMetaDataKiosk()) {
                 try {
-                    sdkService.toggleWakeup(enable);
+                    sdkService.toggleWakeup(disable);
                 } catch (RemoteException e) {
                     Log.e(TAG, "toggleWakeup() error.", e);
                 }
@@ -915,12 +946,12 @@ public class Robot {
         }
     }
 
-    public void toggleNavigationBillboard(boolean show) {
-        Log.d(TAG, "toggleNavigationBillboard() - " + show);
+    public void toggleNavigationBillboard(boolean hide) {
+        Log.d(TAG, "toggleNavigationBillboard() - " + hide);
         if (sdkService != null) {
             if (isMetaDataKiosk()) {
                 try {
-                    sdkService.toggleNavigationBillboard(show);
+                    sdkService.toggleNavigationBillboard(hide);
                 } catch (RemoteException e) {
                     Log.e(TAG, "toggleNavigationBillboard() error.", e);
                 }
@@ -966,6 +997,6 @@ public class Robot {
     }
 
     private boolean isMetaDataKiosk() {
-        return activityInfo.metaData != null && activityInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false);
+        return applicationInfo.metaData != null && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false);
     }
 }
