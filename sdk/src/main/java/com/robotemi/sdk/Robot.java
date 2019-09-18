@@ -762,6 +762,39 @@ public class Robot {
     }
 
     /**
+     * Request robot's serial number as a String.
+     */
+    public String getSerialNumber() {
+        Log.d(TAG, "serialNumber()");
+        String serialNumber = null;
+        if (sdkService != null) {
+            try {
+                serialNumber = sdkService.getSerialNumber();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getSerialNumber()", e);
+            }
+        }
+        return serialNumber;
+    }
+
+
+    /**
+     * Request the robot to provide current battery status.
+     */
+    public BatteryData getBatteryData() {
+        Log.d(TAG, "getBatteryData()");
+        BatteryData batteryData = null;
+        if (sdkService != null) {
+            try {
+                batteryData = sdkService.getBatteryData();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getBatteryData() error.", e);
+            }
+        }
+        return batteryData;
+    }
+
+    /**
      * Joystick commands.
      *
      * @param x From -1 to 1.

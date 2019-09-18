@@ -11,6 +11,7 @@ import com.robotemi.sdk.notification.NormalNotification;
 import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
+import com.robotemi.sdk.BatteryData;
 
 interface ISdkService {
 
@@ -113,11 +114,6 @@ interface ISdkService {
      */
     void beWithMe();
 
-    /**
-     * Request robot to stop any current movement.
-     */
-    void stopMovement();
-
     void skidJoy(in float x, in float y);
 
     void turnBy(in int azimuth, in float speed);
@@ -142,6 +138,15 @@ interface ISdkService {
     void showTopBar();
 
     void hideTopBar();
+
+    /*
+     * Request robot to stop any current movement.
+     */
+    void stopMovement();
+
+    BatteryData getBatteryData();
+
+    String getSerialNumber();
 
     /**
      * Delete location.
