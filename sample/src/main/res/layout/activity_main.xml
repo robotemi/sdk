@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="horizontal"
-              android:background="@color/colorBlack"
-              tools:context=".MainActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBlack"
+        android:orientation="horizontal"
+        tools:context=".MainActivity">
 
     <LinearLayout
             android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
                 android:hint="@string/enter_location"
                 android:inputType="textPersonName"
                 android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey"/>
+                android:textColorHint="@color/colorGrey" />
 
         <Button
                 android:id="@+id/btnSaveLocation"
@@ -34,10 +34,10 @@
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="50dp"
-                android:onClick="saveLocation"
                 android:background="@color/colorLightTeal"
+                android:onClick="saveLocation"
                 android:text="@string/save_location"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
 
         <EditText
@@ -52,7 +52,7 @@
                 android:hint="@string/go_to_location"
                 android:inputType="textPersonName"
                 android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey"/>
+                android:textColorHint="@color/colorGrey" />
 
         <Button
                 android:id="@+id/btnGoTo"
@@ -61,10 +61,10 @@
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="50dp"
-                android:onClick="goTo"
                 android:background="@color/colorLightTeal"
+                android:onClick="goTo"
                 android:text="@string/go_to"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         <EditText
                 android:id="@+id/etSpeak"
@@ -78,7 +78,7 @@
                 android:hint="@string/enter_speech"
                 android:inputType="textPersonName"
                 android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey"/>
+                android:textColorHint="@color/colorGrey" />
 
         <Button
                 android:id="@+id/btnSpeak"
@@ -87,10 +87,10 @@
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="50dp"
-                android:onClick="speak"
                 android:background="@color/colorLightTeal"
+                android:onClick="speak"
                 android:text="@string/speak"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
 
     </LinearLayout>
@@ -110,7 +110,7 @@
                 android:background="@color/colorLightTeal"
                 android:onClick="savedLocationsDialog"
                 android:text="@string/saved_locations"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnFollow"
@@ -122,7 +122,7 @@
                 android:background="@color/colorLightTeal"
                 android:onClick="followMe"
                 android:text="@string/follow_me"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnskidJoy"
@@ -133,8 +133,8 @@
                 android:layout_marginRight="50dp"
                 android:background="@color/colorLightTeal"
                 android:onClick="skidJoy"
-                android:text="skidjoy"
-                android:textSize="18sp"/>
+                android:text="@string/skidjoy"
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnTiltAngle"
@@ -145,8 +145,8 @@
                 android:layout_marginRight="50dp"
                 android:background="@color/colorLightTeal"
                 android:onClick="tiltAngle"
-                android:text="tiltAngle"
-                android:textSize="18sp"/>
+                android:text="@string/tiltangle"
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnTurnBy"
@@ -157,8 +157,8 @@
                 android:layout_marginRight="50dp"
                 android:background="@color/colorLightTeal"
                 android:onClick="turnBy"
-                android:text="turnBy"
-                android:textSize="18sp"/>
+                android:text="@string/turnby"
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnTiltBy"
@@ -170,6 +170,54 @@
                 android:background="@color/colorLightTeal"
                 android:onClick="tiltBy"
                 android:text="tiltBy"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnDisableWakeup"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="disableWakeup"
+                android:text="Disable Wakeup"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnEnableWakeup"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="enableWakeup"
+                android:text="Enable Wakeup"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnHideNavBillboard"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="hideBillboard"
+                android:text="Hide navigation billboard"
+                android:textSize="18sp"/>
+
+        <Button
+                android:id="@+id/btnShowNavBillboard"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="showBillboard"
+                android:text="Show navigation billboard"
                 android:textSize="18sp"/>
 
 
@@ -180,7 +228,53 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+        <Button
+                android:id="@+id/btnBatteryInfo"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="70dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="getBatteryData"
+                android:text="@string/battery_info"
+                android:textSize="18sp" />
 
+        <Button
+                android:id="@+id/btnStopFollow"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="stopMovement"
+                android:text="@string/stop_movement"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnCallOwner"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="callOwner"
+                android:text="@string/call_owner"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnPublish"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="publishToActivityStream"
+                android:text="@string/publish_to_activities"
+                android:textSize="18sp" />
 
     </LinearLayout>
 

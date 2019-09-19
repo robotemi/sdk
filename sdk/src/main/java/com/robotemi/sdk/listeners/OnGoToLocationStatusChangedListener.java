@@ -30,9 +30,9 @@ public interface OnGoToLocationStatusChangedListener {
      * </ul>
      *
      * @param location Location of GoTo response.
-     * @param status Current status.
+     * @param status   Current status.
      */
-    void onGoToLocationStatusChanged(String location, @GoToLocationStatus String status);
+    void onGoToLocationStatusChanged(String location, @GoToLocationStatus String status, int descriptionId, String description);
 
     @StringDef({START, CALCULATING, GOING, COMPLETE, ABORT})
     @Retention(RetentionPolicy.SOURCE)

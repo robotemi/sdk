@@ -11,6 +11,7 @@ import com.robotemi.sdk.notification.NormalNotification;
 import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
+import com.robotemi.sdk.BatteryData;
 
 interface ISdkService {
 
@@ -98,8 +99,10 @@ interface ISdkService {
      * Save location.
      *
      * @param - Location name.
+     *
+     * @return Result of a successful or failed operation.
      */
-    void saveLocation(in String name);
+    boolean saveLocation(in String name);
 
     /**
      * Request robot to follow the user.
@@ -110,11 +113,6 @@ interface ISdkService {
      * Request robot to follow the user.
      */
     void beWithMe();
-
-    /**
-     * Request robot to stop any current movement.
-     */
-    void stopMovement();
 
     void skidJoy(in float x, in float y);
 
@@ -140,4 +138,31 @@ interface ISdkService {
     void showTopBar();
 
     void hideTopBar();
+
+    /*
+     * Request robot to stop any current movement.
+     */
+    void stopMovement();
+
+    BatteryData getBatteryData();
+
+    String getSerialNumber();
+
+    /**
+     * Request robot to toggle the wakeup trigger
+     */
+     void toggleWakeup(in boolean enable);
+
+     /**
+     * Request robot to show/hide navigation billboards
+     */
+     void toggleNavigationBillboard(in boolean show);
+
+     /** Delete location.
+     *
+     * @param name - Location name.
+     *
+     * @return Result of a successful or failed operation.
+     */
+    boolean deleteLocation(in String name);
 }

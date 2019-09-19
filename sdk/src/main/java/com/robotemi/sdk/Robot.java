@@ -11,9 +11,15 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.UiThread;
+
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.activitystream.ActivityStreamUtils;
+import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
@@ -35,11 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.UiThread;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
@@ -286,14 +287,16 @@ public class Robot {
         }
 
         @Override
-        public boolean onGoToLocationStatusChanged(@NonNull final String location, @NonNull final String status) {
-            Log.d(TAG, "onGoToLocationStatusChanged(String, String) (location=" + location + ", status=" + status + ")");
+        public boolean onGoToLocationStatusChanged(@NonNull final String location, @NonNull final String status,
+                                                   final int descriptionId, @NonNull final String description) {
+            Log.d(TAG, "onGoToLocationStatusChanged(String, String, int, String) (location=" + location + ", status=" + status +
+                    ", descriptionId=" + descriptionId + ", description=" + description + ")");
             if (!onGoToLocationStatusChangeListeners.isEmpty()) {
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         for (OnGoToLocationStatusChangedListener listener : onGoToLocationStatusChangeListeners) {
-                            listener.onGoToLocationStatusChanged(location, status);
+                            listener.onGoToLocationStatusChanged(location, status, descriptionId, description);
                         }
                     }
                 });
@@ -696,16 +699,36 @@ public class Robot {
      * Save location.
      *
      * @param - Location name.
+     * @return Result of a successful or failed operation.
      */
-    public void saveLocation(@NonNull final String name) {
+    public boolean saveLocation(@NonNull final String name) {
         Log.d(TAG, "saveLocation(String) (name=" + name + ")");
         if (sdkService != null) {
             try {
-                sdkService.saveLocation(name);
+                return sdkService.saveLocation(name);
             } catch (RemoteException e) {
                 Log.e(TAG, "saveLocation(String)", e);
             }
         }
+        return false;
+    }
+
+    /**
+     * Delete location.
+     *
+     * @param name - Location name.
+     * @return Result of a successful or failed operation.
+     */
+    public boolean deleteLocation(@NonNull final String name) {
+        Log.d(TAG, "deleteLocation(String) (name=" + name + ")");
+        if (sdkService != null) {
+            try {
+                return sdkService.deleteLocation(name);
+            } catch (RemoteException e) {
+                Log.e(TAG, "deleteLocation(String)", e);
+            }
+        }
+        return false;
     }
 
     /**
@@ -738,10 +761,43 @@ public class Robot {
     }
 
     /**
+     * Request robot's serial number as a String.
+     */
+    public String getSerialNumber() {
+        Log.d(TAG, "serialNumber()");
+        String serialNumber = null;
+        if (sdkService != null) {
+            try {
+                serialNumber = sdkService.getSerialNumber();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getSerialNumber()", e);
+            }
+        }
+        return serialNumber;
+    }
+
+
+    /**
+     * Request the robot to provide current battery status.
+     */
+    public BatteryData getBatteryData() {
+        Log.d(TAG, "getBatteryData()");
+        BatteryData batteryData = null;
+        if (sdkService != null) {
+            try {
+                batteryData = sdkService.getBatteryData();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getBatteryData() error.", e);
+            }
+        }
+        return batteryData;
+    }
+
+    /**
      * Joystick commands.
      *
-     * @param x From -1 to 1.
-     * @param y From -1 to 1.
+     * @param x Move on the x axis from -1 to 1.
+     * @param y Move on the y axis from -1 to 1.
      */
     public void skidJoy(final float x, final float y) {
         Log.d(TAG, "skidJoy(float, float) (x=" + x + ", y=" + y + ")");
@@ -754,35 +810,66 @@ public class Robot {
         }
     }
 
-    public void turnBy(final int azimuth, final float speed) {
-        Log.d(TAG, "turnBy(int, float) (azimuth=" + azimuth + ", speed=" + speed + ")");
+    /**
+     * @param degrees the degree amount you want the robot to turn
+     * @param speed   deprecated
+     * @deprecated See {{@link #turnBy(int)}}
+     */
+    @Deprecated
+    public void turnBy(final int degrees, final float speed) {
+        turnBy(degrees);
+    }
+
+    public void turnBy(final int degrees) {
+        Log.d(TAG, "turnBy(int) (degrees=" + degrees + ")");
         if (sdkService != null) {
             try {
-                sdkService.turnBy(azimuth, speed);
+                sdkService.turnBy(degrees, 1.0F);
             } catch (RemoteException e) {
-                Log.e(TAG, "turnBy(int, float) (azimuth=" + azimuth + ", speed=" + speed + ")");
+                Log.e(TAG, "turnBy(int) (degrees=" + degrees + ")");
             }
         }
     }
 
+    /**
+     * @param degrees the degree which you want the robot to tilt to, between 55 and -25
+     * @param speed   deprecated
+     * @deprecated See {{@link #tiltAngle(int)}}
+     */
+    @Deprecated
     public void tiltAngle(final int degrees, final float speed) {
-        Log.d(TAG, "turnBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+        tiltAngle(degrees);
+    }
+
+    public void tiltAngle(final int degrees) {
+        Log.d(TAG, "turnBy(int) (degrees=" + degrees + ")");
         if (sdkService != null) {
             try {
-                sdkService.tiltAngle(degrees, speed);
+                sdkService.tiltAngle(degrees, 1.0f);
             } catch (RemoteException e) {
-                Log.e(TAG, "turnBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+                Log.e(TAG, "turnBy(int) (degrees=" + degrees + ")");
             }
         }
     }
 
+    /**
+     * @param degrees the degree amount you want the robot to tilt
+     * @param speed
+     * @deprecated See {{@link #tiltBy(int)}}
+     */
+
+    @Deprecated
     public void tiltBy(final int degrees, final float speed) {
-        Log.d(TAG, "tiltBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+        tiltBy(degrees);
+    }
+
+    public void tiltBy(final int degrees) {
+        Log.d(TAG, "tiltBy(int) (degrees=" + degrees + ")");
         if (sdkService != null) {
             try {
-                sdkService.tiltBy(degrees, speed);
+                sdkService.tiltBy(degrees, 1.0f);
             } catch (RemoteException e) {
-                Log.e(TAG, "tiltBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+                Log.e(TAG, "tiltBy(int) (degrees=" + degrees + ")");
             }
         }
     }
@@ -895,6 +982,51 @@ public class Robot {
                 Log.e(TAG, "hideTopBar() error.", e);
             }
         }
+    }
+
+    /**
+     * Toggle the wakeup trigger on and off
+     * @param disable set true to disable the wakeup or false to enable it
+     *
+     */
+    public void toggleWakeup(boolean disable) {
+        Log.d(TAG, "toggleWakeup() - disable = " + disable);
+        if (sdkService != null) {
+            if (isMetaDataKiosk()) {
+                try {
+                    sdkService.toggleWakeup(disable);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "toggleWakeup() error.", e);
+                }
+            } else {
+                Log.e(TAG, "toggleWakeup() Wakeup can only be toggled in Kiosk Mode");
+            }
+        }
+    }
+
+    /**
+     * Toggle the visibility of the navigation billboard when you perform goTo commands
+     * @param hide set true to hide the billboard or false to display it
+     *
+     */
+    public void toggleNavigationBillboard(boolean hide) {
+        Log.d(TAG, "toggleNavigationBillboard() - " + hide);
+        if (sdkService != null) {
+            if (isMetaDataKiosk()) {
+                try {
+                    sdkService.toggleNavigationBillboard(hide);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "toggleNavigationBillboard() error.", e);
+                }
+            } else {
+                Log.e(TAG, "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode");
+            }
+        }
+    }
+
+    private boolean isMetaDataKiosk() {
+        return applicationInfo.metaData != null
+                && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false);
     }
 
     public interface WakeupWordListener {
