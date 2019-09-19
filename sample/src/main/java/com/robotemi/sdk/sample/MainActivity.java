@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements
      * the amount of degrees to turn by and at which speed.
      */
     public void turnBy(View view) {
-        robot.turnBy(90, 6.2F);
+        robot.turnBy(180, 6.2F);
     }
 
     /**
@@ -243,7 +243,6 @@ public class MainActivity extends AppCompatActivity implements
 
     /**
      * <<<<<<< HEAD
-     * =======
      * getBatteryData can be used to return the current battery status.
      */
     public void getBatteryData(View view) {
@@ -258,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * >>>>>>> dd8ec77a84712186abcea0cfef3233d872c96386
      * Display the saved locations in a dialog
      */
     public void savedLocationsDialog(View view) {

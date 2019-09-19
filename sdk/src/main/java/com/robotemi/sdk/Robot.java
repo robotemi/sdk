@@ -699,7 +699,6 @@ public class Robot {
      * Save location.
      *
      * @param - Location name.
-     *
      * @return Result of a successful or failed operation.
      */
     public boolean saveLocation(@NonNull final String name) {
@@ -718,7 +717,6 @@ public class Robot {
      * Delete location.
      *
      * @param name - Location name.
-     *
      * @return Result of a successful or failed operation.
      */
     public boolean deleteLocation(@NonNull final String name) {
@@ -798,8 +796,8 @@ public class Robot {
     /**
      * Joystick commands.
      *
-     * @param x From -1 to 1.
-     * @param y From -1 to 1.
+     * @param x Move on the x axis from -1 to 1.
+     * @param y Move on the y axis from -1 to 1.
      */
     public void skidJoy(final float x, final float y) {
         Log.d(TAG, "skidJoy(float, float) (x=" + x + ", y=" + y + ")");
@@ -812,35 +810,66 @@ public class Robot {
         }
     }
 
-    public void turnBy(final int azimuth, final float speed) {
-        Log.d(TAG, "turnBy(int, float) (azimuth=" + azimuth + ", speed=" + speed + ")");
+    /**
+     * @param degrees the degree amount you want the robot to turn
+     * @param speed   deprecated
+     * @deprecated See {{@link #turnBy(int)}}
+     */
+    @Deprecated
+    public void turnBy(final int degrees, final float speed) {
+        turnBy(degrees);
+    }
+
+    public void turnBy(final int degrees) {
+        Log.d(TAG, "turnBy(int) (degrees=" + degrees + ")");
         if (sdkService != null) {
             try {
-                sdkService.turnBy(azimuth, speed);
+                sdkService.turnBy(degrees, 1.0F);
             } catch (RemoteException e) {
-                Log.e(TAG, "turnBy(int, float) (azimuth=" + azimuth + ", speed=" + speed + ")");
+                Log.e(TAG, "turnBy(int) (degrees=" + degrees + ")");
             }
         }
     }
 
+    /**
+     * @param degrees the degree which you want the robot to tilt to, between 55 and -25
+     * @param speed   deprecated
+     * @deprecated See {{@link #tiltAngle(int)}}
+     */
+    @Deprecated
     public void tiltAngle(final int degrees, final float speed) {
-        Log.d(TAG, "turnBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+        tiltAngle(degrees);
+    }
+
+    public void tiltAngle(final int degrees) {
+        Log.d(TAG, "turnBy(int) (degrees=" + degrees + ")");
         if (sdkService != null) {
             try {
-                sdkService.tiltAngle(degrees, speed);
+                sdkService.tiltAngle(degrees, 1.0f);
             } catch (RemoteException e) {
-                Log.e(TAG, "turnBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+                Log.e(TAG, "turnBy(int) (degrees=" + degrees + ")");
             }
         }
     }
 
+    /**
+     * @param degrees the degree amount you want the robot to tilt
+     * @param speed
+     * @deprecated See {{@link #tiltBy(int)}}
+     */
+
+    @Deprecated
     public void tiltBy(final int degrees, final float speed) {
-        Log.d(TAG, "tiltBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+        tiltBy(degrees);
+    }
+
+    public void tiltBy(final int degrees) {
+        Log.d(TAG, "tiltBy(int) (degrees=" + degrees + ")");
         if (sdkService != null) {
             try {
-                sdkService.tiltBy(degrees, speed);
+                sdkService.tiltBy(degrees, 1.0f);
             } catch (RemoteException e) {
-                Log.e(TAG, "tiltBy(int, float) (degrees=" + degrees + ", speed=" + speed + ")");
+                Log.e(TAG, "tiltBy(int) (degrees=" + degrees + ")");
             }
         }
     }
@@ -955,6 +984,11 @@ public class Robot {
         }
     }
 
+    /**
+     * Toggle the wakeup trigger on and off
+     * @param disable set true to disable the wakeup or false to enable it
+     *
+     */
     public void toggleWakeup(boolean disable) {
         Log.d(TAG, "toggleWakeup() - disable = " + disable);
         if (sdkService != null) {
@@ -970,6 +1004,11 @@ public class Robot {
         }
     }
 
+    /**
+     * Toggle the visibility of the navigation billboard when you perform goTo commands
+     * @param hide set true to hide the billboard or false to display it
+     *
+     */
     public void toggleNavigationBillboard(boolean hide) {
         Log.d(TAG, "toggleNavigationBillboard() - " + hide);
         if (sdkService != null) {
@@ -983,6 +1022,11 @@ public class Robot {
                 Log.e(TAG, "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode");
             }
         }
+    }
+
+    private boolean isMetaDataKiosk() {
+        return applicationInfo.metaData != null
+                && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false);
     }
 
     public interface WakeupWordListener {
@@ -1018,9 +1062,5 @@ public class Robot {
 
     public interface ConversationViewAttachesListener {
         void onConversationAttaches(boolean isAttached);
-    }
-
-    private boolean isMetaDataKiosk() {
-        return applicationInfo.metaData != null && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false);
     }
 }
