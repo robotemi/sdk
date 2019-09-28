@@ -35,7 +35,7 @@ or Maven:
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
 
-Install your app on temi
+Installing Applications
 --------
 
 You can begin by downloading ADB (Android Debug Bridge) on the computer you wish to develop for temi. Please follow [this][3] tutorial on how to download and set up ADB on your computer.
@@ -44,9 +44,23 @@ Once you have adb set up on your computer, you can run your code on temi by:
 
 Step 1: Make sure you are connected to the same WiFi network as your robot. 
 
-Step 2: on temi - go to Settings -> temi Developer Tools -> tap on ADB Port Opening.
+Step 2: On temi - go to Settings -> temi Developer Tools -> tap on ADB Port Opening.
 
-Step 3: on computer - Using the IP address on the top right of temi’s screen you can connect to the robot and test your code. Type this command into the terminal/command prompt. “adb connect <IP_ADDRESS>:5555”
+Step 3: On computer - Using the IP address on the top right of temi’s screen you can connect to the robot and test your code. Type this command into the terminal/command prompt. “adb connect <IP_ADDRESS>:5555”
+
+
+Uninstalling Applications
+--------
+
+Once you have adb set up on your computer, you can uninstall your app on temi by:
+
+Step 1: Make sure you are connected to the same WiFi network as your robot. 
+
+Step 2: On temi - go to Settings -> temi Developer Tools -> tap on ADB Port Opening.
+
+Step 3: On computer - Using the IP address on the top right of temi’s screen you can connect to the robot and test your code. Type this command into the terminal/command prompt. “adb connect <IP_ADDRESS>:5555”
+
+Step 4: Type "adb uninstall PACKAGE_NAME" in Terminal on Mac or Command Prompt on Windows. If you are not sure what your package name is, you can check from within your Android Project.
 
 
 License
@@ -69,5 +83,4 @@ License
 
 [1]: https://www.robotemi.com/developers/
 [2]: https://search.maven.org/search?q=g:com.robotemi
-[3]: https://www.xda-developers.com/install-adb-windows-macos-linux/
 [snap]: https://oss.sonatype.org/content/repositories/snapshots/
