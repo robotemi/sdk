@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onWakeupWord(String wakeupWord) {
+    public void onWakeupWord(String wakeupWord, int direction) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
     }
 

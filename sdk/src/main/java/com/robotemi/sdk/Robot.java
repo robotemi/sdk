@@ -44,6 +44,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
+@SuppressWarnings("unused")
 @SuppressLint("LogNotTimber")
 public class Robot {
 
@@ -114,14 +115,14 @@ public class Robot {
     private final ISdkServiceCallback sdkServiceCallback = new ISdkServiceCallback.Stub() {
 
         @Override
-        public boolean onWakeupWord(@NonNull final String wakeupWord) {
+        public boolean onWakeupWord(@NonNull final String wakeupWord,  @NonNull final int direction) {
             Log.d(TAG, "onWakeupWord(String) (wakeupWord=" + wakeupWord + ", thread=" + Thread.currentThread().getName() + ")");
             if (wakeUpWordListeners.size() > 0) {
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         for (WakeupWordListener wakeupWordListener : wakeUpWordListeners) {
-                            wakeupWordListener.onWakeupWord(wakeupWord);
+                            wakeupWordListener.onWakeupWord(wakeupWord, direction);
                         }
                     }
                 });
@@ -731,6 +732,8 @@ public class Robot {
         return false;
     }
 
+    /**************************** Follow Methods ****************************/
+
     /**
      * Request robot to follow user around.
      * See {@link OnBeWithMeStatusChangedListener} to listen for status changes.
@@ -746,6 +749,8 @@ public class Robot {
         }
     }
 
+    /**************************** Movement Methods ****************************/
+
     /**
      * Request robot to stop any movement.
      */
@@ -758,39 +763,6 @@ public class Robot {
                 Log.e(TAG, "stopMovement()", e);
             }
         }
-    }
-
-    /**
-     * Request robot's serial number as a String.
-     */
-    public String getSerialNumber() {
-        Log.d(TAG, "serialNumber()");
-        String serialNumber = null;
-        if (sdkService != null) {
-            try {
-                serialNumber = sdkService.getSerialNumber();
-            } catch (RemoteException e) {
-                Log.e(TAG, "getSerialNumber()", e);
-            }
-        }
-        return serialNumber;
-    }
-
-
-    /**
-     * Request the robot to provide current battery status.
-     */
-    public BatteryData getBatteryData() {
-        Log.d(TAG, "getBatteryData()");
-        BatteryData batteryData = null;
-        if (sdkService != null) {
-            try {
-                batteryData = sdkService.getBatteryData();
-            } catch (RemoteException e) {
-                Log.e(TAG, "getBatteryData() error.", e);
-            }
-        }
-        return batteryData;
     }
 
     /**
@@ -872,6 +844,41 @@ public class Robot {
                 Log.e(TAG, "tiltBy(int) (degrees=" + degrees + ")");
             }
         }
+    }
+
+    /**************************** Util Methods ****************************/
+
+    /**
+     * Request robot's serial number as a String.
+     */
+    public String getSerialNumber() {
+        Log.d(TAG, "serialNumber()");
+        String serialNumber = null;
+        if (sdkService != null) {
+            try {
+                serialNumber = sdkService.getSerialNumber();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getSerialNumber()", e);
+            }
+        }
+        return serialNumber;
+    }
+
+
+    /**
+     * Request the robot to provide current battery status.
+     */
+    public BatteryData getBatteryData() {
+        Log.d(TAG, "getBatteryData()");
+        BatteryData batteryData = null;
+        if (sdkService != null) {
+            try {
+                batteryData = sdkService.getBatteryData();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getBatteryData() error.", e);
+            }
+        }
+        return batteryData;
     }
 
     /**
@@ -1030,7 +1037,7 @@ public class Robot {
     }
 
     public interface WakeupWordListener {
-        void onWakeupWord(String wakeupWord);
+        void onWakeupWord(String wakeupWord, int direction);
     }
 
     public interface TtsListener {

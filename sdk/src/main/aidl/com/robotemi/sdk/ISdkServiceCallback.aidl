@@ -10,7 +10,7 @@ import com.robotemi.sdk.UserInfo;
 
 interface ISdkServiceCallback {
 
-    boolean onWakeupWord(in String wakeupWord);
+    boolean onWakeupWord(in String wakeupWord, in int direction);
 
     boolean onTtsStatusChanged(in TtsRequest ttsRequest);
 
