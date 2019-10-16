@@ -63,6 +63,11 @@ Step 3: On computer - Using the IP address on the top right of temi’s screen y
 Step 4: Type "```adb uninstall PACKAGE_NAME```" in Terminal/Command Prompt. If you are not sure what your package name is, you can check from within your Android Project.
 
 
+Documentation
+--------
+
+* [Getting Started][4]
+
 License
 -------
 
@@ -84,4 +89,5 @@ License
 [1]: https://www.robotemi.com/developers/
 [2]: https://search.maven.org/search?q=g:com.robotemi
 [3]: https://www.xda-developers.com/install-adb-windows-macos-linux/
+[4]: https://github.com/robotemi/sdk/wiki
 [snap]: https://oss.sonatype.org/content/repositories/snapshots/
