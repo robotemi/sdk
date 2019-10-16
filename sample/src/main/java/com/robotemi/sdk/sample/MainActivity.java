@@ -479,5 +479,4 @@ public class MainActivity extends AppCompatActivity implements
     public void hideBillboard(View view) {
         robot.toggleNavigationBillboard(true);
     }
-
 }
