@@ -373,6 +373,10 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    public void hideTopBar(View view) { robot.hideTopBar(); }
+
+    public void showTopBar(View view) { robot.showTopBar(); }
+
     @Override
     public void onWakeupWord(String wakeupWord) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
@@ -475,4 +479,5 @@ public class MainActivity extends AppCompatActivity implements
     public void hideBillboard(View view) {
         robot.toggleNavigationBillboard(true);
     }
+
 }
