@@ -21,21 +21,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
-    flavorDimensions 'variant'
-    productFlavors {
-        usa {
-            dimension 'variant'
-            applicationIdSuffix '.usa'
-            missingDimensionStrategy 'country', 'usa'
-        }
-        china {
-            dimension 'variant'
-            applicationIdSuffix '.china'
-            missingDimensionStrategy 'country', 'china'
-        }
-    }
-
 }
 
 dependencies {

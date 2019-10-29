@@ -15,40 +15,9 @@ publishing {
 
         usa(MavenPublication) {
             groupId = GROUP
-            artifactId = POM_USA_ARTIFACT_ID
+            artifactId = POM_ARTIFACT_ID
             version = VERSION_NAME
-            artifact("$buildDir/outputs/aar/sdk-usa-release.aar")
-            pom {
-                name = POM_NAME
-                packaging = POM_PACKAGING
-                description = POM_DESCRIPTION
-                url = POM_URL
-                licenses {
-                    license {
-                        name = POM_LICENSE_NAME
-                        url = POM_LICENSE_URL
-                        distribution = POM_LICENSE_DIST
-                    }
-                }
-                developers {
-                    developer {
-                        id = POM_DEVELOPER_ID
-                        name = POM_DEVELOPER_NAME
-                    }
-                }
-                scm {
-                    connection = POM_SCM_CONNECTION
-                    developerConnection = POM_SCM_DEV_CONNECTION
-                    url = POM_SCM_URL
-                }
-            }
-        }
-
-        china(MavenPublication) {
-            groupId = GROUP
-            artifactId = POM_CHINA_ARTIFACT_ID
-            version = VERSION_NAME
-            artifact("$buildDir/outputs/aar/sdk-china-release.aar")
+            artifact("$buildDir/outputs/aar/sdk-release.aar")
             pom {
                 name = POM_NAME
                 packaging = POM_PACKAGING
@@ -92,6 +61,5 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.china
-    sign publishing.publications.usa
+    sign publishing.publications
 }
