@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -669,6 +670,9 @@ public class Robot {
      */
     public void goTo(@NonNull final String location) {
         Log.d(TAG, "goTo(String) (location=" + location + ")");
+        if (TextUtils.isEmpty(location)) {
+            throw new IllegalArgumentException("Location can not be null or empty.");
+        }
         if (sdkService != null) {
             try {
                 sdkService.goTo(location);
