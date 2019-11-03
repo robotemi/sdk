@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 
 public interface OnWelcomingModeStatusChangedListener {
 
-    String ACTIVE = "ACTIVE";
+    String ACTIVE = "active";
 
-    String IDLE = "IDLE";
+    String IDLE = "idle";
 
     /**
      * Listen for status changes during 'Welcoming mode'.
