@@ -41,4 +41,6 @@ interface ISdkServiceCallback {
     boolean onLocationsUpdated(in List<String> locations);
 
     boolean onUserUpdated(in UserInfo user);
+
+    boolean onWelcomingModeStatusChanged(in String status);
 }
