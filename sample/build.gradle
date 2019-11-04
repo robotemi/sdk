@@ -34,7 +34,5 @@ dependencies {
 
     // temi SDK
 //    implementation 'com.robotemi:sdk-usa:0.10.43.11-SNAPSHOT'   // for USA version
-    project(":sdk")
-    compile project(path: ':sdk')
-//    compile project(path: ':sdk')
+    implementation project(':sdk')
 }

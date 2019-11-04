@@ -12,8 +12,7 @@ ext."signing.secretKeyRingFile" = properties['SIGNING_SECRET_KEY_RING_FILE']
 
 publishing {
     publications {
-
-        usa(MavenPublication) {
+        maven(MavenPublication) {
             groupId = GROUP
             artifactId = POM_ARTIFACT_ID
             version = VERSION_NAME
@@ -61,5 +60,5 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.usa
+    sign publishing.publications.maven
 }
