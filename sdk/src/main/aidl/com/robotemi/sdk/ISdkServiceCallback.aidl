@@ -1,11 +1,11 @@
 // ISdkServiceCallback.aidl
 package com.robotemi.sdk;
 
-import com.robotemi.sdk.NlpResult;
-import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.voice.NlpResult;
+import com.robotemi.sdk.voice.TtsRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.notification.NotificationCallback;
-import com.robotemi.sdk.telepresence.CallState;
+import com.robotemi.sdk.calls.CallState;
 import com.robotemi.sdk.UserInfo;
 
 interface ISdkServiceCallback {

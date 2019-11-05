@@ -1,4 +1,4 @@
 // CallState.aidl
-package com.robotemi.sdk.telepresence;
+package com.robotemi.sdk.calls;
 
 parcelable CallState;

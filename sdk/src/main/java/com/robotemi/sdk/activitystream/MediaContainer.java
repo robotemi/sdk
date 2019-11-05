@@ -1,4 +1,4 @@
-package com.robotemi.sdk;
+package com.robotemi.sdk.activitystream;
 
 
 public interface MediaContainer {

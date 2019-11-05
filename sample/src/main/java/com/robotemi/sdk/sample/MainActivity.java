@@ -16,22 +16,18 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.os.Environment;
-import android.os.RemoteException;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.robotemi.sdk.BatteryData;
-import com.robotemi.sdk.MediaObject;
-import com.robotemi.sdk.NlpResult;
+import com.robotemi.sdk.activitystream.MediaObject;
+import com.robotemi.sdk.voice.NlpResult;
 import com.robotemi.sdk.Robot;
-import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.voice.TtsRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
@@ -144,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         initViews();
         verifyStoragePermissions(this);
-        robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
+        robot = Robot.Companion.getInstance(); // get an instance of the robot in order to begin using its features.
     }
 
     public void initViews() {
