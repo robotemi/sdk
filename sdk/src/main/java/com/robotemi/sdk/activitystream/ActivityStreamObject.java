@@ -6,8 +6,6 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.robotemi.sdk.MediaObject;
-import com.robotemi.sdk.SourceObject;
 
 import java.util.ArrayList;
 import java.util.List;

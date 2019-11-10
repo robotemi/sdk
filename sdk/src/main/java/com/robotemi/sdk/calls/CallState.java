@@ -1,4 +1,4 @@
-package com.robotemi.sdk.telepresence;
+package com.robotemi.sdk.calls;
 
 import android.os.Parcel;
 import android.os.Parcelable;

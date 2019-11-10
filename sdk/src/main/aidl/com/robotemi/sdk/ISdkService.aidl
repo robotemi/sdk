@@ -3,14 +3,14 @@ package com.robotemi.sdk;
 
 import android.content.pm.ActivityInfo;
 import com.robotemi.sdk.ISdkServiceCallback;
-import com.robotemi.sdk.TtsRequest;
-import com.robotemi.sdk.DisplayListRequest;
+import com.robotemi.sdk.voice.TtsRequest;
+import com.robotemi.sdk.activitystream.DisplayListRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.notification.AlertNotification;
 import com.robotemi.sdk.notification.NormalNotification;
 import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.UserInfo;
-import com.robotemi.sdk.model.RecentCallModel;
+import com.robotemi.sdk.calls.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
 
 interface ISdkService {
@@ -165,4 +165,8 @@ interface ISdkService {
      * @return Result of a successful or failed operation.
      */
     boolean deleteLocation(in String name);
+
+    void wakeup();
+
+    String getWakeupWord();
 }

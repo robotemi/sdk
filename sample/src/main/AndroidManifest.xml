@@ -42,7 +42,7 @@
                 media" />
 
         <meta-data
-                android:name="com.robotemi.sdk.metadata.KIOSK"
+                android:name="@string/metadata_kiosk"
                 android:value="TRUE" />
 
         <meta-data

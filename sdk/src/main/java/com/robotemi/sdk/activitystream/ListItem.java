@@ -1,4 +1,4 @@
-package com.robotemi.sdk;
+package com.robotemi.sdk.activitystream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +9,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.robotemi.sdk.constants.Utils;
 
 public class ListItem implements Parcelable {
 

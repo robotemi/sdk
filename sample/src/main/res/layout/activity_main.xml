@@ -276,6 +276,30 @@
                 android:text="@string/publish_to_activities"
                 android:textSize="18sp" />
 
+        <Button
+            android:id="@+id/btnHideTopBar"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:background="@color/colorLightTeal"
+            android:onClick="hideTopBar"
+            android:text="Hide Top-Bar"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnShowTopBar"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="50dp"
+            android:background="@color/colorLightTeal"
+            android:onClick="showTopBar"
+            android:text="Show Top-Bar"
+            android:textSize="18sp" />
+
     </LinearLayout>
 
 </LinearLayout>

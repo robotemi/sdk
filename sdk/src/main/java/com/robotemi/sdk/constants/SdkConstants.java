@@ -71,6 +71,10 @@ public final class SdkConstants {
 
     public static final String EXTRA_NLP_RESULT = "com.robotemi.sdk.extra.NLP_RESULT";
 
+    public static final String TEMI_USA = "com.roboteam.teamy.usa";
+
+    public static final String TEMI_CHINA = "com.roboteam.teamy.china";
+
     private SdkConstants() {
         super();
         // private constructor to prevent instantiation

@@ -1,4 +1,4 @@
-package com.robotemi.sdk;
+package com.robotemi.sdk.voice;
 
 import android.os.Parcel;
 import android.os.Parcelable;
