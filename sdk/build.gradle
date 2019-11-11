@@ -30,20 +30,6 @@ android {
         }
     }
 
-    flavorDimensions "country"
-    productFlavors {
-        usa {
-            dimension "country"
-            versionNameSuffix "-usa"
-            buildConfigField 'String', 'LAUNCHER_APP_ID', '\"com.roboteam.teamy.usa\"'
-        }
-        china {
-            dimension "country"
-            versionNameSuffix "-china"
-            buildConfigField 'String', 'LAUNCHER_APP_ID', '\"com.roboteam.teamy.china\"'
-        }
-    }
-
     androidExtensions {
         experimental = true
     }
@@ -53,6 +39,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }
 
 apply from: rootProject.file('gradle/mvn-push.gradle')

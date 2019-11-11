@@ -13,6 +13,8 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
+import com.robotemi.sdk.constants.SdkConstants;
+
 class TemiSdkServiceConnection {
 
     private static final String TAG = "TemiSdkServiceConnection";
@@ -25,7 +27,7 @@ class TemiSdkServiceConnection {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "onServiceConnected(ComponentName, IBinder) (name=" + name + ", service=" + service + ", thread=" + Thread.currentThread().getName() + ")");
             final ISdkService sdkService = ISdkService.Stub.asInterface(service);
-            Robot.getInstance().setSdkService(sdkService);
+            Robot.Companion.getInstance().setSdkService(sdkService);
         }
 
         @SuppressLint({"LogNotTimber", "LongLogTag"})
@@ -37,9 +39,9 @@ class TemiSdkServiceConnection {
     };
 
     @SuppressLint({"LogNotTimber", "LongLogTag"})
-    private static Intent getSdkServiceIntent() {
+    private static Intent getSdkServiceIntent(String appId) {
         Log.d(TAG, "getSdkServiceIntent()");
-        final ComponentName componentName = new ComponentName(BuildConfig.LAUNCHER_APP_ID, BuildConfig.SDK_SERVICE_CLASS_NAME);
+        final ComponentName componentName = new ComponentName(appId, BuildConfig.SDK_SERVICE_CLASS_NAME);
         final Intent intent = new Intent();
         intent.setComponent(componentName);
         return intent;
@@ -49,9 +51,12 @@ class TemiSdkServiceConnection {
     @UiThread
     void startConnection(@NonNull final Context context) {
         Log.d(TAG, "startConnection(Context)");
-        if (context.bindService(getSdkServiceIntent(), serviceConnection, Context.BIND_AUTO_CREATE)) {
-            Log.d(TAG, "bindService=true");
-        } else {
+        if (context.bindService(getSdkServiceIntent(SdkConstants.TEMI_USA), serviceConnection, Context.BIND_AUTO_CREATE)) {
+            Log.d(TAG, "bindServiceUsa=true");
+        }else if (context.bindService(getSdkServiceIntent(SdkConstants.TEMI_CHINA), serviceConnection, Context.BIND_AUTO_CREATE)) {
+            Log.d(TAG, "bindServiceChina=true");
+        }
+        else {
             Log.w(TAG, "bindService=false");
             forceStop();
         }
@@ -65,7 +70,7 @@ class TemiSdkServiceConnection {
         Log.d(TAG, "forceStop()");
         try {
             //noinspection ConstantConditions
-            Runtime.getRuntime().exec("am force-stop " + TemiSdkContentProvider.context.getPackageName());
+            Runtime.getRuntime().exec("am force-stop " + TemiSdkContentProvider.Companion.getSdkContext().getPackageName());
         } catch (IOException e) {
             Log.e(TAG, "Error while trying to force stop application.", e);
         }
