@@ -15,26 +15,33 @@ import androidx.annotation.UiThread
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
+import com.robotemi.sdk.calls.CallState
+import com.robotemi.sdk.calls.RecentCallModel
 import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
-import com.robotemi.sdk.calls.RecentCallModel
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
-import com.robotemi.sdk.calls.CallState
 import com.robotemi.sdk.voice.NlpResult
 import com.robotemi.sdk.voice.TtsRequest
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
+@SuppressWarnings("unused")
 class Robot private constructor(context: Context) {
 
     private val applicationInfo: ApplicationInfo
 
     private val uiHandler = Handler(Looper.getMainLooper())
+
+    private var mediaBar = AidlMediaBarController(null)
+
+    private var mediaButtonListener: MediaButtonListener? = null
+
+    private var sdkService: ISdkService? = null
 
     private val listenersMap = HashMap<String, NotificationListener>()
 
@@ -62,25 +69,21 @@ class Robot private constructor(context: Context) {
 
     private val onUsersUpdatedListeners = CopyOnWriteArraySet<OnUsersUpdatedListener>()
 
+    private val onPrivacyModeStateChangedListeners = CopyOnWriteArraySet<OnPrivacyModeChangedListener>()
+
     private val onWelcomingModeStatusChangedListeners =
         CopyOnWriteArraySet<OnWelcomingModeStatusChangedListener>()
-
-    private var mediaBar = AidlMediaBarController(null)
-
-    private var mediaButtonListener: MediaButtonListener? = null
-
-    private var sdkService: ISdkService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     private val sdkServiceCallback = object : ISdkServiceCallback.Stub() {
 
-        override fun onWakeupWord(wakeupWord: String): Boolean {
+        override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
             Timber.d("onWakeupWord(String) (wakeupWord= $wakeupWord, thread= ${Thread.currentThread().name})")
             if (wakeUpWordListeners.size > 0) {
                 uiHandler.post {
                     for (wakeupWordListener in wakeUpWordListeners) {
-                        wakeupWordListener.onWakeupWord(wakeupWord)
+                        wakeupWordListener.onWakeupWord(wakeupWord, direction)
                     }
                 }
                 return true
@@ -288,6 +291,19 @@ class Robot private constructor(context: Context) {
             }
             return false
         }
+
+        override fun onPrivacyModeStateChanged(state: Boolean): Boolean {
+            Timber.d("onPrivacyModeStateChanged(Boolean) (state=$state)")
+            if (onPrivacyModeStateChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onPrivacyModeStateChangedListeners) {
+                        listener.onPrivacyModeChanged(state)
+                    }
+                }
+                return true
+            }
+            return false
+        }
     }
 
     private val isReady: Boolean
@@ -412,6 +428,26 @@ class Robot private constructor(context: Context) {
             return ""
         }
 
+    var privacyMode: Boolean
+        set(on) {
+            try {
+                sdkService!!.togglePrivacyMode(on)
+            } catch (e: RemoteException) {
+                Timber.e(e, "toggleNavigationBillboard() error.")
+            }
+        }
+        get() {
+            Timber.d("getPrivacyModeState()")
+            if (sdkService != null) {
+                try {
+                    return sdkService!!.privacyModeState
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getPrivacyModeState() error.")
+                }
+            }
+            return false
+        }
+
     init {
         val appContext = context.applicationContext
         val packageName = appContext.packageName
@@ -496,17 +532,13 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
-        Timber.d(
-            "addConversationViewAttachesListenerListener(ConversationViewAttachesListener) (conversationViewAttachesListener=$conversationViewAttachesListener)"
-        )
+        Timber.d("addConversationViewAttachesListenerListener(ConversationViewAttachesListener) (conversationViewAttachesListener=$conversationViewAttachesListener)")
         conversationViewAttachesListeners.add(conversationViewAttachesListener)
     }
 
     @UiThread
     fun removeConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
-        Timber.d(
-            "removeConversationViewAttachesListenerListener(ConversationViewAttachesListener) (conversationViewAttachesListener=$conversationViewAttachesListener)"
-        )
+        Timber.d("removeConversationViewAttachesListenerListener(ConversationViewAttachesListener) (conversationViewAttachesListener=$conversationViewAttachesListener)")
         conversationViewAttachesListeners.remove(conversationViewAttachesListener)
     }
 
@@ -536,49 +568,37 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addWakeupWordListener(wakeupWordListener: WakeupWordListener) {
-        Timber.d(
-            "addWakeupWordListener(WakeupWordListener) (wakeupWordListener=$wakeupWordListener)"
-        )
+        Timber.d("addWakeupWordListener(WakeupWordListener) (wakeupWordListener=$wakeupWordListener)")
         wakeUpWordListeners.add(wakeupWordListener)
     }
 
     @UiThread
     fun removeWakeupWordListener(wakeupWordListener: WakeupWordListener) {
-        Timber.d(
-            "removeWakeupWordListener(WakeupWordListener) (wakeupWordListener=$wakeupWordListener)"
-        )
+        Timber.d("removeWakeupWordListener(WakeupWordListener) (wakeupWordListener=$wakeupWordListener)")
         wakeUpWordListeners.remove(wakeupWordListener)
     }
 
     @UiThread
     fun addOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
-        Timber.d(
-            "addOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("addOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
         onBeWithMeStatusChangeListeners.add(listener)
     }
 
     @UiThread
     fun removeOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
-        Timber.d(
-            "removeOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("removeOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
         onBeWithMeStatusChangeListeners.remove(listener)
     }
 
     @UiThread
     fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
-        Timber.d(
-            "addOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("addOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
         onGoToLocationStatusChangeListeners.add(listener)
     }
 
     @UiThread
     fun removeOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
-        Timber.d(
-            "removeOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("removeOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
         onGoToLocationStatusChangeListeners.remove(listener)
     }
 
@@ -590,10 +610,32 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun removeOnLocationsUpdateListener(listener: OnLocationsUpdatedListener) {
-        Timber.d(
-            "removeOnLocationsUpdateListener(OnLocationsUpdatedListener) (listener=$listener)"
-        )
+        Timber.d("removeOnLocationsUpdateListener(OnLocationsUpdatedListener) (listener=$listener)")
         onLocationsUpdatedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnWelcomingModeStatusChangedListener(listener: OnWelcomingModeStatusChangedListener) {
+        Timber.d("addOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
+        onWelcomingModeStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnWelcomingModeStatusChangedListener(listener: OnWelcomingModeStatusChangedListener) {
+        Timber.d("removeOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
+        onWelcomingModeStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
+        Timber.d("addOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
+        onPrivacyModeStateChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
+        Timber.d("removeOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
+        onPrivacyModeStateChangedListeners.remove(listener)
     }
 
     @UiThread
@@ -608,22 +650,6 @@ class Robot private constructor(context: Context) {
     fun removeOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
         Timber.d("removeOnRobotReadyListener(OnRobotReadyListener)")
         onRobotReadyListeners.remove(onRobotReadyListener)
-    }
-
-    @UiThread
-    fun addOnWelcomingModeStatusChangedListener(listener: OnWelcomingModeStatusChangedListener) {
-        Timber.d(
-            "addOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)"
-        )
-        onWelcomingModeStatusChangedListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnWelcomingModeStatusChangedListener(listener: OnWelcomingModeStatusChangedListener) {
-        Timber.d(
-            "removeOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)"
-        )
-        onWelcomingModeStatusChangedListeners.remove(listener)
     }
 
     fun setActivityStreamPublishListener(activityStreamPublishListener: ActivityStreamPublishListener?) {
@@ -1040,7 +1066,7 @@ class Robot private constructor(context: Context) {
     }
 
     interface WakeupWordListener {
-        fun onWakeupWord(wakeupWord: String)
+        fun onWakeupWord(wakeupWord: String, direction: Int)
     }
 
     interface TtsListener {
