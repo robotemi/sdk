@@ -1088,6 +1088,7 @@ class Robot private constructor(context: Context) {
 
         private var instance: Robot? = null
 
+        @JvmStatic
         fun getInstance(): Robot? {
             if (instance == null) {
                 synchronized(Robot::class.java) {
