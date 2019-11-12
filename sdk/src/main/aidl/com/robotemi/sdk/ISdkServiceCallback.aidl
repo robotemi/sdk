@@ -7,6 +7,7 @@ import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.notification.NotificationCallback;
 import com.robotemi.sdk.calls.CallState;
 import com.robotemi.sdk.UserInfo;
+import com.robotemi.sdk.BatteryData;
 
 interface ISdkServiceCallback {
 
@@ -45,4 +46,6 @@ interface ISdkServiceCallback {
     boolean onWelcomingModeStatusChanged(in String status);
 
     boolean onPrivacyModeStateChanged(in boolean state);
+
+    boolean onBatteryStatusChanged(in BatteryData batteryData);
 }

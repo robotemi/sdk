@@ -69,7 +69,11 @@ class Robot private constructor(context: Context) {
 
     private val onUsersUpdatedListeners = CopyOnWriteArraySet<OnUsersUpdatedListener>()
 
-    private val onPrivacyModeStateChangedListeners = CopyOnWriteArraySet<OnPrivacyModeChangedListener>()
+    private val onBatteryStatusChangedListeners =
+        CopyOnWriteArraySet<OnBatteryStatusChangedListener>()
+
+    private val onPrivacyModeStateChangedListeners =
+        CopyOnWriteArraySet<OnPrivacyModeChangedListener>()
 
     private val onWelcomingModeStatusChangedListeners =
         CopyOnWriteArraySet<OnWelcomingModeStatusChangedListener>()
@@ -298,6 +302,19 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (listener in onPrivacyModeStateChangedListeners) {
                         listener.onPrivacyModeChanged(state)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onBatteryStatusChanged(batteryData: BatteryData): Boolean {
+            Timber.d("onBatteryStatusChanged(BatteryData) (level=${batteryData.batteryPercentage})")
+            if (onBatteryStatusChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onBatteryStatusChangedListeners) {
+                        listener.onBatteryStatusChanged(batteryData)
                     }
                 }
                 return true
@@ -636,6 +653,18 @@ class Robot private constructor(context: Context) {
     fun removeOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
         Timber.d("removeOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
         onPrivacyModeStateChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
+        Timber.d("addOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
+        onBatteryStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
+        Timber.d("removeOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
+        onBatteryStatusChangedListeners.remove(listener)
     }
 
     @UiThread
