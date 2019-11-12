@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         initViews();
         verifyStoragePermissions(this);
-        robot = Robot.Companion.getInstance(); // get an instance of the robot in order to begin using its features.
+        robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
     }
 
     public void initViews() {
