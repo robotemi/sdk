@@ -450,7 +450,7 @@ class Robot private constructor(context: Context) {
             try {
                 sdkService!!.togglePrivacyMode(on)
             } catch (e: RemoteException) {
-                Timber.e(e, "toggleNavigationBillboard() error.")
+                Timber.e(e, "togglePrivacyMode() error.")
             }
         }
         get() {
