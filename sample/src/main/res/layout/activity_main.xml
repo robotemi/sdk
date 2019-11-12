@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -182,7 +181,7 @@
                 android:background="@color/colorLightTeal"
                 android:onClick="disableWakeup"
                 android:text="Disable Wakeup"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnEnableWakeup"
@@ -194,7 +193,7 @@
                 android:background="@color/colorLightTeal"
                 android:onClick="enableWakeup"
                 android:text="Enable Wakeup"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnHideNavBillboard"
@@ -206,7 +205,7 @@
                 android:background="@color/colorLightTeal"
                 android:onClick="hideBillboard"
                 android:text="Hide navigation billboard"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
         <Button
                 android:id="@+id/btnShowNavBillboard"
@@ -218,7 +217,7 @@
                 android:background="@color/colorLightTeal"
                 android:onClick="showBillboard"
                 android:text="Show navigation billboard"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
 
     </LinearLayout>
@@ -277,28 +276,64 @@
                 android:textSize="18sp" />
 
         <Button
-            android:id="@+id/btnHideTopBar"
-            android:layout_width="325dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="50dp"
-            android:background="@color/colorLightTeal"
-            android:onClick="hideTopBar"
-            android:text="Hide Top-Bar"
-            android:textSize="18sp" />
+                android:id="@+id/btnHideTopBar"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="hideTopBar"
+                android:text="Hide Top-Bar"
+                android:textSize="18sp" />
 
         <Button
-            android:id="@+id/btnShowTopBar"
-            android:layout_width="325dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="50dp"
-            android:background="@color/colorLightTeal"
-            android:onClick="showTopBar"
-            android:text="Show Top-Bar"
-            android:textSize="18sp" />
+                android:id="@+id/btnShowTopBar"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="showTopBar"
+                android:text="Show Top-Bar"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnTogglePrivacyModeOn"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="privacyModeOn"
+                android:text="Turn on Privacy Mode"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnTogglePrivacyModeOff"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="privacyModeOff"
+                android:text="Turn off Privacy Mode"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnGetPrivacyMode"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="getPrivacyModeState"
+                android:text="Get Privacy Mode"
+                android:textSize="18sp" />
 
     </LinearLayout>
 

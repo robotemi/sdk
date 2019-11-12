@@ -1,8 +1,5 @@
 package com.robotemi.sdk.sample;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,9 +10,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.RemoteException;
 import android.util.Log;
-import android.os.Environment;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -23,17 +20,22 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.robotemi.sdk.BatteryData;
-import com.robotemi.sdk.activitystream.MediaObject;
-import com.robotemi.sdk.voice.NlpResult;
 import com.robotemi.sdk.Robot;
-import com.robotemi.sdk.voice.TtsRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
+import com.robotemi.sdk.activitystream.MediaObject;
+import com.robotemi.sdk.listeners.OnBatteryStatusChangedListener;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
+import com.robotemi.sdk.listeners.OnPrivacyModeChangedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
+import com.robotemi.sdk.voice.NlpResult;
+import com.robotemi.sdk.voice.TtsRequest;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements
         Robot.TtsListener,
         OnBeWithMeStatusChangedListener,
         OnGoToLocationStatusChangedListener,
-        OnLocationsUpdatedListener {
+        OnLocationsUpdatedListener,
+        OnPrivacyModeChangedListener,
+        OnBatteryStatusChangedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -100,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.addWakeupWordListener(this);
         robot.addTtsListener(this);
         robot.addOnLocationsUpdatedListener(this);
+        robot.addOnPrivacyModeStateChangedListener(this);
+        robot.addOnBatteryStatusChangedListener(this);
     }
 
     /**
@@ -116,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
+        robot.removeOnPrivacyModeStateChangedListener(this);
+        robot.removeOnBatteryStatusChangedListener(this);
     }
 
     /**
@@ -369,12 +377,16 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void hideTopBar(View view) { robot.hideTopBar(); }
+    public void hideTopBar(View view) {
+        robot.hideTopBar();
+    }
 
-    public void showTopBar(View view) { robot.showTopBar(); }
+    public void showTopBar(View view) {
+        robot.showTopBar();
+    }
 
     @Override
-    public void onWakeupWord(String wakeupWord) {
+    public void onWakeupWord(String wakeupWord, int direction) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
     }
 
@@ -474,5 +486,30 @@ public class MainActivity extends AppCompatActivity implements
 
     public void hideBillboard(View view) {
         robot.toggleNavigationBillboard(true);
+    }
+
+    public void privacyModeOn(View view) {
+        robot.setPrivacyMode(true);
+    }
+
+    public void privacyModeOff(View view) {
+        robot.setPrivacyMode(false);
+    }
+
+    public void getPrivacyModeState(View view) {
+        Toast.makeText(MainActivity.this, robot.getPrivacyMode() ? "PrivacyMode On"
+                : "PrivacyMode Off", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPrivacyModeChanged(boolean state) {
+        Toast.makeText(MainActivity.this, state ? "PrivacyMode On" :
+                "PrivacyMode Off", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBatteryStatusChanged(BatteryData batteryData) {
+        Log.d("onBatteryStatusChanged", "BatteryData, percentage - "
+                + batteryData.getBatteryPercentage() + ", isCharging = " + batteryData.isCharging());
     }
 }
