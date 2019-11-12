@@ -83,7 +83,7 @@ class Robot private constructor(context: Context) {
     private val sdkServiceCallback = object : ISdkServiceCallback.Stub() {
 
         override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
-            Timber.d("onWakeupWord(String) (wakeupWord= $wakeupWord, thread= ${Thread.currentThread().name})")
+            Timber.d("onWakeupWord(String) (wakeupWord= $wakeupWord, direction = $direction, thread= ${Thread.currentThread().name})")
             if (wakeUpWordListeners.size > 0) {
                 uiHandler.post {
                     for (wakeupWordListener in wakeUpWordListeners) {
