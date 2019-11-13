@@ -22,12 +22,13 @@ import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.activitystream.ActivityStreamUtils;
 import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
+import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
+import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceStatusChangedListener;
 import com.robotemi.sdk.listeners.OnUsersUpdatedListener;
-import com.robotemi.sdk.listeners.OnWelcomingModeStatusChangedListener;
 import com.robotemi.sdk.mediabar.AidlMediaBarController;
 import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.model.RecentCallModel;
@@ -101,7 +102,10 @@ public class Robot {
     private final Set<OnUsersUpdatedListener> onUsersUpdatedListeners = new CopyOnWriteArraySet<>();
 
     @NonNull
-    private final Set<OnWelcomingModeStatusChangedListener> onWelcomingModeStatusChangedListeners = new CopyOnWriteArraySet<>();
+    private final Set<OnConstraintBeWithStatusChangedListener> onConstraintBeWithStatusChangedListeners = new CopyOnWriteArraySet<>();
+
+    @NonNull
+    private final Set<OnDetectionStateChangedListener> onDetectionStateChangedListeners = new CopyOnWriteArraySet<>();
 
     @NonNull
     private AidlMediaBarController mediaBar = new AidlMediaBarController(null);
@@ -372,14 +376,31 @@ public class Robot {
         }
 
         @Override
-        public boolean onWelcomingModeStatusChanged(final String status) throws RemoteException {
-            Log.d(TAG, "onWelcomingModeStatusChanged(String) (status=" + status + ")");
-            if (onWelcomingModeStatusChangedListeners.size() > 0) {
+        public boolean onConstraintBeWithStatusChanged(final boolean isContraint) {
+            Log.d(TAG, "onConstraintBeWithStatusChanged(String) (isContraint=" + isContraint + ")");
+            if (onConstraintBeWithStatusChangedListeners.size() > 0) {
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        for (OnWelcomingModeStatusChangedListener listener : onWelcomingModeStatusChangedListeners) {
-                            listener.onWelcomingModeStatusChanged(status);
+                        for (OnConstraintBeWithStatusChangedListener listener : onConstraintBeWithStatusChangedListeners) {
+                            listener.onConstraintBeWithStatusChanged(isContraint);
+                        }
+                    }
+                });
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onDetectionStateChanged(final boolean isDetected) throws RemoteException {
+            Log.d(TAG, "onDetectionStateChanged(boolean) (isDetected=" + isDetected + ")");
+            if (onConstraintBeWithStatusChangedListeners.size() > 0) {
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (OnDetectionStateChangedListener listener : onDetectionStateChangedListeners) {
+                            listener.onDetectionStateChanged(isDetected);
                         }
                     }
                 });
@@ -584,15 +605,27 @@ public class Robot {
     }
 
     @UiThread
-    public void addOnWelcomingModeStatusChangedListener(@NonNull final OnWelcomingModeStatusChangedListener listener) {
-        Log.d(TAG, "addOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
-        onWelcomingModeStatusChangedListeners.add(listener);
+    public void addOnConstraintBeWithStatusChangedListener(@NonNull final OnConstraintBeWithStatusChangedListener listener) {
+        Log.d(TAG, "addOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
+        onConstraintBeWithStatusChangedListeners.add(listener);
     }
 
     @UiThread
-    public void removeOnWelcomingModeStatusChangedListener(@NonNull final OnWelcomingModeStatusChangedListener listener) {
-        Log.d(TAG, "removeOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
-        onWelcomingModeStatusChangedListeners.remove(listener);
+    public void removeOnConstraintBeWithStatusChangedListener(@NonNull final OnConstraintBeWithStatusChangedListener listener) {
+        Log.d(TAG, "removeOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
+        onConstraintBeWithStatusChangedListeners.remove(listener);
+    }
+
+    @UiThread
+    public void addOnDetectionStateChangedListener(@NonNull final OnDetectionStateChangedListener listener) {
+        Log.d(TAG, "addOnDetectionStateChangedListener(OnDetectionStateChangedListener) (listener=" + listener + ")");
+        onDetectionStateChangedListeners.add(listener);
+    }
+
+    @UiThread
+    public void removeOnDetectionStateChangedListener(@NonNull final OnDetectionStateChangedListener listener) {
+        Log.d(TAG, "removeOnDetectionStateChangedListener(OnDetectionStateChangedListener) (listener=" + listener + ")");
+        onDetectionStateChangedListeners.remove(listener);
     }
 
     public void setActivityStreamPublishListener(@Nullable ActivityStreamPublishListener activityStreamPublishListener) {
@@ -1079,7 +1112,7 @@ public class Robot {
 
     public String getWakeupWord() {
         Log.d(TAG, "getWakeupWord()");
-        if(sdkService != null) {
+        if (sdkService != null) {
             try {
                 return sdkService.getWakeupWord();
             } catch (RemoteException e) {

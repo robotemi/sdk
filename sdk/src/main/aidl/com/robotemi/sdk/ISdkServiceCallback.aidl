@@ -42,5 +42,7 @@ interface ISdkServiceCallback {
 
     boolean onUserUpdated(in UserInfo user);
 
-    boolean onWelcomingModeStatusChanged(in String status);
+    boolean onConstraintBeWithStatusChanged(in boolean isContraint);
+
+    boolean onDetectionStateChanged(in boolean isDetected);
 }
