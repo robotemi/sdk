@@ -23,7 +23,7 @@ import com.robotemi.sdk.activitystream.ActivityStreamUtils;
 import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
-import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
+import com.robotemi.sdk.listeners.OnUserInteractionChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
@@ -105,7 +105,7 @@ public class Robot {
     private final Set<OnConstraintBeWithStatusChangedListener> onConstraintBeWithStatusChangedListeners = new CopyOnWriteArraySet<>();
 
     @NonNull
-    private final Set<OnDetectionStateChangedListener> onDetectionStateChangedListeners = new CopyOnWriteArraySet<>();
+    private final Set<OnUserInteractionChangedListener> onUserInteractionChangedListeners = new CopyOnWriteArraySet<>();
 
     @NonNull
     private AidlMediaBarController mediaBar = new AidlMediaBarController(null);
@@ -393,14 +393,14 @@ public class Robot {
         }
 
         @Override
-        public boolean onDetectionStateChanged(final boolean isDetected) throws RemoteException {
-            Log.d(TAG, "onDetectionStateChanged(boolean) (isDetected=" + isDetected + ")");
+        public boolean onUserInteractionStatusChanged(final boolean isInteracting) throws RemoteException {
+            Log.d(TAG, "onUserInteraction(boolean) (isDetected=" + isInteracting + ")");
             if (onConstraintBeWithStatusChangedListeners.size() > 0) {
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        for (OnDetectionStateChangedListener listener : onDetectionStateChangedListeners) {
-                            listener.onDetectionStateChanged(isDetected);
+                        for (OnUserInteractionChangedListener listener : onUserInteractionChangedListeners) {
+                            listener.onUserInteraction(isInteracting);
                         }
                     }
                 });
@@ -617,15 +617,15 @@ public class Robot {
     }
 
     @UiThread
-    public void addOnDetectionStateChangedListener(@NonNull final OnDetectionStateChangedListener listener) {
-        Log.d(TAG, "addOnDetectionStateChangedListener(OnDetectionStateChangedListener) (listener=" + listener + ")");
-        onDetectionStateChangedListeners.add(listener);
+    public void addOnUserInteractionChangedListener(@NonNull final OnUserInteractionChangedListener listener) {
+        Log.d(TAG, "addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=" + listener + ")");
+        onUserInteractionChangedListeners.add(listener);
     }
 
     @UiThread
-    public void removeOnDetectionStateChangedListener(@NonNull final OnDetectionStateChangedListener listener) {
-        Log.d(TAG, "removeOnDetectionStateChangedListener(OnDetectionStateChangedListener) (listener=" + listener + ")");
-        onDetectionStateChangedListeners.remove(listener);
+    public void removeOnUserInteractionChangedListener(@NonNull final OnUserInteractionChangedListener listener) {
+        Log.d(TAG, "removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=" + listener + ")");
+        onUserInteractionChangedListeners.remove(listener);
     }
 
     public void setActivityStreamPublishListener(@Nullable ActivityStreamPublishListener activityStreamPublishListener) {

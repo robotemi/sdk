@@ -44,5 +44,5 @@ interface ISdkServiceCallback {
 
     boolean onConstraintBeWithStatusChanged(in boolean isContraint);
 
-    boolean onDetectionStateChanged(in boolean isDetected);
+    boolean onUserInteractionStatusChanged(in boolean isInteracting);
 }
