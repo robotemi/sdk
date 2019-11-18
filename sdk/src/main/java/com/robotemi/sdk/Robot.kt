@@ -639,25 +639,25 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
-        Timber.d("addOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
+        Timber.d("addOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
         onConstraintBeWithStatusChangedListeners.add(listener)
     }
 
     @UiThread
     fun removeOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
-        Timber.d("removeOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
+        Timber.d("removeOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
         onConstraintBeWithStatusChangedListeners.remove(listener);
     }
 
     @UiThread
     fun addOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=" + listener + ")");
+        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
         onUserInteractionChangedListeners.add(listener);
     }
 
     @UiThread
     fun removeOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=" + listener + ")");
+        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
         onUserInteractionChangedListeners.remove(listener);
     }
 
