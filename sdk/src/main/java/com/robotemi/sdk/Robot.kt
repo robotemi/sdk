@@ -83,6 +83,18 @@ class Robot private constructor(context: Context) {
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
+    init {
+        val appContext = context.applicationContext
+        val packageName = appContext.packageName
+        val packageManager = appContext.packageManager
+        try {
+            this.applicationInfo =
+                packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        } catch (e: PackageManager.NameNotFoundException) {
+            throw RuntimeException(e)
+        }
+    }
+
     private val sdkServiceCallback = object : ISdkServiceCallback.Stub() {
 
         override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
@@ -349,13 +361,12 @@ class Robot private constructor(context: Context) {
     val locations: List<String>
         get() {
             Timber.d("getLocations()")
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    return sdkService!!.locations
+                    return it.locations
                 } catch (e: RemoteException) {
                     Timber.e(e, "getLocations()")
                 }
-
             }
             return emptyList()
         }
@@ -367,9 +378,9 @@ class Robot private constructor(context: Context) {
         get() {
             Timber.d("serialNumber()")
             var serialNumber: String? = null
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    serialNumber = sdkService!!.serialNumber
+                    serialNumber = it.serialNumber
                 } catch (e: RemoteException) {
                     Timber.e(e, "getSerialNumber()")
                 }
@@ -378,7 +389,6 @@ class Robot private constructor(context: Context) {
             return serialNumber
         }
 
-
     /**
      * Request the robot to provide current battery status.
      */
@@ -386,9 +396,9 @@ class Robot private constructor(context: Context) {
         get() {
             Timber.d("getBatteryData()")
             var batteryData: BatteryData? = null
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    batteryData = sdkService!!.batteryData
+                    batteryData = it.batteryData
                 } catch (e: RemoteException) {
                     Timber.e(e, "getBatteryData() error.")
                 }
@@ -400,9 +410,9 @@ class Robot private constructor(context: Context) {
     val adminInfo: UserInfo?
         get() {
             Timber.d("getAdminInfo()")
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    return sdkService!!.adminInfo
+                    return it.adminInfo
                 } catch (e: RemoteException) {
                     Timber.e(e, "getAdminInfo() error.")
                 }
@@ -415,9 +425,9 @@ class Robot private constructor(context: Context) {
         get() {
             Timber.d("getAllContact()")
             val contactList = ArrayList<UserInfo>()
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    contactList.addAll(sdkService!!.allContacts)
+                    contactList.addAll(it.allContacts)
                 } catch (e: RemoteException) {
                     Timber.e(e, "getAllContacts() error.")
                 }
@@ -429,13 +439,12 @@ class Robot private constructor(context: Context) {
     val recentCalls: List<RecentCallModel>
         get() {
             Timber.d("getRecentCalls()")
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    return sdkService!!.recentCalls
+                    return it.recentCalls
                 } catch (e: RemoteException) {
                     Timber.e(e, "getRecentCalls() error.")
                 }
-
             }
             return ArrayList()
         }
@@ -449,30 +458,31 @@ class Robot private constructor(context: Context) {
     val wakeupWord: String
         get() {
             Timber.d("getWakeupWord()")
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    return sdkService!!.wakeupWord
+                    return it.wakeupWord
                 } catch (e: RemoteException) {
                     Timber.e(e, "getWakeupWord() error.")
                 }
-
             }
             return ""
         }
 
     var privacyMode: Boolean
         set(on) {
-            try {
-                sdkService!!.togglePrivacyMode(on)
-            } catch (e: RemoteException) {
-                Timber.e(e, "togglePrivacyMode() error.")
+            sdkService?.let {
+                try {
+                    it.togglePrivacyMode(on)
+                } catch (e: RemoteException) {
+                    Timber.e(e, "togglePrivacyMode() error.")
+                }
             }
         }
         get() {
             Timber.d("getPrivacyModeState()")
-            if (sdkService != null) {
+            sdkService?.let {
                 try {
-                    return sdkService!!.privacyModeState
+                    return it.privacyModeState
                 } catch (e: RemoteException) {
                     Timber.e(e, "getPrivacyModeState() error.")
                 }
@@ -480,30 +490,16 @@ class Robot private constructor(context: Context) {
             return false
         }
 
-    init {
-        val appContext = context.applicationContext
-        val packageName = appContext.packageName
-        val packageManager = appContext.packageManager
-        try {
-            this.applicationInfo =
-                packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-        } catch (e: PackageManager.NameNotFoundException) {
-            throw RuntimeException(e)
-        }
-
-    }
-
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
         Timber.d("onStart(ActivityInfo) (activityInfo=$activityInfo)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.onStart(activityInfo)
+                it.onStart(activityInfo)
             } catch (e: RemoteException) {
                 Timber.e(e, "onStart(ActivityInfo) - Binder invocation exception.")
             }
-
-        } else {
+        } ?: run {
             Timber.w("onStart(ActivityInfo) - sdkService=null")
         }
     }
@@ -512,13 +508,12 @@ class Robot private constructor(context: Context) {
      * Stops currently processed TTS request and empty the queue.
      */
     fun cancelAllTtsRequests() {
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.cancelAll()
+                it.cancelAll()
             } catch (e: RemoteException) {
                 Timber.e(e, "Failed to invoke remote call cancelAllTtsRequest()")
             }
-
         }
     }
 
@@ -529,37 +524,33 @@ class Robot private constructor(context: Context) {
         this.sdkService = sdkService
         mediaBar = AidlMediaBarController(sdkService)
         registerCallback()
-
-        for (onRobotReadyListener in onRobotReadyListeners) {
-            onRobotReadyListener.onRobotReady(sdkService != null)
-        }
+        onRobotReadyListeners.forEach { it.onRobotReady(sdkService != null) }
     }
 
     @UiThread
     private fun registerCallback() {
         Timber.d("registerCallback()")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.register(applicationInfo, sdkServiceCallback)
+                it.register(applicationInfo, sdkServiceCallback)
             } catch (e: RemoteException) {
                 Timber.e(e, "Remote invocation error.")
             }
 
-        } else {
+        } ?: run {
             Timber.w("sdkService=null")
         }
     }
 
     fun speak(ttsRequest: TtsRequest) {
-        try {
-            if (sdkService != null) {
+        sdkService?.let {
+            try {
                 ttsRequest.packageName = applicationInfo.packageName
-                sdkService!!.speak(ttsRequest)
+                it.speak(ttsRequest)
+            } catch (e: RemoteException) {
+                Timber.e(e, "Failed to invoke remote call speak()")
             }
-        } catch (e: RemoteException) {
-            Timber.e(e, "Failed to invoke remote call speak()")
         }
-
     }
 
     @UiThread
@@ -714,17 +705,15 @@ class Robot private constructor(context: Context) {
 
     @Throws(RemoteException::class)
     fun shareActivityObject(activityStreamObject: ActivityStreamObject) {
-        if (sdkService != null) {
+        sdkService?.let {
             AsyncTask.execute {
                 ActivityStreamUtils.handleActivityStreamObject(activityStreamObject)
                 try {
-                    sdkService!!.shareActivityStreamObject(activityStreamObject)
+                    it.shareActivityStreamObject(activityStreamObject)
                 } catch (e: RemoteException) {
                     Timber.e(e, "Sdk service is null")
                 }
             }
-        } else {
-            throw RemoteException("Sdk service is null.")
         }
     }
 
@@ -826,13 +815,12 @@ class Robot private constructor(context: Context) {
     fun goTo(location: String) {
         Timber.d("goTo(String) (location=$location)")
         require(!TextUtils.isEmpty(location)) { "Location can not be null or empty." }
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.goTo(location)
+                it.goTo(location)
             } catch (e: RemoteException) {
                 Timber.e(e, "goTo(String) error.")
             }
-
         }
     }
 
@@ -844,13 +832,12 @@ class Robot private constructor(context: Context) {
      */
     fun saveLocation(name: String): Boolean {
         Timber.d("saveLocation(String) (name=$name)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                return sdkService!!.saveLocation(name)
+                return it.saveLocation(name)
             } catch (e: RemoteException) {
                 Timber.e(e, "saveLocation(String)")
             }
-
         }
         return false
     }
@@ -863,13 +850,12 @@ class Robot private constructor(context: Context) {
      */
     fun deleteLocation(name: String): Boolean {
         Timber.d("deleteLocation(String) (name=$name)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                return sdkService!!.deleteLocation(name)
+                return it.deleteLocation(name)
             } catch (e: RemoteException) {
                 Timber.e(e, "deleteLocation(String)")
             }
-
         }
         return false
     }
@@ -880,13 +866,12 @@ class Robot private constructor(context: Context) {
      */
     fun beWithMe() {
         Timber.d("beWithMe()")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.beWithMe()
+                it.beWithMe()
             } catch (e: RemoteException) {
                 Timber.e(e, "beWithMe()")
             }
-
         }
     }
 
@@ -895,9 +880,9 @@ class Robot private constructor(context: Context) {
      */
     fun stopMovement() {
         Timber.d("stopMovement()")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.stopMovement()
+                it.stopMovement()
             } catch (e: RemoteException) {
                 Timber.e(e, "stopMovement()")
             }
@@ -913,13 +898,12 @@ class Robot private constructor(context: Context) {
      */
     fun skidJoy(x: Float, y: Float) {
         Timber.d("skidJoy(float, float) (x=$x, y=$y)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.skidJoy(x, y)
+                it.skidJoy(x, y)
             } catch (e: RemoteException) {
                 Timber.e(e, "skidJoy(float, float) (x=$x, y=$y)")
             }
-
         }
     }
 
@@ -934,9 +918,9 @@ class Robot private constructor(context: Context) {
 
     private fun turnBy(degrees: Int) {
         Timber.d("turnBy(int) (degrees=$degrees)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.turnBy(degrees, 1.0f)
+                it.turnBy(degrees, 1.0f)
             } catch (e: RemoteException) {
                 Timber.e(e, "turnBy(int) (degrees=$degrees)")
             }
@@ -955,9 +939,9 @@ class Robot private constructor(context: Context) {
 
     private fun tiltAngle(degrees: Int) {
         Timber.d("turnBy(int) (degrees=$degrees)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.tiltAngle(degrees, 1.0f)
+                it.tiltAngle(degrees, 1.0f)
             } catch (e: RemoteException) {
                 Timber.e(e, "turnBy(int) (degrees=$degrees)")
             }
@@ -977,9 +961,9 @@ class Robot private constructor(context: Context) {
 
     private fun tiltBy(degrees: Int) {
         Timber.d("tiltBy(int) (degrees=$degrees)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.tiltBy(degrees, 1.0f)
+                it.tiltBy(degrees, 1.0f)
             } catch (e: RemoteException) {
                 Timber.e(e, "tiltBy(int) (degrees=$degrees)")
             }
@@ -992,9 +976,9 @@ class Robot private constructor(context: Context) {
      */
     fun startTelepresence(displayName: String, peerId: String): String {
         Timber.d("startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                return sdkService!!.startTelepresence(displayName, peerId)
+                return it.startTelepresence(displayName, peerId)
             } catch (e: RemoteException) {
                 Timber.e(
                     "startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)"
@@ -1031,9 +1015,9 @@ class Robot private constructor(context: Context) {
 
     fun showAppList() {
         Timber.d("showAppList()")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.showAppList()
+                it.showAppList()
             } catch (e: RemoteException) {
                 Timber.e(e, "showAppList() error.")
             }
@@ -1043,9 +1027,9 @@ class Robot private constructor(context: Context) {
 
     fun showTopBar() {
         Timber.d("showTopBar()")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.showTopBar()
+                it.showTopBar()
             } catch (e: RemoteException) {
                 Timber.e(e, "showTopBar() error.")
             }
@@ -1055,13 +1039,12 @@ class Robot private constructor(context: Context) {
 
     fun hideTopBar() {
         Timber.d("hideTopBar()")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.hideTopBar()
+                it.hideTopBar()
             } catch (e: RemoteException) {
                 Timber.e(e, "hideTopBar() error.")
             }
-
         }
     }
 
@@ -1072,10 +1055,10 @@ class Robot private constructor(context: Context) {
      */
     fun toggleWakeup(disable: Boolean) {
         Timber.d("toggleWakeup() - disable = $disable")
-        if (sdkService != null) {
+        sdkService?.let {
             if (isMetaDataKiosk) {
                 try {
-                    sdkService!!.toggleWakeup(disable)
+                    it.toggleWakeup(disable)
                 } catch (e: RemoteException) {
                     Timber.e(e, "toggleWakeup() error.")
                 }
@@ -1093,14 +1076,13 @@ class Robot private constructor(context: Context) {
      */
     fun toggleNavigationBillboard(hide: Boolean) {
         Timber.d("toggleNavigationBillboard() - $hide")
-        if (sdkService != null) {
+        sdkService?.let {
             if (isMetaDataKiosk) {
                 try {
-                    sdkService!!.toggleNavigationBillboard(hide)
+                    it.toggleNavigationBillboard(hide)
                 } catch (e: RemoteException) {
                     Timber.e(e, "toggleNavigationBillboard() error.")
                 }
-
             } else {
                 Timber.e(
                     "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode"
@@ -1111,13 +1093,12 @@ class Robot private constructor(context: Context) {
 
     fun wakeup() {
         Timber.d("wakeup()")
-        if (sdkService != null) {
+        sdkService?.let {
             try {
-                sdkService!!.wakeup()
+                it.wakeup()
             } catch (e: RemoteException) {
                 Timber.e(e, "wakeup() error.")
             }
-
         }
     }
 

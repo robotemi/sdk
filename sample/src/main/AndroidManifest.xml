@@ -46,8 +46,8 @@
                 android:value="TRUE" />
 
         <meta-data
-                android:name="com.robotemi.sdk.metadata.ASSISTANT"
-                android:value="Nugu" />
+                android:name="@string/metadata_open_without_internet"
+                android:value="TRUE" />
 
         <activity
                 android:name=".MainActivity"
