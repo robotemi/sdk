@@ -7,6 +7,7 @@
     <string name="metadata_visibility" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.VISIBILITY</string>
     <string name="metadata_kiosk" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.KIOSK</string>
     <string name="metadata_open_without_internet" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OPEN_WITHOUT_INTERNET</string>
+    <string name="metadata_assistant" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.ASSISTANT</string>
 
     <integer name="metadata_ui_flag_default">0</integer>
     <integer name="metadata_ui_flag_hide_top_bar">1</integer>
