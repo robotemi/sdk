@@ -75,8 +75,11 @@ class Robot private constructor(context: Context) {
     private val onPrivacyModeStateChangedListeners =
         CopyOnWriteArraySet<OnPrivacyModeChangedListener>()
 
-    private val onWelcomingModeStatusChangedListeners =
-        CopyOnWriteArraySet<OnWelcomingModeStatusChangedListener>()
+    private val onConstraintBeWithStatusChangedListeners =
+        CopyOnWriteArraySet<OnConstraintBeWithStatusChangedListener>()
+
+    private val onUserInteractionChangedListeners =
+        CopyOnWriteArraySet<OnUserInteractionChangedListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -294,20 +297,6 @@ class Robot private constructor(context: Context) {
             return false
         }
 
-        @Throws(RemoteException::class)
-        override fun onWelcomingModeStatusChanged(status: String): Boolean {
-            Timber.d("onWelcomingModeStatusChanged(String) (status=$status)")
-            if (onWelcomingModeStatusChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onWelcomingModeStatusChangedListeners) {
-                        listener.onWelcomingModeStatusChanged(status)
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
         override fun onPrivacyModeStateChanged(state: Boolean): Boolean {
             Timber.d("onPrivacyModeStateChanged(Boolean) (state=$state)")
             if (onPrivacyModeStateChangedListeners.size > 0) {
@@ -327,6 +316,32 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (listener in onBatteryStatusChangedListeners) {
                         listener.onBatteryStatusChanged(batteryData)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onConstraintBeWithStatusChanged(isContraint: Boolean): Boolean {
+            Timber.d("onConstraintBeWithStatusChanged(String) (isContraint=$isContraint)")
+            if (onConstraintBeWithStatusChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onConstraintBeWithStatusChangedListeners) {
+                        listener.onConstraintBeWithStatusChanged(isContraint)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
+            Timber.d("onUserInteraction(boolean) (isDetected=$isInteracting)")
+            if (onConstraintBeWithStatusChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onUserInteractionChangedListeners) {
+                        listener.onUserInteraction(isInteracting);
                     }
                 }
                 return true
@@ -623,15 +638,27 @@ class Robot private constructor(context: Context) {
     }
 
     @UiThread
-    fun addOnWelcomingModeStatusChangedListener(listener: OnWelcomingModeStatusChangedListener) {
-        Timber.d("addOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
-        onWelcomingModeStatusChangedListeners.add(listener)
+    fun addOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
+        Timber.d("addOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
+        onConstraintBeWithStatusChangedListeners.add(listener)
     }
 
     @UiThread
-    fun removeOnWelcomingModeStatusChangedListener(listener: OnWelcomingModeStatusChangedListener) {
-        Timber.d("removeOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
-        onWelcomingModeStatusChangedListeners.remove(listener)
+    fun removeOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
+        Timber.d("removeOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
+        onConstraintBeWithStatusChangedListeners.remove(listener);
+    }
+
+    @UiThread
+    fun addOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
+        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
+        onUserInteractionChangedListeners.add(listener);
+    }
+
+    @UiThread
+    fun removeOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
+        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
+        onUserInteractionChangedListeners.remove(listener);
     }
 
     @UiThread

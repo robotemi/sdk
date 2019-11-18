@@ -14,6 +14,8 @@ public final class SdkConstants {
 
     public static final String METADATA_KIOSK = "com.robotemi.sdk.metadata.KIOSK";
 
+    public static final String METADATA_ASSISTANT = "com.robotemi.sdk.metadata.ASSISTANT";
+
     public static final String METADATA_UI_MODE = "com.robotemi.sdk.metadata.UI_MODE";
 
     public static final String METADATA_UI_FLAG = "com.robotemi.sdk.metadata.UI_FLAG";

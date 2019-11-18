@@ -46,8 +46,8 @@
                 android:value="TRUE" />
 
         <meta-data
-            android:name="@string/metadata_open_without_internet"
-            android:value="TRUE" />
+                android:name="@string/metadata_open_without_internet"
+                android:value="TRUE" />
 
         <activity
                 android:name=".MainActivity"
