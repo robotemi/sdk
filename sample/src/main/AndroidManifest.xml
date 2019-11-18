@@ -45,6 +45,10 @@
                 android:name="@string/metadata_kiosk"
                 android:value="TRUE" />
 
+        <meta-data
+                android:name="com.robotemi.sdk.metadata.ASSISTANT"
+                android:value="Nugu" />
+
         <activity
                 android:name=".MainActivity"
                 android:screenOrientation="landscape">
