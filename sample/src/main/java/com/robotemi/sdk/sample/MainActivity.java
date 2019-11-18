@@ -28,11 +28,10 @@ import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.activitystream.MediaObject;
-import com.robotemi.sdk.listeners.OnBatteryStatusChangedListener;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
+import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
-import com.robotemi.sdk.listeners.OnPrivacyModeChangedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.voice.NlpResult;
 import com.robotemi.sdk.voice.TtsRequest;
@@ -51,8 +50,7 @@ public class MainActivity extends AppCompatActivity implements
         OnBeWithMeStatusChangedListener,
         OnGoToLocationStatusChangedListener,
         OnLocationsUpdatedListener,
-        OnPrivacyModeChangedListener,
-        OnBatteryStatusChangedListener {
+        OnConstraintBeWithStatusChangedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -104,8 +102,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addWakeupWordListener(this);
         robot.addTtsListener(this);
         robot.addOnLocationsUpdatedListener(this);
-        robot.addOnPrivacyModeStateChangedListener(this);
-        robot.addOnBatteryStatusChangedListener(this);
+        robot.addOnConstraintBeWithStatusChangedListener(this);
     }
 
     /**
@@ -122,8 +119,6 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
-        robot.removeOnPrivacyModeStateChangedListener(this);
-        robot.removeOnBatteryStatusChangedListener(this);
     }
 
     /**
@@ -488,28 +483,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.toggleNavigationBillboard(true);
     }
 
-    public void privacyModeOn(View view) {
-        robot.setPrivacyMode(true);
-    }
-
-    public void privacyModeOff(View view) {
-        robot.setPrivacyMode(false);
-    }
-
-    public void getPrivacyModeState(View view) {
-        Toast.makeText(MainActivity.this, robot.getPrivacyMode() ? "PrivacyMode On"
-                : "PrivacyMode Off", Toast.LENGTH_SHORT).show();
-    }
-
     @Override
-    public void onPrivacyModeChanged(boolean state) {
-        Toast.makeText(MainActivity.this, state ? "PrivacyMode On" :
-                "PrivacyMode Off", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onBatteryStatusChanged(BatteryData batteryData) {
-        Log.d("onBatteryStatusChanged", "BatteryData, percentage - "
-                + batteryData.getBatteryPercentage() + ", isCharging = " + batteryData.isCharging());
+    public void onConstraintBeWithStatusChanged(boolean isConstraint) {
+        Log.d("onConstraintBeWith", "status = " + isConstraint);
     }
 }
