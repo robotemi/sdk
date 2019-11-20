@@ -67,6 +67,7 @@ Documentation
 --------
 
 * [Getting Started][4]
+* [中文文档][5]
 
 License
 -------
@@ -90,4 +91,5 @@ License
 [2]: https://search.maven.org/search?q=g:com.robotemi
 [3]: https://www.xda-developers.com/install-adb-windows-macos-linux/
 [4]: https://github.com/robotemi/sdk/wiki
+[5]: https://github.com/robotemi/sdk/wiki/Home_chn
 [snap]: https://oss.sonatype.org/content/repositories/snapshots/

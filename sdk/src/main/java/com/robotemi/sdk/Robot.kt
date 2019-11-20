@@ -373,40 +373,45 @@ class Robot private constructor(context: Context) {
 
     /**
      * Request robot's serial number as a String.
+     *
+     * @return The serial number of the robot.
      */
     val serialNumber: String?
         get() {
             Timber.d("serialNumber()")
-            var serialNumber: String? = null
             sdkService?.let {
                 try {
-                    serialNumber = it.serialNumber
+                    return it.serialNumber
                 } catch (e: RemoteException) {
                     Timber.e(e, "getSerialNumber()")
                 }
 
             }
-            return serialNumber
+            return null
         }
 
     /**
      * Request the robot to provide current battery status.
+     *
+     * @return The battery data the robot.
      */
     val batteryData: BatteryData?
         get() {
             Timber.d("getBatteryData()")
-            var batteryData: BatteryData? = null
             sdkService?.let {
                 try {
-                    batteryData = it.batteryData
+                    return it.batteryData
                 } catch (e: RemoteException) {
                     Timber.e(e, "getBatteryData() error.")
                 }
 
             }
-            return batteryData
+            return null
         }
 
+    /**
+     * Get the information of temi's admin.
+     */
     val adminInfo: UserInfo?
         get() {
             Timber.d("getAdminInfo()")
@@ -421,6 +426,9 @@ class Robot private constructor(context: Context) {
             return null
         }
 
+    /**
+     * Fetch all the temi contacts.
+     */
     val allContact: List<UserInfo>
         get() {
             Timber.d("getAllContact()")
@@ -436,6 +444,9 @@ class Robot private constructor(context: Context) {
             return contactList
         }
 
+    /**
+     * Fetch recent calls.
+     */
     val recentCalls: List<RecentCallModel>
         get() {
             Timber.d("getRecentCalls()")
@@ -449,12 +460,20 @@ class Robot private constructor(context: Context) {
             return ArrayList()
         }
 
+    /**
+     * Is current skill a Kiosk Mode skill.
+     *
+     * @return Value of the Metadata Kiosk.
+     */
     private val isMetaDataKiosk: Boolean
         get() = applicationInfo.metaData != null && applicationInfo.metaData.getBoolean(
             SdkConstants.METADATA_KIOSK,
             false
         )
 
+    /**
+     * The wakeup word of the temi's assistant.
+     */
     val wakeupWord: String
         get() {
             Timber.d("getWakeupWord()")
@@ -468,6 +487,9 @@ class Robot private constructor(context: Context) {
             return ""
         }
 
+    /**
+     * Is the robot in privacy mode.
+     */
     var privacyMode: Boolean
         set(on) {
             sdkService?.let {
@@ -542,6 +564,11 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * To ask temi to speak something.
+     *
+     * @param ttsRequest Which contains all the TTS information temi needs to in order to speak.
+     */
     fun speak(ttsRequest: TtsRequest) {
         sdkService?.let {
             try {
@@ -699,6 +726,50 @@ class Robot private constructor(context: Context) {
         onRobotReadyListeners.remove(onRobotReadyListener)
     }
 
+    /**
+     * Start listening for Telepresence Status changes.
+     *
+     * @param listener The listener you want to add.
+     */
+    fun addOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
+        Timber.d(
+            "addOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
+        )
+        onTelepresenceStatusChangedListeners.add(listener)
+    }
+
+    /**
+     * Stop listening for Telepresence Status changes.
+     *
+     * @param listener The listener you added before.
+     */
+    fun removeOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
+        Timber.d(
+            "removeOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
+        )
+        onTelepresenceStatusChangedListeners.remove(listener)
+    }
+
+    /**
+     * Start listening for user information updates.
+     *
+     * @param listener The listener you want to add.
+     */
+    fun addOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
+        Timber.d("addOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
+        onUsersUpdatedListeners.add(listener)
+    }
+
+    /**
+     * Stop listening for user information updates.
+     *
+     * @param listener The listener you added before.
+     */
+    fun removeOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
+        Timber.d("removeOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
+        onUsersUpdatedListeners.remove(listener)
+    }
+
     fun setActivityStreamPublishListener(activityStreamPublishListener: ActivityStreamPublishListener?) {
         this.activityStreamPublishListener = activityStreamPublishListener
     }
@@ -808,23 +879,6 @@ class Robot private constructor(context: Context) {
     }
 
     /**
-     * Send robot to previously saved location.
-     *
-     * @param location - Saved location name.
-     */
-    fun goTo(location: String) {
-        Timber.d("goTo(String) (location=$location)")
-        require(!TextUtils.isEmpty(location)) { "Location can not be null or empty." }
-        sdkService?.let {
-            try {
-                it.goTo(location)
-            } catch (e: RemoteException) {
-                Timber.e(e, "goTo(String) error.")
-            }
-        }
-    }
-
-    /**
      * Save location.
      *
      * @param - Location name.
@@ -858,6 +912,23 @@ class Robot private constructor(context: Context) {
             }
         }
         return false
+    }
+
+    /**
+     * Send robot to previously saved location.
+     *
+     * @param location - Saved location name.
+     */
+    fun goTo(location: String) {
+        Timber.d("goTo(String) (location=$location)")
+        require(!TextUtils.isEmpty(location)) { "Location can not be null or empty." }
+        sdkService?.let {
+            try {
+                it.goTo(location)
+            } catch (e: RemoteException) {
+                Timber.e(e, "goTo(String) error.")
+            }
+        }
     }
 
     /**
@@ -908,6 +979,8 @@ class Robot private constructor(context: Context) {
     }
 
     /**
+     * To turn temi by a specific degree.
+     *
      * @param degrees the degree amount you want the robot to turn
      * @param speed   deprecated
      */
@@ -916,7 +989,12 @@ class Robot private constructor(context: Context) {
         turnBy(degrees)
     }
 
-    private fun turnBy(degrees: Int) {
+    /**
+     * To turn temi by a specific degree.
+     *
+     * @param degrees the degree amount you want the robot to turn
+     */
+    fun turnBy(degrees: Int) {
         Timber.d("turnBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
@@ -929,6 +1007,8 @@ class Robot private constructor(context: Context) {
     }
 
     /**
+     * To tilt temi's head to a specific angle.
+     *
      * @param degrees the degree which you want the robot to tilt to, between 55 and -25
      * @param speed   deprecated
      */
@@ -937,7 +1017,12 @@ class Robot private constructor(context: Context) {
         tiltAngle(degrees)
     }
 
-    private fun tiltAngle(degrees: Int) {
+    /**
+     * To tilt temi's head to a specific angle.
+     *
+     * @param degrees the degree which you want the robot to tilt to, between 55 and -25
+     */
+    fun tiltAngle(degrees: Int) {
         Timber.d("turnBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
@@ -950,16 +1035,22 @@ class Robot private constructor(context: Context) {
     }
 
     /**
-     * @param degrees the degree amount you want the robot to tilt
+     * To tilt temi's head to by a specific degree.
+     *
+     * @param degrees The degree amount you want the robot to tilt
      * @param speed
      */
-
     @Deprecated("See {{@link #tiltBy(int)}}", ReplaceWith("tiltBy(degrees)"))
     fun tiltBy(degrees: Int, speed: Float) {
         tiltBy(degrees)
     }
 
-    private fun tiltBy(degrees: Int) {
+    /**
+     * To tilt temi's head to by a specific degree.
+     *
+     * @param degrees The degree amount you want the robot to tilt
+     */
+    fun tiltBy(degrees: Int) {
         Timber.d("tiltBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
@@ -972,7 +1063,11 @@ class Robot private constructor(context: Context) {
     }
 
     /**
-     * @return the sessionId of Telepresence call
+     * Start a video call to Admin.
+     *
+     * @param displayName Name of admin user info.
+     * @param peerId ID of admin user info.
+     * @return The sessionId of Telepresence call
      */
     fun startTelepresence(displayName: String, peerId: String): String {
         Timber.d("startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
@@ -989,30 +1084,9 @@ class Robot private constructor(context: Context) {
         return ""
     }
 
-    fun addOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d(
-            "addOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
-        )
-        onTelepresenceStatusChangedListeners.add(listener)
-    }
-
-    fun removeOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d(
-            "removeOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
-        )
-        onTelepresenceStatusChangedListeners.remove(listener)
-    }
-
-    fun addOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
-        Timber.d("addOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
-        onUsersUpdatedListeners.add(listener)
-    }
-
-    fun removeOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
-        Timber.d("removeOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
-        onUsersUpdatedListeners.remove(listener)
-    }
-
+    /**
+     * Go to the App list of Launcher.
+     */
     fun showAppList() {
         Timber.d("showAppList()")
         sdkService?.let {
@@ -1025,6 +1099,9 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * Show the top bar of Launcher.
+     */
     fun showTopBar() {
         Timber.d("showTopBar()")
         sdkService?.let {
@@ -1037,6 +1114,9 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * Hide the top bar of Launcher.
+     */
     fun hideTopBar() {
         Timber.d("hideTopBar()")
         sdkService?.let {
@@ -1091,6 +1171,9 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * Wakeup the robot.
+     */
     fun wakeup() {
         Timber.d("wakeup()")
         sdkService?.let {
@@ -1152,7 +1235,7 @@ class Robot private constructor(context: Context) {
         private var instance: Robot? = null
 
         @JvmStatic
-        fun getInstance(): Robot? {
+        fun getInstance(): Robot {
             if (instance == null) {
                 synchronized(Robot::class.java) {
                     if (instance == null) {
@@ -1162,7 +1245,7 @@ class Robot private constructor(context: Context) {
                     }
                 }
             }
-            return instance
+            return instance!!
         }
     }
 }
