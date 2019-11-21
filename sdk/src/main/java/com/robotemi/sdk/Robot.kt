@@ -488,7 +488,7 @@ class Robot private constructor(context: Context) {
         }
 
     /**
-     * Is the robot in privacy mode.
+     * Toggle privacy mode on temi.
      */
     var privacyMode: Boolean
         set(on) {
@@ -732,9 +732,7 @@ class Robot private constructor(context: Context) {
      * @param listener The listener you want to add.
      */
     fun addOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d(
-            "addOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("addOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)")
         onTelepresenceStatusChangedListeners.add(listener)
     }
 
@@ -744,9 +742,7 @@ class Robot private constructor(context: Context) {
      * @param listener The listener you added before.
      */
     fun removeOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d(
-            "removeOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("removeOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)")
         onTelepresenceStatusChangedListeners.remove(listener)
     }
 
@@ -1075,9 +1071,7 @@ class Robot private constructor(context: Context) {
             try {
                 return it.startTelepresence(displayName, peerId)
             } catch (e: RemoteException) {
-                Timber.e(
-                    "startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)"
-                )
+                Timber.e("startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
             }
 
         }
@@ -1164,15 +1158,13 @@ class Robot private constructor(context: Context) {
                     Timber.e(e, "toggleNavigationBillboard() error.")
                 }
             } else {
-                Timber.e(
-                    "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode"
-                )
+                Timber.e("toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode")
             }
         }
     }
 
     /**
-     * Wakeup the robot.
+     * Programatically trigger temi's wakeup.
      */
     fun wakeup() {
         Timber.d("wakeup()")
