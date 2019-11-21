@@ -266,19 +266,6 @@ class Robot private constructor(context: Context) {
             return false
         }
 
-        override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
-            Timber.d("onUserInteraction(boolean) (isDetected=$isInteracting)")
-            if (onUserInteractionChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onUserInteractionChangedListeners) {
-                        listener.onUserInteraction(isInteracting);
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
         /*****************************************/
         /*                 Utils                 */
         /*****************************************/
@@ -375,6 +362,23 @@ class Robot private constructor(context: Context) {
                     Timber.w("mediaButtonListener=null")
                 }
             }
+        }
+
+        /*****************************************/
+        /*             Detection Mode            */
+        /*****************************************/
+
+        override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
+            Timber.d("onUserInteraction(boolean) (isDetected=$isInteracting)")
+            if (onUserInteractionChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onUserInteractionChangedListeners) {
+                        listener.onUserInteraction(isInteracting);
+                    }
+                }
+                return true
+            }
+            return false
         }
     }
 
@@ -918,18 +922,6 @@ class Robot private constructor(context: Context) {
         return ""
     }
 
-    @UiThread
-    fun addOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
-        onUserInteractionChangedListeners.add(listener);
-    }
-
-    @UiThread
-    fun removeOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
-        onUserInteractionChangedListeners.remove(listener);
-    }
-
     /**
      * Start listening for Telepresence Status changes.
      *
@@ -1241,6 +1233,23 @@ class Robot private constructor(context: Context) {
     fun setMediaPlaying(isPlaying: Boolean) {
         mediaBar.setMediaPlaying(isPlaying, applicationInfo.packageName)
     }
+
+    /*****************************************/
+    /*             Detection Mode            */
+    /*****************************************/
+
+    @UiThread
+    fun addOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
+        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
+        onUserInteractionChangedListeners.add(listener);
+    }
+
+    @UiThread
+    fun removeOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
+        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
+        onUserInteractionChangedListeners.remove(listener);
+    }
+
 
     /*****************************************/
     /*               Interface               */
