@@ -266,6 +266,19 @@ class Robot private constructor(context: Context) {
             return false
         }
 
+        override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
+            Timber.d("onUserInteraction(boolean) (isDetected=$isInteracting)")
+            if (onUserInteractionChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onUserInteractionChangedListeners) {
+                        listener.onUserInteraction(isInteracting);
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
         /*****************************************/
         /*                 Utils                 */
         /*****************************************/
@@ -362,23 +375,6 @@ class Robot private constructor(context: Context) {
                     Timber.w("mediaButtonListener=null")
                 }
             }
-        }
-
-        /*****************************************/
-        /*                Detection              */
-        /*****************************************/
-
-        override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
-            Timber.d("onUserInteraction(boolean) (isDetected=$isInteracting)")
-            if (onUserInteractionChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onUserInteractionChangedListeners) {
-                        listener.onUserInteraction(isInteracting);
-                    }
-                }
-                return true
-            }
-            return false
         }
     }
 
