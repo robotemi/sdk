@@ -97,18 +97,9 @@ class Robot private constructor(context: Context) {
 
     private val sdkServiceCallback = object : ISdkServiceCallback.Stub() {
 
-        override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
-            Timber.d("onWakeupWord(String) (wakeupWord= $wakeupWord, direction = $direction, thread= ${Thread.currentThread().name})")
-            if (wakeUpWordListeners.size > 0) {
-                uiHandler.post {
-                    for (wakeupWordListener in wakeUpWordListeners) {
-                        wakeupWordListener.onWakeupWord(wakeupWord, direction)
-                    }
-                }
-                return true
-            }
-            return false
-        }
+        /*****************************************/
+        /*                 Voice                 */
+        /*****************************************/
 
         override fun onTtsStatusChanged(ttsRequest: TtsRequest): Boolean {
             Timber.d("onTtsStatusChanged(TtsRequest) (ttsRequest=$ttsRequest , thread=${Thread.currentThread().name} )")
@@ -116,6 +107,19 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (ttsListener in ttsListeners) {
                         ttsListener.onTtsStatusChanged(ttsRequest)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
+            Timber.d("onWakeupWord(String) (wakeupWord= $wakeupWord, direction = $direction, thread= ${Thread.currentThread().name})")
+            if (wakeUpWordListeners.size > 0) {
+                uiHandler.post {
+                    for (wakeupWordListener in wakeUpWordListeners) {
+                        wakeupWordListener.onWakeupWord(wakeupWord, direction)
                     }
                 }
                 return true
@@ -136,12 +140,189 @@ class Robot private constructor(context: Context) {
             return false
         }
 
+        override fun onConversationViewAttaches(isAttached: Boolean): Boolean {
+            Timber.d("onConversationViewAttaches(boolean) (isAttached= $isAttached , thread=  ${Thread.currentThread().name})")
+            if (conversationViewAttachesListeners.size > 0) {
+                uiHandler.post {
+                    for (conversationViewAttachesListener in conversationViewAttachesListeners) {
+                        conversationViewAttachesListener.onConversationAttaches(isAttached)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun hasActiveNlpListeners(): Boolean {
+            val hasActiveNlpListener = !nlpListeners.isEmpty()
+            Timber.d("hasActiveNlpListeners() (hasActiveNlpListeners=$hasActiveNlpListener)")
+            return hasActiveNlpListener
+        }
+
+        /*****************************************/
+        /*                Location               */
+        /*****************************************/
+
+        override fun onGoToLocationStatusChanged(
+            location: String,
+            status: String,
+            descriptionId: Int,
+            description: String
+        ): Boolean {
+            Timber.d("onGoToLocationStatusChanged(String, String, int, String) (location= location, status= $status, descriptionId= $descriptionId, description=$description)")
+            if (!onGoToLocationStatusChangeListeners.isEmpty()) {
+                uiHandler.post {
+                    for (listener in onGoToLocationStatusChangeListeners) {
+                        listener.onGoToLocationStatusChanged(
+                            location,
+                            status,
+                            descriptionId,
+                            description
+                        )
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onLocationsUpdated(locations: List<String>): Boolean {
+            Timber.d("onLocationsUpdated(List<String>) (locations size=  $locations.size)")
+            if (!onLocationsUpdatedListeners.isEmpty()) {
+                uiHandler.post {
+                    for (listener in onLocationsUpdatedListeners) {
+                        listener?.onLocationsUpdated(locations)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        /*****************************************/
+        /*            Movement & Follow          */
+        /*****************************************/
+
+        override fun onBeWithMeStatusChanged(status: String): Boolean {
+            Timber.d("onBeWithMeStatusChanged(String) (status=$status)")
+            if (onBeWithMeStatusChangeListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onBeWithMeStatusChangeListeners) {
+                        listener.onBeWithMeStatusChanged(status)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onConstraintBeWithStatusChanged(isContraint: Boolean): Boolean {
+            Timber.d("onConstraintBeWithStatusChanged(String) (isContraint=$isContraint)")
+            if (onConstraintBeWithStatusChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onConstraintBeWithStatusChangedListeners) {
+                        listener.onConstraintBeWithStatusChanged(isContraint)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        /*****************************************/
+        /*           Users & Telepresence        */
+        /*****************************************/
+
+        override fun onTelepresenceStatusChanged(callState: CallState): Boolean {
+            Timber.d("onTelepresenceStatusChanged(CallState) (callState= $callState)")
+            if (!onTelepresenceStatusChangedListeners.isEmpty()) {
+                uiHandler.post {
+                    for (listener in onTelepresenceStatusChangedListeners) {
+                        if (listener != null && callState.sessionId == listener.sessionId) {
+                            listener.onTelepresenceStatusChanged(callState)
+                        }
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onUserUpdated(user: UserInfo): Boolean {
+            Timber.d("onUserUpdated(UserInfo) (user= $user)")
+            if (!onUsersUpdatedListeners.isEmpty()) {
+                uiHandler.post {
+                    for (listener in onUsersUpdatedListeners) {
+                        val isValidListener = listener != null && (listener.userIds == null
+                                || listener.userIds!!.isEmpty()
+                                || listener.userIds!!.contains(user.userId))
+                        if (isValidListener) {
+                            listener!!.onUserUpdated(user)
+                        }
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        /*****************************************/
+        /*                 Utils                 */
+        /*****************************************/
+
+        override fun onNotificationBtnClicked(
+            notificationCallback: NotificationCallback
+        ) {
+            Timber.w("onNotificationBtnClicked")
+            uiHandler.post {
+                val notificationListener = listenersMap[notificationCallback.notificationId]
+                if (notificationListener != null) {
+                    notificationListener.onNotificationBtnClicked(notificationCallback.event)
+                    listenersMap.remove(notificationCallback.notificationId)
+                }
+            }
+        }
+
+        override fun onPrivacyModeStateChanged(state: Boolean): Boolean {
+            Timber.d("onPrivacyModeStateChanged(Boolean) (state=$state)")
+            if (onPrivacyModeStateChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onPrivacyModeStateChangedListeners) {
+                        listener.onPrivacyModeChanged(state)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onBatteryStatusChanged(batteryData: BatteryData): Boolean {
+            Timber.d("onBatteryStatusChanged(BatteryData) (level=${batteryData.batteryPercentage})")
+            if (onBatteryStatusChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onBatteryStatusChangedListeners) {
+                        listener.onBatteryStatusChanged(batteryData)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        /*****************************************/
+        /*            Activity Stream            */
+        /*****************************************/
+
         override fun onActivityStreamPublish(message: ActivityStreamPublishMessage) {
             Timber.d("onActivityStreamPublish: $message.success()")
             if (activityStreamPublishListener != null) {
                 activityStreamPublishListener!!.onPublish(message)
             }
         }
+
+        /*****************************************/
+        /*                 Media                 */
+        /*****************************************/
 
         override fun onPlayButtonClicked(play: Boolean) {
             uiHandler.post {
@@ -183,162 +364,13 @@ class Robot private constructor(context: Context) {
             }
         }
 
-        override fun onNotificationBtnClicked(
-            notificationCallback: NotificationCallback
-        ) {
-            Timber.w("onNotificationBtnClicked")
-            uiHandler.post {
-                val notificationListener = listenersMap[notificationCallback.notificationId]
-                if (notificationListener != null) {
-                    notificationListener.onNotificationBtnClicked(notificationCallback.event)
-                    listenersMap.remove(notificationCallback.notificationId)
-                }
-            }
-        }
-
-        override fun onConversationViewAttaches(isAttached: Boolean): Boolean {
-            Timber.d("onConversationViewAttaches(boolean) (isAttached= $isAttached , thread=  ${Thread.currentThread().name})")
-            if (conversationViewAttachesListeners.size > 0) {
-                uiHandler.post {
-                    for (conversationViewAttachesListener in conversationViewAttachesListeners) {
-                        conversationViewAttachesListener.onConversationAttaches(isAttached)
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun hasActiveNlpListeners(): Boolean {
-            val hasActiveNlpListener = !nlpListeners.isEmpty()
-            Timber.d("hasActiveNlpListeners() (hasActiveNlpListeners=$hasActiveNlpListener)")
-            return hasActiveNlpListener
-        }
-
-        override fun onBeWithMeStatusChanged(status: String): Boolean {
-            Timber.d("onBeWithMeStatusChanged(String) (status=$status)")
-            if (onBeWithMeStatusChangeListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onBeWithMeStatusChangeListeners) {
-                        listener.onBeWithMeStatusChanged(status)
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun onGoToLocationStatusChanged(
-            location: String,
-            status: String,
-            descriptionId: Int,
-            description: String
-        ): Boolean {
-            Timber.d("onGoToLocationStatusChanged(String, String, int, String) (location= location, status= $status, descriptionId= $descriptionId, description=$description)")
-            if (!onGoToLocationStatusChangeListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onGoToLocationStatusChangeListeners) {
-                        listener.onGoToLocationStatusChanged(
-                            location,
-                            status,
-                            descriptionId,
-                            description
-                        )
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun onTelepresenceStatusChanged(callState: CallState): Boolean {
-            Timber.d("onTelepresenceStatusChanged(CallState) (callState= $callState)")
-            if (!onTelepresenceStatusChangedListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onTelepresenceStatusChangedListeners) {
-                        if (listener != null && callState.sessionId == listener.sessionId) {
-                            listener.onTelepresenceStatusChanged(callState)
-                        }
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun onLocationsUpdated(locations: List<String>): Boolean {
-            Timber.d("onLocationsUpdated(List<String>) (locations size=  $locations.size)")
-            if (!onLocationsUpdatedListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onLocationsUpdatedListeners) {
-                        listener?.onLocationsUpdated(locations)
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun onUserUpdated(user: UserInfo): Boolean {
-            Timber.d("onUserUpdated(UserInfo) (user= $user)")
-            if (!onUsersUpdatedListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onUsersUpdatedListeners) {
-                        val isValidListener = listener != null && (listener.userIds == null
-                                || listener.userIds!!.isEmpty()
-                                || listener.userIds!!.contains(user.userId))
-                        if (isValidListener) {
-                            listener!!.onUserUpdated(user)
-                        }
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun onPrivacyModeStateChanged(state: Boolean): Boolean {
-            Timber.d("onPrivacyModeStateChanged(Boolean) (state=$state)")
-            if (onPrivacyModeStateChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onPrivacyModeStateChangedListeners) {
-                        listener.onPrivacyModeChanged(state)
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun onBatteryStatusChanged(batteryData: BatteryData): Boolean {
-            Timber.d("onBatteryStatusChanged(BatteryData) (level=${batteryData.batteryPercentage})")
-            if (onBatteryStatusChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onBatteryStatusChangedListeners) {
-                        listener.onBatteryStatusChanged(batteryData)
-                    }
-                }
-                return true
-            }
-            return false
-        }
-
-        override fun onConstraintBeWithStatusChanged(isContraint: Boolean): Boolean {
-            Timber.d("onConstraintBeWithStatusChanged(String) (isContraint=$isContraint)")
-            if (onConstraintBeWithStatusChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onConstraintBeWithStatusChangedListeners) {
-                        listener.onConstraintBeWithStatusChanged(isContraint)
-                    }
-                }
-                return true
-            }
-            return false
-        }
+        /*****************************************/
+        /*             Detection Mode            */
+        /*****************************************/
 
         override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
             Timber.d("onUserInteraction(boolean) (isDetected=$isInteracting)")
-            if (onConstraintBeWithStatusChangedListeners.size > 0) {
+            if (onUserInteractionChangedListeners.size > 0) {
                 uiHandler.post {
                     for (listener in onUserInteractionChangedListeners) {
                         listener.onUserInteraction(isInteracting);
@@ -350,145 +382,12 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /*****************************************/
+    /*                  Init                 */
+    /*****************************************/
+
     private val isReady: Boolean
         get() = sdkService != null
-
-    /**
-     * Retrieve list of previously saved locations.
-     *
-     * @return List of saved locations.
-     */
-    val locations: List<String>
-        get() {
-            Timber.d("getLocations()")
-            sdkService?.let {
-                try {
-                    return it.locations
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getLocations()")
-                }
-            }
-            return emptyList()
-        }
-
-    /**
-     * Request robot's serial number as a String.
-     */
-    val serialNumber: String?
-        get() {
-            Timber.d("serialNumber()")
-            var serialNumber: String? = null
-            sdkService?.let {
-                try {
-                    serialNumber = it.serialNumber
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getSerialNumber()")
-                }
-
-            }
-            return serialNumber
-        }
-
-    /**
-     * Request the robot to provide current battery status.
-     */
-    val batteryData: BatteryData?
-        get() {
-            Timber.d("getBatteryData()")
-            var batteryData: BatteryData? = null
-            sdkService?.let {
-                try {
-                    batteryData = it.batteryData
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getBatteryData() error.")
-                }
-
-            }
-            return batteryData
-        }
-
-    val adminInfo: UserInfo?
-        get() {
-            Timber.d("getAdminInfo()")
-            sdkService?.let {
-                try {
-                    return it.adminInfo
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getAdminInfo() error.")
-                }
-
-            }
-            return null
-        }
-
-    val allContact: List<UserInfo>
-        get() {
-            Timber.d("getAllContact()")
-            val contactList = ArrayList<UserInfo>()
-            sdkService?.let {
-                try {
-                    contactList.addAll(it.allContacts)
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getAllContacts() error.")
-                }
-
-            }
-            return contactList
-        }
-
-    val recentCalls: List<RecentCallModel>
-        get() {
-            Timber.d("getRecentCalls()")
-            sdkService?.let {
-                try {
-                    return it.recentCalls
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getRecentCalls() error.")
-                }
-            }
-            return ArrayList()
-        }
-
-    private val isMetaDataKiosk: Boolean
-        get() = applicationInfo.metaData != null && applicationInfo.metaData.getBoolean(
-            SdkConstants.METADATA_KIOSK,
-            false
-        )
-
-    val wakeupWord: String
-        get() {
-            Timber.d("getWakeupWord()")
-            sdkService?.let {
-                try {
-                    return it.wakeupWord
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getWakeupWord() error.")
-                }
-            }
-            return ""
-        }
-
-    var privacyMode: Boolean
-        set(on) {
-            sdkService?.let {
-                try {
-                    it.togglePrivacyMode(on)
-                } catch (e: RemoteException) {
-                    Timber.e(e, "togglePrivacyMode() error.")
-                }
-            }
-        }
-        get() {
-            Timber.d("getPrivacyModeState()")
-            sdkService?.let {
-                try {
-                    return it.privacyModeState
-                } catch (e: RemoteException) {
-                    Timber.e(e, "getPrivacyModeState() error.")
-                }
-            }
-            return false
-        }
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
@@ -501,19 +400,6 @@ class Robot private constructor(context: Context) {
             }
         } ?: run {
             Timber.w("onStart(ActivityInfo) - sdkService=null")
-        }
-    }
-
-    /**
-     * Stops currently processed TTS request and empty the queue.
-     */
-    fun cancelAllTtsRequests() {
-        sdkService?.let {
-            try {
-                it.cancelAll()
-            } catch (e: RemoteException) {
-                Timber.e(e, "Failed to invoke remote call cancelAllTtsRequest()")
-            }
         }
     }
 
@@ -542,6 +428,29 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    @UiThread
+    fun addOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
+        Timber.d("addOnRobotReadyListener(OnRobotReadyListener)")
+        onRobotReadyListeners.add(onRobotReadyListener)
+
+        onRobotReadyListener.onRobotReady(isReady)
+    }
+
+    @UiThread
+    fun removeOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
+        Timber.d("removeOnRobotReadyListener(OnRobotReadyListener)")
+        onRobotReadyListeners.remove(onRobotReadyListener)
+    }
+
+    /*****************************************/
+    /*                 Voice                 */
+    /*****************************************/
+
+    /**
+     * To ask temi to speak something.
+     *
+     * @param ttsRequest Which contains all the TTS information temi needs to in order to speak.
+     */
     fun speak(ttsRequest: TtsRequest) {
         sdkService?.let {
             try {
@@ -550,6 +459,84 @@ class Robot private constructor(context: Context) {
             } catch (e: RemoteException) {
                 Timber.e(e, "Failed to invoke remote call speak()")
             }
+        }
+    }
+
+    /**
+     * The wakeup word of the temi's assistant.
+     */
+    val wakeupWord: String
+        get() {
+            Timber.d("getWakeupWord()")
+            sdkService?.let {
+                try {
+                    return it.wakeupWord
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getWakeupWord() error.")
+                }
+            }
+            return ""
+        }
+
+    /**
+     * Trigger temi's wakeup programmatically.
+     */
+    fun wakeup() {
+        Timber.d("wakeup()")
+        sdkService?.let {
+            try {
+                it.wakeup()
+            } catch (e: RemoteException) {
+                Timber.e(e, "wakeup() error.")
+            }
+        }
+    }
+
+    /**
+     * Stops currently processed TTS request and empty the queue.
+     */
+    fun cancelAllTtsRequests() {
+        sdkService?.let {
+            try {
+                it.cancelAll()
+            } catch (e: RemoteException) {
+                Timber.e(e, "Failed to invoke remote call cancelAllTtsRequest()")
+            }
+        }
+    }
+
+    /**
+     * Request to lock contexts even if skill screen is dismissed.
+     * Useful for services running in the background without UI.
+     *
+     * @param contextsToLock - List of contexts names to lock.
+     */
+    fun lockContexts(contextsToLock: List<String>) {
+        Timber.d("lockContexts(List<String>) (contextsToLock=$contextsToLock)")
+        if (sdkService != null) {
+            try {
+                sdkService!!.lockContexts(contextsToLock)
+            } catch (e: RemoteException) {
+                Timber.e(e, "lockContexts(List<String>) error.")
+            }
+
+        }
+    }
+
+    /**
+     * Release previously locked contexts. See [.lockContexts].
+     *
+     * @param contextsToRelease - List of contexts names to release.
+     */
+    fun releaseContexts(contextsToRelease: List<String>) {
+        Timber.d("releaseContexts(List<String>) (contextsToRelease=$contextsToRelease)")
+        if (sdkService != null) {
+            try {
+                sdkService!!.releaseContexts(contextsToRelease)
+            } catch (e: RemoteException) {
+                Timber.e(e, "releaseContexts(List<String>) error.")
+            }
+
         }
     }
 
@@ -601,228 +588,10 @@ class Robot private constructor(context: Context) {
         wakeUpWordListeners.remove(wakeupWordListener)
     }
 
-    @UiThread
-    fun addOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
-        Timber.d("addOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
-        onBeWithMeStatusChangeListeners.add(listener)
-    }
 
-    @UiThread
-    fun removeOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
-        Timber.d("removeOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
-        onBeWithMeStatusChangeListeners.remove(listener)
-    }
-
-    @UiThread
-    fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
-        Timber.d("addOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
-        onGoToLocationStatusChangeListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
-        Timber.d("removeOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
-        onGoToLocationStatusChangeListeners.remove(listener)
-    }
-
-    @UiThread
-    fun addOnLocationsUpdatedListener(listener: OnLocationsUpdatedListener) {
-        Timber.d("addOnLocationsUpdatedListener(OnLocationsUpdatedListener) (listener=$listener)")
-        onLocationsUpdatedListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnLocationsUpdateListener(listener: OnLocationsUpdatedListener) {
-        Timber.d("removeOnLocationsUpdateListener(OnLocationsUpdatedListener) (listener=$listener)")
-        onLocationsUpdatedListeners.remove(listener)
-    }
-
-    @UiThread
-    fun addOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
-        Timber.d("addOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
-        onConstraintBeWithStatusChangedListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
-        Timber.d("removeOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
-        onConstraintBeWithStatusChangedListeners.remove(listener);
-    }
-
-    @UiThread
-    fun addOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
-        onUserInteractionChangedListeners.add(listener);
-    }
-
-    @UiThread
-    fun removeOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
-        onUserInteractionChangedListeners.remove(listener);
-    }
-
-    @UiThread
-    fun addOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
-        Timber.d("addOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
-        onPrivacyModeStateChangedListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
-        Timber.d("removeOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
-        onPrivacyModeStateChangedListeners.remove(listener)
-    }
-
-    @UiThread
-    fun addOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
-        Timber.d("addOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
-        onBatteryStatusChangedListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
-        Timber.d("removeOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
-        onBatteryStatusChangedListeners.remove(listener)
-    }
-
-    @UiThread
-    fun addOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
-        Timber.d("addOnRobotReadyListener(OnRobotReadyListener)")
-        onRobotReadyListeners.add(onRobotReadyListener)
-
-        onRobotReadyListener.onRobotReady(isReady)
-    }
-
-    @UiThread
-    fun removeOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
-        Timber.d("removeOnRobotReadyListener(OnRobotReadyListener)")
-        onRobotReadyListeners.remove(onRobotReadyListener)
-    }
-
-    fun setActivityStreamPublishListener(activityStreamPublishListener: ActivityStreamPublishListener?) {
-        this.activityStreamPublishListener = activityStreamPublishListener
-    }
-
-    @Throws(RemoteException::class)
-    fun shareActivityObject(activityStreamObject: ActivityStreamObject) {
-        sdkService?.let {
-            AsyncTask.execute {
-                ActivityStreamUtils.handleActivityStreamObject(activityStreamObject)
-                try {
-                    it.shareActivityStreamObject(activityStreamObject)
-                } catch (e: RemoteException) {
-                    Timber.e(e, "Sdk service is null")
-                }
-            }
-        }
-    }
-
-    fun setMediaButtonListener(mediaButtonListener: MediaButtonListener) {
-        this.mediaButtonListener = mediaButtonListener
-    }
-
-    fun removeMediaButtonListener() {
-        mediaButtonListener = null
-    }
-
-    @Throws(RemoteException::class)
-    fun updateMediaBar(mediaBarData: MediaBarData) {
-        mediaBarData.packageName = applicationInfo.packageName
-        mediaBar.updateMediaBar(mediaBarData)
-    }
-
-    @Throws(RemoteException::class)
-    fun pauseMediaBar() {
-        mediaBar.pauseMediaBar()
-    }
-
-    @Throws(RemoteException::class)
-    fun setMediaPlaying(isPlaying: Boolean) {
-        mediaBar.setMediaPlaying(isPlaying, applicationInfo.packageName)
-    }
-
-    @Throws(RemoteException::class)
-    fun showNormalNotification(notification: NormalNotification) {
-        if (sdkService != null) {
-            sdkService!!.showNormalNotification(notification)
-        } else {
-            throw RemoteException("Sdk service is null.")
-        }
-    }
-
-    @Throws(RemoteException::class)
-    fun showAlertNotification(
-        notification: AlertNotification,
-        notificationListener: NotificationListener
-    ) {
-        if (sdkService != null) {
-            sdkService!!.showAlertNotification(notification)
-            listenersMap[notification.notificationId] = notificationListener
-        } else {
-            throw RemoteException("Sdk service is null.")
-        }
-    }
-
-    @Throws(RemoteException::class)
-    fun removeAlertNotification(notification: AlertNotification) {
-        if (sdkService != null) {
-            sdkService!!.removeAlertNotification(notification)
-        } else {
-            throw RemoteException("Sdk service is null.")
-        }
-    }
-
-    /**
-     * Request to lock contexts even if skill screen is dismissed.
-     * Useful for services running in the background without UI.
-     *
-     * @param contextsToLock - List of contexts names to lock.
-     */
-    fun lockContexts(contextsToLock: List<String>) {
-        Timber.d("lockContexts(List<String>) (contextsToLock=$contextsToLock)")
-        if (sdkService != null) {
-            try {
-                sdkService!!.lockContexts(contextsToLock)
-            } catch (e: RemoteException) {
-                Timber.e(e, "lockContexts(List<String>) error.")
-            }
-
-        }
-    }
-
-    /**
-     * Release previously locked contexts. See [.lockContexts].
-     *
-     * @param contextsToRelease - List of contexts names to release.
-     */
-    fun releaseContexts(contextsToRelease: List<String>) {
-        Timber.d("releaseContexts(List<String>) (contextsToRelease=$contextsToRelease)")
-        if (sdkService != null) {
-            try {
-                sdkService!!.releaseContexts(contextsToRelease)
-            } catch (e: RemoteException) {
-                Timber.e(e, "releaseContexts(List<String>) error.")
-            }
-
-        }
-    }
-
-    /**
-     * Send robot to previously saved location.
-     *
-     * @param location - Saved location name.
-     */
-    fun goTo(location: String) {
-        Timber.d("goTo(String) (location=$location)")
-        require(!TextUtils.isEmpty(location)) { "Location can not be null or empty." }
-        sdkService?.let {
-            try {
-                it.goTo(location)
-            } catch (e: RemoteException) {
-                Timber.e(e, "goTo(String) error.")
-            }
-        }
-    }
+    /*****************************************/
+    /*                Location               */
+    /*****************************************/
 
     /**
      * Save location.
@@ -859,6 +628,69 @@ class Robot private constructor(context: Context) {
         }
         return false
     }
+
+    /**
+     * Retrieve list of previously saved locations.
+     *
+     * @return List of saved locations.
+     */
+    val locations: List<String>
+        get() {
+            Timber.d("getLocations()")
+            sdkService?.let {
+                try {
+                    return it.locations
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getLocations()")
+                }
+            }
+            return emptyList()
+        }
+
+    /**
+     * Send robot to previously saved location.
+     *
+     * @param location - Saved location name.
+     */
+    fun goTo(location: String) {
+        Timber.d("goTo(String) (location=$location)")
+        require(!TextUtils.isEmpty(location)) { "Location can not be null or empty." }
+        sdkService?.let {
+            try {
+                it.goTo(location)
+            } catch (e: RemoteException) {
+                Timber.e(e, "goTo(String) error.")
+            }
+        }
+    }
+
+    @UiThread
+    fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
+        Timber.d("addOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
+        onGoToLocationStatusChangeListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
+        Timber.d("removeOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
+        onGoToLocationStatusChangeListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnLocationsUpdatedListener(listener: OnLocationsUpdatedListener) {
+        Timber.d("addOnLocationsUpdatedListener(OnLocationsUpdatedListener) (listener=$listener)")
+        onLocationsUpdatedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnLocationsUpdateListener(listener: OnLocationsUpdatedListener) {
+        Timber.d("removeOnLocationsUpdateListener(OnLocationsUpdatedListener) (listener=$listener)")
+        onLocationsUpdatedListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*            Movement & Follow          */
+    /*****************************************/
 
     /**
      * Request robot to follow user around.
@@ -908,6 +740,8 @@ class Robot private constructor(context: Context) {
     }
 
     /**
+     * To turn temi by a specific degree.
+     *
      * @param degrees the degree amount you want the robot to turn
      * @param speed   deprecated
      */
@@ -916,7 +750,12 @@ class Robot private constructor(context: Context) {
         turnBy(degrees)
     }
 
-    private fun turnBy(degrees: Int) {
+    /**
+     * To turn temi by a specific degree.
+     *
+     * @param degrees the degree amount you want the robot to turn
+     */
+    fun turnBy(degrees: Int) {
         Timber.d("turnBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
@@ -929,6 +768,8 @@ class Robot private constructor(context: Context) {
     }
 
     /**
+     * To tilt temi's head to a specific angle.
+     *
      * @param degrees the degree which you want the robot to tilt to, between 55 and -25
      * @param speed   deprecated
      */
@@ -937,7 +778,12 @@ class Robot private constructor(context: Context) {
         tiltAngle(degrees)
     }
 
-    private fun tiltAngle(degrees: Int) {
+    /**
+     * To tilt temi's head to a specific angle.
+     *
+     * @param degrees the degree which you want the robot to tilt to, between 55 and -25
+     */
+    fun tiltAngle(degrees: Int) {
         Timber.d("turnBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
@@ -950,16 +796,22 @@ class Robot private constructor(context: Context) {
     }
 
     /**
-     * @param degrees the degree amount you want the robot to tilt
+     * To tilt temi's head to by a specific degree.
+     *
+     * @param degrees The degree amount you want the robot to tilt
      * @param speed
      */
-
     @Deprecated("See {{@link #tiltBy(int)}}", ReplaceWith("tiltBy(degrees)"))
     fun tiltBy(degrees: Int, speed: Float) {
         tiltBy(degrees)
     }
 
-    private fun tiltBy(degrees: Int) {
+    /**
+     * To tilt temi's head to by a specific degree.
+     *
+     * @param degrees The degree amount you want the robot to tilt
+     */
+    fun tiltBy(degrees: Int) {
         Timber.d("tiltBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
@@ -971,8 +823,91 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    @UiThread
+    fun addOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
+        Timber.d("addOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
+        onBeWithMeStatusChangeListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
+        Timber.d("removeOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
+        onBeWithMeStatusChangeListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
+        Timber.d("addOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
+        onConstraintBeWithStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
+        Timber.d("removeOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
+        onConstraintBeWithStatusChangedListeners.remove(listener);
+    }
+
+    /*****************************************/
+    /*           Users & Telepresence        */
+    /*****************************************/
+
     /**
-     * @return the sessionId of Telepresence call
+     * Get the information of temi's admin.
+     */
+    val adminInfo: UserInfo?
+        get() {
+            Timber.d("getAdminInfo()")
+            sdkService?.let {
+                try {
+                    return it.adminInfo
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getAdminInfo() error.")
+                }
+
+            }
+            return null
+        }
+
+    /**
+     * Fetch all the temi contacts.
+     */
+    val allContact: List<UserInfo>
+        get() {
+            Timber.d("getAllContact()")
+            val contactList = ArrayList<UserInfo>()
+            sdkService?.let {
+                try {
+                    contactList.addAll(it.allContacts)
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getAllContacts() error.")
+                }
+
+            }
+            return contactList
+        }
+
+    /**
+     * Fetch recent calls.
+     */
+    val recentCalls: List<RecentCallModel>
+        get() {
+            Timber.d("getRecentCalls()")
+            sdkService?.let {
+                try {
+                    return it.recentCalls
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getRecentCalls() error.")
+                }
+            }
+            return ArrayList()
+        }
+
+    /**
+     * Start a video call to Admin.
+     *
+     * @param displayName Name of admin user info.
+     * @param peerId ID of admin user info.
+     * @return The sessionId of Telepresence call
      */
     fun startTelepresence(displayName: String, peerId: String): String {
         Timber.d("startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
@@ -980,39 +915,98 @@ class Robot private constructor(context: Context) {
             try {
                 return it.startTelepresence(displayName, peerId)
             } catch (e: RemoteException) {
-                Timber.e(
-                    "startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)"
-                )
+                Timber.e("startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
             }
 
         }
         return ""
     }
 
+    /**
+     * Start listening for Telepresence Status changes.
+     *
+     * @param listener The listener you want to add.
+     */
     fun addOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d(
-            "addOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("addOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)")
         onTelepresenceStatusChangedListeners.add(listener)
     }
 
+    /**
+     * Stop listening for Telepresence Status changes.
+     *
+     * @param listener The listener you added before.
+     */
     fun removeOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d(
-            "removeOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)"
-        )
+        Timber.d("removeOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)")
         onTelepresenceStatusChangedListeners.remove(listener)
     }
 
+    /**
+     * Start listening for user information updates.
+     *
+     * @param listener The listener you want to add.
+     */
     fun addOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
         Timber.d("addOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
         onUsersUpdatedListeners.add(listener)
     }
 
+    /**
+     * Stop listening for user information updates.
+     *
+     * @param listener The listener you added before.
+     */
     fun removeOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
         Timber.d("removeOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
         onUsersUpdatedListeners.remove(listener)
     }
 
+    /*****************************************/
+    /*                 Utils                 */
+    /*****************************************/
+
+    /**
+     * Request robot's serial number as a String.
+     *
+     * @return The serial number of the robot.
+     */
+    val serialNumber: String?
+        get() {
+            Timber.d("serialNumber()")
+            sdkService?.let {
+                try {
+                    return it.serialNumber
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getSerialNumber()")
+                }
+
+            }
+            return null
+        }
+
+    /**
+     * Request the robot to provide current battery status.
+     *
+     * @return The battery data the robot.
+     */
+    val batteryData: BatteryData?
+        get() {
+            Timber.d("getBatteryData()")
+            sdkService?.let {
+                try {
+                    return it.batteryData
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getBatteryData() error.")
+                }
+
+            }
+            return null
+        }
+
+    /**
+     * Go to the App list of Launcher.
+     */
     fun showAppList() {
         Timber.d("showAppList()")
         sdkService?.let {
@@ -1025,6 +1019,9 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * Show the top bar of Launcher.
+     */
     fun showTopBar() {
         Timber.d("showTopBar()")
         sdkService?.let {
@@ -1037,6 +1034,9 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * Hide the top bar of Launcher.
+     */
     fun hideTopBar() {
         Timber.d("hideTopBar()")
         sdkService?.let {
@@ -1047,6 +1047,101 @@ class Robot private constructor(context: Context) {
             }
         }
     }
+
+    /**
+     * Toggle privacy mode on temi.
+     */
+    var privacyMode: Boolean
+        set(on) {
+            sdkService?.let {
+                try {
+                    it.togglePrivacyMode(on)
+                } catch (e: RemoteException) {
+                    Timber.e(e, "togglePrivacyMode() error.")
+                }
+            }
+        }
+        get() {
+            Timber.d("getPrivacyModeState()")
+            sdkService?.let {
+                try {
+                    return it.privacyModeState
+                } catch (e: RemoteException) {
+                    Timber.e(e, "getPrivacyModeState() error.")
+                }
+            }
+            return false
+        }
+
+    @Throws(RemoteException::class)
+    fun showNormalNotification(notification: NormalNotification) {
+        if (sdkService != null) {
+            sdkService!!.showNormalNotification(notification)
+        } else {
+            throw RemoteException("Sdk service is null.")
+        }
+    }
+
+    @Throws(RemoteException::class)
+    fun showAlertNotification(
+        notification: AlertNotification,
+        notificationListener: NotificationListener
+    ) {
+        if (sdkService != null) {
+            sdkService!!.showAlertNotification(notification)
+            listenersMap[notification.notificationId] = notificationListener
+        } else {
+            throw RemoteException("Sdk service is null.")
+        }
+    }
+
+    @Throws(RemoteException::class)
+    fun removeAlertNotification(notification: AlertNotification) {
+        if (sdkService != null) {
+            sdkService!!.removeAlertNotification(notification)
+        } else {
+            throw RemoteException("Sdk service is null.")
+        }
+    }
+
+    @UiThread
+    fun addOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
+        Timber.d("addOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
+        onPrivacyModeStateChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
+        Timber.d("removeOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
+        onPrivacyModeStateChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
+        Timber.d("addOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
+        onBatteryStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
+        Timber.d("removeOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
+        onBatteryStatusChangedListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*               Kiosk Mode              */
+    /*****************************************/
+
+    /**
+     * Is current skill a Kiosk Mode skill.
+     *
+     * @return Value of the Metadata Kiosk.
+     */
+    private val isMetaDataKiosk: Boolean
+        get() = applicationInfo.metaData != null && applicationInfo.metaData.getBoolean(
+            SdkConstants.METADATA_KIOSK,
+            false
+        )
 
     /**
      * Toggle the wakeup trigger on and off
@@ -1084,23 +1179,81 @@ class Robot private constructor(context: Context) {
                     Timber.e(e, "toggleNavigationBillboard() error.")
                 }
             } else {
-                Timber.e(
-                    "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode"
-                )
+                Timber.e("toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode")
             }
         }
     }
 
-    fun wakeup() {
-        Timber.d("wakeup()")
+    /*****************************************/
+    /*            Activity Stream            */
+    /*****************************************/
+
+    fun setActivityStreamPublishListener(activityStreamPublishListener: ActivityStreamPublishListener?) {
+        this.activityStreamPublishListener = activityStreamPublishListener
+    }
+
+    @Throws(RemoteException::class)
+    fun shareActivityObject(activityStreamObject: ActivityStreamObject) {
         sdkService?.let {
-            try {
-                it.wakeup()
-            } catch (e: RemoteException) {
-                Timber.e(e, "wakeup() error.")
+            AsyncTask.execute {
+                ActivityStreamUtils.handleActivityStreamObject(activityStreamObject)
+                try {
+                    it.shareActivityStreamObject(activityStreamObject)
+                } catch (e: RemoteException) {
+                    Timber.e(e, "Sdk service is null")
+                }
             }
         }
     }
+
+    /*****************************************/
+    /*                 Media                 */
+    /*****************************************/
+
+    fun setMediaButtonListener(mediaButtonListener: MediaButtonListener) {
+        this.mediaButtonListener = mediaButtonListener
+    }
+
+    fun removeMediaButtonListener() {
+        mediaButtonListener = null
+    }
+
+    @Throws(RemoteException::class)
+    fun updateMediaBar(mediaBarData: MediaBarData) {
+        mediaBarData.packageName = applicationInfo.packageName
+        mediaBar.updateMediaBar(mediaBarData)
+    }
+
+    @Throws(RemoteException::class)
+    fun pauseMediaBar() {
+        mediaBar.pauseMediaBar()
+    }
+
+    @Throws(RemoteException::class)
+    fun setMediaPlaying(isPlaying: Boolean) {
+        mediaBar.setMediaPlaying(isPlaying, applicationInfo.packageName)
+    }
+
+    /*****************************************/
+    /*             Detection Mode            */
+    /*****************************************/
+
+    @UiThread
+    fun addOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
+        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
+        onUserInteractionChangedListeners.add(listener);
+    }
+
+    @UiThread
+    fun removeOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
+        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
+        onUserInteractionChangedListeners.remove(listener);
+    }
+
+
+    /*****************************************/
+    /*               Interface               */
+    /*****************************************/
 
     interface WakeupWordListener {
         fun onWakeupWord(wakeupWord: String, direction: Int)
@@ -1152,7 +1305,7 @@ class Robot private constructor(context: Context) {
         private var instance: Robot? = null
 
         @JvmStatic
-        fun getInstance(): Robot? {
+        fun getInstance(): Robot {
             if (instance == null) {
                 synchronized(Robot::class.java) {
                     if (instance == null) {
@@ -1162,7 +1315,7 @@ class Robot private constructor(context: Context) {
                     }
                 }
             }
-            return instance
+            return instance!!
         }
     }
 }
