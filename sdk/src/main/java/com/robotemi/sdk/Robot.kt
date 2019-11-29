@@ -438,7 +438,7 @@ class Robot private constructor(context: Context) {
         get() {
             sdkService?.let {
                 try {
-                    return it.wakeupWord
+                    return it.wakeupWord ?: ""
                 } catch (e: RemoteException) {
                     Log.e(TAG, "getWakeupWord() error.")
                 }
@@ -593,7 +593,7 @@ class Robot private constructor(context: Context) {
         get() {
             sdkService?.let {
                 try {
-                    return it.locations
+                    return it.locations ?: emptyList()
                 } catch (e: RemoteException) {
                     Log.e(TAG, "getLocations()")
                 }
@@ -830,7 +830,7 @@ class Robot private constructor(context: Context) {
         get() {
             sdkService?.let {
                 try {
-                    return it.recentCalls
+                    return it.recentCalls ?: ArrayList()
                 } catch (e: RemoteException) {
                     Log.e(TAG, "getRecentCalls() error.")
                 }
@@ -848,12 +848,9 @@ class Robot private constructor(context: Context) {
     fun startTelepresence(displayName: String, peerId: String): String {
         sdkService?.let {
             try {
-                return it.startTelepresence(displayName, peerId)
+                return it.startTelepresence(displayName, peerId) ?: ""
             } catch (e: RemoteException) {
-                Log.e(
-                    TAG,
-                    "startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)"
-                )
+                Log.e(TAG, "startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
             }
 
         }
@@ -1101,10 +1098,7 @@ class Robot private constructor(context: Context) {
                     Log.e(TAG, "toggleNavigationBillboard() error.")
                 }
             } else {
-                Log.e(
-                    TAG,
-                    "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode"
-                )
+                Log.e(TAG, "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode")
             }
         }
     }
