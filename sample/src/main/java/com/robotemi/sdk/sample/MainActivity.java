@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
         robot.removeDetectionStateChangedListener(this);
+        robot.stopMovement();
     }
 
     /**

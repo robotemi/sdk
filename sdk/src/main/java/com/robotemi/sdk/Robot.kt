@@ -723,6 +723,9 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * Start constraint follow.
+     */
     fun constraintBeWith() {
         sdkService?.let {
             try {
