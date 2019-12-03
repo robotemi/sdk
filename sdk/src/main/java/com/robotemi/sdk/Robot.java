@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceStatusChangedListener;
 import com.robotemi.sdk.listeners.OnUsersUpdatedListener;
+import com.robotemi.sdk.listeners.OnWelcomingModeStatusChangedListener;
 import com.robotemi.sdk.mediabar.AidlMediaBarController;
 import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.model.RecentCallModel;
@@ -97,6 +99,9 @@ public class Robot {
 
     @NonNull
     private final Set<OnUsersUpdatedListener> onUsersUpdatedListeners = new CopyOnWriteArraySet<>();
+
+    @NonNull
+    private final Set<OnWelcomingModeStatusChangedListener> onWelcomingModeStatusChangedListeners = new CopyOnWriteArraySet<>();
 
     @NonNull
     private AidlMediaBarController mediaBar = new AidlMediaBarController(null);
@@ -365,6 +370,23 @@ public class Robot {
             }
             return false;
         }
+
+        @Override
+        public boolean onWelcomingModeStatusChanged(final String status) throws RemoteException {
+            Log.d(TAG, "onWelcomingModeStatusChanged(String) (status=" + status + ")");
+            if (onWelcomingModeStatusChangedListeners.size() > 0) {
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (OnWelcomingModeStatusChangedListener listener : onWelcomingModeStatusChangedListeners) {
+                            listener.onWelcomingModeStatusChanged(status);
+                        }
+                    }
+                });
+                return true;
+            }
+            return false;
+        }
     };
 
     private Robot(@NonNull final Context context) {
@@ -561,6 +583,18 @@ public class Robot {
         onRobotReadyListeners.remove(onRobotReadyListener);
     }
 
+    @UiThread
+    public void addOnWelcomingModeStatusChangedListener(@NonNull final OnWelcomingModeStatusChangedListener listener) {
+        Log.d(TAG, "addOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
+        onWelcomingModeStatusChangedListeners.add(listener);
+    }
+
+    @UiThread
+    public void removeOnWelcomingModeStatusChangedListener(@NonNull final OnWelcomingModeStatusChangedListener listener) {
+        Log.d(TAG, "removeOnWelcomingModeStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=" + listener + ")");
+        onWelcomingModeStatusChangedListeners.remove(listener);
+    }
+
     public void setActivityStreamPublishListener(@Nullable ActivityStreamPublishListener activityStreamPublishListener) {
         this.activityStreamPublishListener = activityStreamPublishListener;
     }
@@ -669,6 +703,9 @@ public class Robot {
      */
     public void goTo(@NonNull final String location) {
         Log.d(TAG, "goTo(String) (location=" + location + ")");
+        if (TextUtils.isEmpty(location)) {
+            throw new IllegalArgumentException("Location can not be null or empty.");
+        }
         if (sdkService != null) {
             try {
                 sdkService.goTo(location);
@@ -986,8 +1023,8 @@ public class Robot {
 
     /**
      * Toggle the wakeup trigger on and off
-     * @param disable set true to disable the wakeup or false to enable it
      *
+     * @param disable set true to disable the wakeup or false to enable it
      */
     public void toggleWakeup(boolean disable) {
         Log.d(TAG, "toggleWakeup() - disable = " + disable);
@@ -1006,8 +1043,8 @@ public class Robot {
 
     /**
      * Toggle the visibility of the navigation billboard when you perform goTo commands
-     * @param hide set true to hide the billboard or false to display it
      *
+     * @param hide set true to hide the billboard or false to display it
      */
     public void toggleNavigationBillboard(boolean hide) {
         Log.d(TAG, "toggleNavigationBillboard() - " + hide);
@@ -1027,6 +1064,29 @@ public class Robot {
     private boolean isMetaDataKiosk() {
         return applicationInfo.metaData != null
                 && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false);
+    }
+
+    public void wakeup() {
+        Log.d(TAG, "wakeup()");
+        if (sdkService != null) {
+            try {
+                sdkService.wakeup();
+            } catch (RemoteException e) {
+                Log.e(TAG, "wakeup() error.", e);
+            }
+        }
+    }
+
+    public String getWakeupWord() {
+        Log.d(TAG, "getWakeupWord()");
+        if(sdkService != null) {
+            try {
+                return sdkService.getWakeupWord();
+            } catch (RemoteException e) {
+                Log.e(TAG, "getWakeupWord() error.", e);
+            }
+        }
+        return "";
     }
 
     public interface WakeupWordListener {

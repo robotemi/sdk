@@ -165,4 +165,8 @@ interface ISdkService {
      * @return Result of a successful or failed operation.
      */
     boolean deleteLocation(in String name);
+
+    void wakeup();
+
+    String getWakeupWord();
 }

@@ -19,6 +19,8 @@ public interface OnBeWithMeStatusChangedListener {
 
     String TRACK = "track";
 
+    String OBSTACLE_DETECTED = "obstacle detected";
+
     /**
      * Listen for status changes during 'beWithMe'.
      * <p>
@@ -30,13 +32,14 @@ public interface OnBeWithMeStatusChangedListener {
      * <li>{@link OnBeWithMeStatusChangedListener#SEARCH}</li>
      * <li>{@link OnBeWithMeStatusChangedListener#START}</li>
      * <li>{@link OnBeWithMeStatusChangedListener#TRACK}</li>
+     * <li>{@link OnBeWithMeStatusChangedListener#OBSTACLE_DETECTED}</li>
      * </ul>
      *
      * @param status Current status.
      */
     void onBeWithMeStatusChanged(@BeWithMeStatus String status);
 
-    @StringDef({ABORT, CALCULATING, LOCK, SEARCH, START, TRACK})
+    @StringDef({ABORT, CALCULATING, LOCK, SEARCH, START, TRACK, OBSTACLE_DETECTED})
     @Retention(RetentionPolicy.SOURCE)
     @interface BeWithMeStatus {
     }
