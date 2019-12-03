@@ -27,7 +27,6 @@ import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
 import com.robotemi.sdk.voice.NlpResult
 import com.robotemi.sdk.voice.TtsRequest
-import timber.log.Timber
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -106,7 +105,6 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onTtsStatusChanged(ttsRequest: TtsRequest): Boolean {
-            Timber.d("onTtsStatusChanged(TtsRequest) (ttsRequest=$ttsRequest , thread=${Thread.currentThread().name} )")
             if (ttsListeners.size > 0) {
                 uiHandler.post {
                     for (ttsListener in ttsListeners) {
@@ -119,7 +117,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
-            Timber.d("onWakeupWord(String) (wakeupWord= $wakeupWord, direction = $direction, thread= ${Thread.currentThread().name})")
             if (wakeUpWordListeners.size > 0) {
                 uiHandler.post {
                     for (wakeupWordListener in wakeUpWordListeners) {
@@ -132,7 +129,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onNlpCompleted(nlpResult: NlpResult): Boolean {
-            Timber.d("onNlpCompleted(NlpResult) (nlpResult= $nlpResult , thread= ${Thread.currentThread().name} )")
             if (nlpListeners.size > 0) {
                 uiHandler.post {
                     for (nlpListener in nlpListeners) {
@@ -145,7 +141,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onConversationViewAttaches(isAttached: Boolean): Boolean {
-            Timber.d("onConversationViewAttaches(boolean) (isAttached= $isAttached , thread=  ${Thread.currentThread().name})")
             if (conversationViewAttachesListeners.size > 0) {
                 uiHandler.post {
                     for (conversationViewAttachesListener in conversationViewAttachesListeners) {
@@ -159,7 +154,6 @@ class Robot private constructor(context: Context) {
 
         override fun hasActiveNlpListeners(): Boolean {
             val hasActiveNlpListener = !nlpListeners.isEmpty()
-            Timber.d("hasActiveNlpListeners() (hasActiveNlpListeners=$hasActiveNlpListener)")
             return hasActiveNlpListener
         }
 
@@ -173,7 +167,6 @@ class Robot private constructor(context: Context) {
             descriptionId: Int,
             description: String
         ): Boolean {
-            Timber.d("onGoToLocationStatusChanged(String, String, int, String) (location= location, status= $status, descriptionId= $descriptionId, description=$description)")
             if (!onGoToLocationStatusChangeListeners.isEmpty()) {
                 uiHandler.post {
                     for (listener in onGoToLocationStatusChangeListeners) {
@@ -191,7 +184,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onLocationsUpdated(locations: List<String>): Boolean {
-            Timber.d("onLocationsUpdated(List<String>) (locations size=  $locations.size)")
             if (!onLocationsUpdatedListeners.isEmpty()) {
                 uiHandler.post {
                     for (listener in onLocationsUpdatedListeners) {
@@ -208,7 +200,6 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onBeWithMeStatusChanged(status: String): Boolean {
-            Timber.d("onBeWithMeStatusChanged(String) (status=$status)")
             if (onBeWithMeStatusChangeListeners.size > 0) {
                 uiHandler.post {
                     for (listener in onBeWithMeStatusChangeListeners) {
@@ -221,7 +212,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onConstraintBeWithStatusChanged(isContraint: Boolean): Boolean {
-            Timber.d("onConstraintBeWithStatusChanged(String) (isContraint=$isContraint)")
             if (onConstraintBeWithStatusChangedListeners.size > 0) {
                 uiHandler.post {
                     for (listener in onConstraintBeWithStatusChangedListeners) {
@@ -238,7 +228,6 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onTelepresenceStatusChanged(callState: CallState): Boolean {
-            Timber.d("onTelepresenceStatusChanged(CallState) (callState= $callState)")
             if (!onTelepresenceStatusChangedListeners.isEmpty()) {
                 uiHandler.post {
                     for (listener in onTelepresenceStatusChangedListeners) {
@@ -253,7 +242,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onUserUpdated(user: UserInfo): Boolean {
-            Timber.d("onUserUpdated(UserInfo) (user= $user)")
             if (!onUsersUpdatedListeners.isEmpty()) {
                 uiHandler.post {
                     for (listener in onUsersUpdatedListeners) {
@@ -274,10 +262,7 @@ class Robot private constructor(context: Context) {
         /*                 Utils                 */
         /*****************************************/
 
-        override fun onNotificationBtnClicked(
-            notificationCallback: NotificationCallback
-        ) {
-            Timber.w("onNotificationBtnClicked")
+        override fun onNotificationBtnClicked(notificationCallback: NotificationCallback) {
             uiHandler.post {
                 val notificationListener = listenersMap[notificationCallback.notificationId]
                 if (notificationListener != null) {
@@ -288,7 +273,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onPrivacyModeStateChanged(state: Boolean): Boolean {
-            Timber.d("onPrivacyModeStateChanged(Boolean) (state=$state)")
             if (onPrivacyModeStateChangedListeners.size > 0) {
                 uiHandler.post {
                     for (listener in onPrivacyModeStateChangedListeners) {
@@ -301,7 +285,6 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onBatteryStatusChanged(batteryData: BatteryData): Boolean {
-            Timber.d("onBatteryStatusChanged(BatteryData) (level=${batteryData.batteryPercentage})")
             if (onBatteryStatusChangedListeners.size > 0) {
                 uiHandler.post {
                     for (listener in onBatteryStatusChangedListeners) {
@@ -318,7 +301,6 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onActivityStreamPublish(message: ActivityStreamPublishMessage) {
-            Timber.d("onActivityStreamPublish: $message.success()")
             if (activityStreamPublishListener != null) {
                 activityStreamPublishListener!!.onPublish(message)
             }
@@ -332,8 +314,6 @@ class Robot private constructor(context: Context) {
             uiHandler.post {
                 if (mediaButtonListener != null) {
                     mediaButtonListener!!.onPlayButtonClicked(play)
-                } else {
-                    Timber.w("mediaButtonListener=null")
                 }
             }
         }
@@ -342,8 +322,6 @@ class Robot private constructor(context: Context) {
             uiHandler.post {
                 if (mediaButtonListener != null) {
                     mediaButtonListener!!.onNextButtonClicked()
-                } else {
-                    Timber.w("mediaButtonListener=null")
                 }
             }
         }
@@ -352,8 +330,6 @@ class Robot private constructor(context: Context) {
             uiHandler.post {
                 if (mediaButtonListener != null) {
                     mediaButtonListener!!.onBackButtonClicked()
-                } else {
-                    Timber.w("mediaButtonListener=null")
                 }
             }
         }
@@ -362,8 +338,6 @@ class Robot private constructor(context: Context) {
             uiHandler.post {
                 if (mediaButtonListener != null) {
                     mediaButtonListener!!.onTrackBarChanged(position)
-                } else {
-                    Timber.w("mediaButtonListener=null")
                 }
             }
         }
@@ -373,7 +347,6 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
-            Timber.d("onUserInteraction(boolean) (isDetected=$isInteracting)")
             if (onUserInteractionChangedListeners.size > 0) {
                 uiHandler.post {
                     for (listener in onUserInteractionChangedListeners) {
@@ -407,22 +380,20 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
-        Timber.d("onStart(ActivityInfo) (activityInfo=$activityInfo)")
         sdkService?.let {
             try {
                 it.onStart(activityInfo)
             } catch (e: RemoteException) {
-                Timber.e(e, "onStart(ActivityInfo) - Binder invocation exception.")
+                Log.e(TAG, "onStart(ActivityInfo) - Binder invocation exception.")
             }
         } ?: run {
-            Timber.w("onStart(ActivityInfo) - sdkService=null")
+            Log.w(TAG, "onStart(ActivityInfo) - sdkService=null")
         }
     }
 
     @RestrictTo(LIBRARY)
     @UiThread
     fun setSdkService(sdkService: ISdkService?) {
-        Timber.d("setSdkService(ISdkService)")
         this.sdkService = sdkService
         mediaBar = AidlMediaBarController(sdkService)
         registerCallback()
@@ -431,22 +402,20 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     private fun registerCallback() {
-        Timber.d("registerCallback()")
         sdkService?.let {
             try {
                 it.register(applicationInfo, sdkServiceCallback)
             } catch (e: RemoteException) {
-                Timber.e(e, "Remote invocation error.")
+                Log.e(TAG, "Remote invocation error.")
             }
 
         } ?: run {
-            Timber.w("sdkService=null")
+            Log.w(TAG, "sdkService=null")
         }
     }
 
     @UiThread
     fun addOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
-        Timber.d("addOnRobotReadyListener(OnRobotReadyListener)")
         onRobotReadyListeners.add(onRobotReadyListener)
 
         onRobotReadyListener.onRobotReady(isReady)
@@ -454,7 +423,6 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun removeOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
-        Timber.d("removeOnRobotReadyListener(OnRobotReadyListener)")
         onRobotReadyListeners.remove(onRobotReadyListener)
     }
 
@@ -473,7 +441,7 @@ class Robot private constructor(context: Context) {
                 ttsRequest.packageName = applicationInfo.packageName
                 it.speak(ttsRequest)
             } catch (e: RemoteException) {
-                Timber.e(e, "Failed to invoke remote call speak()")
+                Log.e(TAG, "Failed to invoke remote call speak()")
             }
         }
     }
@@ -483,12 +451,11 @@ class Robot private constructor(context: Context) {
      */
     val wakeupWord: String
         get() {
-            Timber.d("getWakeupWord()")
             sdkService?.let {
                 try {
-                    return it.wakeupWord
+                    return it.wakeupWord ?: ""
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getWakeupWord() error.")
+                    Log.e(TAG, "getWakeupWord() error.")
                 }
             }
             return ""
@@ -498,12 +465,11 @@ class Robot private constructor(context: Context) {
      * Trigger temi's wakeup programmatically.
      */
     fun wakeup() {
-        Timber.d("wakeup()")
         sdkService?.let {
             try {
                 it.wakeup()
             } catch (e: RemoteException) {
-                Timber.e(e, "wakeup() error.")
+                Log.e(TAG, "wakeup() error.")
             }
         }
     }
@@ -516,7 +482,7 @@ class Robot private constructor(context: Context) {
             try {
                 it.cancelAll()
             } catch (e: RemoteException) {
-                Timber.e(e, "Failed to invoke remote call cancelAllTtsRequest()")
+                Log.e(TAG, "Failed to invoke remote call cancelAllTtsRequest()")
             }
         }
     }
@@ -528,12 +494,11 @@ class Robot private constructor(context: Context) {
      * @param contextsToLock - List of contexts names to lock.
      */
     fun lockContexts(contextsToLock: List<String>) {
-        Timber.d("lockContexts(List<String>) (contextsToLock=$contextsToLock)")
         if (sdkService != null) {
             try {
                 sdkService!!.lockContexts(contextsToLock)
             } catch (e: RemoteException) {
-                Timber.e(e, "lockContexts(List<String>) error.")
+                Log.e(TAG, "lockContexts(List<String>) error.")
             }
 
         }
@@ -545,12 +510,11 @@ class Robot private constructor(context: Context) {
      * @param contextsToRelease - List of contexts names to release.
      */
     fun releaseContexts(contextsToRelease: List<String>) {
-        Timber.d("releaseContexts(List<String>) (contextsToRelease=$contextsToRelease)")
         if (sdkService != null) {
             try {
                 sdkService!!.releaseContexts(contextsToRelease)
             } catch (e: RemoteException) {
-                Timber.e(e, "releaseContexts(List<String>) error.")
+                Log.e(TAG, "releaseContexts(List<String>) error.")
             }
 
         }
@@ -558,49 +522,41 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
-        Timber.d("addConversationViewAttachesListenerListener(ConversationViewAttachesListener) (conversationViewAttachesListener=$conversationViewAttachesListener)")
         conversationViewAttachesListeners.add(conversationViewAttachesListener)
     }
 
     @UiThread
     fun removeConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
-        Timber.d("removeConversationViewAttachesListenerListener(ConversationViewAttachesListener) (conversationViewAttachesListener=$conversationViewAttachesListener)")
         conversationViewAttachesListeners.remove(conversationViewAttachesListener)
     }
 
     @UiThread
     fun addNlpListener(nlpListener: NlpListener) {
-        Timber.d("addNlpListener(NlpListener) (nlpListener=$nlpListener)")
         nlpListeners.add(nlpListener)
     }
 
     @UiThread
     fun removeNlpListener(nlpListener: NlpListener) {
-        Timber.d("removeNlpListener(NlpListener) (nlpListener=$nlpListener)")
         nlpListeners.remove(nlpListener)
     }
 
     @UiThread
     fun addTtsListener(ttsListener: TtsListener) {
-        Timber.d("addTtsListener(TtsListener) (ttsListener=$ttsListener)")
         ttsListeners.add(ttsListener)
     }
 
     @UiThread
     fun removeTtsListener(ttsListener: TtsListener) {
-        Timber.d("removeTtsListener(TtsListener) (ttsListener=$ttsListener)")
         ttsListeners.remove(ttsListener)
     }
 
     @UiThread
     fun addWakeupWordListener(wakeupWordListener: WakeupWordListener) {
-        Timber.d("addWakeupWordListener(WakeupWordListener) (wakeupWordListener=$wakeupWordListener)")
         wakeUpWordListeners.add(wakeupWordListener)
     }
 
     @UiThread
     fun removeWakeupWordListener(wakeupWordListener: WakeupWordListener) {
-        Timber.d("removeWakeupWordListener(WakeupWordListener) (wakeupWordListener=$wakeupWordListener)")
         wakeUpWordListeners.remove(wakeupWordListener)
     }
 
@@ -616,12 +572,11 @@ class Robot private constructor(context: Context) {
      * @return Result of a successful or failed operation.
      */
     fun saveLocation(name: String): Boolean {
-        Timber.d("saveLocation(String) (name=$name)")
         sdkService?.let {
             try {
                 return it.saveLocation(name)
             } catch (e: RemoteException) {
-                Timber.e(e, "saveLocation(String)")
+                Log.e(TAG, "saveLocation(String)")
             }
         }
         return false
@@ -634,12 +589,11 @@ class Robot private constructor(context: Context) {
      * @return Result of a successful or failed operation.
      */
     fun deleteLocation(name: String): Boolean {
-        Timber.d("deleteLocation(String) (name=$name)")
         sdkService?.let {
             try {
                 return it.deleteLocation(name)
             } catch (e: RemoteException) {
-                Timber.e(e, "deleteLocation(String)")
+                Log.e(TAG, "deleteLocation(String)")
             }
         }
         return false
@@ -652,12 +606,11 @@ class Robot private constructor(context: Context) {
      */
     val locations: List<String>
         get() {
-            Timber.d("getLocations()")
             sdkService?.let {
                 try {
-                    return it.locations
+                    return it.locations ?: emptyList()
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getLocations()")
+                    Log.e(TAG, "getLocations()")
                 }
             }
             return emptyList()
@@ -669,38 +622,33 @@ class Robot private constructor(context: Context) {
      * @param location - Saved location name.
      */
     fun goTo(location: String) {
-        Timber.d("goTo(String) (location=$location)")
         require(!TextUtils.isEmpty(location)) { "Location can not be null or empty." }
         sdkService?.let {
             try {
                 it.goTo(location)
             } catch (e: RemoteException) {
-                Timber.e(e, "goTo(String) error.")
+                Log.e(TAG, "goTo(String) error.")
             }
         }
     }
 
     @UiThread
     fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
-        Timber.d("addOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
         onGoToLocationStatusChangeListeners.add(listener)
     }
 
     @UiThread
     fun removeOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
-        Timber.d("removeOnGoToLocationStatusChangedListener(OnGoToLocationStatusChangedListener) (listener=$listener)")
         onGoToLocationStatusChangeListeners.remove(listener)
     }
 
     @UiThread
     fun addOnLocationsUpdatedListener(listener: OnLocationsUpdatedListener) {
-        Timber.d("addOnLocationsUpdatedListener(OnLocationsUpdatedListener) (listener=$listener)")
         onLocationsUpdatedListeners.add(listener)
     }
 
     @UiThread
     fun removeOnLocationsUpdateListener(listener: OnLocationsUpdatedListener) {
-        Timber.d("removeOnLocationsUpdateListener(OnLocationsUpdatedListener) (listener=$listener)")
         onLocationsUpdatedListeners.remove(listener)
     }
 
@@ -713,12 +661,11 @@ class Robot private constructor(context: Context) {
      * See [OnBeWithMeStatusChangedListener] to listen for status changes.
      */
     fun beWithMe() {
-        Timber.d("beWithMe()")
         sdkService?.let {
             try {
                 it.beWithMe()
             } catch (e: RemoteException) {
-                Timber.e(e, "beWithMe()")
+                Log.e(TAG, "beWithMe()")
             }
         }
     }
@@ -740,12 +687,11 @@ class Robot private constructor(context: Context) {
      * Request robot to stop any movement.
      */
     fun stopMovement() {
-        Timber.d("stopMovement()")
         sdkService?.let {
             try {
                 it.stopMovement()
             } catch (e: RemoteException) {
-                Timber.e(e, "stopMovement()")
+                Log.e(TAG, "stopMovement()")
             }
 
         }
@@ -758,12 +704,11 @@ class Robot private constructor(context: Context) {
      * @param y Move on the y axis from -1 to 1.
      */
     fun skidJoy(x: Float, y: Float) {
-        Timber.d("skidJoy(float, float) (x=$x, y=$y)")
         sdkService?.let {
             try {
                 it.skidJoy(x, y)
             } catch (e: RemoteException) {
-                Timber.e(e, "skidJoy(float, float) (x=$x, y=$y)")
+                Log.e(TAG, "skidJoy(float, float) (x=$x, y=$y)")
             }
         }
     }
@@ -785,12 +730,11 @@ class Robot private constructor(context: Context) {
      * @param degrees the degree amount you want the robot to turn
      */
     fun turnBy(degrees: Int) {
-        Timber.d("turnBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
                 it.turnBy(degrees, 1.0f)
             } catch (e: RemoteException) {
-                Timber.e(e, "turnBy(int) (degrees=$degrees)")
+                Log.e(TAG, "turnBy(int) (degrees=$degrees)")
             }
 
         }
@@ -813,12 +757,11 @@ class Robot private constructor(context: Context) {
      * @param degrees the degree which you want the robot to tilt to, between 55 and -25
      */
     fun tiltAngle(degrees: Int) {
-        Timber.d("turnBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
                 it.tiltAngle(degrees, 1.0f)
             } catch (e: RemoteException) {
-                Timber.e(e, "turnBy(int) (degrees=$degrees)")
+                Log.e(TAG, "turnBy(int) (degrees=$degrees)")
             }
 
         }
@@ -841,12 +784,11 @@ class Robot private constructor(context: Context) {
      * @param degrees The degree amount you want the robot to tilt
      */
     fun tiltBy(degrees: Int) {
-        Timber.d("tiltBy(int) (degrees=$degrees)")
         sdkService?.let {
             try {
                 it.tiltBy(degrees, 1.0f)
             } catch (e: RemoteException) {
-                Timber.e(e, "tiltBy(int) (degrees=$degrees)")
+                Log.e(TAG, "tiltBy(int) (degrees=$degrees)")
             }
 
         }
@@ -854,25 +796,21 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
-        Timber.d("addOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
         onBeWithMeStatusChangeListeners.add(listener)
     }
 
     @UiThread
     fun removeOnBeWithMeStatusChangedListener(listener: OnBeWithMeStatusChangedListener) {
-        Timber.d("removeOnBeWithMeStatusChangedListener(OnBeWithMeStatusChangedListener) (listener=$listener)")
         onBeWithMeStatusChangeListeners.remove(listener)
     }
 
     @UiThread
     fun addOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
-        Timber.d("addOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
         onConstraintBeWithStatusChangedListeners.add(listener)
     }
 
     @UiThread
     fun removeOnConstraintBeWithStatusChangedListener(listener: OnConstraintBeWithStatusChangedListener) {
-        Timber.d("removeOnConstraintBeWithStatusChangedListener(OnWelcomingModeStatusChangedListener) (listener=$listener)")
         onConstraintBeWithStatusChangedListeners.remove(listener);
     }
 
@@ -885,12 +823,11 @@ class Robot private constructor(context: Context) {
      */
     val adminInfo: UserInfo?
         get() {
-            Timber.d("getAdminInfo()")
             sdkService?.let {
                 try {
                     return it.adminInfo
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getAdminInfo() error.")
+                    Log.e(TAG, "getAdminInfo() error.")
                 }
 
             }
@@ -902,13 +839,12 @@ class Robot private constructor(context: Context) {
      */
     val allContact: List<UserInfo>
         get() {
-            Timber.d("getAllContact()")
             val contactList = ArrayList<UserInfo>()
             sdkService?.let {
                 try {
                     contactList.addAll(it.allContacts)
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getAllContacts() error.")
+                    Log.e(TAG, "getAllContacts() error.")
                 }
 
             }
@@ -920,12 +856,11 @@ class Robot private constructor(context: Context) {
      */
     val recentCalls: List<RecentCallModel>
         get() {
-            Timber.d("getRecentCalls()")
             sdkService?.let {
                 try {
-                    return it.recentCalls
+                    return it.recentCalls ?: ArrayList()
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getRecentCalls() error.")
+                    Log.e(TAG, "getRecentCalls() error.")
                 }
             }
             return ArrayList()
@@ -939,12 +874,11 @@ class Robot private constructor(context: Context) {
      * @return The sessionId of Telepresence call
      */
     fun startTelepresence(displayName: String, peerId: String): String {
-        Timber.d("startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
         sdkService?.let {
             try {
-                return it.startTelepresence(displayName, peerId)
+                return it.startTelepresence(displayName, peerId) ?: ""
             } catch (e: RemoteException) {
-                Timber.e("startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
+                Log.e(TAG, "startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)")
             }
 
         }
@@ -957,7 +891,6 @@ class Robot private constructor(context: Context) {
      * @param listener The listener you want to add.
      */
     fun addOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d("addOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)")
         onTelepresenceStatusChangedListeners.add(listener)
     }
 
@@ -967,7 +900,6 @@ class Robot private constructor(context: Context) {
      * @param listener The listener you added before.
      */
     fun removeOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
-        Timber.d("removeOnTelepresenceStatusChangedListener(OnTelepresenceStatusChangedListener) (listener=$listener)")
         onTelepresenceStatusChangedListeners.remove(listener)
     }
 
@@ -977,7 +909,6 @@ class Robot private constructor(context: Context) {
      * @param listener The listener you want to add.
      */
     fun addOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
-        Timber.d("addOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
         onUsersUpdatedListeners.add(listener)
     }
 
@@ -987,7 +918,6 @@ class Robot private constructor(context: Context) {
      * @param listener The listener you added before.
      */
     fun removeOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
-        Timber.d("removeOnUsersUpdatedListener(OnUsersUpdatedListener) (listener=$listener)")
         onUsersUpdatedListeners.remove(listener)
     }
 
@@ -1002,12 +932,11 @@ class Robot private constructor(context: Context) {
      */
     val serialNumber: String?
         get() {
-            Timber.d("serialNumber()")
             sdkService?.let {
                 try {
                     return it.serialNumber
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getSerialNumber()")
+                    Log.e(TAG, "getSerialNumber()")
                 }
 
             }
@@ -1021,12 +950,11 @@ class Robot private constructor(context: Context) {
      */
     val batteryData: BatteryData?
         get() {
-            Timber.d("getBatteryData()")
             sdkService?.let {
                 try {
                     return it.batteryData
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getBatteryData() error.")
+                    Log.e(TAG, "getBatteryData() error.")
                 }
 
             }
@@ -1037,12 +965,11 @@ class Robot private constructor(context: Context) {
      * Go to the App list of Launcher.
      */
     fun showAppList() {
-        Timber.d("showAppList()")
         sdkService?.let {
             try {
                 it.showAppList()
             } catch (e: RemoteException) {
-                Timber.e(e, "showAppList() error.")
+                Log.e(TAG, "showAppList() error.")
             }
 
         }
@@ -1052,12 +979,11 @@ class Robot private constructor(context: Context) {
      * Show the top bar of Launcher.
      */
     fun showTopBar() {
-        Timber.d("showTopBar()")
         sdkService?.let {
             try {
                 it.showTopBar()
             } catch (e: RemoteException) {
-                Timber.e(e, "showTopBar() error.")
+                Log.e(TAG, "showTopBar() error.")
             }
 
         }
@@ -1067,12 +993,11 @@ class Robot private constructor(context: Context) {
      * Hide the top bar of Launcher.
      */
     fun hideTopBar() {
-        Timber.d("hideTopBar()")
         sdkService?.let {
             try {
                 it.hideTopBar()
             } catch (e: RemoteException) {
-                Timber.e(e, "hideTopBar() error.")
+                Log.e(TAG, "hideTopBar() error.")
             }
         }
     }
@@ -1086,17 +1011,16 @@ class Robot private constructor(context: Context) {
                 try {
                     it.togglePrivacyMode(on)
                 } catch (e: RemoteException) {
-                    Timber.e(e, "togglePrivacyMode() error.")
+                    Log.e(TAG, "togglePrivacyMode() error.")
                 }
             }
         }
         get() {
-            Timber.d("getPrivacyModeState()")
             sdkService?.let {
                 try {
                     return it.privacyModeState
                 } catch (e: RemoteException) {
-                    Timber.e(e, "getPrivacyModeState() error.")
+                    Log.e(TAG, "getPrivacyModeState() error.")
                 }
             }
             return false
@@ -1135,25 +1059,21 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
-        Timber.d("addOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
         onPrivacyModeStateChangedListeners.add(listener)
     }
 
     @UiThread
     fun removeOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
-        Timber.d("removeOnPrivacyModeStateChangedListener(OnPrivacyModeChangedListener) (listener=$listener)")
         onPrivacyModeStateChangedListeners.remove(listener)
     }
 
     @UiThread
     fun addOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
-        Timber.d("addOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
         onBatteryStatusChangedListeners.add(listener)
     }
 
     @UiThread
     fun removeOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
-        Timber.d("removeOnBatteryStatusChangedListener(OnBatteryStatusChangedListener) (listener=$listener)")
         onBatteryStatusChangedListeners.remove(listener)
     }
 
@@ -1178,17 +1098,16 @@ class Robot private constructor(context: Context) {
      * @param disable set true to disable the wakeup or false to enable it
      */
     fun toggleWakeup(disable: Boolean) {
-        Timber.d("toggleWakeup() - disable = $disable")
         sdkService?.let {
             if (isMetaDataKiosk) {
                 try {
                     it.toggleWakeup(disable)
                 } catch (e: RemoteException) {
-                    Timber.e(e, "toggleWakeup() error.")
+                    Log.e(TAG, "toggleWakeup() error.")
                 }
 
             } else {
-                Timber.e("toggleWakeup() Wakeup can only be toggled in Kiosk Mode")
+                Log.e(TAG, "toggleWakeup() Wakeup can only be toggled in Kiosk Mode")
             }
         }
     }
@@ -1199,16 +1118,15 @@ class Robot private constructor(context: Context) {
      * @param hide set true to hide the billboard or false to display it
      */
     fun toggleNavigationBillboard(hide: Boolean) {
-        Timber.d("toggleNavigationBillboard() - $hide")
         sdkService?.let {
             if (isMetaDataKiosk) {
                 try {
                     it.toggleNavigationBillboard(hide)
                 } catch (e: RemoteException) {
-                    Timber.e(e, "toggleNavigationBillboard() error.")
+                    Log.e(TAG, "toggleNavigationBillboard() error.")
                 }
             } else {
-                Timber.e("toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode")
+                Log.e(TAG, "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode")
             }
         }
     }
@@ -1229,7 +1147,7 @@ class Robot private constructor(context: Context) {
                 try {
                     it.shareActivityStreamObject(activityStreamObject)
                 } catch (e: RemoteException) {
-                    Timber.e(e, "Sdk service is null")
+                    Log.e(TAG, "Sdk service is null")
                 }
             }
         }
@@ -1269,13 +1187,11 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("addOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
         onUserInteractionChangedListeners.add(listener);
     }
 
     @UiThread
     fun removeOnUserInteractionChangedListener(listener: OnUserInteractionChangedListener) {
-        Timber.d("removeOnUserInteractionChangedListener(OnUserInteractionChangedListener) (listener=$listener)")
         onUserInteractionChangedListeners.remove(listener);
     }
 

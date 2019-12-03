@@ -7,7 +7,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
-import timber.log.Timber
 
 @RestrictTo(LIBRARY)
 class TemiSdkContentProvider : ContentProvider() {
@@ -17,9 +16,6 @@ class TemiSdkContentProvider : ContentProvider() {
         sdkContext = context
         if (context == null) {
             throw NullPointerException("context=null")
-        }
-        if (BuildConfig.BUILD_TYPE === "debug") {
-            Timber.plant(Timber.DebugTree())
         }
         TemiSdkServiceConnection().startConnection(context!!)
         return true
@@ -44,7 +40,7 @@ class TemiSdkContentProvider : ContentProvider() {
         selectionArgs: Array<String>?
     ) = 0
 
-    companion object{
+    companion object {
         @SuppressLint("StaticFieldLeak")
         var sdkContext: Context? = null
     }

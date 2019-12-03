@@ -47,9 +47,9 @@ interface ISdkServiceCallback {
 
     boolean onUserInteractionStatusChanged(in boolean isInteracting);
 
-    boolean onPrivacyModeStateChanged(in boolean state);
-
     boolean onBatteryStatusChanged(in BatteryData batteryData);
+
+    boolean onPrivacyModeStateChanged(in boolean state);
 
     boolean onDetectionStateChanged(in boolean isDetected);
 }
