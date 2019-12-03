@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
 import android.text.TextUtils
+import android.util.Log
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import androidx.annotation.UiThread
@@ -80,6 +81,9 @@ class Robot private constructor(context: Context) {
 
     private val onUserInteractionChangedListeners =
         CopyOnWriteArraySet<OnUserInteractionChangedListener>()
+
+    private val onDetectionStateChangedListeners =
+        CopyOnWriteArraySet<OnDetectionStateChangedListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -374,6 +378,18 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (listener in onUserInteractionChangedListeners) {
                         listener.onUserInteraction(isInteracting);
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onDetectionStateChanged(isDetected: Boolean): Boolean {
+            if (onDetectionStateChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onDetectionStateChangedListeners) {
+                        listener.onDetectionStateChanged(isDetected)
                     }
                 }
                 return true
@@ -703,6 +719,19 @@ class Robot private constructor(context: Context) {
                 it.beWithMe()
             } catch (e: RemoteException) {
                 Timber.e(e, "beWithMe()")
+            }
+        }
+    }
+
+    /**
+     * Start constraint follow.
+     */
+    fun constraintBeWith() {
+        sdkService?.let {
+            try {
+                it.constraintBeWith()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "constraintBeWith() error.")
             }
         }
     }
@@ -1250,6 +1279,15 @@ class Robot private constructor(context: Context) {
         onUserInteractionChangedListeners.remove(listener);
     }
 
+    @UiThread
+    fun addOnDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
+        onDetectionStateChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
+        onDetectionStateChangedListeners.remove(listener)
+    }
 
     /*****************************************/
     /*               Interface               */

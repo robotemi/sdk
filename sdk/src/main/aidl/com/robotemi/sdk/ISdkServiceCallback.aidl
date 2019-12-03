@@ -43,11 +43,13 @@ interface ISdkServiceCallback {
 
     boolean onUserUpdated(in UserInfo user);
 
+    boolean onConstraintBeWithStatusChanged(in boolean isContraint);
+
+    boolean onUserInteractionStatusChanged(in boolean isInteracting);
+
     boolean onPrivacyModeStateChanged(in boolean state);
 
     boolean onBatteryStatusChanged(in BatteryData batteryData);
 
-    boolean onConstraintBeWithStatusChanged(in boolean isContraint);
-
-    boolean onUserInteractionStatusChanged(in boolean isInteracting);
+    boolean onDetectionStateChanged(in boolean isDetected);
 }

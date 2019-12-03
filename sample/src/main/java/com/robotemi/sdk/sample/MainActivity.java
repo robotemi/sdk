@@ -30,6 +30,7 @@ import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.activitystream.MediaObject;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
+import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements
         OnBeWithMeStatusChangedListener,
         OnGoToLocationStatusChangedListener,
         OnLocationsUpdatedListener,
-        OnConstraintBeWithStatusChangedListener {
+        OnConstraintBeWithStatusChangedListener,
+        OnDetectionStateChangedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addTtsListener(this);
         robot.addOnLocationsUpdatedListener(this);
         robot.addOnConstraintBeWithStatusChangedListener(this);
+        robot.addOnDetectionStateChangedListener(this);
     }
 
     /**
@@ -119,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
+        robot.removeDetectionStateChangedListener(this);
+        robot.stopMovement();
     }
 
     /**
@@ -486,5 +491,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConstraintBeWithStatusChanged(boolean isConstraint) {
         Log.d("onConstraintBeWith", "status = " + isConstraint);
+    }
+
+    @Override
+    public void onDetectionStateChanged(boolean isDetected) {
+        Log.d("onDetectionStateChanged", "isDetected = " + isDetected);
+        if (isDetected) {
+            robot.constraintBeWith();
+        } else {
+            robot.stopMovement();
+        }
     }
 }
