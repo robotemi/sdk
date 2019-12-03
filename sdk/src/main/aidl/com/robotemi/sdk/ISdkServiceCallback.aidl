@@ -7,10 +7,11 @@ import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.notification.NotificationCallback;
 import com.robotemi.sdk.telepresence.CallState;
 import com.robotemi.sdk.UserInfo;
+import com.robotemi.sdk.BatteryData;
 
 interface ISdkServiceCallback {
 
-    boolean onWakeupWord(in String wakeupWord);
+    boolean onWakeupWord(in String wakeupWord, in int direction);
 
     boolean onTtsStatusChanged(in TtsRequest ttsRequest);
 
@@ -42,5 +43,13 @@ interface ISdkServiceCallback {
 
     boolean onUserUpdated(in UserInfo user);
 
-    boolean onWelcomingModeStatusChanged(in String status);
+    boolean onConstraintBeWithStatusChanged(in boolean isContraint);
+
+    boolean onUserInteractionStatusChanged(in boolean isInteracting);
+
+    boolean onBatteryStatusChanged(in BatteryData batteryData);
+
+    boolean onPrivacyModeStateChanged(in boolean state);
+
+    boolean onDetectionStateChanged(in boolean isDetected);
 }

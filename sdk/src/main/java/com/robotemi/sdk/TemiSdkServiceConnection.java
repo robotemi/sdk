@@ -27,7 +27,7 @@ class TemiSdkServiceConnection {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "onServiceConnected(ComponentName, IBinder) (name=" + name + ", service=" + service + ", thread=" + Thread.currentThread().getName() + ")");
             final ISdkService sdkService = ISdkService.Stub.asInterface(service);
-            Robot.getInstance().setSdkService(sdkService);
+            Robot.Companion.getInstance().setSdkService(sdkService);
         }
 
         @SuppressLint({"LogNotTimber", "LongLogTag"})
@@ -70,7 +70,7 @@ class TemiSdkServiceConnection {
         Log.d(TAG, "forceStop()");
         try {
             //noinspection ConstantConditions
-            Runtime.getRuntime().exec("am force-stop " + TemiSdkContentProvider.context.getPackageName());
+            Runtime.getRuntime().exec("am force-stop " + TemiSdkContentProvider.Companion.getSdkContext().getPackageName());
         } catch (IOException e) {
             Log.e(TAG, "Error while trying to force stop application.", e);
         }

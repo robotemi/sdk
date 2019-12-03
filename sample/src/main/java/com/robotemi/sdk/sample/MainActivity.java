@@ -1,8 +1,5 @@
 package com.robotemi.sdk.sample;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,19 +10,18 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.util.Log;
 import android.os.Environment;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.MediaObject;
@@ -35,6 +31,8 @@ import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
+import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
+import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
@@ -52,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements
         Robot.TtsListener,
         OnBeWithMeStatusChangedListener,
         OnGoToLocationStatusChangedListener,
-        OnLocationsUpdatedListener {
+        OnLocationsUpdatedListener,
+        OnConstraintBeWithStatusChangedListener,
+        OnDetectionStateChangedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.addWakeupWordListener(this);
         robot.addTtsListener(this);
         robot.addOnLocationsUpdatedListener(this);
+        robot.addOnConstraintBeWithStatusChangedListener(this);
+        robot.addOnDetectionStateChangedListener(this);
     }
 
     /**
@@ -120,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
+        robot.removeDetectionStateChangedListener(this);
+        robot.stopMovement();
     }
 
     /**
@@ -373,12 +377,16 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void hideTopBar(View view) { robot.hideTopBar(); }
+    public void hideTopBar(View view) {
+        robot.hideTopBar();
+    }
 
-    public void showTopBar(View view) { robot.showTopBar(); }
+    public void showTopBar(View view) {
+        robot.showTopBar();
+    }
 
     @Override
-    public void onWakeupWord(String wakeupWord) {
+    public void onWakeupWord(String wakeupWord, int direction) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
     }
 
@@ -478,5 +486,20 @@ public class MainActivity extends AppCompatActivity implements
 
     public void hideBillboard(View view) {
         robot.toggleNavigationBillboard(true);
+    }
+
+    @Override
+    public void onConstraintBeWithStatusChanged(boolean isConstraint) {
+        Log.d("onConstraintBeWith", "status = " + isConstraint);
+    }
+
+    @Override
+    public void onDetectionStateChanged(boolean isDetected) {
+        Log.d("onDetectionStateChanged", "isDetected = " + isDetected);
+        if (isDetected) {
+            robot.constraintBeWith();
+        } else {
+            robot.stopMovement();
+        }
     }
 }

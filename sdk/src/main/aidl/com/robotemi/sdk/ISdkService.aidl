@@ -169,4 +169,13 @@ interface ISdkService {
     void wakeup();
 
     String getWakeupWord();
+
+    /**
+    * Request robot to turn on/off privacy mode
+    */
+    void togglePrivacyMode(in boolean on);
+
+    boolean getPrivacyModeState();
+
+    void constraintBeWith();
 }
