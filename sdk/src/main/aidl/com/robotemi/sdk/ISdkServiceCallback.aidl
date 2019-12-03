@@ -50,4 +50,6 @@ interface ISdkServiceCallback {
     boolean onBatteryStatusChanged(in BatteryData batteryData);
 
     boolean onPrivacyModeStateChanged(in boolean state);
+
+    boolean onDetectionStateChanged(in boolean isDetected);
 }

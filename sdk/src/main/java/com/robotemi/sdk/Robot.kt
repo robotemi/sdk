@@ -81,6 +81,9 @@ class Robot private constructor(context: Context) {
     private val onUserInteractionChangedListeners =
         CopyOnWriteArraySet<OnUserInteractionChangedListener>()
 
+    private val onDetectionStateChangedListeners =
+        CopyOnWriteArraySet<OnDetectionStateChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -348,6 +351,18 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (listener in onUserInteractionChangedListeners) {
                         listener.onUserInteraction(isInteracting);
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onDetectionStateChanged(isDetected: Boolean): Boolean {
+            if (onDetectionStateChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onDetectionStateChangedListeners) {
+                        listener.onDetectionStateChanged(isDetected)
                     }
                 }
                 return true
@@ -651,6 +666,19 @@ class Robot private constructor(context: Context) {
                 it.beWithMe()
             } catch (e: RemoteException) {
                 Log.e(TAG, "beWithMe()")
+            }
+        }
+    }
+
+    /**
+     * Start constraint follow.
+     */
+    fun constraintBeWith() {
+        sdkService?.let {
+            try {
+                it.constraintBeWith()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "constraintBeWith() error.")
             }
         }
     }
@@ -1167,6 +1195,15 @@ class Robot private constructor(context: Context) {
         onUserInteractionChangedListeners.remove(listener);
     }
 
+    @UiThread
+    fun addOnDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
+        onDetectionStateChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
+        onDetectionStateChangedListeners.remove(listener)
+    }
 
     /*****************************************/
     /*               Interface               */

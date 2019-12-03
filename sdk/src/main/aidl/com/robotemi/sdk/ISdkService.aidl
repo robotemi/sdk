@@ -176,4 +176,6 @@ interface ISdkService {
     void togglePrivacyMode(in boolean on);
 
     boolean getPrivacyModeState();
+
+    void constraintBeWith();
 }
