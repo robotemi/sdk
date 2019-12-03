@@ -18,6 +18,8 @@ public final class SdkConstants {
 
     public static final String METADATA_UI_FLAG = "com.robotemi.sdk.metadata.UI_FLAG";
 
+    public static final String METADATA_OPEN_WITHOUT_INTERNET = "com.robotemi.sdk.metadata.OPEN_WITHOUT_INTERNET";
+
     /**
      * Show everything.
      * {@code R.integer.metadata_ui_flag_default}
