@@ -11,7 +11,7 @@ android {
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
         versionCode 1
-        versionName VERSION_NAME
+        versionName "1"
         buildConfigField 'String', 'SDK_SERVICE_CLASS_NAME', '\"com.roboteam.teamy.sdk.SdkService\"'
     }
     buildTypes {
@@ -41,4 +41,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-apply from: rootProject.file('gradle/mvn-push.gradle')
+//apply from: rootProject.file('gradle/mvn-push.gradle')

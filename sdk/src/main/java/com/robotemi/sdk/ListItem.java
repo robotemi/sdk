@@ -89,7 +89,7 @@ public class ListItem implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (isIconBitmapProvided ? 1 : 0));
         if (isIconBitmapProvided) {
-            final byte[] iconData = Utils.convertBitmapToByteArray(iconBitmap);
+            final byte[] iconData = Utils.INSTANCE.convertBitmapToByteArray(iconBitmap);
             dest.writeInt(iconData.length);
             dest.writeByteArray(iconData);
         }

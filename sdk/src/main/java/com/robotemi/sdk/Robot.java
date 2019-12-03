@@ -318,7 +318,7 @@ public class Robot {
                     @Override
                     public void run() {
                         for (OnTelepresenceStatusChangedListener listener : onTelepresenceStatusChangedListeners) {
-                            if (listener != null && callState.getSessionId().equals(listener.sessionId)) {
+                            if (listener != null && callState.getSessionId().equals(listener.getSessionId())) {
                                 listener.onTelepresenceStatusChanged(callState);
                             }
                         }
@@ -357,9 +357,9 @@ public class Robot {
                     public void run() {
                         for (OnUsersUpdatedListener listener : onUsersUpdatedListeners) {
                             final boolean isValidListener = listener != null
-                                    && (listener.userIds == null
-                                    || listener.userIds.isEmpty()
-                                    || listener.userIds.contains(user.getUserId()));
+                                    && (listener.getUserIds() == null
+                                    || listener.getUserIds().isEmpty()
+                                    || listener.getUserIds().contains(user.getUserId()));
                             if (isValidListener) {
                                 listener.onUserUpdated(user);
                             }
