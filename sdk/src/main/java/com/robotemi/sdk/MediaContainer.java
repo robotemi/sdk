@@ -1,5 +1,7 @@
-package com.robotemi.sdk.activitystream;
+package com.robotemi.sdk;
 
+
+import com.robotemi.sdk.MediaObject;
 
 public interface MediaContainer {
 

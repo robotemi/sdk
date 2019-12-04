@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.robotemi.sdk.MediaContainer;
+import com.robotemi.sdk.MediaObject;
 
 import java.io.File;
 

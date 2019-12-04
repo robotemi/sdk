@@ -1,4 +1,4 @@
-package com.robotemi.sdk.calls
+package com.robotemi.sdk.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

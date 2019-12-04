@@ -16,8 +16,8 @@ import androidx.annotation.UiThread
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
-import com.robotemi.sdk.calls.CallState
-import com.robotemi.sdk.calls.RecentCallModel
+import com.robotemi.sdk.telepresence.CallState
+import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
@@ -25,8 +25,6 @@ import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
-import com.robotemi.sdk.voice.NlpResult
-import com.robotemi.sdk.voice.TtsRequest
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 

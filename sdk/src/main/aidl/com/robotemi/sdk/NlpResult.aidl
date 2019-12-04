@@ -1,4 +1,4 @@
 // NlpResult.aidl
-package com.robotemi.sdk.voice;
+package com.robotemi.sdk;
 
 parcelable NlpResult;

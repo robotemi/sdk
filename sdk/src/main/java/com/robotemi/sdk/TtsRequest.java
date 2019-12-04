@@ -1,4 +1,4 @@
-package com.robotemi.sdk.voice;
+package com.robotemi.sdk;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;

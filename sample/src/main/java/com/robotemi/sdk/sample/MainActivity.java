@@ -27,15 +27,15 @@ import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
-import com.robotemi.sdk.activitystream.MediaObject;
+import com.robotemi.sdk.MediaObject;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
-import com.robotemi.sdk.voice.NlpResult;
-import com.robotemi.sdk.voice.TtsRequest;
+import com.robotemi.sdk.NlpResult;
+import com.robotemi.sdk.TtsRequest;
 
 import java.io.File;
 import java.io.FileOutputStream;

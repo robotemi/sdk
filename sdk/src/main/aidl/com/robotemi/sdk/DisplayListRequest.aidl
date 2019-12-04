@@ -1,4 +1,4 @@
 // DisplayListRequest.aidl
-package com.robotemi.sdk.activitystream;
+package com.robotemi.sdk;
 
 parcelable DisplayListRequest;

@@ -1,4 +1,4 @@
 // RecentCallModel.aidl
-package com.robotemi.sdk.calls;
+package com.robotemi.sdk.model;
 
 parcelable RecentCallModel;

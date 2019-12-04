@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import com.robotemi.sdk.MediaObject;
+
 public final class ActivityStreamUtils {
 
     private static final String TAG = "ActivityStreamUtils";

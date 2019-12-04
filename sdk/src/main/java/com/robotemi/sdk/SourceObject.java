@@ -1,4 +1,4 @@
-package com.robotemi.sdk.activitystream;
+package com.robotemi.sdk;
 
 
 import android.os.Parcel;

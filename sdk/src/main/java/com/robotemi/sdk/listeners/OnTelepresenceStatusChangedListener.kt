@@ -1,6 +1,6 @@
 package com.robotemi.sdk.listeners
 
-import com.robotemi.sdk.calls.CallState
+import com.robotemi.sdk.telepresence.CallState
 
 abstract class OnTelepresenceStatusChangedListener(var sessionId: String) {
 
