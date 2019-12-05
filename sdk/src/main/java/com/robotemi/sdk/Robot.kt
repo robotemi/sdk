@@ -356,11 +356,11 @@ class Robot private constructor(context: Context) {
             return false
         }
 
-        override fun onDetectionStateChanged(isDetected: Boolean): Boolean {
+        override fun onDetectionStateChanged(state: Int): Boolean {
             if (onDetectionStateChangedListeners.size > 0) {
                 uiHandler.post {
                     for (listener in onDetectionStateChangedListeners) {
-                        listener.onDetectionStateChanged(isDetected)
+                        listener.onDetectionStateChanged(state)
                     }
                 }
                 return true

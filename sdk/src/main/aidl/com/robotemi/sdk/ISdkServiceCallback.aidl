@@ -51,5 +51,5 @@ interface ISdkServiceCallback {
 
     boolean onPrivacyModeStateChanged(in boolean state);
 
-    boolean onDetectionStateChanged(in boolean isDetected);
+    boolean onDetectionStateChanged(in int state);
 }
