@@ -48,6 +48,8 @@ class Robot private constructor(context: Context) {
 
     private val ttsListeners = CopyOnWriteArraySet<TtsListener>()
 
+    private val asrListeners = CopyOnWriteArraySet<AsrListener>()
+
     private val nlpListeners = CopyOnWriteArraySet<NlpListener>()
 
     private val wakeUpWordListeners = CopyOnWriteArraySet<WakeupWordListener>()
@@ -131,6 +133,18 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (nlpListener in nlpListeners) {
                         nlpListener.onNlpCompleted(nlpResult)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onAsrResult(asrText: String): Boolean {
+            if (asrListeners.size > 0) {
+                uiHandler.post {
+                    for (asrListener in asrListeners) {
+                        asrListener.onAsrResult(asrText)
                     }
                 }
                 return true
@@ -558,6 +572,15 @@ class Robot private constructor(context: Context) {
         wakeUpWordListeners.remove(wakeupWordListener)
     }
 
+    @UiThread
+    fun removeAsrListener(asrListener: AsrListener) {
+        asrListeners.remove(asrListener)
+    }
+
+    @UiThread
+    fun addAsrListener(asrListener: AsrListener) {
+        asrListeners.add(asrListener)
+    }
 
     /*****************************************/
     /*                Location               */
@@ -1213,6 +1236,10 @@ class Robot private constructor(context: Context) {
 
     interface TtsListener {
         fun onTtsStatusChanged(ttsRequest: TtsRequest)
+    }
+
+    interface AsrListener {
+        fun onAsrResult(asrResult: String)
     }
 
     interface NlpListener {
