@@ -52,4 +52,6 @@ interface ISdkServiceCallback {
     boolean onPrivacyModeStateChanged(in boolean state);
 
     boolean onDetectionStateChanged(in int state);
+
+    boolean onAsrResult(in String asrText);
 }
