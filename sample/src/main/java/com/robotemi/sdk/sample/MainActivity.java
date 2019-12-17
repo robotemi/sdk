@@ -513,4 +513,32 @@ public class MainActivity extends AppCompatActivity implements
     public void onAsrResult(@NonNull String asrResult){
         Log.d("onAsrResult", "asrResult = " + asrResult);
     }
+
+    public void privacyModeOn(View view) {
+        robot.setPrivacyMode(true);
+        Toast.makeText(this, robot.getPrivacyMode() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void privacyModeOff(View view) {
+        robot.setPrivacyMode(false);
+        Toast.makeText(this, robot.getPrivacyMode() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void getPrivacyModeState(View view) {
+        Toast.makeText(this, robot.getPrivacyMode() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void isHardButtonsEnabled(View view) {
+        Toast.makeText(this, robot.isHardButtonsEnabled() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void disableHardButtons(View view) {
+        robot.setHardButtonsEnabled(false);
+        Toast.makeText(this, robot.isHardButtonsEnabled() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void enableHardButtons(View view) {
+        robot.setHardButtonsEnabled(true);
+        Toast.makeText(this, robot.isHardButtonsEnabled() + "", Toast.LENGTH_SHORT).show();
+    }
 }

@@ -335,6 +335,42 @@
                 android:text="Get Privacy Mode"
                 android:textSize="18sp" />
 
+        <Button
+                android:id="@+id/btnEnableHardButtons"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="enableHardButtons"
+                android:text="Enable Hard Buttons"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnDisableHardButtons"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="disableHardButtons"
+                android:text="Disable Hard Buttons"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnIsHardButtonsEnabled"
+                android:layout_width="325dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="isHardButtonsEnabled"
+                android:text="Is Hard Buttons Enabled"
+                android:textSize="18sp" />
+
     </LinearLayout>
 
 </LinearLayout>

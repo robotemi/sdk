@@ -1047,6 +1047,27 @@ class Robot private constructor(context: Context) {
             return false
         }
 
+    var isHardButtonsEnabled: Boolean
+        set(enabled) {
+            sdkService?.let {
+                try {
+                    it.toggleHardButtons(enabled)
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "isHardButtonsEnabled() error")
+                }
+            }
+        }
+        get() {
+            sdkService?.let {
+                try {
+                    return it.isHardButtonsEnabled
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "setHardButtonsEnabled() error")
+                }
+            }
+            return false
+        }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -1147,7 +1168,10 @@ class Robot private constructor(context: Context) {
                     Log.e(TAG, "toggleNavigationBillboard() error.")
                 }
             } else {
-                Log.e(TAG, "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode")
+                Log.e(
+                    TAG,
+                    "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode"
+                )
             }
         }
     }

@@ -178,4 +178,8 @@ interface ISdkService {
     boolean getPrivacyModeState();
 
     void constraintBeWith();
+
+    void toggleHardButtons(in boolean enabled);
+
+    boolean isHardButtonsEnabled();
 }
