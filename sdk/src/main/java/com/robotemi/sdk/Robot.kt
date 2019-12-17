@@ -1047,6 +1047,27 @@ class Robot private constructor(context: Context) {
             return false
         }
 
+    var isHardButtonsEnabled: Boolean
+        set(enabled) {
+            sdkService?.let {
+                try {
+                    it.toggleHardButtons(enabled)
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "isHardButtonsEnabled() error")
+                }
+            }
+        }
+        get() {
+            sdkService?.let {
+                try {
+                    return it.isHardButtonsEnabled
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "setHardButtonsEnabled() error")
+                }
+            }
+            return false
+        }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
