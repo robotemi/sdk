@@ -1168,10 +1168,7 @@ class Robot private constructor(context: Context) {
                     Log.e(TAG, "toggleNavigationBillboard() error.")
                 }
             } else {
-                Log.e(
-                    TAG,
-                    "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode"
-                )
+                Log.e(TAG, "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode")
             }
         }
     }
