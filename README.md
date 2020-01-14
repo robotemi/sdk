@@ -11,24 +11,15 @@ Download
 
 Download the latest AAR from [Maven Central][2] or grab via Gradle:
 ```groovy
-implementation 'com.robotemi:sdk-usa:0.10.44'   // for USA version
-implementation 'com.robotemi:sdk-china:0.10.44' // for Chinese version
+implementation 'com.robotemi:sdk:0.10.53'   
 ```
 
 or Maven:
 ```xml
-<!-- for USA version -->
 <dependency>
   <groupId>com.robotemi</groupId>
-  <artifactId>sdk-usa</artifactId>
-  <version>0.10.44</version>
-</dependency>
-
-<!-- for Chinese version -->
-<dependency>
-  <groupId>com.robotemi</groupId>
-  <artifactId>sdk-china</artifactId>
-  <version>0.10.44</version>
+  <artifactId>sdk</artifactId>
+  <version>0.10.53</version>
 </dependency>
 ```
 
