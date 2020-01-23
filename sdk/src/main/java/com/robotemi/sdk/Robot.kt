@@ -1047,11 +1047,11 @@ class Robot private constructor(context: Context) {
             return false
         }
 
-    var isHardButtonsEnabled: Boolean
-        set(enabled) {
+    var isHardButtonsDisabled: Boolean
+        set(disable) {
             sdkService?.let {
                 try {
-                    it.toggleHardButtons(enabled)
+                    it.toggleHardButtons(disable)
                 } catch (e: RemoteException) {
                     Log.e(TAG, "isHardButtonsEnabled() error")
                 }
@@ -1060,7 +1060,7 @@ class Robot private constructor(context: Context) {
         get() {
             sdkService?.let {
                 try {
-                    return it.isHardButtonsEnabled
+                    return it.isHardButtonsDisabled
                 } catch (e: RemoteException) {
                     Log.e(TAG, "setHardButtonsEnabled() error")
                 }

@@ -8,8 +8,6 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.io.IOException;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
@@ -53,26 +51,17 @@ class TemiSdkServiceConnection {
         Log.d(TAG, "startConnection(Context)");
         if (context.bindService(getSdkServiceIntent(SdkConstants.TEMI_USA), serviceConnection, Context.BIND_AUTO_CREATE)) {
             Log.d(TAG, "bindServiceUsa=true");
-        }else if (context.bindService(getSdkServiceIntent(SdkConstants.TEMI_CHINA), serviceConnection, Context.BIND_AUTO_CREATE)) {
+        } else if (context.bindService(getSdkServiceIntent(SdkConstants.TEMI_CHINA), serviceConnection, Context.BIND_AUTO_CREATE)) {
             Log.d(TAG, "bindServiceChina=true");
-        }
-        else {
+        } else {
             Log.w(TAG, "bindService=false");
             forceStop();
         }
     }
 
-    /**
-     * Skill needs to be signed with system certificate for this to work.
-     */
     @SuppressLint({"LogNotTimber", "LongLogTag"})
     private void forceStop() {
         Log.d(TAG, "forceStop()");
-        try {
-            //noinspection ConstantConditions
-            Runtime.getRuntime().exec("am force-stop " + TemiSdkContentProvider.Companion.getSdkContext().getPackageName());
-        } catch (IOException e) {
-            Log.e(TAG, "Error while trying to force stop application.", e);
-        }
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

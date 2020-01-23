@@ -360,7 +360,7 @@
                 android:textSize="18sp" />
 
         <Button
-                android:id="@+id/btnIsHardButtonsEnabled"
+                android:id="@+id/btnIsHardButtonsDisabled"
                 android:layout_width="325dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="50dp"
@@ -368,7 +368,7 @@
                 android:layout_marginRight="50dp"
                 android:background="@color/colorLightTeal"
                 android:onClick="isHardButtonsEnabled"
-                android:text="Is Hard Buttons Enabled"
+                android:text="Is Hard Buttons Disabled"
                 android:textSize="18sp" />
 
     </LinearLayout>

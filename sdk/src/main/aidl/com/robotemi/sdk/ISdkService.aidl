@@ -179,7 +179,7 @@ interface ISdkService {
 
     void constraintBeWith();
 
-    void toggleHardButtons(in boolean enabled);
+    void toggleHardButtons(in boolean disable);
 
-    boolean isHardButtonsEnabled();
+    boolean isHardButtonsDisabled();
 }

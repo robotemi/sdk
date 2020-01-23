@@ -38,8 +38,6 @@ import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
@@ -529,16 +527,16 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void isHardButtonsEnabled(View view) {
-        Toast.makeText(this, robot.isHardButtonsEnabled() + "", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, robot.isHardButtonsDisabled() + "", Toast.LENGTH_SHORT).show();
     }
 
     public void disableHardButtons(View view) {
-        robot.setHardButtonsEnabled(false);
-        Toast.makeText(this, robot.isHardButtonsEnabled() + "", Toast.LENGTH_SHORT).show();
+        robot.setHardButtonsDisabled(true);
+        Toast.makeText(this, robot.isHardButtonsDisabled() + "", Toast.LENGTH_SHORT).show();
     }
 
     public void enableHardButtons(View view) {
-        robot.setHardButtonsEnabled(true);
-        Toast.makeText(this, robot.isHardButtonsEnabled() + "", Toast.LENGTH_SHORT).show();
+        robot.setHardButtonsDisabled(false);
+        Toast.makeText(this, robot.isHardButtonsDisabled() + "", Toast.LENGTH_SHORT).show();
     }
 }
