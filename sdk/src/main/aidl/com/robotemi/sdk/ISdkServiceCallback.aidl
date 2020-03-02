@@ -54,4 +54,6 @@ interface ISdkServiceCallback {
     boolean onDetectionStateChanged(in int state);
 
     boolean onAsrResult(in String asrText);
+
+    boolean onSequenceStatusChanged(in String status);
 }

@@ -12,6 +12,7 @@ import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
+import com.robotemi.sdk.sequence.Callback;
 
 interface ISdkService {
 
@@ -182,4 +183,8 @@ interface ISdkService {
     void toggleHardButtons(in boolean disable);
 
     boolean isHardButtonsDisabled();
+
+    void fetchSequences(in Callback callback);
+
+    void startSequence(in String sequenceId);
 }

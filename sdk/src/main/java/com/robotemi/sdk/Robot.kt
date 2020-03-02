@@ -4,10 +4,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.os.AsyncTask
-import android.os.Handler
-import android.os.Looper
-import android.os.RemoteException
+import android.os.*
 import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.RestrictTo
@@ -25,6 +22,10 @@ import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
+import com.robotemi.sdk.sequence.Callback
+import com.robotemi.sdk.sequence.SequenceCallback
+import com.robotemi.sdk.sequence.SequenceModel
+import java.lang.Exception
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -83,6 +84,9 @@ class Robot private constructor(context: Context) {
 
     private val onDetectionStateChangedListeners =
         CopyOnWriteArraySet<OnDetectionStateChangedListener>()
+
+    private val onSequenceStatusChangedListeners =
+        CopyOnWriteArraySet<OnSequenceStatusChangedListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -375,6 +379,22 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (listener in onDetectionStateChangedListeners) {
                         listener.onDetectionStateChanged(state)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        /*****************************************/
+        /*                Sequence               */
+        /*****************************************/
+
+        override fun onSequenceStatusChanged(status: String): Boolean {
+            if (onSequenceStatusChangedListeners.size > 0) {
+                uiHandler.post {
+                    for (listener in onSequenceStatusChangedListeners) {
+                        listener.onSequenceStatusChanged(status)
                     }
                 }
                 return true
@@ -1245,6 +1265,54 @@ class Robot private constructor(context: Context) {
     @UiThread
     fun removeDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
         onDetectionStateChangedListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*                Sequence               */
+    /*****************************************/
+    @UiThread
+    fun fetchSequences(sequenceCallback: SequenceCallback) {
+        sdkService?.let {
+            try {
+                it.fetchSequences(object : Callback.Stub() {
+                    override fun onSuccess(sequenceModelList: MutableList<SequenceModel>) {
+                        uiHandler.post {
+                            sequenceCallback.onSuccess(sequenceModelList)
+                        }
+                    }
+
+                    override fun onFailure(errorMessage: String) {
+                        uiHandler.post {
+                            sequenceCallback.onFailure(Exception(errorMessage))
+                        }
+                    }
+
+                })
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getSequences() error.")
+            }
+        }
+    }
+
+    @UiThread
+    fun startSequence(sequenceId: String) {
+        sdkService?.let {
+            try {
+                it.startSequence(sequenceId)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "startSequence() error.")
+            }
+        }
+    }
+
+    @UiThread
+    fun addOnSequenceStatusChangedListener(listener: OnSequenceStatusChangedListener) {
+        onSequenceStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnSequenceStatusChangedListener(listener: OnSequenceStatusChangedListener) {
+        onSequenceStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/

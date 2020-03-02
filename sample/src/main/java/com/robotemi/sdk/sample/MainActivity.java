@@ -37,6 +37,10 @@ import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
+import com.robotemi.sdk.sequence.SequenceCallback;
+import com.robotemi.sdk.sequence.SequenceModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -508,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAsrResult(@NonNull String asrResult){
+    public void onAsrResult(@NonNull String asrResult) {
         Log.d("onAsrResult", "asrResult = " + asrResult);
     }
 
@@ -538,5 +542,22 @@ public class MainActivity extends AppCompatActivity implements
     public void enableHardButtons(View view) {
         robot.setHardButtonsDisabled(false);
         Toast.makeText(this, robot.isHardButtonsDisabled() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void fetchSequences(View view) {
+        robot.fetchSequences(new SequenceCallback() {
+            @Override
+            public void onSuccess(@NotNull List<SequenceModel> sequenceList) {
+                for (SequenceModel sequenceModel : sequenceList) {
+                    Log.d("fetchSequences()", String.format("SequenceModel{id=%s, name=%s}",
+                            sequenceModel.getId(), sequenceModel.getName()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Exception e) {
+                Log.e("fetchSequences()", e.getMessage());
+            }
+        });
     }
 }
