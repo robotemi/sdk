@@ -508,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAsrResult(@NonNull String asrResult){
+    public void onAsrResult(@NonNull String asrResult) {
         Log.d("onAsrResult", "asrResult = " + asrResult);
     }
 

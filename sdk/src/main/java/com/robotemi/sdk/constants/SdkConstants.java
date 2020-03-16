@@ -22,10 +22,11 @@ public final class SdkConstants {
 
     public static final String METADATA_OPEN_WITHOUT_INTERNET = "com.robotemi.sdk.metadata.OPEN_WITHOUT_INTERNET";
 
+    public static final String METADATA_OVERRIDE_NLU = "com.robotemi.sdk.metadata.OVERRIDE_NLU";
+
     /**
      * Show everything.
      * {@code R.integer.metadata_ui_flag_default}
-     *
      */
     public static final int METADATA_UI_FLAG_DEFAULT = 0;
 
@@ -81,4 +82,5 @@ public final class SdkConstants {
         super();
         // private constructor to prevent instantiation
     }
+
 }
