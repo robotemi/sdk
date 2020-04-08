@@ -13,19 +13,19 @@ import android.util.Log
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import androidx.annotation.UiThread
+import com.google.gson.Gson
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
-import com.robotemi.sdk.telepresence.CallState
-import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
+import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
-import timber.log.Timber
+import com.robotemi.sdk.telepresence.CallState
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -1258,7 +1258,7 @@ class Robot private constructor(context: Context) {
         try {
             sdkService?.askQuestion(question)
         } catch (e: RemoteException) {
-            Timber.e(e, "Ask question call failed.")
+            Log.e(TAG, "Ask question call failed.")
         }
     }
 
@@ -1266,7 +1266,7 @@ class Robot private constructor(context: Context) {
         try {
             sdkService?.finishConversation()
         } catch (e: RemoteException) {
-            Timber.e(e, "Finish conversation call failed.")
+            Log.e(TAG, "Finish conversation call failed.")
         }
     }
 
