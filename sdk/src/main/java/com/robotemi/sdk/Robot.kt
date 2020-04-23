@@ -13,7 +13,6 @@ import android.util.Log
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import androidx.annotation.UiThread
-import com.google.gson.Gson
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
@@ -530,6 +529,30 @@ class Robot private constructor(context: Context) {
                 Log.e(TAG, "releaseContexts(List<String>) error.")
             }
 
+        }
+    }
+
+    /**
+     * Start a conversation.
+     *
+     * @param question - First question from robot.
+     */
+    fun askQuestion(question: String) {
+        try {
+            sdkService?.askQuestion(question)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Ask question call failed.")
+        }
+    }
+
+    /**
+     * Finish conversation.
+     */
+    fun finishConversation() {
+        try {
+            sdkService?.finishConversation()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Finish conversation call failed.")
         }
     }
 
@@ -1252,22 +1275,6 @@ class Robot private constructor(context: Context) {
     @UiThread
     fun removeDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
         onDetectionStateChangedListeners.remove(listener)
-    }
-
-    fun askQuestion(question: String) {
-        try {
-            sdkService?.askQuestion(question)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Ask question call failed.")
-        }
-    }
-
-    fun finishConversation() {
-        try {
-            sdkService?.finishConversation()
-        } catch (e: RemoteException) {
-            Log.e(TAG, "Finish conversation call failed.")
-        }
     }
 
     /*****************************************/
