@@ -20,6 +20,7 @@ import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
+import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
@@ -64,6 +65,9 @@ class Robot private constructor(context: Context) {
 
     private val onTelepresenceStatusChangedListeners =
         CopyOnWriteArraySet<OnTelepresenceStatusChangedListener>()
+
+    private val onTelepresenceEventChangedListener =
+        CopyOnWriteArraySet<OnTelepresenceEventChangedListener>()
 
     private val onLocationsUpdatedListeners = CopyOnWriteArraySet<OnLocationsUpdatedListener>()
 
@@ -268,6 +272,18 @@ class Robot private constructor(context: Context) {
                 return true
             }
             return false
+        }
+
+        override fun onTelepresenceEventChangedListener(callEventModel: CallEventModel): Boolean {
+            if (onTelepresenceEventChangedListener.isEmpty()) {
+                return false
+            }
+            uiHandler.post {
+                for (listener in onTelepresenceEventChangedListener) {
+                    listener.onTelepresenceEventChanged(callEventModel)
+                }
+            }
+            return true
         }
 
         /*****************************************/
@@ -969,6 +985,14 @@ class Robot private constructor(context: Context) {
         onUsersUpdatedListeners.remove(listener)
     }
 
+    fun addOnTelepresenceEventChangedListener(listener: OnTelepresenceEventChangedListener) {
+        onTelepresenceEventChangedListener.add(listener)
+    }
+
+    fun removeOnTelepresenceEventChangedListener(listener: OnTelepresenceEventChangedListener) {
+        onTelepresenceEventChangedListener.remove(listener)
+    }
+
     /*****************************************/
     /*                 Utils                 */
     /*****************************************/
@@ -1074,13 +1098,16 @@ class Robot private constructor(context: Context) {
             return false
         }
 
+    /**
+     * Get(Set) HardButtons enabled(disabled)
+     */
     var isHardButtonsDisabled: Boolean
         set(disable) {
             sdkService?.let {
                 try {
                     it.toggleHardButtons(disable)
                 } catch (e: RemoteException) {
-                    Log.e(TAG, "isHardButtonsEnabled() error")
+                    Log.e(TAG, "isHardButtonsEnabled() - set - error")
                 }
             }
         }
@@ -1089,10 +1116,40 @@ class Robot private constructor(context: Context) {
                 try {
                     return it.isHardButtonsDisabled
                 } catch (e: RemoteException) {
-                    Log.e(TAG, "setHardButtonsEnabled() error")
+                    Log.e(TAG, "isHardButtonsEnabled() - get - error")
                 }
             }
             return false
+        }
+
+    /**
+     * Get version of the Launcher
+     */
+    val launcherVersion: String
+        get() {
+            sdkService?.let {
+                try {
+                    return it.launcherVersion ?: ""
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "getLauncherVersion() error")
+                }
+            }
+            return ""
+        }
+
+    /**
+     * Get version of the Robox
+     */
+    val roboxVersion: String
+        get() {
+            sdkService?.let {
+                try {
+                    return it.roboxVersion ?: ""
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "getRoboxVersion() error")
+                }
+            }
+            return ""
         }
 
     @Throws(RemoteException::class)

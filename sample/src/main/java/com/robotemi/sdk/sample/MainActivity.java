@@ -37,6 +37,10 @@ import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
+import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
+import com.robotemi.sdk.model.CallEventModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener,
         OnConstraintBeWithStatusChangedListener,
         OnDetectionStateChangedListener,
-        Robot.AsrListener {
+        Robot.AsrListener,
+        OnTelepresenceEventChangedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -153,6 +158,13 @@ public class MainActivity extends AppCompatActivity implements
         initViews();
         verifyStoragePermissions(this);
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
+        robot.addOnTelepresenceEventChangedListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        robot.removeOnTelepresenceEventChangedListener(this);
+        super.onDestroy();
     }
 
     public void initViews() {
@@ -538,5 +550,15 @@ public class MainActivity extends AppCompatActivity implements
     public void enableHardButtons(View view) {
         robot.setHardButtonsDisabled(false);
         Toast.makeText(this, robot.isHardButtonsDisabled() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void getOSVersion(View view) {
+        String osVersion = String.format("LauncherOs: %s, RoboxVersion: %s", robot.getLauncherVersion(), robot.getRoboxVersion());
+        Toast.makeText(this, osVersion, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onTelepresenceEventChanged(@NotNull CallEventModel callEventModel) {
+        Log.d("onTelepresenceEvent", callEventModel.toString());
     }
 }

@@ -8,6 +8,7 @@ import com.robotemi.sdk.telepresence.CallState;
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.BatteryData;
+import com.robotemi.sdk.model.CallEventModel;
 
 interface ISdkServiceCallback {
 
@@ -54,4 +55,6 @@ interface ISdkServiceCallback {
     boolean onDetectionStateChanged(in int state);
 
     boolean onAsrResult(in String asrText);
+
+    boolean onTelepresenceEventChangedListener(in CallEventModel callEventModel);
 }
