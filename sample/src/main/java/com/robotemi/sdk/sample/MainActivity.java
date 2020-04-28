@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
-        robot.removeDetectionStateChangedListener(this);
+        robot.removeOnDetectionStateChangedListener(this);
         robot.removeAsrListener(this);
         robot.stopMovement();
     }
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements
      * to tilt to and at which speed.
      */
     public void tiltAngle(View view) {
-        robot.tiltAngle(23, 5.3F);
+        robot.tiltAngle(23);
     }
 
     /**
@@ -251,18 +251,17 @@ public class MainActivity extends AppCompatActivity implements
      * the amount of degrees to turn by and at which speed.
      */
     public void turnBy(View view) {
-        robot.turnBy(180, 6.2F);
+        robot.turnBy(180);
     }
 
     /**
      * tiltBy is used to tilt temi's head from its current position.
      */
     public void tiltBy(View view) {
-        robot.tiltBy(70, 1.2F);
+        robot.tiltBy(70);
     }
 
     /**
-     * <<<<<<< HEAD
      * getBatteryData can be used to return the current battery status.
      */
     public void getBatteryData(View view) {

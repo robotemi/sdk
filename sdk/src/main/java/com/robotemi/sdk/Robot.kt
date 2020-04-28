@@ -403,8 +403,7 @@ class Robot private constructor(context: Context) {
     /*                  Init                 */
     /*****************************************/
 
-    private val isReady: Boolean
-        get() = sdkService != null
+    val isReady = sdkService != null
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
@@ -1057,7 +1056,6 @@ class Robot private constructor(context: Context) {
             } catch (e: RemoteException) {
                 Log.e(TAG, "showTopBar() error.")
             }
-
         }
     }
 
@@ -1329,8 +1327,18 @@ class Robot private constructor(context: Context) {
         onDetectionStateChangedListeners.add(listener)
     }
 
+    @Deprecated(
+        "Use removeOnDetectionStateChangedListener(listener) instead.",
+        ReplaceWith("this.removeOnDetectionStateChangedListener(listener)"),
+        DeprecationLevel.WARNING
+    )
     @UiThread
     fun removeDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
+        onDetectionStateChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun removeOnDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
         onDetectionStateChangedListeners.remove(listener)
     }
 

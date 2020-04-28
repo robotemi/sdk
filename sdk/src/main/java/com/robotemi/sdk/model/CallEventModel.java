@@ -4,7 +4,12 @@ package com.robotemi.sdk.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
+
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class CallEventModel implements Parcelable {
 
@@ -16,18 +21,54 @@ public class CallEventModel implements Parcelable {
 
     public static final int STATE_ENDED = 1;
 
+    @IntDef({TYPE_INCOMING, TYPE_OUTGOING})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CallType { }
+
+    @IntDef({STATE_STARTED, STATE_ENDED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CallState { }
+
     private String sessionId;
 
+    @CallType
     private int type;
 
+    @CallState
     private int state;
 
     public CallEventModel() {
     }
 
-    public CallEventModel(String sessionId, int type, int state) {
+    public CallEventModel(String sessionId, @CallType int type, @CallState int state) {
         this.sessionId = sessionId;
         this.type = type;
+        this.state = state;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    @CallType
+    public int getType() {
+        return type;
+    }
+
+    public void setType(@CallType int type) {
+        this.type = type;
+    }
+
+    @CallState
+    public int getState() {
+        return state;
+    }
+
+    public void setState(@CallState int state) {
         this.state = state;
     }
 
