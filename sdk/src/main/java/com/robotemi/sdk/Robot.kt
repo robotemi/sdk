@@ -274,7 +274,7 @@ class Robot private constructor(context: Context) {
             return false
         }
 
-        override fun onTelepresenceEventChangedListener(callEventModel: CallEventModel): Boolean {
+        override fun onTelepresenceEventChanged(callEventModel: CallEventModel): Boolean {
             if (onTelepresenceEventChangedListener.isEmpty()) {
                 return false
             }

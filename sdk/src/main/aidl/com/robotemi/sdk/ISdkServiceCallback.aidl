@@ -56,5 +56,5 @@ interface ISdkServiceCallback {
 
     boolean onAsrResult(in String asrText);
 
-    boolean onTelepresenceEventChangedListener(in CallEventModel callEventModel);
+    boolean onTelepresenceEventChanged(in CallEventModel callEventModel);
 }
