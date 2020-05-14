@@ -559,5 +559,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onTelepresenceEventChanged(@NotNull CallEventModel callEventModel) {
         Log.d("onTelepresenceEvent", callEventModel.toString());
+        if (callEventModel.getType() == CallEventModel.TYPE_INCOMING) {
+            Toast.makeText(this, "Incoming call", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Outgoing call", Toast.LENGTH_LONG).show();
+        }
     }
 }
