@@ -182,4 +182,8 @@ interface ISdkService {
     void toggleHardButtons(in boolean disable);
 
     boolean isHardButtonsDisabled();
+
+    void askQuestion(in String question);
+
+    void finishConversation();
 }
