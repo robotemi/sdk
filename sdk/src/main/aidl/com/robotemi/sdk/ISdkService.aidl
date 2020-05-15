@@ -186,4 +186,8 @@ interface ISdkService {
     void askQuestion(in String question);
 
     void finishConversation();
+
+    String getLauncherVersion();
+
+    String getRoboxVersion();
 }

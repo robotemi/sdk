@@ -37,6 +37,10 @@ import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
+import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
+import com.robotemi.sdk.model.CallEventModel;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener,
         OnConstraintBeWithStatusChangedListener,
         OnDetectionStateChangedListener,
-        Robot.AsrListener {
+        Robot.AsrListener,
+        OnTelepresenceEventChangedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
-        robot.removeDetectionStateChangedListener(this);
+        robot.removeOnDetectionStateChangedListener(this);
         robot.removeAsrListener(this);
         robot.stopMovement();
     }
@@ -153,6 +158,13 @@ public class MainActivity extends AppCompatActivity implements
         initViews();
         verifyStoragePermissions(this);
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
+        robot.addOnTelepresenceEventChangedListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        robot.removeOnTelepresenceEventChangedListener(this);
+        super.onDestroy();
     }
 
     public void initViews() {
@@ -231,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements
      * to tilt to and at which speed.
      */
     public void tiltAngle(View view) {
-        robot.tiltAngle(23, 5.3F);
+        robot.tiltAngle(23);
     }
 
     /**
@@ -239,18 +251,17 @@ public class MainActivity extends AppCompatActivity implements
      * the amount of degrees to turn by and at which speed.
      */
     public void turnBy(View view) {
-        robot.turnBy(180, 6.2F);
+        robot.turnBy(180);
     }
 
     /**
      * tiltBy is used to tilt temi's head from its current position.
      */
     public void tiltBy(View view) {
-        robot.tiltBy(70, 1.2F);
+        robot.tiltBy(70);
     }
 
     /**
-     * <<<<<<< HEAD
      * getBatteryData can be used to return the current battery status.
      */
     public void getBatteryData(View view) {
@@ -538,5 +549,20 @@ public class MainActivity extends AppCompatActivity implements
     public void enableHardButtons(View view) {
         robot.setHardButtonsDisabled(false);
         Toast.makeText(this, robot.isHardButtonsDisabled() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void getOSVersion(View view) {
+        String osVersion = String.format("LauncherOs: %s, RoboxVersion: %s", robot.getLauncherVersion(), robot.getRoboxVersion());
+        Toast.makeText(this, osVersion, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onTelepresenceEventChanged(@NotNull CallEventModel callEventModel) {
+        Log.d("onTelepresenceEvent", callEventModel.toString());
+        if (callEventModel.getType() == CallEventModel.TYPE_INCOMING) {
+            Toast.makeText(this, "Incoming call", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Outgoing call", Toast.LENGTH_LONG).show();
+        }
     }
 }
