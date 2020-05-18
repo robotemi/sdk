@@ -24,6 +24,8 @@ import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
+import com.robotemi.sdk.permission.Permission
+import com.robotemi.sdk.permission.Result.Companion.DENIED
 import com.robotemi.sdk.telepresence.CallState
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
@@ -83,6 +85,9 @@ class Robot private constructor(context: Context) {
 
     private val onDetectionStateChangedListeners =
         CopyOnWriteArraySet<OnDetectionStateChangedListener>()
+
+    private val onRequestPermissionsResultListeners =
+        CopyOnWriteArraySet<OnRequestPermissionResultListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -301,6 +306,21 @@ class Robot private constructor(context: Context) {
                 uiHandler.post {
                     for (listener in onBatteryStatusChangedListeners) {
                         listener.onBatteryStatusChanged(batteryData)
+                    }
+                }
+                return true
+            }
+            return false
+        }
+
+        override fun onRequestPermissionResult(permission: String, grantResult: Int): Boolean {
+            if (onRequestPermissionsResultListeners.isNotEmpty()) {
+                uiHandler.post {
+                    for (listener in onRequestPermissionsResultListeners) {
+                        listener.onRequestPermissionResult(
+                            Permission.valueToEnum(permission),
+                            grantResult
+                        )
                     }
                 }
                 return true
@@ -1126,6 +1146,53 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    fun checkSelfPermission(permission: Permission): Int {
+        if (permission.isKioskPermission && !isMetaDataKiosk) {
+            Log.w(TAG, "Only Kiosk App may have kiosk permissions")
+            return DENIED
+        }
+        sdkService?.let {
+            try {
+                return it.checkSelfPermission(applicationInfo.packageName, permission.value)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "checkSelfPermission() error.")
+            }
+        }
+        return DENIED
+    }
+
+    fun requestPermissions(permissions: List<Permission>) {
+        val permissionsFromMetadata =
+            applicationInfo.metaData?.getString(SdkConstants.METADATA_PERMISSIONS)
+        if (permissionsFromMetadata.isNullOrBlank()) {
+            Log.w(TAG, "There is no valid permission in metadata.")
+            return
+        }
+        val validPermissions = mutableListOf<String>()
+        for (permission in permissions) {
+            if (!permissionsFromMetadata.contains(permission.value)) {
+                Log.w(TAG, "This permission $permission is not declared in AndroidManifest.xml.")
+                continue
+            }
+            if (permission.isKioskPermission && !isMetaDataKiosk) {
+                Log.w(TAG, "Kiosk permission $permission should request in Kiosk Mode.")
+                continue
+            }
+            validPermissions.add(permission.value)
+        }
+        if (validPermissions.isEmpty()) {
+            Log.w(TAG, "There is no valid permission in permissions.")
+            return
+        }
+        sdkService?.let {
+            try {
+                it.requestPermissions(applicationInfo.packageName, validPermissions)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "requestPermissions() error.")
+            }
+        }
+    }
+
     @UiThread
     fun addOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
         onPrivacyModeStateChangedListeners.add(listener)
@@ -1144,6 +1211,16 @@ class Robot private constructor(context: Context) {
     @UiThread
     fun removeOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
         onBatteryStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
+        onRequestPermissionsResultListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
+        onRequestPermissionsResultListeners.remove(listener)
     }
 
     /*****************************************/

@@ -47,6 +47,12 @@
                 android:name="@string/metadata_open_without_internet"
                 android:value="TRUE" />
 
+        <meta-data
+                android:name="@string/metadata_permissions"
+                android:value="com.robotemi.permission.face_recognition,
+                               com.robotemi.permission.map,
+                               com.robotemi.permission.settings" />
+
         <activity
                 android:name=".MainActivity"
                 android:screenOrientation="landscape">

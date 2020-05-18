@@ -36,11 +36,19 @@ import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
+import com.robotemi.sdk.listeners.OnRequestPermissionResultListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
+import com.robotemi.sdk.permission.Permission;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.robotemi.sdk.permission.Result.GRANTED;
+
 
 public class MainActivity extends AppCompatActivity implements
         Robot.NlpListener,
@@ -54,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements
         OnLocationsUpdatedListener,
         OnConstraintBeWithStatusChangedListener,
         OnDetectionStateChangedListener,
-        Robot.AsrListener {
+        Robot.AsrListener,
+        OnRequestPermissionResultListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -86,10 +95,10 @@ public class MainActivity extends AppCompatActivity implements
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-        }
+//        if (permission != PackageManager.PERMISSION_GRANTED) {
+        // We don't have permission so prompt the user
+        ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+//        }
     }
 
     /**
@@ -101,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnRobotReadyListener(this);
         robot.addNlpListener(this);
         robot.addOnBeWithMeStatusChangedListener(this);
-        robot.addOnGoToLocationStatusChangedListener(this);
         robot.addConversationViewAttachesListenerListener(this);
         robot.addWakeupWordListener(this);
         robot.addTtsListener(this);
@@ -120,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnRobotReadyListener(this);
         robot.removeNlpListener(this);
         robot.removeOnBeWithMeStatusChangedListener(this);
-        robot.removeOnGoToLocationStatusChangedListener(this);
         robot.removeConversationViewAttachesListenerListener(this);
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
@@ -153,6 +160,17 @@ public class MainActivity extends AppCompatActivity implements
         initViews();
         verifyStoragePermissions(this);
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
+        Robot.getInstance().addOnRequestPermissionResultListener(this);
+        robot.addOnGoToLocationStatusChangedListener(this);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Robot.getInstance().removeOnRequestPermissionResultListener(this);
+        robot.removeOnGoToLocationStatusChangedListener(this);
+
     }
 
     public void initViews() {
@@ -321,9 +339,11 @@ public class MainActivity extends AppCompatActivity implements
     public void onNlpCompleted(NlpResult nlpResult) {
         //do something with nlp result. Base the action specified in the AndroidManifest.xml
         Toast.makeText(MainActivity.this, nlpResult.action, Toast.LENGTH_SHORT).show();
+        Log.d("onNlpCompleted", nlpResult.action);
 
         switch (nlpResult.action) {
             case ACTION_HOME_WELCOME:
+                robot.speak(TtsRequest.create("红红火火恍恍惚惚", false));
                 robot.tiltAngle(23, 5.3F);
                 break;
 
@@ -432,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onGoToLocationStatusChanged(String location, String status, int descriptionId, String description) {
-        Log.d("GoToStatusChanged", "descriptionId=" + descriptionId + ", description=" + description);
+        Log.d("GoToStatusChanged", "status=" + status + ", descriptionId=" + descriptionId + ", description=" + description);
         switch (status) {
             case "start":
                 robot.speak(TtsRequest.create("Starting", false));
@@ -510,6 +530,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAsrResult(@NonNull String asrResult) {
         Log.d("onAsrResult", "asrResult = " + asrResult);
+        robot.speak(TtsRequest.create("哈哈哈哈", true));
     }
 
     public void privacyModeOn(View view) {
@@ -538,5 +559,58 @@ public class MainActivity extends AppCompatActivity implements
     public void enableHardButtons(View view) {
         robot.setHardButtonsDisabled(false);
         Toast.makeText(this, robot.isHardButtonsDisabled() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionResult(@NotNull Permission permission, int grantResult) {
+        String log = String.format("Permission: %s, grantResult: %d", permission.getValue(), grantResult);
+        Toast.makeText(this, log, Toast.LENGTH_SHORT).show();
+        Log.d("onRequestPermission", log);
+    }
+
+    public void requestFace(View view) {
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.FACE_RECOGNITION);
+        for (Permission permission : permissions) {
+            if (Robot.getInstance().checkSelfPermission(permission) == GRANTED) {
+                Toast.makeText(this, String.format("You have already '%s' permission.", permission.toString()), Toast.LENGTH_SHORT).show();
+            }
+        }
+        Robot.getInstance().requestPermissions(permissions);
+    }
+
+    public void requestMap(View view) {
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.MAP);
+        for (Permission permission : permissions) {
+            if (robot.checkSelfPermission(permission) == GRANTED) {
+                Toast.makeText(this, String.format("You already had '%s' permission.", permission.toString()), Toast.LENGTH_SHORT).show();
+            }
+        }
+        robot.requestPermissions(permissions);
+    }
+
+    public void requestSettings(View view) {
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.SETTINGS);
+        for (Permission permission : permissions) {
+            if (robot.checkSelfPermission(permission) == GRANTED) {
+                Toast.makeText(this, String.format("You already had '%s' permission.", permission.toString()), Toast.LENGTH_SHORT).show();
+            }
+        }
+        robot.requestPermissions(permissions);
+    }
+
+    public void requestAll(View view) {
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.FACE_RECOGNITION);
+        permissions.add(Permission.MAP);
+        permissions.add(Permission.SETTINGS);
+        for (Permission permission : permissions) {
+            if (Robot.getInstance().checkSelfPermission(permission) == GRANTED) {
+                Toast.makeText(this, String.format("You already had '%s' permission.", permission.toString()), Toast.LENGTH_SHORT).show();
+            }
+        }
+        Robot.getInstance().requestPermissions(permissions);
     }
 }

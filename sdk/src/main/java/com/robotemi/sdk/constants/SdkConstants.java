@@ -24,6 +24,8 @@ public final class SdkConstants {
 
     public static final String METADATA_OVERRIDE_NLU = "com.robotemi.sdk.metadata.OVERRIDE_NLU";
 
+    public static final String METADATA_PERMISSIONS = "com.robotemi.sdk.metadata.PERMISSIONS";
+
     /**
      * Show everything.
      * {@code R.integer.metadata_ui_flag_default}

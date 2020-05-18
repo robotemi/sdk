@@ -91,6 +91,58 @@
                 android:text="@string/speak"
                 android:textSize="18sp" />
 
+        <Button
+                android:id="@+id/btnCheckFace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="requestFace"
+                android:textAllCaps="false"
+                android:text="Request Permission: Face Recognition"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnCheckMap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:textAllCaps="false"
+                android:onClick="requestMap"
+                android:text="Request Permission: Map"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnCheckSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="requestSettings"
+                android:textAllCaps="false"
+                android:text="Request Permission: Settings"
+                android:textSize="18sp" />
+
+        <Button
+                android:id="@+id/btnCheckAllPermission"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorLightTeal"
+                android:onClick="requestAll"
+                android:text="Request All Permissions"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
+
 
     </LinearLayout>
 

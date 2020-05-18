@@ -186,4 +186,8 @@ interface ISdkService {
     void askQuestion(in String question);
 
     void finishConversation();
+
+    int checkSelfPermission(in String packageName, in String permission);
+
+    void requestPermissions(in String packageName, in List<String> permissions);
 }
