@@ -20,6 +20,7 @@ import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
+import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
@@ -67,6 +68,9 @@ class Robot private constructor(context: Context) {
     private val onTelepresenceStatusChangedListeners =
         CopyOnWriteArraySet<OnTelepresenceStatusChangedListener>()
 
+    private val onTelepresenceEventChangedListener =
+        CopyOnWriteArraySet<OnTelepresenceEventChangedListener>()
+
     private val onLocationsUpdatedListeners = CopyOnWriteArraySet<OnLocationsUpdatedListener>()
 
     private val onUsersUpdatedListeners = CopyOnWriteArraySet<OnUsersUpdatedListener>()
@@ -86,7 +90,7 @@ class Robot private constructor(context: Context) {
     private val onDetectionStateChangedListeners =
         CopyOnWriteArraySet<OnDetectionStateChangedListener>()
 
-    private val onRequestPermissionsResultListeners =
+    private val onRequestPermissionResultListeners =
         CopyOnWriteArraySet<OnRequestPermissionResultListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
@@ -275,6 +279,18 @@ class Robot private constructor(context: Context) {
             return false
         }
 
+        override fun onTelepresenceEventChanged(callEventModel: CallEventModel): Boolean {
+            if (onTelepresenceEventChangedListener.isEmpty()) {
+                return false
+            }
+            uiHandler.post {
+                for (listener in onTelepresenceEventChangedListener) {
+                    listener.onTelepresenceEventChanged(callEventModel)
+                }
+            }
+            return true
+        }
+
         /*****************************************/
         /*                 Utils                 */
         /*****************************************/
@@ -314,9 +330,9 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onRequestPermissionResult(permission: String, grantResult: Int): Boolean {
-            if (onRequestPermissionsResultListeners.isNotEmpty()) {
+            if (onRequestPermissionResultListeners.isNotEmpty()) {
                 uiHandler.post {
-                    for (listener in onRequestPermissionsResultListeners) {
+                    for (listener in onRequestPermissionResultListeners) {
                         listener.onRequestPermissionResult(
                             Permission.valueToEnum(permission),
                             grantResult
@@ -407,8 +423,7 @@ class Robot private constructor(context: Context) {
     /*                  Init                 */
     /*****************************************/
 
-    private val isReady: Boolean
-        get() = sdkService != null
+    val isReady = sdkService != null
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
@@ -989,6 +1004,14 @@ class Robot private constructor(context: Context) {
         onUsersUpdatedListeners.remove(listener)
     }
 
+    fun addOnTelepresenceEventChangedListener(listener: OnTelepresenceEventChangedListener) {
+        onTelepresenceEventChangedListener.add(listener)
+    }
+
+    fun removeOnTelepresenceEventChangedListener(listener: OnTelepresenceEventChangedListener) {
+        onTelepresenceEventChangedListener.remove(listener)
+    }
+
     /*****************************************/
     /*                 Utils                 */
     /*****************************************/
@@ -1053,7 +1076,6 @@ class Robot private constructor(context: Context) {
             } catch (e: RemoteException) {
                 Log.e(TAG, "showTopBar() error.")
             }
-
         }
     }
 
@@ -1094,13 +1116,16 @@ class Robot private constructor(context: Context) {
             return false
         }
 
+    /**
+     * Get(Set) HardButtons enabled(disabled)
+     */
     var isHardButtonsDisabled: Boolean
         set(disable) {
             sdkService?.let {
                 try {
                     it.toggleHardButtons(disable)
                 } catch (e: RemoteException) {
-                    Log.e(TAG, "isHardButtonsEnabled() error")
+                    Log.e(TAG, "isHardButtonsEnabled() - set - error")
                 }
             }
         }
@@ -1109,10 +1134,40 @@ class Robot private constructor(context: Context) {
                 try {
                     return it.isHardButtonsDisabled
                 } catch (e: RemoteException) {
-                    Log.e(TAG, "setHardButtonsEnabled() error")
+                    Log.e(TAG, "isHardButtonsEnabled() - get - error")
                 }
             }
             return false
+        }
+
+    /**
+     * Get version of the Launcher
+     */
+    val launcherVersion: String
+        get() {
+            sdkService?.let {
+                try {
+                    return it.launcherVersion ?: ""
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "getLauncherVersion() error")
+                }
+            }
+            return ""
+        }
+
+    /**
+     * Get version of the Robox
+     */
+    val roboxVersion: String
+        get() {
+            sdkService?.let {
+                try {
+                    return it.roboxVersion ?: ""
+                } catch (e: RemoteException) {
+                    Log.e(TAG, "getRoboxVersion() error")
+                }
+            }
+            return ""
         }
 
     @Throws(RemoteException::class)
@@ -1215,12 +1270,12 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun addOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
-        onRequestPermissionsResultListeners.add(listener)
+        onRequestPermissionResultListeners.add(listener)
     }
 
     @UiThread
     fun removeOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
-        onRequestPermissionsResultListeners.remove(listener)
+        onRequestPermissionResultListeners.remove(listener)
     }
 
     /*****************************************/
@@ -1349,8 +1404,18 @@ class Robot private constructor(context: Context) {
         onDetectionStateChangedListeners.add(listener)
     }
 
+    @Deprecated(
+        "Use removeOnDetectionStateChangedListener(listener) instead.",
+        ReplaceWith("this.removeOnDetectionStateChangedListener(listener)"),
+        DeprecationLevel.WARNING
+    )
     @UiThread
     fun removeDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
+        onDetectionStateChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun removeOnDetectionStateChangedListener(listener: OnDetectionStateChangedListener) {
         onDetectionStateChangedListeners.remove(listener)
     }
 

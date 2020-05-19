@@ -1,428 +1,252 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    android:orientation="horizontal"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/colorBlack"
-        android:orientation="horizontal"
-        tools:context=".MainActivity">
-
-    <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:orientation="vertical">
 
         <EditText
-                android:id="@+id/etSaveLocation"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="70dp"
-                android:layout_marginRight="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:hint="@string/enter_location"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey" />
+            android:id="@+id/etSaveLocation"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_location"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
         <Button
-                android:id="@+id/btnSaveLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="saveLocation"
-                android:text="@string/save_location"
-                android:textSize="18sp" />
-
+            android:id="@+id/btnSaveLocation"
+            style="@style/ButtonCommon"
+            android:onClick="saveLocation"
+            android:text="@string/save_location" />
 
         <EditText
-                android:id="@+id/etGoTo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:hint="@string/go_to_location"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey" />
+            android:id="@+id/etGoTo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/go_to_location"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
         <Button
-                android:id="@+id/btnGoTo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="goTo"
-                android:text="@string/go_to"
-                android:textSize="18sp" />
+            android:id="@+id/btnGoTo"
+            style="@style/ButtonCommon"
+            android:onClick="goTo"
+            android:text="@string/go_to" />
 
         <EditText
-                android:id="@+id/etSpeak"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:hint="@string/enter_speech"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey" />
+            android:id="@+id/etSpeak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_speech"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
         <Button
-                android:id="@+id/btnSpeak"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="speak"
-                android:text="@string/speak"
-                android:textSize="18sp" />
+            android:id="@+id/btnSpeak"
+            style="@style/ButtonCommon"
+            android:onClick="speak"
+            android:text="@string/speak" />
 
         <Button
-                android:id="@+id/btnCheckFace"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="requestFace"
-                android:textAllCaps="false"
-                android:text="Request Permission: Face Recognition"
-                android:textSize="18sp" />
+            android:id="@+id/btnCheckFace"
+            style="@style/ButtonCommon"
+            android:onClick="requestFace"
+            android:text="Request Permission: Face Recognition" />
 
         <Button
-                android:id="@+id/btnCheckMap"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:textAllCaps="false"
-                android:onClick="requestMap"
-                android:text="Request Permission: Map"
-                android:textSize="18sp" />
+            android:id="@+id/btnCheckMap"
+            style="@style/ButtonCommon"
+            android:onClick="requestMap"
+            android:text="Request Permission: Map" />
 
         <Button
-                android:id="@+id/btnCheckSettings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="requestSettings"
-                android:textAllCaps="false"
-                android:text="Request Permission: Settings"
-                android:textSize="18sp" />
+            android:id="@+id/btnCheckSettings"
+            style="@style/ButtonCommon"
+            android:onClick="requestSettings"
+            android:text="Request Permission: Settings" />
 
         <Button
-                android:id="@+id/btnCheckAllPermission"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="requestAll"
-                android:text="Request All Permissions"
-                android:textAllCaps="false"
-                android:textSize="18sp" />
-
-
+            android:id="@+id/btnCheckAllPermission"
+            style="@style/ButtonCommon"
+            android:onClick="requestAll"
+            android:text="Request All Permissions" />
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="70dp">
 
         <Button
-                android:id="@+id/btnSavedLocations"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="70dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="savedLocationsDialog"
-                android:text="@string/saved_locations"
-                android:textSize="18sp" />
+            android:id="@+id/btnSavedLocations"
+            style="@style/ButtonCommon"
+            android:onClick="savedLocationsDialog"
+            android:text="@string/saved_locations" />
 
         <Button
-                android:id="@+id/btnFollow"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="followMe"
-                android:text="@string/follow_me"
-                android:textSize="18sp" />
+            android:id="@+id/btnFollow"
+            style="@style/ButtonCommon"
+            android:onClick="followMe"
+            android:text="@string/follow_me" />
 
         <Button
-                android:id="@+id/btnskidJoy"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="skidJoy"
-                android:text="@string/skidjoy"
-                android:textSize="18sp" />
+            android:id="@+id/btnskidJoy"
+            style="@style/ButtonCommon"
+            android:onClick="skidJoy"
+            android:text="@string/skidjoy" />
 
         <Button
-                android:id="@+id/btnTiltAngle"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="tiltAngle"
-                android:text="@string/tiltangle"
-                android:textSize="18sp" />
+            android:id="@+id/btnTiltAngle"
+            style="@style/ButtonCommon"
+            android:onClick="tiltAngle"
+            android:text="@string/tiltangle" />
 
         <Button
-                android:id="@+id/btnTurnBy"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="turnBy"
-                android:text="@string/turnby"
-                android:textSize="18sp" />
+            android:id="@+id/btnTurnBy"
+            style="@style/ButtonCommon"
+            android:onClick="turnBy"
+            android:text="@string/turnby" />
 
         <Button
-                android:id="@+id/btnTiltBy"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="tiltBy"
-                android:text="tiltBy"
-                android:textSize="18sp" />
+            android:id="@+id/btnTiltBy"
+            style="@style/ButtonCommon"
+            android:onClick="tiltBy"
+            android:text="tiltBy" />
 
         <Button
-                android:id="@+id/btnDisableWakeup"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="disableWakeup"
-                android:text="Disable Wakeup"
-                android:textSize="18sp" />
+            android:id="@+id/btnDisableWakeup"
+            style="@style/ButtonCommon"
+            android:onClick="disableWakeup"
+            android:text="Disable Wakeup" />
 
         <Button
-                android:id="@+id/btnEnableWakeup"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="enableWakeup"
-                android:text="Enable Wakeup"
-                android:textSize="18sp" />
+            android:id="@+id/btnEnableWakeup"
+            style="@style/ButtonCommon"
+            android:onClick="enableWakeup"
+            android:text="Enable Wakeup" />
 
         <Button
-                android:id="@+id/btnHideNavBillboard"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="hideBillboard"
-                android:text="Hide navigation billboard"
-                android:textSize="18sp" />
+            android:id="@+id/btnHideNavBillboard"
+            style="@style/ButtonCommon"
+            android:onClick="hideBillboard"
+            android:text="Hide navigation billboard" />
 
         <Button
-                android:id="@+id/btnShowNavBillboard"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="showBillboard"
-                android:text="Show navigation billboard"
-                android:textSize="18sp" />
+            android:id="@+id/btnShowNavBillboard"
+            style="@style/ButtonCommon"
+            android:onClick="showBillboard"
+            android:text="Show navigation billboard" />
 
-
+        <Button
+            android:id="@+id/btnGetOSVersion"
+            style="@style/ButtonCommon"
+            android:onClick="getOSVersion"
+            android:text="Get OS Version" />
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="70dp">
 
         <Button
-                android:id="@+id/btnBatteryInfo"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="70dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="getBatteryData"
-                android:text="@string/battery_info"
-                android:textSize="18sp" />
+            android:id="@+id/btnBatteryInfo"
+            style="@style/ButtonCommon"
+            android:onClick="getBatteryData"
+            android:text="@string/battery_info" />
 
         <Button
-                android:id="@+id/btnStopFollow"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="stopMovement"
-                android:text="@string/stop_movement"
-                android:textSize="18sp" />
+            android:id="@+id/btnStopFollow"
+            style="@style/ButtonCommon"
+            android:onClick="stopMovement"
+            android:text="@string/stop_movement" />
 
         <Button
-                android:id="@+id/btnCallOwner"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="callOwner"
-                android:text="@string/call_owner"
-                android:textSize="18sp" />
+            android:id="@+id/btnCallOwner"
+            style="@style/ButtonCommon"
+            android:onClick="callOwner"
+            android:text="@string/call_owner" />
 
         <Button
-                android:id="@+id/btnPublish"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="publishToActivityStream"
-                android:text="@string/publish_to_activities"
-                android:textSize="18sp" />
+            android:id="@+id/btnPublish"
+            style="@style/ButtonCommon"
+            android:onClick="publishToActivityStream"
+            android:text="@string/publish_to_activities" />
 
         <Button
-                android:id="@+id/btnHideTopBar"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="hideTopBar"
-                android:text="Hide Top-Bar"
-                android:textSize="18sp" />
+            android:id="@+id/btnHideTopBar"
+            style="@style/ButtonCommon"
+            android:onClick="hideTopBar"
+            android:text="Hide Top Bar" />
 
         <Button
-                android:id="@+id/btnShowTopBar"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="showTopBar"
-                android:text="Show Top-Bar"
-                android:textSize="18sp" />
+            android:id="@+id/btnShowTopBar"
+            style="@style/ButtonCommon"
+            android:onClick="showTopBar"
+            android:text="Show Top Bar" />
 
         <Button
-                android:id="@+id/btnTogglePrivacyModeOn"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="privacyModeOn"
-                android:text="Turn on Privacy Mode"
-                android:textSize="18sp" />
+            android:id="@+id/btnTogglePrivacyModeOn"
+            style="@style/ButtonCommon"
+            android:onClick="privacyModeOn"
+            android:text="Turn on Privacy Mode" />
 
         <Button
-                android:id="@+id/btnTogglePrivacyModeOff"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="privacyModeOff"
-                android:text="Turn off Privacy Mode"
-                android:textSize="18sp" />
+            android:id="@+id/btnTogglePrivacyModeOff"
+            style="@style/ButtonCommon"
+            android:onClick="privacyModeOff"
+            android:text="Turn off Privacy Mode" />
 
         <Button
-                android:id="@+id/btnGetPrivacyMode"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="getPrivacyModeState"
-                android:text="Get Privacy Mode"
-                android:textSize="18sp" />
+            android:id="@+id/btnGetPrivacyMode"
+            style="@style/ButtonCommon"
+            android:onClick="getPrivacyModeState"
+            android:text="Get Privacy Mode" />
 
         <Button
-                android:id="@+id/btnEnableHardButtons"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="enableHardButtons"
-                android:text="Enable Hard Buttons"
-                android:textSize="18sp" />
+            android:id="@+id/btnEnableHardButtons"
+            style="@style/ButtonCommon"
+            android:onClick="enableHardButtons"
+            android:text="Enable Hard Buttons" />
 
         <Button
-                android:id="@+id/btnDisableHardButtons"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="disableHardButtons"
-                android:text="Disable Hard Buttons"
-                android:textSize="18sp" />
+            android:id="@+id/btnDisableHardButtons"
+            style="@style/ButtonCommon"
+            android:onClick="disableHardButtons"
+            android:text="Disable Hard Buttons" />
 
         <Button
-                android:id="@+id/btnIsHardButtonsDisabled"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="50dp"
-                android:background="@color/colorLightTeal"
-                android:onClick="isHardButtonsEnabled"
-                android:text="Is Hard Buttons Disabled"
-                android:textSize="18sp" />
-
+            android:id="@+id/btnIsHardButtonsDisabled"
+            style="@style/ButtonCommon"
+            android:onClick="isHardButtonsEnabled"
+            android:text="Is Hard Buttons Disabled"
+            android:textSize="18sp" />
     </LinearLayout>
-
 </LinearLayout>
