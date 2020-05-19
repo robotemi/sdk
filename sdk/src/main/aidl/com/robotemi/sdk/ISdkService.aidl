@@ -190,4 +190,8 @@ interface ISdkService {
     String getLauncherVersion();
 
     String getRoboxVersion();
+
+    int checkSelfPermission(in String packageName, in String permission);
+
+    void requestPermissions(in String packageName, in List<String> permissions);
 }

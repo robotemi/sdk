@@ -1,233 +1,252 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    android:orientation="horizontal"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/colorBlack"
-        android:orientation="horizontal"
-        tools:context=".MainActivity">
-
-    <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:orientation="vertical">
 
         <EditText
-                android:id="@+id/etSaveLocation"
-                android:layout_width="325dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="70dp"
-                android:layout_marginRight="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:hint="@string/enter_location"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey" />
+            android:id="@+id/etSaveLocation"
+            android:layout_width="325dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_location"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
         <Button
-                android:id="@+id/btnSaveLocation"
-                style="@style/ButtonCommon"
-                android:onClick="saveLocation"
-                android:text="@string/save_location" />
-
+            android:id="@+id/btnSaveLocation"
+            style="@style/ButtonCommon"
+            android:onClick="saveLocation"
+            android:text="@string/save_location" />
 
         <EditText
-                android:id="@+id/etGoTo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:hint="@string/go_to_location"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey" />
+            android:id="@+id/etGoTo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/go_to_location"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
         <Button
-                android:id="@+id/btnGoTo"
-                style="@style/ButtonCommon"
-                android:onClick="goTo"
-                android:text="@string/go_to" />
+            android:id="@+id/btnGoTo"
+            style="@style/ButtonCommon"
+            android:onClick="goTo"
+            android:text="@string/go_to" />
 
         <EditText
-                android:id="@+id/etSpeak"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
-                android:ems="10"
-                android:gravity="center_horizontal"
-                android:hint="@string/enter_speech"
-                android:inputType="textPersonName"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorGrey" />
+            android:id="@+id/etSpeak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="50dp"
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:hint="@string/enter_speech"
+            android:inputType="textPersonName"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
         <Button
-                android:id="@+id/btnSpeak"
-                style="@style/ButtonCommon"
-                android:onClick="speak"
-                android:text="@string/speak" />
+            android:id="@+id/btnSpeak"
+            style="@style/ButtonCommon"
+            android:onClick="speak"
+            android:text="@string/speak" />
+
+        <Button
+            android:id="@+id/btnCheckFace"
+            style="@style/ButtonCommon"
+            android:onClick="requestFace"
+            android:text="Request Permission: Face Recognition" />
+
+        <Button
+            android:id="@+id/btnCheckMap"
+            style="@style/ButtonCommon"
+            android:onClick="requestMap"
+            android:text="Request Permission: Map" />
+
+        <Button
+            android:id="@+id/btnCheckSettings"
+            style="@style/ButtonCommon"
+            android:onClick="requestSettings"
+            android:text="Request Permission: Settings" />
+
+        <Button
+            android:id="@+id/btnCheckAllPermission"
+            style="@style/ButtonCommon"
+            android:onClick="requestAll"
+            android:text="Request All Permissions" />
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingTop="70dp"
-            android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="70dp">
 
         <Button
-                android:id="@+id/btnSavedLocations"
-                style="@style/ButtonCommon"
-                android:onClick="savedLocationsDialog"
-                android:text="@string/saved_locations" />
+            android:id="@+id/btnSavedLocations"
+            style="@style/ButtonCommon"
+            android:onClick="savedLocationsDialog"
+            android:text="@string/saved_locations" />
 
         <Button
-                android:id="@+id/btnFollow"
-                style="@style/ButtonCommon"
-                android:onClick="followMe"
-                android:text="@string/follow_me" />
+            android:id="@+id/btnFollow"
+            style="@style/ButtonCommon"
+            android:onClick="followMe"
+            android:text="@string/follow_me" />
 
         <Button
-                android:id="@+id/btnskidJoy"
-                style="@style/ButtonCommon"
-                android:onClick="skidJoy"
-                android:text="@string/skidjoy" />
+            android:id="@+id/btnskidJoy"
+            style="@style/ButtonCommon"
+            android:onClick="skidJoy"
+            android:text="@string/skidjoy" />
 
         <Button
-                android:id="@+id/btnTiltAngle"
-                style="@style/ButtonCommon"
-                android:onClick="tiltAngle"
-                android:text="@string/tiltangle" />
+            android:id="@+id/btnTiltAngle"
+            style="@style/ButtonCommon"
+            android:onClick="tiltAngle"
+            android:text="@string/tiltangle" />
 
         <Button
-                android:id="@+id/btnTurnBy"
-                style="@style/ButtonCommon"
-                android:onClick="turnBy"
-                android:text="@string/turnby" />
+            android:id="@+id/btnTurnBy"
+            style="@style/ButtonCommon"
+            android:onClick="turnBy"
+            android:text="@string/turnby" />
 
         <Button
-                android:id="@+id/btnTiltBy"
-                style="@style/ButtonCommon"
-                android:onClick="tiltBy"
-                android:text="tiltBy" />
+            android:id="@+id/btnTiltBy"
+            style="@style/ButtonCommon"
+            android:onClick="tiltBy"
+            android:text="tiltBy" />
 
         <Button
-                android:id="@+id/btnDisableWakeup"
-                style="@style/ButtonCommon"
-                android:onClick="disableWakeup"
-                android:text="Disable Wakeup" />
+            android:id="@+id/btnDisableWakeup"
+            style="@style/ButtonCommon"
+            android:onClick="disableWakeup"
+            android:text="Disable Wakeup" />
 
         <Button
-                android:id="@+id/btnEnableWakeup"
-                style="@style/ButtonCommon"
-                android:onClick="enableWakeup"
-                android:text="Enable Wakeup" />
+            android:id="@+id/btnEnableWakeup"
+            style="@style/ButtonCommon"
+            android:onClick="enableWakeup"
+            android:text="Enable Wakeup" />
 
         <Button
-                android:id="@+id/btnHideNavBillboard"
-                style="@style/ButtonCommon"
-                android:onClick="hideBillboard"
-                android:text="Hide navigation billboard" />
+            android:id="@+id/btnHideNavBillboard"
+            style="@style/ButtonCommon"
+            android:onClick="hideBillboard"
+            android:text="Hide navigation billboard" />
 
         <Button
-                android:id="@+id/btnShowNavBillboard"
-                style="@style/ButtonCommon"
-                android:onClick="showBillboard"
-                android:text="Show navigation billboard" />
+            android:id="@+id/btnShowNavBillboard"
+            style="@style/ButtonCommon"
+            android:onClick="showBillboard"
+            android:text="Show navigation billboard" />
 
         <Button
-                android:id="@+id/btnGetOSVersion"
-                style="@style/ButtonCommon"
-                android:onClick="getOSVersion"
-                android:text="Get OS Version" />
-
-
+            android:id="@+id/btnGetOSVersion"
+            style="@style/ButtonCommon"
+            android:onClick="getOSVersion"
+            android:text="Get OS Version" />
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingTop="70dp"
-            android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="70dp">
 
         <Button
-                android:id="@+id/btnBatteryInfo"
-                style="@style/ButtonCommon"
-                android:onClick="getBatteryData"
-                android:text="@string/battery_info"/>
+            android:id="@+id/btnBatteryInfo"
+            style="@style/ButtonCommon"
+            android:onClick="getBatteryData"
+            android:text="@string/battery_info" />
 
         <Button
-                android:id="@+id/btnStopFollow"
-                style="@style/ButtonCommon"
-                android:onClick="stopMovement"
-                android:text="@string/stop_movement"/>
+            android:id="@+id/btnStopFollow"
+            style="@style/ButtonCommon"
+            android:onClick="stopMovement"
+            android:text="@string/stop_movement" />
 
         <Button
-                android:id="@+id/btnCallOwner"
-                style="@style/ButtonCommon"
-                android:onClick="callOwner"
-                android:text="@string/call_owner"/>
+            android:id="@+id/btnCallOwner"
+            style="@style/ButtonCommon"
+            android:onClick="callOwner"
+            android:text="@string/call_owner" />
 
         <Button
-                android:id="@+id/btnPublish"
-                style="@style/ButtonCommon"
-                android:onClick="publishToActivityStream"
-                android:text="@string/publish_to_activities" />
+            android:id="@+id/btnPublish"
+            style="@style/ButtonCommon"
+            android:onClick="publishToActivityStream"
+            android:text="@string/publish_to_activities" />
 
         <Button
-                android:id="@+id/btnHideTopBar"
-                style="@style/ButtonCommon"
-                android:onClick="hideTopBar"
-                android:text="Hide Top Bar"/>
+            android:id="@+id/btnHideTopBar"
+            style="@style/ButtonCommon"
+            android:onClick="hideTopBar"
+            android:text="Hide Top Bar" />
 
         <Button
-                android:id="@+id/btnShowTopBar"
-                style="@style/ButtonCommon"
-                android:onClick="showTopBar"
-                android:text="Show Top Bar"/>
+            android:id="@+id/btnShowTopBar"
+            style="@style/ButtonCommon"
+            android:onClick="showTopBar"
+            android:text="Show Top Bar" />
 
         <Button
-                android:id="@+id/btnTogglePrivacyModeOn"
-                style="@style/ButtonCommon"
-                android:onClick="privacyModeOn"
-                android:text="Turn on Privacy Mode"/>
+            android:id="@+id/btnTogglePrivacyModeOn"
+            style="@style/ButtonCommon"
+            android:onClick="privacyModeOn"
+            android:text="Turn on Privacy Mode" />
 
         <Button
-                android:id="@+id/btnTogglePrivacyModeOff"
-                style="@style/ButtonCommon"
-                android:onClick="privacyModeOff"
-                android:text="Turn off Privacy Mode"/>
+            android:id="@+id/btnTogglePrivacyModeOff"
+            style="@style/ButtonCommon"
+            android:onClick="privacyModeOff"
+            android:text="Turn off Privacy Mode" />
 
         <Button
-                android:id="@+id/btnGetPrivacyMode"
-                style="@style/ButtonCommon"
-                android:onClick="getPrivacyModeState"
-                android:text="Get Privacy Mode"/>
+            android:id="@+id/btnGetPrivacyMode"
+            style="@style/ButtonCommon"
+            android:onClick="getPrivacyModeState"
+            android:text="Get Privacy Mode" />
 
         <Button
-                android:id="@+id/btnEnableHardButtons"
-                style="@style/ButtonCommon"
-                android:onClick="enableHardButtons"
-                android:text="Enable Hard Buttons" />
+            android:id="@+id/btnEnableHardButtons"
+            style="@style/ButtonCommon"
+            android:onClick="enableHardButtons"
+            android:text="Enable Hard Buttons" />
 
         <Button
-                android:id="@+id/btnDisableHardButtons"
-                style="@style/ButtonCommon"
-                android:onClick="disableHardButtons"
-                android:text="Disable Hard Buttons"/>
+            android:id="@+id/btnDisableHardButtons"
+            style="@style/ButtonCommon"
+            android:onClick="disableHardButtons"
+            android:text="Disable Hard Buttons" />
 
         <Button
-                android:id="@+id/btnIsHardButtonsDisabled"
-                style="@style/ButtonCommon"
-                android:onClick="isHardButtonsEnabled"
-                android:text="Is Hard Buttons Disabled"
-                android:textSize="18sp" />
-
+            android:id="@+id/btnIsHardButtonsDisabled"
+            style="@style/ButtonCommon"
+            android:onClick="isHardButtonsEnabled"
+            android:text="Is Hard Buttons Disabled"
+            android:textSize="18sp" />
     </LinearLayout>
-
 </LinearLayout>

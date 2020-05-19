@@ -1,6 +1,7 @@
 package com.robotemi.sdk.sample;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -36,15 +37,21 @@ import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
+import com.robotemi.sdk.listeners.OnRequestPermissionResultListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
 import com.robotemi.sdk.model.CallEventModel;
+import com.robotemi.sdk.permission.Permission;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.robotemi.sdk.permission.Result.GRANTED;
+
 
 public class MainActivity extends AppCompatActivity implements
         Robot.NlpListener,
@@ -59,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements
         OnConstraintBeWithStatusChangedListener,
         OnDetectionStateChangedListener,
         Robot.AsrListener,
-        OnTelepresenceEventChangedListener {
+        OnTelepresenceEventChangedListener,
+        OnRequestPermissionResultListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -158,11 +166,13 @@ public class MainActivity extends AppCompatActivity implements
         initViews();
         verifyStoragePermissions(this);
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
+        robot.addOnRequestPermissionResultListener(this);
         robot.addOnTelepresenceEventChangedListener(this);
     }
 
     @Override
     protected void onDestroy() {
+        robot.removeOnRequestPermissionResultListener(this);
         robot.removeOnTelepresenceEventChangedListener(this);
         super.onDestroy();
     }
@@ -266,6 +276,10 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void getBatteryData(View view) {
         BatteryData batteryData = robot.getBatteryData();
+        if (batteryData == null) {
+            Log.e("getBatteryData()", "batteryData is null");
+            return;
+        }
         if (batteryData.isCharging()) {
             TtsRequest ttsRequest = TtsRequest.create(batteryData.getBatteryPercentage() + " percent battery and charging.", true);
             robot.speak(ttsRequest);
@@ -332,10 +346,9 @@ public class MainActivity extends AppCompatActivity implements
     public void onNlpCompleted(NlpResult nlpResult) {
         //do something with nlp result. Base the action specified in the AndroidManifest.xml
         Toast.makeText(MainActivity.this, nlpResult.action, Toast.LENGTH_SHORT).show();
-
         switch (nlpResult.action) {
             case ACTION_HOME_WELCOME:
-                robot.tiltAngle(23, 5.3F);
+                robot.tiltAngle(23);
                 break;
 
             case ACTION_HOME_DANCE:
@@ -356,6 +369,10 @@ public class MainActivity extends AppCompatActivity implements
      * callOwner is an example of how to use telepresence to call an individual.
      */
     public void callOwner(View view) {
+        if (robot.getAdminInfo() == null) {
+            Log.d("callOwner()", "adminInfo is null.");
+            return;
+        }
         robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId());
     }
 
@@ -363,13 +380,13 @@ public class MainActivity extends AppCompatActivity implements
      * publishToActivityStream takes an image stored in the resources folder
      * and uploads it to the mobile application under the Activities tab.
      */
-    public void publishToActivityStream(View view) throws RemoteException {
+    public void publishToActivityStream(View view) {
         ActivityStreamObject activityStreamObject;
         if (robot != null) {
             final String fileName = "puppy.png";
             Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.puppy);
             File puppiesFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), fileName);
-            FileOutputStream fileOutputStream = null;
+            FileOutputStream fileOutputStream;
             try {
                 fileOutputStream = new FileOutputStream(puppiesFile);
                 bm.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
@@ -401,12 +418,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onWakeupWord(String wakeupWord, int direction) {
+    public void onWakeupWord(@NotNull String wakeupWord, int direction) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
     }
 
     @Override
-    public void onTtsStatusChanged(TtsRequest ttsRequest) {
+    public void onTtsStatusChanged(@NotNull TtsRequest ttsRequest) {
         // Do whatever you like upon the status changing. after the robot finishes speaking
     }
 
@@ -442,8 +459,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onGoToLocationStatusChanged(String location, String status, int descriptionId, String description) {
-        Log.d("GoToStatusChanged", "descriptionId=" + descriptionId + ", description=" + description);
+    public void onGoToLocationStatusChanged(@NotNull String location, String status, int descriptionId, @NotNull String description) {
+        Log.d("GoToStatusChanged", "status=" + status + ", descriptionId=" + descriptionId + ", description=" + description);
         switch (status) {
             case "start":
                 robot.speak(TtsRequest.create("Starting", false));
@@ -469,20 +486,18 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConversationAttaches(boolean isAttached) {
-        if (isAttached) {
-            //Do something as soon as the conversation is displayed.
-        }
+        //Do something as soon as the conversation is displayed.
     }
 
     @Override
-    public void onPublish(ActivityStreamPublishMessage message) {
+    public void onPublish(@NotNull ActivityStreamPublishMessage message) {
         //After the activity stream finished publishing (photo or otherwise).
         //Do what you want based on the message returned.
         robot.speak(TtsRequest.create("Uploaded.", false));
     }
 
     @Override
-    public void onLocationsUpdated(List<String> locations) {
+    public void onLocationsUpdated(@NotNull List<String> locations) {
         //Saving or deleting a location will update the list.
         Toast.makeText(this, "Locations updated :\n" + locations, Toast.LENGTH_LONG).show();
     }
@@ -564,5 +579,55 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, "Outgoing call", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @SuppressLint("DefaultLocale")
+    @Override
+    public void onRequestPermissionResult(@NotNull Permission permission, int grantResult) {
+        String log = String.format("Permission: %s, grantResult: %d", permission.getValue(), grantResult);
+        Toast.makeText(this, log, Toast.LENGTH_SHORT).show();
+        Log.d("onRequestPermission", log);
+    }
+
+    public void requestFace(View view) {
+        if (robot.checkSelfPermission(Permission.FACE_RECOGNITION) == GRANTED) {
+            Toast.makeText(this, "You already had FACE_RECOGNITION permission.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.FACE_RECOGNITION);
+        Robot.getInstance().requestPermissions(permissions);
+    }
+
+    public void requestMap(View view) {
+        if (robot.checkSelfPermission(Permission.MAP) == GRANTED) {
+            Toast.makeText(this, "You already had MAP permission.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.MAP);
+        robot.requestPermissions(permissions);
+    }
+
+    public void requestSettings(View view) {
+        if (robot.checkSelfPermission(Permission.SETTINGS) == GRANTED) {
+            Toast.makeText(this, "You already had SETTINGS permission.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.SETTINGS);
+        robot.requestPermissions(permissions);
+    }
+
+    public void requestAll(View view) {
+        List<Permission> permissions = new ArrayList<>();
+        for (Permission permission : Permission.values()) {
+            if (robot.checkSelfPermission(permission) == GRANTED) {
+                Toast.makeText(this, String.format("You already had '%s' permission.", permission.toString()), Toast.LENGTH_SHORT).show();
+                continue;
+            }
+            permissions.add(permission);
+        }
+        robot.requestPermissions(permissions);
     }
 }
