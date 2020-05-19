@@ -30,7 +30,7 @@ enum class Permission(val value: String, val isKioskPermission: Boolean) {
 @IntDef(GRANTED, DENIED)
 annotation class Result {
     companion object {
-        const val GRANTED = 0
-        const val DENIED = -1
+        const val GRANTED = 1
+        const val DENIED = 0
     }
 }
