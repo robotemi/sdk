@@ -9,8 +9,7 @@ import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 
 @RestrictTo(LIBRARY)
-class TemiSdkContentProvider : ContentProvider() {
-
+internal class TemiSdkContentProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         sdkContext = context

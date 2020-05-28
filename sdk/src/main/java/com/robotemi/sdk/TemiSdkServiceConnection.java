@@ -25,7 +25,7 @@ class TemiSdkServiceConnection {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "onServiceConnected(ComponentName, IBinder) (name=" + name + ", service=" + service + ", thread=" + Thread.currentThread().getName() + ")");
             final ISdkService sdkService = ISdkService.Stub.asInterface(service);
-            Robot.Companion.getInstance().setSdkService(sdkService);
+            Robot.getInstance().setSdkService(sdkService);
         }
 
         @SuppressLint({"LogNotTimber", "LongLogTag"})

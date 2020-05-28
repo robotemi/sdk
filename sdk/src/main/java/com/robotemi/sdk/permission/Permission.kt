@@ -4,6 +4,13 @@ import androidx.annotation.IntDef
 import com.robotemi.sdk.permission.Result.Companion.DENIED
 import com.robotemi.sdk.permission.Result.Companion.GRANTED
 
+/**
+ * All permissions can be requested for now.
+ *
+ * @property value The String type value of the Permission.
+ * @property isValidPermission Is this permission string validate.
+ * @property isKioskPermission Is this permission only available in Kiosk Mode.
+ */
 enum class Permission(val value: String, val isKioskPermission: Boolean) {
 
     FACE_RECOGNITION("com.robotemi.permission.face_recognition", true),

@@ -8,7 +8,6 @@ import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
-import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
@@ -440,7 +439,7 @@ class Robot private constructor(context: Context) {
 
     @RestrictTo(LIBRARY)
     @UiThread
-    fun setSdkService(sdkService: ISdkService?) {
+    protected fun setSdkService(sdkService: ISdkService?) {
         this.sdkService = sdkService
         mediaBar = AidlMediaBarController(sdkService)
         registerCallback()
@@ -699,10 +698,10 @@ class Robot private constructor(context: Context) {
     /**
      * Send robot to previously saved location.
      *
-     * @param location - Saved location name.
+     * @param location Saved location name.
      */
     fun goTo(location: String) {
-        require(!TextUtils.isEmpty(location)) { "Location can not be null or empty." }
+        require(location.isNotBlank()) { "Location can not be null or empty." }
         sdkService?.let {
             try {
                 it.goTo(location)
@@ -799,7 +798,7 @@ class Robot private constructor(context: Context) {
      * @param degrees the degree amount you want the robot to turn
      * @param speed   deprecated
      */
-    @Deprecated("See {{@link #turnBy(int)}}", ReplaceWith("turnBy(degrees)"))
+    @Deprecated("Use turnBy(degrees) instead.", ReplaceWith("turnBy(degrees)"))
     fun turnBy(degrees: Int, speed: Float) {
         turnBy(degrees)
     }
@@ -1201,6 +1200,12 @@ class Robot private constructor(context: Context) {
         }
     }
 
+    /**
+     * Check permission grant status.
+     *
+     * @param permission The [Permission] you want to check.
+     * @return Grant status. See [com.robotemi.sdk.permission.Result].
+     */
     fun checkSelfPermission(permission: Permission): Int {
         if (permission.isKioskPermission && !isMetaDataKiosk) {
             Log.w(TAG, "Only Kiosk App may have kiosk permissions")
@@ -1216,6 +1221,13 @@ class Robot private constructor(context: Context) {
         return DENIED
     }
 
+    /**
+     * Request permissions.
+     *
+     * If you already had the permission, Launcher will not handle this request again.
+     *
+     * @param permissions A list holds the permissions you want to request.
+     */
     fun requestPermissions(permissions: List<Permission>) {
         val permissionsFromMetadata =
             applicationInfo.metaData?.getString(SdkConstants.METADATA_PERMISSIONS)
