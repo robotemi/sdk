@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnConstraintBeWithStatusChangedListener(this);
         robot.addOnDetectionStateChangedListener(this);
         robot.addAsrListener(this);
+        robot.showTopBar();
     }
 
     /**
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements
         if (isReady) {
             try {
                 final ActivityInfo activityInfo = getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
+                // Robot.getInstance().onStart() method may change the visibility of top bar.
                 robot.onStart(activityInfo);
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);
@@ -461,6 +463,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onGoToLocationStatusChanged(@NotNull String location, String status, int descriptionId, @NotNull String description) {
         Log.d("GoToStatusChanged", "status=" + status + ", descriptionId=" + descriptionId + ", description=" + description);
+        robot.speak(TtsRequest.create(description, false));
         switch (status) {
             case "start":
                 robot.speak(TtsRequest.create("Starting", false));
@@ -533,9 +536,51 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * If you want to cover the voice flow in Launcher OS, please add following meta-data to AndroidManifest.xml.
+     *
+     * <meta-data
+     *     android:name="com.robotemi.sdk.metadata.KIOSK"
+     *     android:value="TRUE" />
+     *
+     * <meta-data
+     *     android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
+     *     android:value="TRUE" />
+     *
+     * And also need to select this App as the Kiosk Mode App in Settings > Kiosk Mode.
+     *
+     * @param asrResult The result of the ASR after waking up temi.
+     */
     @Override
-    public void onAsrResult(@NonNull String asrResult) {
+    public void onAsrResult(final @NonNull String asrResult) {
         Log.d("onAsrResult", "asrResult = " + asrResult);
+        if (asrResult.equalsIgnoreCase("Hello")) {
+            robot.askQuestion("Hello, I'm temi, what can I do for you?");
+        } else if (asrResult.equalsIgnoreCase("Play music")) {
+            robot.speak(TtsRequest.create("Okay, please enjoy.", false));
+            robot.finishConversation();
+            playMusic();
+        } else if (asrResult.equalsIgnoreCase("Play movie")) {
+            robot.speak(TtsRequest.create("Okay, please enjoy.", false));
+            robot.finishConversation();
+            playMovie();
+        } else if (asrResult.toLowerCase().contains("follow me")) {
+            robot.finishConversation();
+            robot.beWithMe();
+        } else if (asrResult.toLowerCase().contains("go to home base")) {
+            robot.finishConversation();
+            robot.goTo("home base");
+        } else {
+            robot.askQuestion("Sorry I can't understand you, could you please ask something else?");
+        }
+    }
+
+    private void playMovie() {
+        // Play movie...
+    }
+
+    private void playMusic() {
+        // Play music...
     }
 
     public void privacyModeOn(View view) {
