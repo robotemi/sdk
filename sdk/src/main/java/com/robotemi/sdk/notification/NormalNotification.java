@@ -1,5 +1,6 @@
 package com.robotemi.sdk.notification;
 
+import android.app.PendingIntent;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -43,6 +44,16 @@ public class NormalNotification implements Notification, Parcelable {
 
     private Bitmap bitmap;
 
+    private String primaryButton;
+
+    private String secondaryButton;
+
+    private PendingIntent primaryPendingIntent;
+
+    private PendingIntent secondaryPendingIntent;
+
+    private int timeout;
+
     private NormalNotification(NormalNotification.Builder builder) {
         this.type = builder.type == null ? Type.INFO : builder.type;
         this.title = builder.title;
@@ -51,6 +62,11 @@ public class NormalNotification implements Notification, Parcelable {
         this.subtitleResource = builder.subtitleResource;
         this.iconResource = builder.iconResource;
         this.bitmap = builder.bitmap;
+        this.primaryButton = builder.primaryButton;
+        this.secondaryButton = builder.secondaryButton;
+        this.primaryPendingIntent = builder.primaryPendingIntent;
+        this.secondaryPendingIntent = builder.secondaryPendingIntent;
+        this.timeout = builder.timeout;
         this.notificationId = UUID.randomUUID().toString();
     }
 
@@ -110,6 +126,26 @@ public class NormalNotification implements Notification, Parcelable {
         return bitmap;
     }
 
+    public String getPrimaryButton() {
+        return primaryButton;
+    }
+
+    public String getSecondaryButton() {
+        return secondaryButton;
+    }
+
+    public PendingIntent getPrimaryPendingIntent() {
+        return primaryPendingIntent;
+    }
+
+    public PendingIntent getSecondaryPendingIntent() {
+        return secondaryPendingIntent;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -124,6 +160,11 @@ public class NormalNotification implements Notification, Parcelable {
         dest.writeInt(this.subtitleResource);
         dest.writeInt(this.iconResource);
         dest.writeParcelable(this.bitmap, flags);
+        dest.writeString(this.primaryButton);
+        dest.writeString(this.secondaryButton);
+        dest.writeParcelable(this.primaryPendingIntent, flags);
+        dest.writeParcelable(this.secondaryPendingIntent, flags);
+        dest.writeInt(this.timeout);
     }
 
     public static class Builder {
@@ -144,6 +185,16 @@ public class NormalNotification implements Notification, Parcelable {
         int iconResource;
 
         public Bitmap bitmap;
+
+        public String primaryButton;
+
+        public String secondaryButton;
+
+        public PendingIntent primaryPendingIntent;
+
+        public PendingIntent secondaryPendingIntent;
+
+        public int timeout;
 
         public Builder(String title) {
             this.title = title;
@@ -184,6 +235,30 @@ public class NormalNotification implements Notification, Parcelable {
             return this;
         }
 
+        public NormalNotification.Builder primaryButton(String primaryButton) {
+            this.primaryButton = primaryButton;
+            return this;
+        }
+
+        public NormalNotification.Builder secondaryButton(String secondaryButton) {
+            this.secondaryButton = secondaryButton;
+            return this;
+        }
+
+        public NormalNotification.Builder primaryPendingIntent(PendingIntent primaryPendingIntent) {
+            this.primaryPendingIntent = primaryPendingIntent;
+            return this;
+        }
+
+        public NormalNotification.Builder secondaryPendingIntent(PendingIntent secondaryPendingIntent) {
+            this.secondaryPendingIntent = secondaryPendingIntent;
+            return this;
+        }
+
+        public NormalNotification.Builder timeout(int timeout) {
+            this.timeout = timeout;
+            return this;
+        }
 
         public NormalNotification build() {
             return new NormalNotification(this);
