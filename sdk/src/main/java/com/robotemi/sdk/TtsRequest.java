@@ -9,6 +9,8 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TtsRequest implements Parcelable {
 
     public static final Creator<TtsRequest> CREATOR = new Creator<TtsRequest>() {
@@ -41,10 +43,10 @@ public class TtsRequest implements Parcelable {
     private boolean isShowOnConversationLayer;
 
     private TtsRequest(@NonNull final String speech, @Nullable final Bitmap bitmap, boolean isShowOnConversationLayer) {
-        id = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.packageName = "";
         this.speech = speech;
-        status = Status.PENDING;
+        this.status = Status.PENDING;
         this.bitmap = bitmap;
         this.isShowOnConversationLayer = isShowOnConversationLayer; // Currently this field is not streamed from skill
     }
@@ -96,7 +98,6 @@ public class TtsRequest implements Parcelable {
         this.status = status;
     }
 
-    @NonNull
     public boolean isShowOnConversationLayer() {
         return isShowOnConversationLayer;
     }
@@ -116,6 +117,7 @@ public class TtsRequest implements Parcelable {
         return id.hashCode();
     }
 
+    @NotNull
     @Override
     public String toString() {
         return "TtsRequest{" +

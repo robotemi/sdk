@@ -1,11 +1,11 @@
 package com.robotemi.sdk.listeners;
 
-public interface OnUserInteractionChangedListener {
+interface OnUserInteractionChangedListener {
 
     /**
      * Listen for user interaction with temi.
      *
      * @param isInteracting true if a user is interacting with temi, otherwise false.
      */
-    void onUserInteraction(boolean isInteracting);
+    fun onUserInteraction(isInteracting: Boolean)
 }

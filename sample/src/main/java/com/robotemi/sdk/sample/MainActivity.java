@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,13 +13,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -34,23 +34,35 @@ import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
+import com.robotemi.sdk.listeners.OnDetectionDataChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRequestPermissionResultListener;
+import com.robotemi.sdk.listeners.OnRobotLiftedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
+import com.robotemi.sdk.listeners.OnUserInteractionChangedListener;
 import com.robotemi.sdk.model.CallEventModel;
+import com.robotemi.sdk.model.DetectionData;
+import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener;
+import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener;
+import com.robotemi.sdk.navigation.model.Position;
+import com.robotemi.sdk.navigation.model.SafetyLevel;
+import com.robotemi.sdk.navigation.model.SpeedLevel;
 import com.robotemi.sdk.permission.Permission;
+import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import static com.robotemi.sdk.permission.Result.GRANTED;
+import java.util.Map;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -67,27 +79,42 @@ public class MainActivity extends AppCompatActivity implements
         OnDetectionStateChangedListener,
         Robot.AsrListener,
         OnTelepresenceEventChangedListener,
-        OnRequestPermissionResultListener {
+        OnRequestPermissionResultListener,
+        OnDistanceToLocationChangedListener,
+        OnCurrentPositionChangedListener,
+        OnSequencePlayStatusChangedListener,
+        OnRobotLiftedListener,
+        OnDetectionDataChangedListener,
+        OnUserInteractionChangedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    public EditText etSpeak, etSaveLocation, etGoTo;
-    List<String> locations;
+
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    private EditText etSpeak, etSaveLocation, etGoTo, etPosition;
+
+    private List<String> locations;
+
     private Robot robot;
+
+    private CustomAdapter mAdapter;
 
     /**
      * Hiding keyboard after every button press
      */
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
+        View view = getCurrentFocus();
         //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
-            view = new View(activity);
+            view = new View(this);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
@@ -122,6 +149,12 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnConstraintBeWithStatusChangedListener(this);
         robot.addOnDetectionStateChangedListener(this);
         robot.addAsrListener(this);
+        robot.addOnDistanceToLocationChangedListener(this);
+        robot.addOnCurrentPositionChangedListener(this);
+        robot.addOnSequencePlayStatusChangedListener(this);
+        robot.addOnRobotLiftedListener(this);
+        robot.addOnDetectionDataChangedListener(this);
+        robot.addOnUserInteractionChangedListener(this);
         robot.showTopBar();
     }
 
@@ -141,6 +174,12 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnLocationsUpdateListener(this);
         robot.removeOnDetectionStateChangedListener(this);
         robot.removeAsrListener(this);
+        robot.removeOnDistanceToLocationChangedListener(this);
+        robot.removeOnCurrentPositionChangedListener(this);
+        robot.removeOnSequencePlayStatusChangedListener(this);
+        robot.removeOnRobotLiftedListener(this);
+        robot.removeOnDetectionDataChangedListener(this);
+        robot.addOnUserInteractionChangedListener(this);
         robot.stopMovement();
     }
 
@@ -183,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements
         etSpeak = findViewById(R.id.etSpeak);
         etSaveLocation = findViewById(R.id.etSaveLocation);
         etGoTo = findViewById(R.id.etGoTo);
+        etPosition = findViewById(R.id.etPositioin);
     }
 
     /**
@@ -191,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements
     public void speak(View view) {
         TtsRequest ttsRequest = TtsRequest.create(etSpeak.getText().toString().trim(), true);
         robot.speak(ttsRequest);
-        hideKeyboard(MainActivity.this);
+        hideKeyboard();
     }
 
     /**
@@ -205,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             robot.speak(TtsRequest.create("Saved the " + location + " location failed.", true));
         }
-        hideKeyboard(MainActivity.this);
+        hideKeyboard();
     }
 
     /**
@@ -215,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements
         for (String location : robot.getLocations()) {
             if (location.equals(etGoTo.getText().toString().toLowerCase().trim())) {
                 robot.goTo(etGoTo.getText().toString().toLowerCase().trim());
-                hideKeyboard(MainActivity.this);
+                hideKeyboard();
             }
         }
     }
@@ -234,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void followMe(View view) {
         robot.beWithMe();
-        hideKeyboard(MainActivity.this);
+        hideKeyboard();
     }
 
     /**
@@ -295,45 +335,36 @@ public class MainActivity extends AppCompatActivity implements
      * Display the saved locations in a dialog
      */
     public void savedLocationsDialog(View view) {
-        hideKeyboard(MainActivity.this);
+        hideKeyboard();
         locations = robot.getLocations();
-        final CustomAdapter customAdapter = new CustomAdapter(MainActivity.this, android.R.layout.simple_selectable_list_item, locations);
+        mAdapter = new CustomAdapter(MainActivity.this, android.R.layout.simple_selectable_list_item, locations);
         AlertDialog.Builder versionsDialog = new AlertDialog.Builder(MainActivity.this);
         versionsDialog.setTitle("Saved Locations: (Click to delete the location)");
         versionsDialog.setPositiveButton("OK", null);
-        versionsDialog.setAdapter(customAdapter, null);
+        versionsDialog.setAdapter(mAdapter, null);
         AlertDialog dialog = versionsDialog.create();
-        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setMessage("Delete location \"" + customAdapter.getItem(position) + "\" ?");
-                builder.setPositiveButton("No thanks", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("Delete location \"" + mAdapter.getItem(position) + "\" ?");
+            builder.setPositiveButton("No thanks", (dialog1, which) -> {
 
-                    }
-                });
-                builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String location = customAdapter.getItem(position);
-                        if (location == null) {
-                            return;
-                        }
-                        boolean result = robot.deleteLocation(location);
-                        if (result) {
-                            locations.remove(position);
-                            robot.speak(TtsRequest.create(location + "delete successfully!", false));
-                            customAdapter.notifyDataSetChanged();
-                        } else {
-                            robot.speak(TtsRequest.create(location + "delete failed!", false));
-                        }
-                    }
-                });
-                Dialog deleteDialog = builder.create();
-                deleteDialog.show();
-            }
+            });
+            builder.setNegativeButton("Yes", (dialog1, which) -> {
+                String location = mAdapter.getItem(position);
+                if (location == null) {
+                    return;
+                }
+                boolean result = robot.deleteLocation(location);
+                if (result) {
+                    locations.remove(position);
+                    robot.speak(TtsRequest.create(location + "delete successfully!", false));
+                    mAdapter.notifyDataSetChanged();
+                } else {
+                    robot.speak(TtsRequest.create(location + "delete failed!", false));
+                }
+            });
+            Dialog deleteDialog = builder.create();
+            deleteDialog.show();
         });
         dialog.show();
     }
@@ -490,6 +521,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConversationAttaches(boolean isAttached) {
         //Do something as soon as the conversation is displayed.
+        Log.d("onConversationAttaches", "isAttached:" + isAttached);
     }
 
     @Override
@@ -513,12 +545,11 @@ public class MainActivity extends AppCompatActivity implements
         robot.toggleWakeup(false);
     }
 
-    public void showBillboard(View view) {
-        robot.toggleNavigationBillboard(false);
-    }
-
-    public void hideBillboard(View view) {
-        robot.toggleNavigationBillboard(true);
+    public void toggleNavBillboard(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        robot.toggleNavigationBillboard(!robot.isNavigationBillboardDisabled());
     }
 
     @Override
@@ -538,15 +569,15 @@ public class MainActivity extends AppCompatActivity implements
 
     /**
      * If you want to cover the voice flow in Launcher OS, please add following meta-data to AndroidManifest.xml.
-     *
+     * <p>
      * <meta-data
-     *     android:name="com.robotemi.sdk.metadata.KIOSK"
-     *     android:value="TRUE" />
-     *
+     * android:name="com.robotemi.sdk.metadata.KIOSK"
+     * android:value="TRUE" />
+     * <p>
      * <meta-data
-     *     android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
-     *     android:value="TRUE" />
-     *
+     * android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
+     * android:value="TRUE" />
+     * <p>
      * And also need to select this App as the Kiosk Mode App in Settings > Kiosk Mode.
      *
      * @param asrResult The result of the ASR after waking up temi.
@@ -635,17 +666,17 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void requestFace(View view) {
-        if (robot.checkSelfPermission(Permission.FACE_RECOGNITION) == GRANTED) {
+        if (robot.checkSelfPermission(Permission.FACE_RECOGNITION) == Permission.GRANTED) {
             Toast.makeText(this, "You already had FACE_RECOGNITION permission.", Toast.LENGTH_SHORT).show();
             return;
         }
         List<Permission> permissions = new ArrayList<>();
         permissions.add(Permission.FACE_RECOGNITION);
-        Robot.getInstance().requestPermissions(permissions);
+        robot.requestPermissions(permissions);
     }
 
     public void requestMap(View view) {
-        if (robot.checkSelfPermission(Permission.MAP) == GRANTED) {
+        if (robot.checkSelfPermission(Permission.MAP) == Permission.GRANTED) {
             Toast.makeText(this, "You already had MAP permission.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -655,7 +686,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void requestSettings(View view) {
-        if (robot.checkSelfPermission(Permission.SETTINGS) == GRANTED) {
+        if (robot.checkSelfPermission(Permission.SETTINGS) == Permission.GRANTED) {
             Toast.makeText(this, "You already had SETTINGS permission.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -664,15 +695,202 @@ public class MainActivity extends AppCompatActivity implements
         robot.requestPermissions(permissions);
     }
 
+    public void requestSequence(View view) {
+        if (robot.checkSelfPermission(Permission.SEQUENCE) == Permission.GRANTED) {
+            Toast.makeText(this, "You already had SEQUENCE permission.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(Permission.SEQUENCE);
+        robot.requestPermissions(permissions);
+    }
+
     public void requestAll(View view) {
         List<Permission> permissions = new ArrayList<>();
         for (Permission permission : Permission.values()) {
-            if (robot.checkSelfPermission(permission) == GRANTED) {
+            if (robot.checkSelfPermission(permission) == Permission.GRANTED) {
                 Toast.makeText(this, String.format("You already had '%s' permission.", permission.toString()), Toast.LENGTH_SHORT).show();
                 continue;
             }
             permissions.add(permission);
         }
         robot.requestPermissions(permissions);
+    }
+
+    public void startFaceRecognition(View view) {
+        if (requestPermissionIfNeeded(Permission.FACE_RECOGNITION)) {
+            return;
+        }
+        robot.startFaceRecognition();
+    }
+
+    public void stopFaceRecognition(View view) {
+        robot.stopFaceRecognition();
+    }
+
+    public void setGoToSpeed(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        List<String> speedLevels = new ArrayList<>();
+        speedLevels.add(SpeedLevel.HIGH.getValue());
+        speedLevels.add(SpeedLevel.MEDIUM.getValue());
+        speedLevels.add(SpeedLevel.SLOW.getValue());
+        final CustomAdapter adapter = new CustomAdapter(this, android.R.layout.simple_selectable_list_item, speedLevels);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select Go To Speed Level")
+                .setAdapter(adapter, null)
+                .create();
+        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
+            robot.setGoToSpeed(SpeedLevel.valueToEnum(Objects.requireNonNull(adapter.getItem(position))));
+            Toast.makeText(MainActivity.this, adapter.getItem(position), Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    public void setGoToSafety(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        List<String> safetyLevel = new ArrayList<>();
+        safetyLevel.add(SafetyLevel.HIGH.getValue());
+        safetyLevel.add(SafetyLevel.MEDIUM.getValue());
+        final CustomAdapter adapter = new CustomAdapter(this, android.R.layout.simple_selectable_list_item, safetyLevel);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select Go To Safety Level")
+                .setAdapter(adapter, null)
+                .create();
+        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
+            robot.setNavigationSafety(SafetyLevel.valueToEnum(Objects.requireNonNull(adapter.getItem(position))));
+            Toast.makeText(MainActivity.this, adapter.getItem(position), Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    public void toggleTopBadge(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        robot.setTopBadgeEnabled(!robot.isTopBadgeEnabled());
+    }
+
+    public void toggleDetectionMode(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        robot.setDetectionModeOn(!robot.isDetectionModeOn());
+    }
+
+    public void toggleAutoReturn(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        robot.setAutoReturnOn(!robot.isAutoReturnOn());
+    }
+
+    public void toggleTrackUser(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        robot.setTrackUserOn(!robot.isTrackUserOn());
+    }
+
+    public void getVolume(View view) {
+        Toast.makeText(this, robot.getVolume() + "", Toast.LENGTH_SHORT).show();
+    }
+
+    public void setVolume(View view) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+            return;
+        }
+        List<String> volumeList = new ArrayList<>(Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+        final CustomAdapter adapter = new CustomAdapter(this, android.R.layout.simple_selectable_list_item, volumeList);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Set Volume")
+                .setAdapter(adapter, null)
+                .create();
+        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
+            robot.setVolume(Integer.parseInt(Objects.requireNonNull(adapter.getItem(position))));
+            Toast.makeText(MainActivity.this, adapter.getItem(position), Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    public void requestToBeKioskApp(View view) {
+        if (robot.isSelectedKioskApp()) {
+            Toast.makeText(this, this.getString(R.string.app_name) + " was the selected Kiosk App.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        robot.requestToBeKioskApp();
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void goToPosition(View view) {
+        hideKeyboard();
+        String[] coordinates = etPosition.getText().toString().replaceAll(" ", "").split(",");
+        if (coordinates.length != 2) {
+            Toast.makeText(this, "A position needs two coordinates to determine.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Position position = new Position();
+        try {
+            position.setX(Float.parseFloat(coordinates[0]));
+            position.setY(Float.parseFloat(coordinates[1]));
+            Toast.makeText(this, String.format("(%f,%f)", position.getX(), position.getY()), Toast.LENGTH_SHORT).show();
+            robot.goToPosition(position);
+        } catch (Exception e) {
+            Log.e("goToPosition", e.getMessage());
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onDistanceToLocationChanged(@NotNull Map<String, Float> distances) {
+        for (String location : distances.keySet()) {
+            Log.d("onDistanceToLocation", "location:" + location + ", distance:" + distances.get(location));
+        }
+    }
+
+    @Override
+    public void onCurrentPositionChanged(@NotNull Position position) {
+        Log.d("onCurrentPosition", position.toString());
+    }
+
+    @Override
+    public void onSequencePlayStatusChanged(@NotNull String sequenceId, int status) {
+        Log.d("onSequencePlayStatus", String.format("sequenceId:%s, status:%d", sequenceId, status));
+    }
+
+    @Override
+    public void onRobotLifted(boolean isRobotLifted) {
+        Log.d("onRobotLifted", "isRobotLifted: " + isRobotLifted);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        hideKeyboard();
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @CheckResult
+    private boolean requestPermissionIfNeeded(Permission permission) {
+        if (robot.checkSelfPermission(permission) == Permission.GRANTED) {
+            return false;
+        }
+        robot.requestPermissions(Collections.singletonList(permission));
+        return true;
+    }
+
+    @Override
+    public void onDetectionDataChanged(@NotNull DetectionData detectionData) {
+        Log.d("onDetectionDataChanged", detectionData.toString());
+    }
+
+    @Override
+    public void onUserInteraction(boolean isInteracting) {
+        Log.d("onUserInteraction", "isInteracting:" + isInteracting);
     }
 }

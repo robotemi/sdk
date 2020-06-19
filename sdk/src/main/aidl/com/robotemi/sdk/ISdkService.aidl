@@ -12,6 +12,8 @@ import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
+import com.robotemi.sdk.sequence.SequenceRemoteCallback;
+import com.robotemi.sdk.navigation.model.Position;
 
 interface ISdkService {
 
@@ -31,8 +33,8 @@ interface ISdkService {
      *
      * @param mediaBarData an object containg the media bar data (title, subtitle, icon etc..).
      */
-
     void setMedia(in MediaBarData mediaBarData);
+
     /**
     * pauses the media
     */
@@ -151,14 +153,15 @@ interface ISdkService {
     /**
      * Request robot to toggle the wakeup trigger
      */
-     void toggleWakeup(in boolean enable);
+     void toggleWakeup(in boolean disable);
 
      /**
      * Request robot to show/hide navigation billboards
      */
-     void toggleNavigationBillboard(in boolean show);
+     void toggleNavigationBillboard(in boolean hide);
 
-     /** Delete location.
+     /**
+     * Delete location.
      *
      * @param name - Location name.
      *
@@ -194,4 +197,50 @@ interface ISdkService {
     int checkSelfPermission(in String packageName, in String permission);
 
     void requestPermissions(in String packageName, in List<String> permissions);
+
+    void requestToBeKioskApp(in String packageName);
+
+    boolean isSelectedKioskApp(in String packageName);
+
+    void setTopBadgeEnabled(in String packageName, boolean enabled);
+
+    boolean isTopBadgeEnabled();
+
+    void setGoToBillboardDisabled(in String packageName, boolean disabled);
+
+    boolean isGoToBillboardDisabled();
+
+    void setDetectionModeOn(in String packageName, boolean on);
+
+    boolean isDetectionModeOn();
+
+    void setTrackUserOn(in String packageName, boolean on);
+
+    boolean isTrackUserOn();
+
+    void setAutoReturnOn(in String packageName, boolean on);
+
+    boolean isAutoReturnOn();
+
+    void setVolume(in String packageName, int volume);
+
+    int getVolume();
+
+    void setNavigationSafety(in String packageName, in String safetyLevel);
+
+    String getNavigationSafety();
+
+    void setGoToSpeed(in String packageName, in String speedLevel);
+
+    String getGoToSpeed();
+
+    void startFaceRecognition(in String packageName);
+
+    void stopFaceRecognition(in String packageName);
+
+    void fetchAllSequences(in String packageName, in SequenceRemoteCallback callback);
+
+    void playSequence(in String packageName, in String sequenceId);
+
+    void goToPosition(in Position position);
 }

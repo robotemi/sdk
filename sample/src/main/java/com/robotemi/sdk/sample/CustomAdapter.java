@@ -11,11 +11,11 @@ import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<String> {
 
-    private List<String> savedLocations;
+    private List<String> data;
 
-    CustomAdapter(Context context, int textViewResourceId, List<String> savedLocations) {
-        super(context, textViewResourceId, savedLocations);
-        this.savedLocations = savedLocations;
+    CustomAdapter(Context context, int textViewResourceId, List<String> data) {
+        super(context, textViewResourceId, data);
+        this.data = data;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class CustomAdapter extends ArrayAdapter<String> {
             convertView = inflater.inflate(R.layout.location_row, null);
         }
 
-        String loc = savedLocations.get(position);
+        String loc = data.get(position);
         if (loc != null) {
             TextView tvName = (TextView) convertView.findViewById(R.id.name);
             if (tvName != null) {
@@ -34,5 +34,11 @@ public class CustomAdapter extends ArrayAdapter<String> {
             }
         }
         return convertView;
+    }
+
+    public void setData(List<String> data) {
+        this.data.clear();
+        this.data.addAll(data);
+        notifyDataSetChanged();
     }
 }

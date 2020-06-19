@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
+import androidx.annotation.CheckResult
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import androidx.annotation.UiThread
@@ -20,15 +21,25 @@ import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
+import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.model.RecentCallModel
+import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
+import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
+import com.robotemi.sdk.navigation.model.Position
+import com.robotemi.sdk.navigation.model.SafetyLevel
+import com.robotemi.sdk.navigation.model.SpeedLevel
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
 import com.robotemi.sdk.permission.Permission
-import com.robotemi.sdk.permission.Result.Companion.DENIED
+import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
+import com.robotemi.sdk.sequence.SequenceCallback
+import com.robotemi.sdk.sequence.SequenceModel
+import com.robotemi.sdk.sequence.SequenceRemoteCallback
 import com.robotemi.sdk.telepresence.CallState
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.collections.HashMap
 
 @SuppressWarnings("unused")
 class Robot private constructor(context: Context) {
@@ -92,6 +103,20 @@ class Robot private constructor(context: Context) {
     private val onRequestPermissionResultListeners =
         CopyOnWriteArraySet<OnRequestPermissionResultListener>()
 
+    private val onDistanceToLocationChangedListeners =
+        CopyOnWriteArraySet<OnDistanceToLocationChangedListener>()
+
+    private val onCurrentPositionChangedListeners =
+        CopyOnWriteArraySet<OnCurrentPositionChangedListener>()
+
+    private val onSequencePlayStatusChangedListeners =
+        CopyOnWriteArraySet<OnSequencePlayStatusChangedListener>()
+
+    private val onRobotLiftedListeners = CopyOnWriteArraySet<OnRobotLiftedListener>()
+
+    private val onDetectionDataChangedListeners =
+        CopyOnWriteArraySet<OnDetectionDataChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -113,72 +138,61 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onTtsStatusChanged(ttsRequest: TtsRequest): Boolean {
-            if (ttsListeners.size > 0) {
-                uiHandler.post {
-                    for (ttsListener in ttsListeners) {
-                        ttsListener.onTtsStatusChanged(ttsRequest)
-                    }
+            if (ttsListeners.isEmpty()) return false
+            uiHandler.post {
+                for (ttsListener in ttsListeners) {
+                    ttsListener.onTtsStatusChanged(ttsRequest)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
-            if (wakeUpWordListeners.size > 0) {
-                uiHandler.post {
-                    for (wakeupWordListener in wakeUpWordListeners) {
-                        wakeupWordListener.onWakeupWord(wakeupWord, direction)
-                    }
+            if (wakeUpWordListeners.isEmpty()) return false
+            uiHandler.post {
+                for (wakeupWordListener in wakeUpWordListeners) {
+                    wakeupWordListener.onWakeupWord(wakeupWord, direction)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onNlpCompleted(nlpResult: NlpResult): Boolean {
-            if (nlpListeners.size > 0) {
-                uiHandler.post {
-                    for (nlpListener in nlpListeners) {
-                        nlpListener.onNlpCompleted(nlpResult)
-                    }
+            if (nlpListeners.isEmpty()) return false
+            uiHandler.post {
+                for (nlpListener in nlpListeners) {
+                    nlpListener.onNlpCompleted(nlpResult)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onAsrResult(asrText: String): Boolean {
-            if (asrListeners.size > 0) {
-                uiHandler.post {
-                    for (asrListener in asrListeners) {
-                        asrListener.onAsrResult(asrText)
-                    }
+            if (asrListeners.isEmpty()) return false
+            uiHandler.post {
+                for (asrListener in asrListeners) {
+                    asrListener.onAsrResult(asrText)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onConversationViewAttaches(isAttached: Boolean): Boolean {
-            if (conversationViewAttachesListeners.size > 0) {
-                uiHandler.post {
-                    for (conversationViewAttachesListener in conversationViewAttachesListeners) {
-                        conversationViewAttachesListener.onConversationAttaches(isAttached)
-                    }
+            if (conversationViewAttachesListeners.isEmpty()) return false
+            uiHandler.post {
+                for (conversationViewAttachesListener in conversationViewAttachesListeners) {
+                    conversationViewAttachesListener.onConversationAttaches(isAttached)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun hasActiveNlpListeners(): Boolean {
-            val hasActiveNlpListener = !nlpListeners.isEmpty()
-            return hasActiveNlpListener
+            return nlpListeners.isNotEmpty()
         }
 
         /*****************************************/
-        /*                Location               */
+        /*               Navigation              */
         /*****************************************/
 
         override fun onGoToLocationStatusChanged(
@@ -187,32 +201,49 @@ class Robot private constructor(context: Context) {
             descriptionId: Int,
             description: String
         ): Boolean {
-            if (!onGoToLocationStatusChangeListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onGoToLocationStatusChangeListeners) {
-                        listener.onGoToLocationStatusChanged(
-                            location,
-                            status,
-                            descriptionId,
-                            description
-                        )
-                    }
+            if (onGoToLocationStatusChangeListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onGoToLocationStatusChangeListeners) {
+                    listener.onGoToLocationStatusChanged(
+                        location,
+                        status,
+                        descriptionId,
+                        description
+                    )
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onLocationsUpdated(locations: List<String>): Boolean {
-            if (!onLocationsUpdatedListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onLocationsUpdatedListeners) {
-                        listener?.onLocationsUpdated(locations)
-                    }
+            if (onLocationsUpdatedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onLocationsUpdatedListeners) {
+                    listener.onLocationsUpdated(locations)
                 }
-                return true
             }
-            return false
+            return true
+        }
+
+        override fun onDistanceToLocationChanged(distances: MutableMap<Any?, Any?>): Boolean {
+            if (onDistanceToLocationChangedListeners.isEmpty()) return false
+            val distancesMap: Map<String, Float> = distances as Map<String, Float>
+            uiHandler.post {
+                for (listener in onDistanceToLocationChangedListeners) {
+                    listener.onDistanceToLocationChanged(distancesMap)
+                }
+            }
+            return true
+        }
+
+        override fun onCurrentPositionChanged(position: Position): Boolean {
+            if (onCurrentPositionChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onCurrentPositionChangedListeners) {
+                    listener.onCurrentPositionChanged(position)
+                }
+            }
+            return true
         }
 
         /*****************************************/
@@ -220,27 +251,33 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onBeWithMeStatusChanged(status: String): Boolean {
-            if (onBeWithMeStatusChangeListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onBeWithMeStatusChangeListeners) {
-                        listener.onBeWithMeStatusChanged(status)
-                    }
+            if (onBeWithMeStatusChangeListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onBeWithMeStatusChangeListeners) {
+                    listener.onBeWithMeStatusChanged(status)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onConstraintBeWithStatusChanged(isContraint: Boolean): Boolean {
-            if (onConstraintBeWithStatusChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onConstraintBeWithStatusChangedListeners) {
-                        listener.onConstraintBeWithStatusChanged(isContraint)
-                    }
+            if (onConstraintBeWithStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onConstraintBeWithStatusChangedListeners) {
+                    listener.onConstraintBeWithStatusChanged(isContraint)
                 }
-                return true
             }
-            return false
+            return true
+        }
+
+        override fun onRobotLifted(isRobotLifted: Boolean): Boolean {
+            if (onRobotLiftedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onRobotLiftedListeners) {
+                    listener.onRobotLifted(isRobotLifted)
+                }
+            }
+            return true
         }
 
         /*****************************************/
@@ -248,40 +285,34 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onTelepresenceStatusChanged(callState: CallState): Boolean {
-            if (!onTelepresenceStatusChangedListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onTelepresenceStatusChangedListeners) {
-                        if (listener != null && callState.sessionId == listener.sessionId) {
-                            listener.onTelepresenceStatusChanged(callState)
-                        }
+            if (onTelepresenceStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onTelepresenceStatusChangedListeners) {
+                    if (listener != null && callState.sessionId == listener.sessionId) {
+                        listener.onTelepresenceStatusChanged(callState)
                     }
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onUserUpdated(user: UserInfo): Boolean {
-            if (!onUsersUpdatedListeners.isEmpty()) {
-                uiHandler.post {
-                    for (listener in onUsersUpdatedListeners) {
-                        val isValidListener = listener != null && (listener.userIds == null
-                                || listener.userIds!!.isEmpty()
-                                || listener.userIds!!.contains(user.userId))
-                        if (isValidListener) {
-                            listener!!.onUserUpdated(user)
-                        }
+            if (onUsersUpdatedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onUsersUpdatedListeners) {
+                    val isValidListener = listener != null && (listener.userIds == null
+                            || listener.userIds!!.isEmpty()
+                            || listener.userIds!!.contains(user.userId))
+                    if (isValidListener) {
+                        listener!!.onUserUpdated(user)
                     }
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onTelepresenceEventChanged(callEventModel: CallEventModel): Boolean {
-            if (onTelepresenceEventChangedListener.isEmpty()) {
-                return false
-            }
+            if (onTelepresenceEventChangedListener.isEmpty()) return false
             uiHandler.post {
                 for (listener in onTelepresenceEventChangedListener) {
                     listener.onTelepresenceEventChanged(callEventModel)
@@ -291,7 +322,7 @@ class Robot private constructor(context: Context) {
         }
 
         /*****************************************/
-        /*                 Utils                 */
+        /*                 System                */
         /*****************************************/
 
         override fun onNotificationBtnClicked(notificationCallback: NotificationCallback) {
@@ -305,42 +336,40 @@ class Robot private constructor(context: Context) {
         }
 
         override fun onPrivacyModeStateChanged(state: Boolean): Boolean {
-            if (onPrivacyModeStateChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onPrivacyModeStateChangedListeners) {
-                        listener.onPrivacyModeChanged(state)
-                    }
+            if (onPrivacyModeStateChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onPrivacyModeStateChangedListeners) {
+                    listener.onPrivacyModeChanged(state)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onBatteryStatusChanged(batteryData: BatteryData): Boolean {
-            if (onBatteryStatusChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onBatteryStatusChangedListeners) {
-                        listener.onBatteryStatusChanged(batteryData)
-                    }
+            if (onBatteryStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onBatteryStatusChangedListeners) {
+                    listener.onBatteryStatusChanged(batteryData)
                 }
-                return true
             }
-            return false
+            return true
         }
 
+        /*****************************************/
+        /*               Permission              */
+        /*****************************************/
+
         override fun onRequestPermissionResult(permission: String, grantResult: Int): Boolean {
-            if (onRequestPermissionResultListeners.isNotEmpty()) {
-                uiHandler.post {
-                    for (listener in onRequestPermissionResultListeners) {
-                        listener.onRequestPermissionResult(
-                            Permission.valueToEnum(permission),
-                            grantResult
-                        )
-                    }
+            if (onRequestPermissionResultListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onRequestPermissionResultListeners) {
+                    listener.onRequestPermissionResult(
+                        Permission.valueToEnum(permission),
+                        grantResult
+                    )
                 }
-                return true
             }
-            return false
+            return true
         }
 
         /*****************************************/
@@ -394,27 +423,47 @@ class Robot private constructor(context: Context) {
         /*****************************************/
 
         override fun onUserInteractionStatusChanged(isInteracting: Boolean): Boolean {
-            if (onUserInteractionChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onUserInteractionChangedListeners) {
-                        listener.onUserInteraction(isInteracting)
-                    }
+            if (onUserInteractionChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onUserInteractionChangedListeners) {
+                    listener.onUserInteraction(isInteracting)
                 }
-                return true
             }
-            return false
+            return true
         }
 
         override fun onDetectionStateChanged(state: Int): Boolean {
-            if (onDetectionStateChangedListeners.size > 0) {
-                uiHandler.post {
-                    for (listener in onDetectionStateChangedListeners) {
-                        listener.onDetectionStateChanged(state)
-                    }
+            if (onDetectionStateChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onDetectionStateChangedListeners) {
+                    listener.onDetectionStateChanged(state)
                 }
-                return true
             }
-            return false
+            return true
+        }
+
+        override fun onDetectionDataChanged(detectionData: DetectionData): Boolean {
+            if (onDetectionDataChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onDetectionDataChangedListeners) {
+                    listener.onDetectionDataChanged(detectionData)
+                }
+            }
+            return true
+        }
+
+        /*****************************************/
+        /*                Sequence               */
+        /*****************************************/
+
+        override fun onSequencePlayStatusChanged(sequenceId: String, status: Int): Boolean {
+            if (onSequencePlayStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onSequencePlayStatusChangedListeners) {
+                    listener.onSequencePlayStatusChanged(sequenceId, status)
+                }
+            }
+            return true
         }
     }
 
@@ -426,20 +475,16 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
-        sdkService?.let {
-            try {
-                it.onStart(activityInfo)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "onStart(ActivityInfo) - Binder invocation exception.")
-            }
-        } ?: run {
-            Log.w(TAG, "onStart(ActivityInfo) - sdkService=null")
+        try {
+            sdkService?.onStart(activityInfo)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "onStart(ActivityInfo) - Binder invocation exception.")
         }
     }
 
     @RestrictTo(LIBRARY)
     @UiThread
-    protected fun setSdkService(sdkService: ISdkService?) {
+    internal fun setSdkService(sdkService: ISdkService?) {
         this.sdkService = sdkService
         mediaBar = AidlMediaBarController(sdkService)
         registerCallback()
@@ -448,22 +493,16 @@ class Robot private constructor(context: Context) {
 
     @UiThread
     private fun registerCallback() {
-        sdkService?.let {
-            try {
-                it.register(applicationInfo, sdkServiceCallback)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "Remote invocation error.")
-            }
-
-        } ?: run {
-            Log.w(TAG, "sdkService=null")
+        try {
+            sdkService?.register(applicationInfo, sdkServiceCallback)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Remote invocation error")
         }
     }
 
     @UiThread
     fun addOnRobotReadyListener(onRobotReadyListener: OnRobotReadyListener) {
         onRobotReadyListeners.add(onRobotReadyListener)
-
         onRobotReadyListener.onRobotReady(isReady)
     }
 
@@ -482,13 +521,10 @@ class Robot private constructor(context: Context) {
      * @param ttsRequest Which contains all the TTS information temi needs to in order to speak.
      */
     fun speak(ttsRequest: TtsRequest) {
-        sdkService?.let {
-            try {
-                ttsRequest.packageName = applicationInfo.packageName
-                it.speak(ttsRequest)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "Failed to invoke remote call speak()")
-            }
+        try {
+            sdkService?.speak(ttsRequest.apply { packageName = applicationInfo.packageName })
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Failed to invoke remote call speak()")
         }
     }
 
@@ -496,13 +532,12 @@ class Robot private constructor(context: Context) {
      * The wakeup word of the temi's assistant.
      */
     val wakeupWord: String
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.wakeupWord ?: ""
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getWakeupWord() error.")
-                }
+            try {
+                return sdkService?.wakeupWord ?: ""
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getWakeupWord() error")
             }
             return ""
         }
@@ -511,12 +546,10 @@ class Robot private constructor(context: Context) {
      * Trigger temi's wakeup programmatically.
      */
     fun wakeup() {
-        sdkService?.let {
-            try {
-                it.wakeup()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "wakeup() error.")
-            }
+        try {
+            sdkService?.wakeup()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "wakeup() error")
         }
     }
 
@@ -524,12 +557,10 @@ class Robot private constructor(context: Context) {
      * Stops currently processed TTS request and empty the queue.
      */
     fun cancelAllTtsRequests() {
-        sdkService?.let {
-            try {
-                it.cancelAll()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "Failed to invoke remote call cancelAllTtsRequest()")
-            }
+        try {
+            sdkService?.cancelAll()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Failed to invoke remote call cancelAllTtsRequest()")
         }
     }
 
@@ -540,13 +571,10 @@ class Robot private constructor(context: Context) {
      * @param contextsToLock - List of contexts names to lock.
      */
     fun lockContexts(contextsToLock: List<String>) {
-        if (sdkService != null) {
-            try {
-                sdkService!!.lockContexts(contextsToLock)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "lockContexts(List<String>) error.")
-            }
-
+        try {
+            sdkService?.lockContexts(contextsToLock)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "lockContexts(List<String>) error")
         }
     }
 
@@ -556,13 +584,10 @@ class Robot private constructor(context: Context) {
      * @param contextsToRelease - List of contexts names to release.
      */
     fun releaseContexts(contextsToRelease: List<String>) {
-        if (sdkService != null) {
-            try {
-                sdkService!!.releaseContexts(contextsToRelease)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "releaseContexts(List<String>) error.")
-            }
-
+        try {
+            sdkService?.releaseContexts(contextsToRelease)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "releaseContexts(List<String>) error")
         }
     }
 
@@ -641,7 +666,7 @@ class Robot private constructor(context: Context) {
     }
 
     /*****************************************/
-    /*                Location               */
+    /*               Navigation              */
     /*****************************************/
 
     /**
@@ -651,14 +676,12 @@ class Robot private constructor(context: Context) {
      * @return Result of a successful or failed operation.
      */
     fun saveLocation(name: String): Boolean {
-        sdkService?.let {
-            try {
-                return it.saveLocation(name)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "saveLocation(String)")
-            }
+        try {
+            return sdkService?.saveLocation(name) ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "saveLocation(String) error")
         }
-        return false
+        return true
     }
 
     /**
@@ -668,12 +691,10 @@ class Robot private constructor(context: Context) {
      * @return Result of a successful or failed operation.
      */
     fun deleteLocation(name: String): Boolean {
-        sdkService?.let {
-            try {
-                return it.deleteLocation(name)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "deleteLocation(String)")
-            }
+        try {
+            return sdkService?.deleteLocation(name) ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "deleteLocation(String) error")
         }
         return false
     }
@@ -684,13 +705,12 @@ class Robot private constructor(context: Context) {
      * @return List of saved locations.
      */
     val locations: List<String>
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.locations ?: emptyList()
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getLocations()")
-                }
+            try {
+                return sdkService?.locations ?: emptyList()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getLocations() error")
             }
             return emptyList()
         }
@@ -702,14 +722,71 @@ class Robot private constructor(context: Context) {
      */
     fun goTo(location: String) {
         require(location.isNotBlank()) { "Location can not be null or empty." }
-        sdkService?.let {
-            try {
-                it.goTo(location)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "goTo(String) error.")
-            }
+        try {
+            sdkService?.goTo(location)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "goTo(String) error")
         }
     }
+
+    /**
+     * Go to a specific position with (x,y).
+     *
+     * @param position Position holds (x,y).
+     */
+    fun goToPosition(position: Position) {
+        try {
+            sdkService?.goToPosition(position)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "goToPosition() error")
+        }
+    }
+
+    /**
+     *  Set navigation safety level.
+     */
+    var navigationSafety: SafetyLevel
+        @CheckResult
+        get() {
+            try {
+                return SafetyLevel.valueToEnum(
+                    sdkService?.navigationSafety ?: SafetyLevel.DEFAULT.value
+                )
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getNavigationSafety() error")
+            }
+            return SafetyLevel.DEFAULT
+        }
+        set(safetyLevel) {
+            try {
+                sdkService?.setNavigationSafety(applicationInfo.packageName, safetyLevel.value)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setNavigationSafety() error")
+            }
+        }
+
+    /**
+     * Set navigation speed level.
+     */
+    var goToSpeed: SpeedLevel
+        @CheckResult
+        get() {
+            try {
+                return SpeedLevel.valueToEnum(
+                    sdkService?.goToSpeed ?: SpeedLevel.DEFAULT.value
+                )
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getGoToSpeed() error")
+            }
+            return SpeedLevel.DEFAULT
+        }
+        set(speedLevel) {
+            try {
+                sdkService?.setGoToSpeed(applicationInfo.packageName, speedLevel.value)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setGoToSpeed() error")
+            }
+        }
 
     @UiThread
     fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
@@ -731,34 +808,51 @@ class Robot private constructor(context: Context) {
         onLocationsUpdatedListeners.remove(listener)
     }
 
+    @UiThread
+    fun addOnDistanceToLocationChangedListener(listener: OnDistanceToLocationChangedListener) {
+        onDistanceToLocationChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnDistanceToLocationChangedListener(listener: OnDistanceToLocationChangedListener) {
+        onDistanceToLocationChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
+        onCurrentPositionChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
+        onCurrentPositionChangedListeners.remove(listener)
+    }
+
     /*****************************************/
     /*            Movement & Follow          */
     /*****************************************/
 
     /**
      * Request robot to follow user around.
-     * See [OnBeWithMeStatusChangedListener] to listen for status changes.
+     * Add [OnBeWithMeStatusChangedListener] to listen for status changes.
      */
     fun beWithMe() {
-        sdkService?.let {
-            try {
-                it.beWithMe()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "beWithMe()")
-            }
+        try {
+            sdkService?.beWithMe()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "beWithMe() error")
         }
     }
 
     /**
      * Start constraint follow.
+     * Add [OnConstraintBeWithStatusChangedListener] to listen for status changed.
      */
     fun constraintBeWith() {
-        sdkService?.let {
-            try {
-                it.constraintBeWith()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "constraintBeWith() error.")
-            }
+        try {
+            sdkService?.constraintBeWith()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "constraintBeWith() error")
         }
     }
 
@@ -766,13 +860,10 @@ class Robot private constructor(context: Context) {
      * Request robot to stop any movement.
      */
     fun stopMovement() {
-        sdkService?.let {
-            try {
-                it.stopMovement()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "stopMovement()")
-            }
-
+        try {
+            sdkService?.stopMovement()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "stopMovement() error")
         }
     }
 
@@ -783,12 +874,10 @@ class Robot private constructor(context: Context) {
      * @param y Move on the y axis from -1 to 1.
      */
     fun skidJoy(x: Float, y: Float) {
-        sdkService?.let {
-            try {
-                it.skidJoy(x, y)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "skidJoy(float, float) (x=$x, y=$y)")
-            }
+        try {
+            sdkService?.skidJoy(x, y)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "skidJoy(float, float) (x=$x, y=$y) error")
         }
     }
 
@@ -809,13 +898,10 @@ class Robot private constructor(context: Context) {
      * @param degrees the degree amount you want the robot to turn
      */
     fun turnBy(degrees: Int) {
-        sdkService?.let {
-            try {
-                it.turnBy(degrees, 1.0f)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "turnBy(int) (degrees=$degrees)")
-            }
-
+        try {
+            sdkService?.turnBy(degrees, 1.0f)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "turnBy(int) (degrees=$degrees) error")
         }
     }
 
@@ -825,7 +911,7 @@ class Robot private constructor(context: Context) {
      * @param degrees the degree which you want the robot to tilt to, between 55 and -25
      * @param speed   deprecated
      */
-    @Deprecated("See {{@link #tiltAngle(int)}}", ReplaceWith("tiltAngle(degrees)"))
+    @Deprecated("Use tiltAngle(degrees) instead.", ReplaceWith("tiltAngle(degrees)"))
     fun tiltAngle(degrees: Int, speed: Float) {
         tiltAngle(degrees)
     }
@@ -836,13 +922,10 @@ class Robot private constructor(context: Context) {
      * @param degrees the degree which you want the robot to tilt to, between 55 and -25
      */
     fun tiltAngle(degrees: Int) {
-        sdkService?.let {
-            try {
-                it.tiltAngle(degrees, 1.0f)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "turnBy(int) (degrees=$degrees)")
-            }
-
+        try {
+            sdkService?.tiltAngle(degrees, 1.0f)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "turnBy(int) (degrees=$degrees) error")
         }
     }
 
@@ -850,9 +933,9 @@ class Robot private constructor(context: Context) {
      * To tilt temi's head to by a specific degree.
      *
      * @param degrees The degree amount you want the robot to tilt
-     * @param speed
+     * @param speed Deprecated. The value will always be 1.
      */
-    @Deprecated("See {{@link #tiltBy(int)}}", ReplaceWith("tiltBy(degrees)"))
+    @Deprecated("Use tiltBy(degrees) instead.", ReplaceWith("tiltBy(degrees)"))
     fun tiltBy(degrees: Int, speed: Float) {
         tiltBy(degrees)
     }
@@ -863,13 +946,10 @@ class Robot private constructor(context: Context) {
      * @param degrees The degree amount you want the robot to tilt
      */
     fun tiltBy(degrees: Int) {
-        sdkService?.let {
-            try {
-                it.tiltBy(degrees, 1.0f)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "tiltBy(int) (degrees=$degrees)")
-            }
-
+        try {
+            sdkService?.tiltBy(degrees, 1.0f)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "tiltBy(int) (degrees=$degrees) error")
         }
     }
 
@@ -893,6 +973,16 @@ class Robot private constructor(context: Context) {
         onConstraintBeWithStatusChangedListeners.remove(listener)
     }
 
+    @UiThread
+    fun addOnRobotLiftedListener(listener: OnRobotLiftedListener) {
+        onRobotLiftedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnRobotLiftedListener(listener: OnRobotLiftedListener) {
+        onRobotLiftedListeners.remove(listener)
+    }
+
     /*****************************************/
     /*           Users & Telepresence        */
     /*****************************************/
@@ -901,14 +991,12 @@ class Robot private constructor(context: Context) {
      * Get the information of temi's admin.
      */
     val adminInfo: UserInfo?
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.adminInfo
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getAdminInfo() error.")
-                }
-
+            try {
+                return sdkService?.adminInfo
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getAdminInfo() error")
             }
             return null
         }
@@ -917,15 +1005,13 @@ class Robot private constructor(context: Context) {
      * Fetch all the temi contacts.
      */
     val allContact: List<UserInfo>
+        @CheckResult
         get() {
             val contactList = ArrayList<UserInfo>()
-            sdkService?.let {
-                try {
-                    contactList.addAll(it.allContacts)
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getAllContacts() error.")
-                }
-
+            try {
+                contactList.addAll(sdkService?.allContacts ?: emptyList())
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getAllContacts() error")
             }
             return contactList
         }
@@ -934,15 +1020,14 @@ class Robot private constructor(context: Context) {
      * Fetch recent calls.
      */
     val recentCalls: List<RecentCallModel>
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.recentCalls ?: ArrayList()
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getRecentCalls() error.")
-                }
+            try {
+                return sdkService?.recentCalls ?: emptyList()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getRecentCalls() error")
             }
-            return ArrayList()
+            return emptyList()
         }
 
     /**
@@ -953,16 +1038,10 @@ class Robot private constructor(context: Context) {
      * @return The sessionId of Telepresence call
      */
     fun startTelepresence(displayName: String, peerId: String): String {
-        sdkService?.let {
-            try {
-                return it.startTelepresence(displayName, peerId) ?: ""
-            } catch (e: RemoteException) {
-                Log.e(
-                    TAG,
-                    "startTelepresence(String, String) (displayName=$displayName, peerId=$peerId)"
-                )
-            }
-
+        try {
+            return sdkService?.startTelepresence(displayName, peerId) ?: ""
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startTelepresence() error")
         }
         return ""
     }
@@ -1012,7 +1091,7 @@ class Robot private constructor(context: Context) {
     }
 
     /*****************************************/
-    /*                 Utils                 */
+    /*                 System                */
     /*****************************************/
 
     /**
@@ -1021,14 +1100,12 @@ class Robot private constructor(context: Context) {
      * @return The serial number of the robot.
      */
     val serialNumber: String?
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.serialNumber
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getSerialNumber()")
-                }
-
+            try {
+                return sdkService?.serialNumber
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getSerialNumber() error")
             }
             return null
         }
@@ -1039,14 +1116,12 @@ class Robot private constructor(context: Context) {
      * @return The battery data the robot.
      */
     val batteryData: BatteryData?
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.batteryData
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getBatteryData() error.")
-                }
-
+            try {
+                return sdkService?.batteryData
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getBatteryData() error")
             }
             return null
         }
@@ -1055,13 +1130,10 @@ class Robot private constructor(context: Context) {
      * Go to the App list of Launcher.
      */
     fun showAppList() {
-        sdkService?.let {
-            try {
-                it.showAppList()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "showAppList() error.")
-            }
-
+        try {
+            sdkService?.showAppList()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "showAppList() error")
         }
     }
 
@@ -1069,12 +1141,10 @@ class Robot private constructor(context: Context) {
      * Show the top bar of Launcher.
      */
     fun showTopBar() {
-        sdkService?.let {
-            try {
-                it.showTopBar()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "showTopBar() error.")
-            }
+        try {
+            sdkService?.showTopBar()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "showTopBar() error")
         }
     }
 
@@ -1082,12 +1152,10 @@ class Robot private constructor(context: Context) {
      * Hide the top bar of Launcher.
      */
     fun hideTopBar() {
-        sdkService?.let {
-            try {
-                it.hideTopBar()
-            } catch (e: RemoteException) {
-                Log.e(TAG, "hideTopBar() error.")
-            }
+        try {
+            sdkService?.hideTopBar()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "hideTopBar() error")
         }
     }
 
@@ -1095,79 +1163,227 @@ class Robot private constructor(context: Context) {
      * Toggle privacy mode on temi.
      */
     var privacyMode: Boolean
-        set(on) {
-            sdkService?.let {
-                try {
-                    it.togglePrivacyMode(on)
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "togglePrivacyMode() error.")
-                }
-            }
-        }
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.privacyModeState
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getPrivacyModeState() error.")
-                }
+            try {
+                return sdkService?.privacyModeState ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getPrivacyModeState() error")
             }
             return false
         }
+        set(on) {
+            try {
+                sdkService?.togglePrivacyMode(on)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "togglePrivacyMode() error")
+            }
+        }
 
     /**
-     * Get(Set) HardButtons enabled(disabled)
+     * Get(Set) HardButtons enabled(disabled).
      */
     var isHardButtonsDisabled: Boolean
-        set(disable) {
-            sdkService?.let {
-                try {
-                    it.toggleHardButtons(disable)
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "isHardButtonsEnabled() - set - error")
-                }
-            }
-        }
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.isHardButtonsDisabled
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "isHardButtonsEnabled() - get - error")
-                }
+            try {
+                return sdkService?.isHardButtonsDisabled ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setHardButtonsDisabled() error")
             }
             return false
         }
+        set(disable) {
+            try {
+                sdkService?.toggleHardButtons(disable)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isHardButtonsEnabled() error")
+            }
+        }
 
     /**
-     * Get version of the Launcher
+     * Get version of the Launcher.
      */
     val launcherVersion: String
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.launcherVersion ?: ""
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getLauncherVersion() error")
-                }
+            try {
+                return sdkService?.launcherVersion ?: ""
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getLauncherVersion() error")
             }
             return ""
         }
 
     /**
-     * Get version of the Robox
+     * Get version of the Robox.
      */
     val roboxVersion: String
+        @CheckResult
         get() {
-            sdkService?.let {
-                try {
-                    return it.roboxVersion ?: ""
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "getRoboxVersion() error")
-                }
+            try {
+                return sdkService?.roboxVersion ?: ""
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getRoboxVersion() error")
             }
             return ""
         }
+
+    /**
+     * Show or hide the green badge(Movement indicator such as navigation, follow...) at the top of the screen.
+     */
+    @get:JvmName("isTopBadgeEnabled")
+    var topBadgeEnabled: Boolean
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.isTopBadgeEnabled ?: true
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isTopBadgeEnabled() error")
+            }
+            return true
+        }
+        /**
+         * @param enabled true to enable, false to disable the green badge.
+         */
+        set(enabled) {
+            if (!isMetaDataKiosk) return
+            try {
+                sdkService?.setTopBadgeEnabled(applicationInfo.packageName, enabled)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setTopBadgeEnabled() error")
+            }
+        }
+
+    /**
+     * Turn on/off detection mode.
+     */
+    @get: JvmName("isDetectionModeOn")
+    var detectionModeOn: Boolean
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.isDetectionModeOn ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isDetectionModeOn() error")
+            }
+            return false
+        }
+        /**
+         * @param on true to turn on, false to turn off.
+         */
+        set(on) {
+            try {
+                sdkService?.setDetectionModeOn(applicationInfo.packageName, on)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setDetectionModeOn() error")
+            }
+        }
+
+    /**
+     * Turn on/off track user(welcome mode).
+     */
+    @get:JvmName("isTrackUserOn")
+    var trackUserOn: Boolean
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.isTrackUserOn ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isTrackUser() error")
+            }
+            return false
+        }
+        /**
+         * @param on true to turn on, false to turn off.
+         */
+        set(on) {
+            try {
+                sdkService?.setTrackUserOn(applicationInfo.packageName, on)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setTrackUserOn() error")
+            }
+        }
+
+    /**
+     * Turn on/off auto return.
+     */
+    @get:JvmName("isAutoReturnOn")
+    var autoReturnOn: Boolean
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.isAutoReturnOn ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isAutoReturnOn() error")
+            }
+            return false
+        }
+        /**
+         * @param on true to turn on, false to turn off.
+         */
+        set(on) {
+            try {
+                sdkService?.setAutoReturnOn(applicationInfo.packageName, on)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setAutoReturnOn() error")
+            }
+        }
+
+    /**
+     * Volume of Launcher OS.
+     */
+    var volume: Int
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.volume ?: 0
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getVolume() error")
+            }
+            return 0
+        }
+        /**
+         * @param volume the volume you want to set to Launcher.
+         */
+        set(volume) {
+            try {
+                val validVolume = when {
+                    volume < 0 -> 0
+                    volume > 10 -> 10
+                    else -> volume
+                }
+                sdkService?.setVolume(applicationInfo.packageName, validVolume)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setVolume() error")
+            }
+        }
+
+    /*****************************************/
+    /*            Face Recognition           */
+    /*****************************************/
+
+    /**
+     * Start face recognition.
+     */
+    fun startFaceRecognition() {
+        try {
+            sdkService?.startFaceRecognition(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startFaceRecognition() error")
+        }
+    }
+
+    /**
+     * Stop face recognition.
+     */
+    fun stopFaceRecognition() {
+        try {
+            sdkService?.stopFaceRecognition(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "stopFaceRecognition() error")
+        }
+    }
 
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
@@ -1200,66 +1416,6 @@ class Robot private constructor(context: Context) {
         }
     }
 
-    /**
-     * Check permission grant status.
-     *
-     * @param permission The [Permission] you want to check.
-     * @return Grant status. See [com.robotemi.sdk.permission.Result].
-     */
-    fun checkSelfPermission(permission: Permission): Int {
-        if (permission.isKioskPermission && !isMetaDataKiosk) {
-            Log.w(TAG, "Only Kiosk App may have kiosk permissions")
-            return DENIED
-        }
-        sdkService?.let {
-            try {
-                return it.checkSelfPermission(applicationInfo.packageName, permission.value)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "checkSelfPermission() error.")
-            }
-        }
-        return DENIED
-    }
-
-    /**
-     * Request permissions.
-     *
-     * If you already had the permission, Launcher will not handle this request again.
-     *
-     * @param permissions A list holds the permissions you want to request.
-     */
-    fun requestPermissions(permissions: List<Permission>) {
-        val permissionsFromMetadata =
-            applicationInfo.metaData?.getString(SdkConstants.METADATA_PERMISSIONS)
-        if (permissionsFromMetadata.isNullOrBlank()) {
-            Log.w(TAG, "There is no valid permission in metadata.")
-            return
-        }
-        val validPermissions = mutableListOf<String>()
-        for (permission in permissions) {
-            if (!permissionsFromMetadata.contains(permission.value)) {
-                Log.w(TAG, "This permission $permission is not declared in AndroidManifest.xml.")
-                continue
-            }
-            if (permission.isKioskPermission && !isMetaDataKiosk) {
-                Log.w(TAG, "Kiosk permission $permission should request in Kiosk Mode.")
-                continue
-            }
-            validPermissions.add(permission.value)
-        }
-        if (validPermissions.isEmpty()) {
-            Log.w(TAG, "There is no valid permission in permissions.")
-            return
-        }
-        sdkService?.let {
-            try {
-                it.requestPermissions(applicationInfo.packageName, validPermissions)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "requestPermissions() error.")
-            }
-        }
-    }
-
     @UiThread
     fun addOnPrivacyModeStateChangedListener(listener: OnPrivacyModeChangedListener) {
         onPrivacyModeStateChangedListeners.add(listener)
@@ -1280,16 +1436,6 @@ class Robot private constructor(context: Context) {
         onBatteryStatusChangedListeners.remove(listener)
     }
 
-    @UiThread
-    fun addOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
-        onRequestPermissionResultListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
-        onRequestPermissionResultListeners.remove(listener)
-    }
-
     /*****************************************/
     /*               Kiosk Mode              */
     /*****************************************/
@@ -1300,51 +1446,80 @@ class Robot private constructor(context: Context) {
      * @return Value of the Metadata Kiosk.
      */
     private val isMetaDataKiosk: Boolean
-        get() = applicationInfo.metaData != null && applicationInfo.metaData.getBoolean(
-            SdkConstants.METADATA_KIOSK,
-            false
-        )
+        get() = applicationInfo.metaData != null
+                && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false)
 
     /**
      * Toggle the wakeup trigger on and off
      *
-     * @param disable set true to disable the wakeup or false to enable it
+     * @param disabled set true to disable the wakeup or false to enable it
      */
-    fun toggleWakeup(disable: Boolean) {
-        sdkService?.let {
-            if (isMetaDataKiosk) {
-                try {
-                    it.toggleWakeup(disable)
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "toggleWakeup() error.")
-                }
-
-            } else {
-                Log.e(TAG, "toggleWakeup() Wakeup can only be toggled in Kiosk Mode")
-            }
+    fun toggleWakeup(disabled: Boolean) {
+        if (!isMetaDataKiosk) {
+            Log.e(TAG, "Wakeup can only be toggled in Kiosk Mode")
+            return
+        }
+        try {
+            sdkService?.toggleWakeup(disabled)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "toggleWakeup() error")
         }
     }
 
     /**
-     * Toggle the visibility of the navigation billboard when you perform goTo commands
-     *
-     * @param hide set true to hide the billboard or false to display it
+     * Toggle the visibility of the navigation billboard when you perform goTo commands.
      */
-    fun toggleNavigationBillboard(hide: Boolean) {
-        sdkService?.let {
-            if (isMetaDataKiosk) {
-                try {
-                    it.toggleNavigationBillboard(hide)
-                } catch (e: RemoteException) {
-                    Log.e(TAG, "toggleNavigationBillboard() error.")
-                }
-            } else {
-                Log.e(
-                    TAG,
-                    "toggleNavigationBillboard() Billboard can only be toggled in Kiosk Mode"
-                )
+    @get:JvmName("isNavigationBillboardDisabled")
+    @set:JvmName("toggleNavigationBillboard")
+    var navigationBillboardDisabled: Boolean
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.isGoToBillboardDisabled ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isNavigationBillboardDisabled() error")
+            }
+            return false
+        }
+        /**
+         * @param disabled true to disable the billboard or false to enable it.
+         */
+        set(disabled) {
+            if (!isMetaDataKiosk) {
+                Log.e(TAG, "Billboard can only be toggled in Kiosk Mode")
+                return
+            }
+            try {
+                sdkService?.setGoToBillboardDisabled(applicationInfo.packageName, disabled)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "toggleNavigationBillboard() error")
             }
         }
+
+    fun requestToBeKioskApp() {
+        if (!isMetaDataKiosk) {
+            Log.e(TAG, "No kiosk mode declaration in meta data")
+            return
+        }
+        try {
+            sdkService?.requestToBeKioskApp(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "requestToBeKioskApp() error")
+        }
+    }
+
+    /**
+     * Whether this App is selected as the Kiosk Mode App.
+     */
+    @CheckResult
+    fun isSelectedKioskApp(): Boolean {
+        if (!isMetaDataKiosk) return false
+        try {
+            return sdkService?.isSelectedKioskApp(applicationInfo.packageName) ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isSelectedKioskApp() error")
+        }
+        return false
     }
 
     /*****************************************/
@@ -1431,6 +1606,144 @@ class Robot private constructor(context: Context) {
         onDetectionStateChangedListeners.remove(listener)
     }
 
+    @UiThread
+    fun addOnDetectionDataChangedListener(listener: OnDetectionDataChangedListener) {
+        onDetectionDataChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnDetectionDataChangedListener(listener: OnDetectionDataChangedListener) {
+        onDetectionDataChangedListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*               Permission              */
+    /*****************************************/
+
+    /**
+     * Check permission grant status.
+     *
+     * @param permission The [Permission] you want to check.
+     * @return Grant status. See [com.robotemi.sdk.permission.Permission.PermissionResult].
+     */
+    @Permission.PermissionResult
+    @CheckResult
+    fun checkSelfPermission(permission: Permission): Int {
+        if (permission.isKioskPermission && !isMetaDataKiosk) {
+            Log.w(TAG, "Only Kiosk App may have kiosk permissions")
+            return Permission.DENIED
+        }
+        try {
+            return sdkService?.checkSelfPermission(applicationInfo.packageName, permission.value)
+                ?: Permission.DENIED
+        } catch (e: RemoteException) {
+            Log.e(TAG, "checkSelfPermission() error")
+        }
+        return Permission.DENIED
+    }
+
+    /**
+     * Request permissions.
+     *
+     * If you already had the permission, Launcher will not handle this request again.
+     *
+     * Add [OnRequestPermissionResultListener] to listen the request result.
+     *
+     * @param permissions A list holds the permissions you want to request.
+     */
+    fun requestPermissions(permissions: List<Permission>) {
+        val permissionsFromMetadata =
+            applicationInfo.metaData?.getString(SdkConstants.METADATA_PERMISSIONS)
+        if (permissionsFromMetadata.isNullOrBlank()) {
+            Log.w(TAG, "There is no valid permission in metadata")
+            return
+        }
+
+        val validPermissions = mutableListOf<String>()
+        for (permission in permissions) {
+            if (!permissionsFromMetadata.contains(permission.value)) {
+                Log.w(TAG, "This permission $permission is not declared in AndroidManifest.xml")
+                continue
+            }
+            if (permission.isKioskPermission && !isMetaDataKiosk) {
+                Log.w(TAG, "Kiosk permission $permission should request in Kiosk Mode")
+                continue
+            }
+            validPermissions.add(permission.value)
+        }
+
+        if (validPermissions.isEmpty()) {
+            Log.w(TAG, "There is no valid permission in permissions")
+            return
+        }
+
+        try {
+            sdkService?.requestPermissions(applicationInfo.packageName, validPermissions)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "requestPermissions() error")
+        }
+    }
+
+    @UiThread
+    fun addOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
+        onRequestPermissionResultListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnRequestPermissionResultListener(listener: OnRequestPermissionResultListener) {
+        onRequestPermissionResultListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*                Sequence               */
+    /*****************************************/
+
+    /**
+     * Fetch all sequences user created on the Web platform.
+     *
+     * @param callback Holds the fetch result.
+     */
+    fun fetchAllSequences(callback: SequenceCallback) {
+        try {
+            sdkService?.fetchAllSequences(
+                applicationInfo.packageName,
+                object : SequenceRemoteCallback.Stub() {
+                    override fun onSuccess(sequences: MutableList<SequenceModel>) {
+                        uiHandler.post { callback.onSuccess(sequences.toList()) }
+                    }
+
+                    override fun onFailure(errorMsg: String) {
+                        uiHandler.post { callback.onFailure(errorMsg) }
+                    }
+                })
+        } catch (e: RemoteException) {
+            Log.e(TAG, "fetchAllSequences() error")
+        }
+    }
+
+    /**
+     * Play sequence by sequence ID.
+     *
+     * @param sequenceId Sequence ID you want to play.
+     */
+    fun playSequence(sequenceId: String) {
+        try {
+            sdkService?.playSequence(applicationInfo.packageName, sequenceId)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "playSequence() error")
+        }
+    }
+
+    @UiThread
+    fun addOnSequencePlayStatusChangedListener(listener: OnSequencePlayStatusChangedListener) {
+        onSequencePlayStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnSequencePlayStatusChangedListener(listener: OnSequencePlayStatusChangedListener) {
+        onSequencePlayStatusChangedListeners.remove(listener)
+    }
+
     /*****************************************/
     /*               Interface               */
     /*****************************************/
@@ -1476,15 +1789,7 @@ class Robot private constructor(context: Context) {
 
     companion object {
 
-        val DEFAULT_ACTION = "skill.default"
-
-        val PAUSE = "reserved.pauseMediaBar"
-
-        val STOP = "reserved.stop"
-
-        val RESUME = "reserved.resume"
-
-        private val TAG = "Robot"
+        private const val TAG = "Robot"
 
         private var instance: Robot? = null
 
