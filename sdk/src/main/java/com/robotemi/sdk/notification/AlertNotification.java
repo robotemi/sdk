@@ -63,6 +63,8 @@ public class AlertNotification implements Notification, Parcelable {
 
     private Bitmap bitmap;
 
+    private boolean quite;
+
     private AlertNotification(Builder builder) {
         this.type = builder.type;
         this.title = builder.title;
@@ -79,6 +81,7 @@ public class AlertNotification implements Notification, Parcelable {
         this.altTextRes = builder.altTextRes;
         this.isDismissible = builder.isDismissible;
         this.timeout = builder.timeout;
+        this.quite = builder.quite;
         this.notificationId = UUID.randomUUID().toString();
     }
 
@@ -100,6 +103,7 @@ public class AlertNotification implements Notification, Parcelable {
         this.isDismissible = in.readByte() != 0;
         this.timeout = in.readInt();
         this.bitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        this.quite = in.readByte() != 0;
     }
 
     public static AlertNotification.Builder builder(String title) {
@@ -179,6 +183,10 @@ public class AlertNotification implements Notification, Parcelable {
         return altTextRes;
     }
 
+    public boolean getQuite() {
+        return quite;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -202,6 +210,7 @@ public class AlertNotification implements Notification, Parcelable {
         dest.writeInt(this.timeout);
         dest.writeInt(this.altTextRes);
         dest.writeParcelable(this.bitmap, flags);
+        dest.writeByte(this.quite ? (byte) 1 : (byte) 0);
     }
 
     public static class Builder {
@@ -243,6 +252,8 @@ public class AlertNotification implements Notification, Parcelable {
         boolean isDismissible = true;
 
         int timeout = DEFAULT_TIMEOUT_DURATION;
+
+        boolean quite = false;
 
         public Builder(String title) {
             this.title = title;
@@ -318,6 +329,11 @@ public class AlertNotification implements Notification, Parcelable {
             if (timeout > 0) {
                 autoTimeout = true;
             }
+            return this;
+        }
+
+        public AlertNotification.Builder quite(boolean quite) {
+            this.quite = quite;
             return this;
         }
 
