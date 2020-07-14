@@ -4,15 +4,16 @@ import androidx.annotation.IntDef
 
 interface OnSequencePlayStatusChangedListener {
 
-    fun onSequencePlayStatusChanged(sequenceId: String, @Status status: Int)
+    fun onSequencePlayStatusChanged(@Status status: Int)
 
-    @IntDef(START, COMPLETE, ERROR)
+    @IntDef(IDLE, PREPARING, PLAYING, ERROR)
     @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
     annotation class Status
 
     companion object {
-        const val START = 1
-        const val COMPLETE = 2
-        const val ERROR = 0
+        const val IDLE = 0
+        const val PREPARING = 1
+        const val PLAYING = 2
+        const val ERROR = -1
     }
 }

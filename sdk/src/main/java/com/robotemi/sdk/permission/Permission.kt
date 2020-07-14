@@ -11,13 +11,9 @@ import androidx.annotation.IntDef
 enum class Permission(val value: String, val isKioskPermission: Boolean) {
 
     FACE_RECOGNITION("com.robotemi.permission.face_recognition", true),
-
     MAP("com.robotemi.permission.map", true),
-
     SETTINGS("com.robotemi.permission.settings", true),
-
     SEQUENCE("com.robotemi.permission.sequence", true),
-
     UNKNOWN("unknown", false);
 
     companion object {

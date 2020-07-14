@@ -12,8 +12,9 @@ import com.robotemi.sdk.mediabar.MediaBarData;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
-import com.robotemi.sdk.sequence.SequenceRemoteCallback;
+import com.robotemi.sdk.sequence.SequenceModel;
 import com.robotemi.sdk.navigation.model.Position;
+import com.robotemi.sdk.map.MapDataModel;
 
 interface ISdkService {
 
@@ -196,7 +197,7 @@ interface ISdkService {
 
     int checkSelfPermission(in String packageName, in String permission);
 
-    void requestPermissions(in String packageName, in List<String> permissions);
+    void requestPermissions(in String packageName, in List<String> permissions, int requestCode);
 
     void requestToBeKioskApp(in String packageName);
 
@@ -238,9 +239,13 @@ interface ISdkService {
 
     void stopFaceRecognition(in String packageName);
 
-    void fetchAllSequences(in String packageName, in SequenceRemoteCallback callback);
+    List<SequenceModel> getAllSequences(in String packageName);
 
     void playSequence(in String packageName, in String sequenceId);
 
     void goToPosition(in Position position);
+
+    MapDataModel getMapData(in String packageName);
+
+    void startNlu(in String packageName, in String content);
 }

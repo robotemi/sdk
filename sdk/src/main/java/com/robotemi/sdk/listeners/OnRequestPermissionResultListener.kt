@@ -5,6 +5,7 @@ import com.robotemi.sdk.permission.Permission
 interface OnRequestPermissionResultListener {
     fun onRequestPermissionResult(
         permission: Permission,
-        @Permission.PermissionResult grantResult: Int
+        @Permission.PermissionResult grantResult: Int,
+        requestCode: Int
     )
 }

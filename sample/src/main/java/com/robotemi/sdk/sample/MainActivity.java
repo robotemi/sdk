@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,12 +13,15 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.CheckResult;
@@ -32,6 +36,8 @@ import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
+import com.robotemi.sdk.face.ContactModel;
+import com.robotemi.sdk.face.OnFaceRecognizedListener;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionDataChangedListener;
@@ -52,6 +58,7 @@ import com.robotemi.sdk.navigation.model.SafetyLevel;
 import com.robotemi.sdk.navigation.model.SpeedLevel;
 import com.robotemi.sdk.permission.Permission;
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener;
+import com.robotemi.sdk.sequence.SequenceModel;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -85,16 +92,25 @@ public class MainActivity extends AppCompatActivity implements
         OnSequencePlayStatusChangedListener,
         OnRobotLiftedListener,
         OnDetectionDataChangedListener,
-        OnUserInteractionChangedListener {
+        OnUserInteractionChangedListener,
+        OnFaceRecognizedListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
+    private static final int REQUEST_CODE_NORMAL = 0;
+    private static final int REQUEST_CODE_FACE_START = 1;
+    private static final int REQUEST_CODE_FACE_STOP = 2;
+    private static final int REQUEST_CODE_MAP = 3;
+    private static final int REQUEST_CODE_SEQUENCE_FETCH_ALL = 4;
+    private static final int REQUEST_CODE_SEQUENCE_PLAY = 5;
+
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            "com.robotemi.permission.map"
     };
 
     private EditText etSpeak, etSaveLocation, etGoTo, etPosition;
@@ -104,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements
     private Robot robot;
 
     private CustomAdapter mAdapter;
+
+    private TextView tvLog;
 
     /**
      * Hiding keyboard after every button press
@@ -209,12 +227,15 @@ public class MainActivity extends AppCompatActivity implements
         robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
         robot.addOnRequestPermissionResultListener(this);
         robot.addOnTelepresenceEventChangedListener(this);
+        robot.addOnFaceRecognizedListener(this);
+
     }
 
     @Override
     protected void onDestroy() {
         robot.removeOnRequestPermissionResultListener(this);
         robot.removeOnTelepresenceEventChangedListener(this);
+        robot.removeOnFaceRecognizedListener(this);
         super.onDestroy();
     }
 
@@ -223,6 +244,8 @@ public class MainActivity extends AppCompatActivity implements
         etSaveLocation = findViewById(R.id.etSaveLocation);
         etGoTo = findViewById(R.id.etGoTo);
         etPosition = findViewById(R.id.etPositioin);
+        tvLog = findViewById(R.id.tvLog);
+        tvLog.setMovementMethod(new ScrollingMovementMethod());
     }
 
     /**
@@ -319,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements
     public void getBatteryData(View view) {
         BatteryData batteryData = robot.getBatteryData();
         if (batteryData == null) {
-            Log.e("getBatteryData()", "batteryData is null");
+            printLog("getBatteryData()", "batteryData is null");
             return;
         }
         if (batteryData.isCharging()) {
@@ -403,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void callOwner(View view) {
         if (robot.getAdminInfo() == null) {
-            Log.d("callOwner()", "adminInfo is null.");
+            printLog("callOwner()", "adminInfo is null.");
             return;
         }
         robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId());
@@ -453,6 +476,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onWakeupWord(@NotNull String wakeupWord, int direction) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
+        printLog("onWakeupWord", wakeupWord + ", " + direction);
     }
 
     @Override
@@ -464,28 +488,28 @@ public class MainActivity extends AppCompatActivity implements
     public void onBeWithMeStatusChanged(String status) {
         //  When status changes to "lock" the robot recognizes the user and begin to follow.
         switch (status) {
-            case "abort":
+            case OnBeWithMeStatusChangedListener.ABORT:
                 // do something i.e. speak
                 robot.speak(TtsRequest.create("Abort", false));
                 break;
 
-            case "calculating":
+            case OnBeWithMeStatusChangedListener.CALCULATING:
                 robot.speak(TtsRequest.create("Calculating", false));
                 break;
 
-            case "lock":
+            case OnBeWithMeStatusChangedListener.LOCK:
                 robot.speak(TtsRequest.create("Lock", false));
                 break;
 
-            case "search":
+            case OnBeWithMeStatusChangedListener.SEARCH:
                 robot.speak(TtsRequest.create("search", false));
                 break;
 
-            case "start":
+            case OnBeWithMeStatusChangedListener.START:
                 robot.speak(TtsRequest.create("Start", false));
                 break;
 
-            case "track":
+            case OnBeWithMeStatusChangedListener.TRACK:
                 robot.speak(TtsRequest.create("Track", false));
                 break;
         }
@@ -493,26 +517,26 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onGoToLocationStatusChanged(@NotNull String location, String status, int descriptionId, @NotNull String description) {
-        Log.d("GoToStatusChanged", "status=" + status + ", descriptionId=" + descriptionId + ", description=" + description);
+        printLog("GoToStatusChanged", "status=" + status + ", descriptionId=" + descriptionId + ", description=" + description);
         robot.speak(TtsRequest.create(description, false));
         switch (status) {
-            case "start":
+            case OnGoToLocationStatusChangedListener.START:
                 robot.speak(TtsRequest.create("Starting", false));
                 break;
 
-            case "calculating":
+            case OnGoToLocationStatusChangedListener.CALCULATING:
                 robot.speak(TtsRequest.create("Calculating", false));
                 break;
 
-            case "going":
+            case OnGoToLocationStatusChangedListener.GOING:
                 robot.speak(TtsRequest.create("Going", false));
                 break;
 
-            case "complete":
+            case OnGoToLocationStatusChangedListener.COMPLETE:
                 robot.speak(TtsRequest.create("Completed", false));
                 break;
 
-            case "abort":
+            case OnGoToLocationStatusChangedListener.ABORT:
                 robot.speak(TtsRequest.create("Cancelled", false));
                 break;
         }
@@ -521,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConversationAttaches(boolean isAttached) {
         //Do something as soon as the conversation is displayed.
-        Log.d("onConversationAttaches", "isAttached:" + isAttached);
+        printLog("onConversationAttaches", "isAttached:" + isAttached);
     }
 
     @Override
@@ -546,7 +570,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void toggleNavBillboard(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         robot.toggleNavigationBillboard(!robot.isNavigationBillboardDisabled());
@@ -554,12 +578,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConstraintBeWithStatusChanged(boolean isConstraint) {
-        Log.d("onConstraintBeWith", "status = " + isConstraint);
+        printLog("onConstraintBeWith", "status = " + isConstraint);
+        robot.stopMovement();
     }
 
     @Override
     public void onDetectionStateChanged(int state) {
-        Log.d("onDetectionStateChanged", "state = " + state);
+        printLog("", "onDetectionStateChanged: state = " + state);
         if (state == DETECTED) {
             robot.constraintBeWith();
         } else {
@@ -568,23 +593,24 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * If you want to cover the voice flow in Launcher OS, please add following meta-data to AndroidManifest.xml.
-     * <p>
+     * If you want to cover the voice flow in Launcher OS,
+     * please add following meta-data to AndroidManifest.xml.
+     * <pre>
      * <meta-data
-     * android:name="com.robotemi.sdk.metadata.KIOSK"
-     * android:value="TRUE" />
-     * <p>
+     *     android:name="com.robotemi.sdk.metadata.KIOSK"
+     *     android:value="TRUE" />
+     *
      * <meta-data
-     * android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
-     * android:value="TRUE" />
-     * <p>
+     *     android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
+     *     android:value="TRUE" />
+     * <pre>
      * And also need to select this App as the Kiosk Mode App in Settings > Kiosk Mode.
      *
      * @param asrResult The result of the ASR after waking up temi.
      */
     @Override
     public void onAsrResult(final @NonNull String asrResult) {
-        Log.d("onAsrResult", "asrResult = " + asrResult);
+        printLog("onAsrResult", "asrResult = " + asrResult);
         if (asrResult.equalsIgnoreCase("Hello")) {
             robot.askQuestion("Hello, I'm temi, what can I do for you?");
         } else if (asrResult.equalsIgnoreCase("Play music")) {
@@ -608,10 +634,12 @@ public class MainActivity extends AppCompatActivity implements
 
     private void playMovie() {
         // Play movie...
+        printLog("onAsrResult", "Play movie...");
     }
 
     private void playMusic() {
         // Play music...
+        printLog("onAsrResult", "Play music...");
     }
 
     public void privacyModeOn(View view) {
@@ -649,7 +677,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onTelepresenceEventChanged(@NotNull CallEventModel callEventModel) {
-        Log.d("onTelepresenceEvent", callEventModel.toString());
+        printLog("onTelepresenceEvent", callEventModel.toString());
         if (callEventModel.getType() == CallEventModel.TYPE_INCOMING) {
             Toast.makeText(this, "Incoming call", Toast.LENGTH_LONG).show();
         } else {
@@ -659,10 +687,34 @@ public class MainActivity extends AppCompatActivity implements
 
     @SuppressLint("DefaultLocale")
     @Override
-    public void onRequestPermissionResult(@NotNull Permission permission, int grantResult) {
+    public void onRequestPermissionResult(@NotNull Permission permission, int grantResult, int requestCode) {
         String log = String.format("Permission: %s, grantResult: %d", permission.getValue(), grantResult);
         Toast.makeText(this, log, Toast.LENGTH_SHORT).show();
-        Log.d("onRequestPermission", log);
+        printLog("onRequestPermission", log);
+        if (grantResult == Permission.DENIED) {
+            return;
+        }
+        switch (permission) {
+            case FACE_RECOGNITION:
+                if (requestCode == REQUEST_CODE_FACE_START) {
+                    robot.startFaceRecognition();
+                } else if (requestCode == REQUEST_CODE_FACE_STOP) {
+                    robot.stopFaceRecognition();
+                }
+                break;
+            case SEQUENCE:
+                if (requestCode == REQUEST_CODE_SEQUENCE_FETCH_ALL) {
+                    getAllSequences();
+                } else if (requestCode == REQUEST_CODE_SEQUENCE_PLAY) {
+                    playFirstSequence();
+                }
+                break;
+            case MAP:
+                if (requestCode == REQUEST_CODE_MAP) {
+                    getMap();
+                }
+                break;
+        }
     }
 
     public void requestFace(View view) {
@@ -672,7 +724,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         List<Permission> permissions = new ArrayList<>();
         permissions.add(Permission.FACE_RECOGNITION);
-        robot.requestPermissions(permissions);
+        robot.requestPermissions(permissions, REQUEST_CODE_NORMAL);
     }
 
     public void requestMap(View view) {
@@ -682,7 +734,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         List<Permission> permissions = new ArrayList<>();
         permissions.add(Permission.MAP);
-        robot.requestPermissions(permissions);
+        robot.requestPermissions(permissions, REQUEST_CODE_NORMAL);
     }
 
     public void requestSettings(View view) {
@@ -692,7 +744,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         List<Permission> permissions = new ArrayList<>();
         permissions.add(Permission.SETTINGS);
-        robot.requestPermissions(permissions);
+        robot.requestPermissions(permissions, REQUEST_CODE_NORMAL);
     }
 
     public void requestSequence(View view) {
@@ -702,7 +754,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         List<Permission> permissions = new ArrayList<>();
         permissions.add(Permission.SEQUENCE);
-        robot.requestPermissions(permissions);
+        robot.requestPermissions(permissions, REQUEST_CODE_NORMAL);
     }
 
     public void requestAll(View view) {
@@ -714,11 +766,11 @@ public class MainActivity extends AppCompatActivity implements
             }
             permissions.add(permission);
         }
-        robot.requestPermissions(permissions);
+        robot.requestPermissions(permissions, REQUEST_CODE_NORMAL);
     }
 
     public void startFaceRecognition(View view) {
-        if (requestPermissionIfNeeded(Permission.FACE_RECOGNITION)) {
+        if (requestPermissionIfNeeded(Permission.FACE_RECOGNITION, REQUEST_CODE_FACE_START)) {
             return;
         }
         robot.startFaceRecognition();
@@ -729,7 +781,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void setGoToSpeed(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         List<String> speedLevels = new ArrayList<>();
@@ -750,7 +802,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void setGoToSafety(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         List<String> safetyLevel = new ArrayList<>();
@@ -770,39 +822,40 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void toggleTopBadge(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         robot.setTopBadgeEnabled(!robot.isTopBadgeEnabled());
     }
 
     public void toggleDetectionMode(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         robot.setDetectionModeOn(!robot.isDetectionModeOn());
     }
 
     public void toggleAutoReturn(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         robot.setAutoReturnOn(!robot.isAutoReturnOn());
     }
 
     public void toggleTrackUser(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         robot.setTrackUserOn(!robot.isTrackUserOn());
     }
 
     public void getVolume(View view) {
-        Toast.makeText(this, robot.getVolume() + "", Toast.LENGTH_SHORT).show();
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL))
+            Toast.makeText(this, robot.getVolume() + "", Toast.LENGTH_SHORT).show();
     }
 
     public void setVolume(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS)) {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
         List<String> volumeList = new ArrayList<>(Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
@@ -842,7 +895,7 @@ public class MainActivity extends AppCompatActivity implements
             Toast.makeText(this, String.format("(%f,%f)", position.getX(), position.getY()), Toast.LENGTH_SHORT).show();
             robot.goToPosition(position);
         } catch (Exception e) {
-            Log.e("goToPosition", e.getMessage());
+            printLog("goToPosition", e.getMessage());
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
@@ -850,23 +903,28 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onDistanceToLocationChanged(@NotNull Map<String, Float> distances) {
         for (String location : distances.keySet()) {
-            Log.d("onDistanceToLocation", "location:" + location + ", distance:" + distances.get(location));
+            printLog("onDistanceToLocation", "location:" + location + ", distance:" + distances.get(location));
         }
     }
 
     @Override
     public void onCurrentPositionChanged(@NotNull Position position) {
-        Log.d("onCurrentPosition", position.toString());
+        printLog("onCurrentPosition", position.toString());
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
-    public void onSequencePlayStatusChanged(@NotNull String sequenceId, int status) {
-        Log.d("onSequencePlayStatus", String.format("sequenceId:%s, status:%d", sequenceId, status));
+    public void onSequencePlayStatusChanged(int status) {
+        printLog(String.format("onSequencePlayStatus status:%d", status));
+        if (status == OnSequencePlayStatusChangedListener.ERROR
+                || status == OnSequencePlayStatusChangedListener.IDLE) {
+            robot.showTopBar();
+        }
     }
 
     @Override
     public void onRobotLifted(boolean isRobotLifted) {
-        Log.d("onRobotLifted", "isRobotLifted: " + isRobotLifted);
+        printLog("onRobotLifted", "isRobotLifted: " + isRobotLifted);
     }
 
     @Override
@@ -876,21 +934,94 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @CheckResult
-    private boolean requestPermissionIfNeeded(Permission permission) {
+    private boolean requestPermissionIfNeeded(Permission permission, int requestCode) {
         if (robot.checkSelfPermission(permission) == Permission.GRANTED) {
             return false;
         }
-        robot.requestPermissions(Collections.singletonList(permission));
+        robot.requestPermissions(Collections.singletonList(permission), requestCode);
         return true;
     }
 
     @Override
     public void onDetectionDataChanged(@NotNull DetectionData detectionData) {
-        Log.d("onDetectionDataChanged", detectionData.toString());
+        printLog("onDetectionDataChanged", detectionData.toString());
     }
 
     @Override
     public void onUserInteraction(boolean isInteracting) {
-        Log.d("onUserInteraction", "isInteracting:" + isInteracting);
+        printLog("onUserInteraction", "isInteracting:" + isInteracting);
+    }
+
+    public void getAllSequences(View view) {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_FETCH_ALL)) {
+            return;
+        }
+        getAllSequences();
+    }
+
+    private volatile List<SequenceModel> allSequences;
+
+    private void getAllSequences() {
+        new Thread(() -> {
+            allSequences = robot.getAllSequences();
+            runOnUiThread(() -> {
+                for (SequenceModel sequenceModel : allSequences) {
+                    if (sequenceModel == null) {
+                        continue;
+                    }
+                    printLog(sequenceModel.toString());
+                }
+            });
+        }).start();
+    }
+
+    public void playFirstSequence(View view) {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY)) {
+            return;
+        }
+        playFirstSequence();
+    }
+
+    private void playFirstSequence() {
+        if (allSequences != null && !allSequences.isEmpty()) {
+            robot.playSequence(allSequences.get(0).getId());
+        }
+    }
+
+    public void getMap(View view) {
+        if (requestPermissionIfNeeded(Permission.MAP, REQUEST_CODE_MAP)) {
+            return;
+        }
+        getMap();
+    }
+
+    private void getMap() {
+        startActivity(new Intent(this, MapActivity.class));
+    }
+
+    @Override
+    public void onFaceRecognized(@NotNull List<ContactModel> contactModelList) {
+        for (ContactModel contactModel : contactModelList) {
+            printLog("onFaceRecognized", contactModel.toString());
+        }
+    }
+
+    private void printLog(String msg) {
+        printLog("", msg);
+    }
+
+    private void printLog(String tag, String msg) {
+        Log.d(tag, msg);
+        tvLog.setGravity(Gravity.BOTTOM);
+        tvLog.append(String.format("%s %s\n", "· ", msg));
+    }
+
+    public void btnClearLog(View view) {
+        tvLog.setText("");
+    }
+
+    public void startNlu(View view) {
+        EditText editText = findViewById(R.id.etNlu);
+        robot.startNlu(editText.getText().toString());
     }
 }

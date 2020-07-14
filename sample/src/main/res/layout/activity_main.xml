@@ -96,6 +96,25 @@
                 style="@style/ButtonCommon"
                 android:onClick="goToPosition"
                 android:text="Go To Position" />
+
+            <EditText
+                android:id="@+id/etNlu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="50dp"
+                android:ems="10"
+                android:gravity="center_horizontal"
+                android:hint="@string/enter_speech"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="@color/colorGrey" />
+
+            <Button
+                android:id="@+id/btnNlu"
+                style="@style/ButtonCommon"
+                android:onClick="startNlu"
+                android:text="Start NLU" />
         </LinearLayout>
     </ScrollView>
 
@@ -107,6 +126,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnFetchMap"
+                style="@style/ButtonCommon"
+                android:onClick="getMap"
+                android:text="Get Map Data" />
+
+            <Button
+                android:id="@+id/btnFetchSequence"
+                style="@style/ButtonCommon"
+                android:onClick="getAllSequences"
+                android:text="Get All Sequences" />
+
+            <Button
+                android:id="@+id/btnPlayFirstSequence"
+                style="@style/ButtonCommon"
+                android:onClick="playFirstSequence"
+                android:text="Play First Sequence" />
 
             <Button
                 android:id="@+id/btnGetOSVersion"
@@ -263,85 +300,104 @@
                 style="@style/ButtonCommon"
                 android:onClick="toggleNavBillboard"
                 android:text="Toggle navigation billboard" />
+
+            <Button
+                android:id="@+id/btnBatteryInfo"
+                style="@style/ButtonCommon"
+                android:onClick="getBatteryData"
+                android:text="@string/battery_info" />
+
+            <Button
+                android:id="@+id/btnStopFollow"
+                style="@style/ButtonCommon"
+                android:onClick="stopMovement"
+                android:text="@string/stop_movement" />
+
+            <Button
+                android:id="@+id/btnCallOwner"
+                style="@style/ButtonCommon"
+                android:onClick="callOwner"
+                android:text="@string/call_owner" />
+
+            <Button
+                android:id="@+id/btnPublish"
+                style="@style/ButtonCommon"
+                android:onClick="publishToActivityStream"
+                android:text="@string/publish_to_activities" />
+
+            <Button
+                android:id="@+id/btnHideTopBar"
+                style="@style/ButtonCommon"
+                android:onClick="hideTopBar"
+                android:text="Hide Top Bar" />
+
+            <Button
+                android:id="@+id/btnShowTopBar"
+                style="@style/ButtonCommon"
+                android:onClick="showTopBar"
+                android:text="Show Top Bar" />
+
+            <Button
+                android:id="@+id/btnTogglePrivacyModeOn"
+                style="@style/ButtonCommon"
+                android:onClick="privacyModeOn"
+                android:text="Turn on Privacy Mode" />
+
+            <Button
+                android:id="@+id/btnTogglePrivacyModeOff"
+                style="@style/ButtonCommon"
+                android:onClick="privacyModeOff"
+                android:text="Turn off Privacy Mode" />
+
+            <Button
+                android:id="@+id/btnGetPrivacyMode"
+                style="@style/ButtonCommon"
+                android:onClick="getPrivacyModeState"
+                android:text="Get Privacy Mode" />
+
+            <Button
+                android:id="@+id/btnEnableHardButtons"
+                style="@style/ButtonCommon"
+                android:onClick="enableHardButtons"
+                android:text="Enable Hard Buttons" />
+
+            <Button
+                android:id="@+id/btnDisableHardButtons"
+                style="@style/ButtonCommon"
+                android:onClick="disableHardButtons"
+                android:text="Disable Hard Buttons" />
+
+            <Button
+                android:id="@+id/btnIsHardButtonsDisabled"
+                style="@style/ButtonCommon"
+                android:onClick="isHardButtonsEnabled"
+                android:text="Is Hard Buttons Disabled"
+                android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnBatteryInfo"
-            style="@style/ButtonCommon"
-            android:onClick="getBatteryData"
-            android:text="@string/battery_info" />
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="50dp"
+            android:lineSpacingExtra="5dp"
+            android:padding="20dp"
+            android:scrollbars="vertical"
+            android:textColor="@color/colorWhite"
+            tools:text="log panel" />
 
         <Button
-            android:id="@+id/btnStopFollow"
+            android:id="@+id/btnClearLog"
             style="@style/ButtonCommon"
-            android:onClick="stopMovement"
-            android:text="@string/stop_movement" />
-
-        <Button
-            android:id="@+id/btnCallOwner"
-            style="@style/ButtonCommon"
-            android:onClick="callOwner"
-            android:text="@string/call_owner" />
-
-        <Button
-            android:id="@+id/btnPublish"
-            style="@style/ButtonCommon"
-            android:onClick="publishToActivityStream"
-            android:text="@string/publish_to_activities" />
-
-        <Button
-            android:id="@+id/btnHideTopBar"
-            style="@style/ButtonCommon"
-            android:onClick="hideTopBar"
-            android:text="Hide Top Bar" />
-
-        <Button
-            android:id="@+id/btnShowTopBar"
-            style="@style/ButtonCommon"
-            android:onClick="showTopBar"
-            android:text="Show Top Bar" />
-
-        <Button
-            android:id="@+id/btnTogglePrivacyModeOn"
-            style="@style/ButtonCommon"
-            android:onClick="privacyModeOn"
-            android:text="Turn on Privacy Mode" />
-
-        <Button
-            android:id="@+id/btnTogglePrivacyModeOff"
-            style="@style/ButtonCommon"
-            android:onClick="privacyModeOff"
-            android:text="Turn off Privacy Mode" />
-
-        <Button
-            android:id="@+id/btnGetPrivacyMode"
-            style="@style/ButtonCommon"
-            android:onClick="getPrivacyModeState"
-            android:text="Get Privacy Mode" />
-
-        <Button
-            android:id="@+id/btnEnableHardButtons"
-            style="@style/ButtonCommon"
-            android:onClick="enableHardButtons"
-            android:text="Enable Hard Buttons" />
-
-        <Button
-            android:id="@+id/btnDisableHardButtons"
-            style="@style/ButtonCommon"
-            android:onClick="disableHardButtons"
-            android:text="Disable Hard Buttons" />
-
-        <Button
-            android:id="@+id/btnIsHardButtonsDisabled"
-            style="@style/ButtonCommon"
-            android:onClick="isHardButtonsEnabled"
-            android:text="Is Hard Buttons Disabled"
+            android:layout_alignParentBottom="true"
+            android:onClick="btnClearLog"
+            android:text="Clear"
             android:textSize="18sp" />
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

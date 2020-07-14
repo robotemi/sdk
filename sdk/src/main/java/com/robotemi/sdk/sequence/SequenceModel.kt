@@ -5,9 +5,11 @@ import android.os.Parcelable
 
 data class SequenceModel(
     val id: String,
-    val name: String
+    val name: String,
+    val description: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!
     )
@@ -15,6 +17,7 @@ data class SequenceModel(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
         parcel.writeString(name)
+        parcel.writeString(description)
     }
 
     override fun describeContents(): Int {

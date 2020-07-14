@@ -28,7 +28,7 @@ public class CustomAdapter extends ArrayAdapter<String> {
 
         String loc = data.get(position);
         if (loc != null) {
-            TextView tvName = (TextView) convertView.findViewById(R.id.name);
+            TextView tvName = convertView.findViewById(R.id.name);
             if (tvName != null) {
                 tvName.setText(loc);
             }

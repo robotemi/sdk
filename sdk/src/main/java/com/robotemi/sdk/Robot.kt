@@ -13,11 +13,15 @@ import androidx.annotation.CheckResult
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
 import com.robotemi.sdk.constants.SdkConstants
+import com.robotemi.sdk.face.ContactModel
+import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.listeners.*
+import com.robotemi.sdk.map.MapDataModel
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
@@ -33,16 +37,14 @@ import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
 import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
-import com.robotemi.sdk.sequence.SequenceCallback
 import com.robotemi.sdk.sequence.SequenceModel
-import com.robotemi.sdk.sequence.SequenceRemoteCallback
 import com.robotemi.sdk.telepresence.CallState
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.collections.HashMap
 
 @SuppressWarnings("unused")
-class Robot private constructor(context: Context) {
+class Robot private constructor(private val context: Context) {
 
     private val applicationInfo: ApplicationInfo
 
@@ -116,6 +118,8 @@ class Robot private constructor(context: Context) {
 
     private val onDetectionDataChangedListeners =
         CopyOnWriteArraySet<OnDetectionDataChangedListener>()
+
+    private val onFaceRecognizedListeners = CopyOnWriteArraySet<OnFaceRecognizedListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -359,13 +363,18 @@ class Robot private constructor(context: Context) {
         /*               Permission              */
         /*****************************************/
 
-        override fun onRequestPermissionResult(permission: String, grantResult: Int): Boolean {
+        override fun onRequestPermissionResult(
+            permission: String,
+            grantResult: Int,
+            requestCode: Int
+        ): Boolean {
             if (onRequestPermissionResultListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onRequestPermissionResultListeners) {
                     listener.onRequestPermissionResult(
                         Permission.valueToEnum(permission),
-                        grantResult
+                        grantResult,
+                        requestCode
                     )
                 }
             }
@@ -456,14 +465,26 @@ class Robot private constructor(context: Context) {
         /*                Sequence               */
         /*****************************************/
 
-        override fun onSequencePlayStatusChanged(sequenceId: String, status: Int): Boolean {
+        override fun onSequencePlayStatusChanged(status: Int): Boolean {
             if (onSequencePlayStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onSequencePlayStatusChangedListeners) {
-                    listener.onSequencePlayStatusChanged(sequenceId, status)
+                    listener.onSequencePlayStatusChanged(status)
                 }
             }
             return true
+        }
+
+        /*****************************************/
+        /*            Face Recognition           */
+        override fun onFaceRecoginzed(contactModelList: MutableList<ContactModel>): Boolean {
+            if (onFaceRecognizedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onFaceRecognizedListeners) {
+                    listener.onFaceRecognized(contactModelList)
+                }
+            }
+            return false
         }
     }
 
@@ -600,7 +621,7 @@ class Robot private constructor(context: Context) {
         try {
             sdkService?.askQuestion(question)
         } catch (e: RemoteException) {
-            Log.e(TAG, "Ask question call failed.")
+            Log.e(TAG, "Ask question call failed")
         }
     }
 
@@ -611,9 +632,27 @@ class Robot private constructor(context: Context) {
         try {
             sdkService?.finishConversation()
         } catch (e: RemoteException) {
-            Log.e(TAG, "Finish conversation call failed.")
+            Log.e(TAG, "Finish conversation call failed")
         }
     }
+
+    /**
+     * Trigger temi Launcher's default NLU service.
+     *
+     * @param text The text want to be NlU.
+     */
+    fun startNlu(text: String) {
+        if (isMetaDataOverridingNlu) return
+        try {
+            sdkService?.startNlu(applicationInfo.packageName, text)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startNlu() error")
+        }
+    }
+
+    private val isMetaDataOverridingNlu: Boolean
+        get() = applicationInfo.metaData != null
+                && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_NLU, false)
 
     @UiThread
     fun addConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
@@ -1359,32 +1398,6 @@ class Robot private constructor(context: Context) {
             }
         }
 
-    /*****************************************/
-    /*            Face Recognition           */
-    /*****************************************/
-
-    /**
-     * Start face recognition.
-     */
-    fun startFaceRecognition() {
-        try {
-            sdkService?.startFaceRecognition(applicationInfo.packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "startFaceRecognition() error")
-        }
-    }
-
-    /**
-     * Stop face recognition.
-     */
-    fun stopFaceRecognition() {
-        try {
-            sdkService?.stopFaceRecognition(applicationInfo.packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "stopFaceRecognition() error")
-        }
-    }
-
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -1650,8 +1663,9 @@ class Robot private constructor(context: Context) {
      * Add [OnRequestPermissionResultListener] to listen the request result.
      *
      * @param permissions A list holds the permissions you want to request.
+     * @param requestCode Identify which request.
      */
-    fun requestPermissions(permissions: List<Permission>) {
+    fun requestPermissions(permissions: List<Permission>, requestCode: Int) {
         val permissionsFromMetadata =
             applicationInfo.metaData?.getString(SdkConstants.METADATA_PERMISSIONS)
         if (permissionsFromMetadata.isNullOrBlank()) {
@@ -1678,7 +1692,11 @@ class Robot private constructor(context: Context) {
         }
 
         try {
-            sdkService?.requestPermissions(applicationInfo.packageName, validPermissions)
+            sdkService?.requestPermissions(
+                applicationInfo.packageName,
+                validPermissions,
+                requestCode
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "requestPermissions() error")
         }
@@ -1701,24 +1719,17 @@ class Robot private constructor(context: Context) {
     /**
      * Fetch all sequences user created on the Web platform.
      *
-     * @param callback Holds the fetch result.
+     * @return List holds all sequences.
      */
-    fun fetchAllSequences(callback: SequenceCallback) {
+    @WorkerThread
+    @CheckResult
+    fun getAllSequences(): List<SequenceModel> {
         try {
-            sdkService?.fetchAllSequences(
-                applicationInfo.packageName,
-                object : SequenceRemoteCallback.Stub() {
-                    override fun onSuccess(sequences: MutableList<SequenceModel>) {
-                        uiHandler.post { callback.onSuccess(sequences.toList()) }
-                    }
-
-                    override fun onFailure(errorMsg: String) {
-                        uiHandler.post { callback.onFailure(errorMsg) }
-                    }
-                })
+            return sdkService?.getAllSequences(applicationInfo.packageName) ?: emptyList()
         } catch (e: RemoteException) {
             Log.e(TAG, "fetchAllSequences() error")
         }
+        return emptyList()
     }
 
     /**
@@ -1742,6 +1753,62 @@ class Robot private constructor(context: Context) {
     @UiThread
     fun removeOnSequencePlayStatusChangedListener(listener: OnSequencePlayStatusChangedListener) {
         onSequencePlayStatusChangedListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*                  Map                  */
+    /*****************************************/
+
+    /**
+     * Get map data.
+     *
+     * @return Map data.
+     */
+    @WorkerThread
+    @CheckResult
+    fun getMapData(): MapDataModel? {
+        try {
+            return sdkService?.getMapData(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getMapDataString() error")
+        }
+        return null
+    }
+
+    /*****************************************/
+    /*            Face Recognition           */
+    /*****************************************/
+
+    /**
+     * Start face recognition.
+     */
+    fun startFaceRecognition() {
+        try {
+            sdkService?.startFaceRecognition(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startFaceRecognition() error")
+        }
+    }
+
+    /**
+     * Stop face recognition.
+     */
+    fun stopFaceRecognition() {
+        try {
+            sdkService?.stopFaceRecognition(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "stopFaceRecognition() error")
+        }
+    }
+
+    @UiThread
+    fun addOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
+        onFaceRecognizedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
+        onFaceRecognizedListeners.remove(listener)
     }
 
     /*****************************************/

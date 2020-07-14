@@ -14,10 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/SkillTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <!--
-        Adding this meta-data is required in order to display this app in temi's launcher app
-        -->
+        <activity android:name=".MapActivity" />
+        <!--         Adding this meta-data is required in order to display this app in temi's launcher app -->
         <meta-data
             android:name="com.robotemi.sdk.metadata.SKILL"
             android:value="@string/app_name" />
@@ -41,15 +39,20 @@
 
         <meta-data
             android:name="com.robotemi.sdk.metadata.KIOSK"
-            android:value="TRUE" />
+            android:value="true" />
 
         <meta-data
             android:name="@string/metadata_open_without_internet"
-            android:value="TRUE" />
+            android:value="true" />
+
+        <!-- Set value to TRUE to cover original voice flow. -->
+        <meta-data
+            android:name="@string/metadata_override_nlu"
+            android:value="false" />
 
         <meta-data
-            android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
-            android:value="TRUE" />
+            android:name="@string/metadata_override_stt"
+            android:value="true" />
 
         <meta-data
             android:name="@string/metadata_permissions"
@@ -67,7 +70,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package com.robotemi.sdk.navigation.model
 
 enum class SafetyLevel(val value: String) {
+
     HIGH("high"),
     MEDIUM("medium");
 
