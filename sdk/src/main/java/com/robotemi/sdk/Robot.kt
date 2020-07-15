@@ -44,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.collections.HashMap
 
 @SuppressWarnings("unused")
-class Robot private constructor(private val context: Context) {
+class Robot private constructor(context: Context) {
 
     private val applicationInfo: ApplicationInfo
 
@@ -1213,7 +1213,7 @@ class Robot private constructor(private val context: Context) {
         }
         set(on) {
             try {
-                sdkService?.togglePrivacyMode(on)
+                sdkService?.togglePrivacyMode(on, applicationInfo.packageName)
             } catch (e: RemoteException) {
                 Log.e(TAG, "togglePrivacyMode() error")
             }
@@ -1234,7 +1234,7 @@ class Robot private constructor(private val context: Context) {
         }
         set(disable) {
             try {
-                sdkService?.toggleHardButtons(disable)
+                sdkService?.toggleHardButtons(disable, applicationInfo.packageName)
             } catch (e: RemoteException) {
                 Log.e(TAG, "isHardButtonsEnabled() error")
             }
@@ -1312,12 +1312,23 @@ class Robot private constructor(private val context: Context) {
          * @param on true to turn on, false to turn off.
          */
         set(on) {
-            try {
-                sdkService?.setDetectionModeOn(applicationInfo.packageName, on)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "setDetectionModeOn() error")
-            }
+            setDetectionModeOn(on, SdkConstants.DETECTION_DISTANCE_DEFAULT)
         }
+
+    /**
+     * Turn on/off detection mode with distance.
+     *
+     * @param on true to turn on, false to turn off.
+     * @param distance  Maximum detection distance, person will be detected when the distance
+     *                  to temi less than this value only.
+     */
+    fun setDetectionModeOn(on: Boolean, distance: Float) {
+        try {
+            sdkService?.setDetectionModeOn(applicationInfo.packageName, on, distance)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setDetectionModeOn() error")
+        }
+    }
 
     /**
      * Turn on/off track user(welcome mode).
@@ -1464,20 +1475,33 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Toggle the wakeup trigger on and off
-     *
-     * @param disabled set true to disable the wakeup or false to enable it
      */
-    fun toggleWakeup(disabled: Boolean) {
-        if (!isMetaDataKiosk) {
-            Log.e(TAG, "Wakeup can only be toggled in Kiosk Mode")
-            return
+    @get: JvmName("isWakeupDisabled")
+    @set: JvmName("toggleWakeup")
+    var toggleWakeup: Boolean
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.isWakeupDisabled ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isWakeupDisabled() error")
+            }
+            return false
         }
-        try {
-            sdkService?.toggleWakeup(disabled)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "toggleWakeup() error")
+        /**
+         * @param disabled set true to disable the wakeup or false to enable it.
+         */
+        set(disabled) {
+            if (!isMetaDataKiosk) {
+                Log.e(TAG, "Wakeup can only be toggled in Kiosk Mode")
+                return
+            }
+            try {
+                sdkService?.toggleWakeup(disabled, applicationInfo.packageName)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "toggleWakeup() error")
+            }
         }
-    }
 
     /**
      * Toggle the visibility of the navigation billboard when you perform goTo commands.
@@ -1509,6 +1533,9 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    /**
+     * Request to be the selected Kiosk Mode App programmatically.
+     */
     fun requestToBeKioskApp() {
         if (!isMetaDataKiosk) {
             Log.e(TAG, "No kiosk mode declaration in meta data")

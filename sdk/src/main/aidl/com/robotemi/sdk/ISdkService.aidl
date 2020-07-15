@@ -154,7 +154,7 @@ interface ISdkService {
     /**
      * Request robot to toggle the wakeup trigger
      */
-     void toggleWakeup(in boolean disable);
+     void toggleWakeup(boolean disable, in String packageName);
 
      /**
      * Request robot to show/hide navigation billboards
@@ -177,13 +177,13 @@ interface ISdkService {
      /**
      * Request robot to turn on/off privacy mode
      */
-    void togglePrivacyMode(in boolean on);
+    void togglePrivacyMode(boolean on, in String packageName);
 
     boolean getPrivacyModeState();
 
     void constraintBeWith();
 
-    void toggleHardButtons(in boolean disable);
+    void toggleHardButtons(boolean disable, in String packageName);
 
     boolean isHardButtonsDisabled();
 
@@ -211,7 +211,7 @@ interface ISdkService {
 
     boolean isGoToBillboardDisabled();
 
-    void setDetectionModeOn(in String packageName, boolean on);
+    void setDetectionModeOn(in String packageName, boolean on, float distance);
 
     boolean isDetectionModeOn();
 
@@ -248,4 +248,6 @@ interface ISdkService {
     MapDataModel getMapData(in String packageName);
 
     void startNlu(in String packageName, in String content);
+
+    boolean isWakeupDisabled();
 }

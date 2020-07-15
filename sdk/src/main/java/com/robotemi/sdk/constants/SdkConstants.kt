@@ -63,8 +63,6 @@ object SdkConstants {
     const val TEMI_USA = "com.roboteam.teamy.usa"
     const val TEMI_CHINA = "com.roboteam.teamy.china"
 
-    const val PROVIDER_AUTHORITY = "com.robotemi.sdk.provider"
-    const val PROVIDER_PATH_MAP = "map"
-    const val PROVIDER_MAP_ID_GET = 0
-    const val PROVIDER_URI_MAP_GET = "content://$PROVIDER_AUTHORITY/$PROVIDER_PATH_MAP/$PROVIDER_MAP_ID_GET"
+    const val DETECTION_DISTANCE_DEFAULT = 0.8F
+
 }

@@ -832,7 +832,7 @@ public class MainActivity extends AppCompatActivity implements
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
-        robot.setDetectionModeOn(!robot.isDetectionModeOn());
+        robot.setDetectionModeOn(!robot.isDetectionModeOn(), 3f);
     }
 
     public void toggleAutoReturn(View view) {
