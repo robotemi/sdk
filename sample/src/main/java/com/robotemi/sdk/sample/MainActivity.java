@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_CODE_MAP = 3;
     private static final int REQUEST_CODE_SEQUENCE_FETCH_ALL = 4;
     private static final int REQUEST_CODE_SEQUENCE_PLAY = 5;
+    private static final int REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements
             "com.robotemi.permission.map"
     };
 
-    private EditText etSpeak, etSaveLocation, etGoTo, etPosition;
+    private EditText etSpeak, etSaveLocation, etGoTo, etDistance;
 
     private List<String> locations;
 
@@ -243,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements
         etSpeak = findViewById(R.id.etSpeak);
         etSaveLocation = findViewById(R.id.etSaveLocation);
         etGoTo = findViewById(R.id.etGoTo);
-        etPosition = findViewById(R.id.etPositioin);
+        etDistance = findViewById(R.id.etDistance);
         tvLog = findViewById(R.id.tvLog);
         tvLog.setMovementMethod(new ScrollingMovementMethod());
     }
@@ -579,15 +580,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConstraintBeWithStatusChanged(boolean isConstraint) {
         printLog("onConstraintBeWith", "status = " + isConstraint);
-        robot.stopMovement();
     }
 
     @Override
     public void onDetectionStateChanged(int state) {
-        printLog("", "onDetectionStateChanged: state = " + state);
-        if (state == DETECTED) {
+        printLog("onDetectionStateChanged: state = " + state);
+        if (state == OnDetectionStateChangedListener.DETECTED) {
             robot.constraintBeWith();
-        } else {
+        } else if (state == OnDetectionStateChangedListener.IDLE) {
             robot.stopMovement();
         }
     }
@@ -714,6 +714,11 @@ public class MainActivity extends AppCompatActivity implements
                     getMap();
                 }
                 break;
+            case SETTINGS:
+                if (requestCode == REQUEST_CODE_START_DETECTION_WITH_DISTANCE) {
+                    startDetectionWishDistance();
+                }
+                break;
         }
     }
 
@@ -832,7 +837,7 @@ public class MainActivity extends AppCompatActivity implements
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return;
         }
-        robot.setDetectionModeOn(!robot.isDetectionModeOn(), 3f);
+        robot.setDetectionModeOn(!robot.isDetectionModeOn());
     }
 
     public void toggleAutoReturn(View view) {
@@ -881,21 +886,23 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @SuppressLint("DefaultLocale")
-    public void goToPosition(View view) {
+    public void startDetectionModeWithDistance(View view) {
         hideKeyboard();
-        String[] coordinates = etPosition.getText().toString().replaceAll(" ", "").split(",");
-        if (coordinates.length != 2) {
-            Toast.makeText(this, "A position needs two coordinates to determine.", Toast.LENGTH_LONG).show();
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_START_DETECTION_WITH_DISTANCE)) {
             return;
         }
-        Position position = new Position();
+        startDetectionWishDistance();
+    }
+
+    private void startDetectionWishDistance() {
+        String distanceStr = etDistance.getText().toString();
+        if (distanceStr.isEmpty()) distanceStr = "0";
         try {
-            position.setX(Float.parseFloat(coordinates[0]));
-            position.setY(Float.parseFloat(coordinates[1]));
-            Toast.makeText(this, String.format("(%f,%f)", position.getX(), position.getY()), Toast.LENGTH_SHORT).show();
-            robot.goToPosition(position);
+            float distance = Float.parseFloat(distanceStr);
+            robot.setDetectionModeOn(true, distance);
+            printLog("Start detection mode with distance: " + distance);
         } catch (Exception e) {
-            printLog("goToPosition", e.getMessage());
+            printLog("startDetectionModeWithDistance", e.getMessage());
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }

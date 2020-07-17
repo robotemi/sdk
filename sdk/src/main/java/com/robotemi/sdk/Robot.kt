@@ -1319,7 +1319,7 @@ class Robot private constructor(context: Context) {
      * Turn on/off detection mode with distance.
      *
      * @param on true to turn on, false to turn off.
-     * @param distance  Maximum detection distance, person will be detected when the distance
+     * @param distance  Maximum detection distance(0.5~2.0), person will be detected when the distance
      *                  to temi less than this value only.
      */
     fun setDetectionModeOn(on: Boolean, distance: Float) {

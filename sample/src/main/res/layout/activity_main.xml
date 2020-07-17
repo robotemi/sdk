@@ -78,7 +78,7 @@
                 android:text="@string/speak" />
 
             <EditText
-                android:id="@+id/etPositioin"
+                android:id="@+id/etDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="50dp"
@@ -86,7 +86,8 @@
                 android:layout_marginRight="50dp"
                 android:ems="10"
                 android:gravity="center_horizontal"
-                android:hint="Please enter x,y"
+                android:hint="Please enter the distance"
+                android:inputType="numberDecimal"
                 android:maxLines="1"
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
@@ -94,8 +95,8 @@
             <Button
                 android:id="@+id/btnGoToPosition"
                 style="@style/ButtonCommon"
-                android:onClick="goToPosition"
-                android:text="Go To Position" />
+                android:onClick="startDetectionModeWithDistance"
+                android:text="Start Detection Mode with Distance" />
 
             <EditText
                 android:id="@+id/etNlu"
@@ -104,7 +105,6 @@
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="50dp"
-                android:ems="10"
                 android:gravity="center_horizontal"
                 android:hint="@string/enter_speech"
                 android:textColor="@color/colorWhite"
