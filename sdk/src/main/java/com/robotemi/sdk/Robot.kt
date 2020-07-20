@@ -18,6 +18,8 @@ import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
 import com.robotemi.sdk.constants.SdkConstants
+import com.robotemi.sdk.exception.OnSdkExceptionListener
+import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
 import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.listeners.*
@@ -35,6 +37,7 @@ import com.robotemi.sdk.navigation.model.SpeedLevel
 import com.robotemi.sdk.notification.AlertNotification
 import com.robotemi.sdk.notification.NormalNotification
 import com.robotemi.sdk.notification.NotificationCallback
+import com.robotemi.sdk.permission.OnRequestPermissionResultListener
 import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
@@ -120,6 +123,8 @@ class Robot private constructor(context: Context) {
         CopyOnWriteArraySet<OnDetectionDataChangedListener>()
 
     private val onFaceRecognizedListeners = CopyOnWriteArraySet<OnFaceRecognizedListener>()
+
+    private val onSdkExceptionListeners = CopyOnWriteArraySet<OnSdkExceptionListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -477,7 +482,8 @@ class Robot private constructor(context: Context) {
 
         /*****************************************/
         /*            Face Recognition           */
-        override fun onFaceRecoginzed(contactModelList: MutableList<ContactModel>): Boolean {
+        /*****************************************/
+        override fun onFaceRecognized(contactModelList: MutableList<ContactModel>): Boolean {
             if (onFaceRecognizedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onFaceRecognizedListeners) {
@@ -486,13 +492,26 @@ class Robot private constructor(context: Context) {
             }
             return false
         }
+
+        override fun onSdkError(sdkException: SdkException): Boolean {
+            if (onSdkExceptionListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onSdkExceptionListeners) {
+                    listener.onSdkError(sdkException)
+                }
+            }
+            return true
+        }
+
     }
 
     /*****************************************/
     /*                  Init                 */
     /*****************************************/
 
-    val isReady = sdkService != null
+    val isReady
+        @CheckResult
+        get() = sdkService != null
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
@@ -769,11 +788,11 @@ class Robot private constructor(context: Context) {
     }
 
     /**
-     * Go to a specific position with (x,y).
+     * TBD. Go to a specific position with (x,y).
      *
      * @param position Position holds (x,y).
      */
-    fun goToPosition(position: Position) {
+    private fun goToPosition(position: Position) {
         try {
             sdkService?.goToPosition(position)
         } catch (e: RemoteException) {
@@ -1836,6 +1855,16 @@ class Robot private constructor(context: Context) {
     @UiThread
     fun removeOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
         onFaceRecognizedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnSdkExceptionListener(listener: OnSdkExceptionListener) {
+        onSdkExceptionListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnSdkExceptionListener(listener: OnSdkExceptionListener) {
+        onSdkExceptionListeners.remove(listener)
     }
 
     /*****************************************/

@@ -373,6 +373,12 @@
                 android:onClick="isHardButtonsEnabled"
                 android:text="Is Hard Buttons Disabled"
                 android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btnGetAllContacts"
+                style="@style/ButtonCommon"
+                android:onClick="getAllContacts"
+                android:text="Get All Contacts" />
         </LinearLayout>
     </ScrollView>
 

@@ -17,13 +17,12 @@ public class UserInfo implements Parcelable {
     @Nullable
     private final String picUrl;
 
-    @NonNull
     private final int role;
 
     public UserInfo(@NonNull final String userId,
                     @NonNull final String name,
                     @Nullable final String picUrl,
-                    @NonNull final int role) {
+                    final int role) {
         this.userId = userId;
         this.name = name;
         this.picUrl = picUrl;

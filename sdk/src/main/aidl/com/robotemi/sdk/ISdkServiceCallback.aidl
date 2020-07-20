@@ -12,6 +12,7 @@ import com.robotemi.sdk.model.CallEventModel;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.model.DetectionData;
 import com.robotemi.sdk.face.ContactModel;
+import com.robotemi.sdk.exception.SdkException;
 
 interface ISdkServiceCallback {
 
@@ -73,5 +74,7 @@ interface ISdkServiceCallback {
 
     boolean onDetectionDataChanged(in DetectionData detectionData);
 
-    boolean onFaceRecoginzed(in List<ContactModel> contactModelList);
+    boolean onFaceRecognized(in List<ContactModel> contactModelList);
+
+    boolean onSdkError(in SdkException sdkException);
 }

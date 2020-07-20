@@ -1,6 +1,4 @@
-package com.robotemi.sdk.listeners
-
-import com.robotemi.sdk.permission.Permission
+package com.robotemi.sdk.permission
 
 interface OnRequestPermissionResultListener {
     fun onRequestPermissionResult(

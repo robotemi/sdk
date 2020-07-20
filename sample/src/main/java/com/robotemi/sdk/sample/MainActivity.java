@@ -34,8 +34,11 @@ import com.robotemi.sdk.MediaObject;
 import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
+import com.robotemi.sdk.exception.OnSdkExceptionListener;
+import com.robotemi.sdk.exception.SdkException;
 import com.robotemi.sdk.face.ContactModel;
 import com.robotemi.sdk.face.OnFaceRecognizedListener;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
@@ -44,7 +47,6 @@ import com.robotemi.sdk.listeners.OnDetectionDataChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
-import com.robotemi.sdk.listeners.OnRequestPermissionResultListener;
 import com.robotemi.sdk.listeners.OnRobotLiftedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
@@ -56,6 +58,7 @@ import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.navigation.model.SafetyLevel;
 import com.robotemi.sdk.navigation.model.SpeedLevel;
+import com.robotemi.sdk.permission.OnRequestPermissionResultListener;
 import com.robotemi.sdk.permission.Permission;
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener;
 import com.robotemi.sdk.sequence.SequenceModel;
@@ -93,7 +96,8 @@ public class MainActivity extends AppCompatActivity implements
         OnRobotLiftedListener,
         OnDetectionDataChangedListener,
         OnUserInteractionChangedListener,
-        OnFaceRecognizedListener {
+        OnFaceRecognizedListener,
+        OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
     public static final String HOME_BASE_LOCATION = "home base";
@@ -110,8 +114,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            "com.robotemi.permission.map"
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     private EditText etSpeak, etSaveLocation, etGoTo, etDistance;
@@ -229,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnRequestPermissionResultListener(this);
         robot.addOnTelepresenceEventChangedListener(this);
         robot.addOnFaceRecognizedListener(this);
-
+        robot.addOnSdkExceptionListener(this);
     }
 
     @Override
@@ -237,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnRequestPermissionResultListener(this);
         robot.removeOnTelepresenceEventChangedListener(this);
         robot.removeOnFaceRecognizedListener(this);
+        robot.removeOnSdkExceptionListener(this);
         super.onDestroy();
     }
 
@@ -1030,5 +1034,17 @@ public class MainActivity extends AppCompatActivity implements
     public void startNlu(View view) {
         EditText editText = findViewById(R.id.etNlu);
         robot.startNlu(editText.getText().toString());
+    }
+
+    @Override
+    public void onSdkError(@NotNull SdkException sdkException) {
+        printLog("onSdkError: " + sdkException.toString());
+    }
+
+    public void getAllContacts(View view) {
+        List<UserInfo> allContacts = robot.getAllContact();
+        for (UserInfo userInfo : allContacts) {
+            printLog("UserInfo: " + userInfo.toString());
+        }
     }
 }
