@@ -1493,11 +1493,25 @@ class Robot private constructor(context: Context) {
                 && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_KIOSK, false)
 
     /**
-     * Toggle the wakeup trigger on and off
+     * Toggle the wakeup trigger on and off.
+     *
+     * @param disabled Set true to disable the wakeup or false to enable it.
      */
-    @get: JvmName("isWakeupDisabled")
-    @set: JvmName("toggleWakeup")
-    var toggleWakeup: Boolean
+    fun toggleWakeup(disabled: Boolean) {
+        if (!isMetaDataKiosk) {
+            Log.e(TAG, "Wakeup can only be toggled in Kiosk Mode")
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
+            return
+        }
+        try {
+            sdkService?.toggleWakeup(disabled, applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "toggleWakeup() error")
+        }
+    }
+
+    @get:JvmName("isWakeupDisabled")
+    val wakeupWordDisabled: Boolean
         @CheckResult
         get() {
             try {
@@ -1507,27 +1521,27 @@ class Robot private constructor(context: Context) {
             }
             return false
         }
-        /**
-         * @param disabled set true to disable the wakeup or false to enable it.
-         */
-        set(disabled) {
-            if (!isMetaDataKiosk) {
-                Log.e(TAG, "Wakeup can only be toggled in Kiosk Mode")
-                return
-            }
-            try {
-                sdkService?.toggleWakeup(disabled, applicationInfo.packageName)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "toggleWakeup() error")
-            }
-        }
 
     /**
      * Toggle the visibility of the navigation billboard when you perform goTo commands.
+     *
+     * @param disabled Set true to disable the billboard or false to enable it.
      */
+    fun toggleNavigationBillboard(disabled: Boolean) {
+        if (!isMetaDataKiosk) {
+            Log.e(TAG, "Billboard can only be toggled in Kiosk Mode")
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
+            return
+        }
+        try {
+            sdkService?.setGoToBillboardDisabled(applicationInfo.packageName, disabled)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "toggleNavigationBillboard() error")
+        }
+    }
+
     @get:JvmName("isNavigationBillboardDisabled")
-    @set:JvmName("toggleNavigationBillboard")
-    var navigationBillboardDisabled: Boolean
+    val navigationBillboardDisabled: Boolean
         @CheckResult
         get() {
             try {
@@ -1537,20 +1551,6 @@ class Robot private constructor(context: Context) {
             }
             return false
         }
-        /**
-         * @param disabled true to disable the billboard or false to enable it.
-         */
-        set(disabled) {
-            if (!isMetaDataKiosk) {
-                Log.e(TAG, "Billboard can only be toggled in Kiosk Mode")
-                return
-            }
-            try {
-                sdkService?.setGoToBillboardDisabled(applicationInfo.packageName, disabled)
-            } catch (e: RemoteException) {
-                Log.e(TAG, "toggleNavigationBillboard() error")
-            }
-        }
 
     /**
      * Request to be the selected Kiosk Mode App programmatically.
@@ -1558,6 +1558,7 @@ class Robot private constructor(context: Context) {
     fun requestToBeKioskApp() {
         if (!isMetaDataKiosk) {
             Log.e(TAG, "No kiosk mode declaration in meta data")
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
             return
         }
         try {
@@ -1572,7 +1573,10 @@ class Robot private constructor(context: Context) {
      */
     @CheckResult
     fun isSelectedKioskApp(): Boolean {
-        if (!isMetaDataKiosk) return false
+        if (!isMetaDataKiosk) {
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
+            return false
+        }
         try {
             return sdkService?.isSelectedKioskApp(applicationInfo.packageName) ?: false
         } catch (e: RemoteException) {
@@ -1690,6 +1694,7 @@ class Robot private constructor(context: Context) {
     fun checkSelfPermission(permission: Permission): Int {
         if (permission.isKioskPermission && !isMetaDataKiosk) {
             Log.w(TAG, "Only Kiosk App may have kiosk permissions")
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
             return Permission.DENIED
         }
         try {
@@ -1727,6 +1732,7 @@ class Robot private constructor(context: Context) {
             }
             if (permission.isKioskPermission && !isMetaDataKiosk) {
                 Log.w(TAG, "Kiosk permission $permission should request in Kiosk Mode")
+                sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
                 continue
             }
             validPermissions.add(permission.value)
