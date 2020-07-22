@@ -934,8 +934,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRobotLifted(boolean isRobotLifted) {
-        printLog("onRobotLifted", "isRobotLifted: " + isRobotLifted);
+    public void onRobotLifted(boolean isLifted, @NotNull String reason) {
+        printLog("onRobotLifted: isLifted: " + isLifted + ", reason: " + reason);
     }
 
     @Override

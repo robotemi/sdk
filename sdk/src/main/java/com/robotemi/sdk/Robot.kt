@@ -279,11 +279,11 @@ class Robot private constructor(context: Context) {
             return true
         }
 
-        override fun onRobotLifted(isRobotLifted: Boolean): Boolean {
+        override fun onRobotLifted(isLifted: Boolean, reason: String): Boolean {
             if (onRobotLiftedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onRobotLiftedListeners) {
-                    listener.onRobotLifted(isRobotLifted)
+                    listener.onRobotLifted(isLifted, reason)
                 }
             }
             return true

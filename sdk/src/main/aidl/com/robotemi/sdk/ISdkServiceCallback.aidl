@@ -70,7 +70,7 @@ interface ISdkServiceCallback {
 
     boolean onSequencePlayStatusChanged(int status);
 
-    boolean onRobotLifted(boolean isRobotLifted);
+    boolean onRobotLifted(boolean isRobotLifted, String reason);
 
     boolean onDetectionDataChanged(in DetectionData detectionData);
 
