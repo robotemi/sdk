@@ -5,11 +5,10 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
 
-
     defaultConfig {
         applicationId "com.robotemi.sdk.sample"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
 

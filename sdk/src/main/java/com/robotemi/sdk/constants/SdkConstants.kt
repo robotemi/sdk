@@ -55,6 +55,9 @@ object SdkConstants {
      * `R.integer.metadata_ui_mode_blend`
      */
     const val METADATA_UI_MODE_BLEND = 3
+
+    const val METADATA_UI_MODE_HIDE_ALL_TOP_BAR_ELEMENTS = 4
+
     const val PLAY = -1
     const val PAUSE = -2
     const val NEXT = -3

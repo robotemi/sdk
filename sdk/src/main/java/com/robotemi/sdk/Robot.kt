@@ -610,6 +610,7 @@ class Robot private constructor(context: Context) {
      *
      * @param contextsToLock - List of contexts names to lock.
      */
+    @Deprecated("No longer supported")
     fun lockContexts(contextsToLock: List<String>) {
         try {
             sdkService?.lockContexts(contextsToLock)
@@ -623,6 +624,7 @@ class Robot private constructor(context: Context) {
      *
      * @param contextsToRelease - List of contexts names to release.
      */
+    @Deprecated("No longer supported")
     fun releaseContexts(contextsToRelease: List<String>) {
         try {
             sdkService?.releaseContexts(contextsToRelease)
@@ -730,7 +732,7 @@ class Robot private constructor(context: Context) {
     /**
      * Save location.
      *
-     * @param - Location name.
+     * @param name Location name.
      * @return Result of a successful or failed operation.
      */
     fun saveLocation(name: String): Boolean {
@@ -745,7 +747,7 @@ class Robot private constructor(context: Context) {
     /**
      * Delete location.
      *
-     * @param name - Location name.
+     * @param name Location name.
      * @return Result of a successful or failed operation.
      */
     fun deleteLocation(name: String): Boolean {
@@ -792,7 +794,7 @@ class Robot private constructor(context: Context) {
      *
      * @param position Position holds (x,y).
      */
-    private fun goToPosition(position: Position) {
+    fun goToPosition(position: Position) {
         try {
             sdkService?.goToPosition(position)
         } catch (e: RemoteException) {
