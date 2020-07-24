@@ -663,7 +663,10 @@ class Robot private constructor(context: Context) {
      * @param text The text want to be NlU.
      */
     fun startNlu(text: String) {
-        if (isMetaDataOverridingNlu) return
+        if (isMetaDataOverridingNlu) {
+            sdkServiceCallback.onSdkError(SdkException.operationConflict("Already override NLU"))
+            return
+        }
         try {
             sdkService?.startNlu(applicationInfo.packageName, text)
         } catch (e: RemoteException) {
@@ -1111,6 +1114,7 @@ class Robot private constructor(context: Context) {
      *
      * @param listener The listener you want to add.
      */
+    @UiThread
     fun addOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
         onTelepresenceStatusChangedListeners.add(listener)
     }
@@ -1120,6 +1124,7 @@ class Robot private constructor(context: Context) {
      *
      * @param listener The listener you added before.
      */
+    @UiThread
     fun removeOnTelepresenceStatusChangedListener(listener: OnTelepresenceStatusChangedListener) {
         onTelepresenceStatusChangedListeners.remove(listener)
     }
@@ -1129,6 +1134,7 @@ class Robot private constructor(context: Context) {
      *
      * @param listener The listener you want to add.
      */
+    @UiThread
     fun addOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
         onUsersUpdatedListeners.add(listener)
     }
@@ -1138,14 +1144,17 @@ class Robot private constructor(context: Context) {
      *
      * @param listener The listener you added before.
      */
+    @UiThread
     fun removeOnUsersUpdatedListener(listener: OnUsersUpdatedListener) {
         onUsersUpdatedListeners.remove(listener)
     }
 
+    @UiThread
     fun addOnTelepresenceEventChangedListener(listener: OnTelepresenceEventChangedListener) {
         onTelepresenceEventChangedListener.add(listener)
     }
 
+    @UiThread
     fun removeOnTelepresenceEventChangedListener(listener: OnTelepresenceEventChangedListener) {
         onTelepresenceEventChangedListener.remove(listener)
     }
@@ -1621,17 +1630,20 @@ class Robot private constructor(context: Context) {
         mediaButtonListener = null
     }
 
+    @Deprecated("No longer supported")
     @Throws(RemoteException::class)
     fun updateMediaBar(mediaBarData: MediaBarData) {
         mediaBarData.packageName = applicationInfo.packageName
         mediaBar.updateMediaBar(mediaBarData)
     }
 
+    @Deprecated("No longer supported")
     @Throws(RemoteException::class)
     fun pauseMediaBar() {
         mediaBar.pauseMediaBar()
     }
 
+    @Deprecated("No longer supported")
     @Throws(RemoteException::class)
     fun setMediaPlaying(isPlaying: Boolean) {
         mediaBar.setMediaPlaying(isPlaying, applicationInfo.packageName)

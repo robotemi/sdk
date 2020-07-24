@@ -30,13 +30,6 @@
                     home.dance,
                     home.sleep" />
 
-        <!-- this meta-data tells the laucnher which Nlp context we are in. -->
-        <meta-data
-            android:name="com.robotemi.sdk.metadata.CONTEXTS"
-            android:value="
-                radio,
-                media" />
-
         <meta-data
             android:name="com.robotemi.sdk.metadata.KIOSK"
             android:value="true" />
@@ -45,14 +38,15 @@
             android:name="@string/metadata_open_without_internet"
             android:value="true" />
 
-        <!-- Set value to TRUE to cover original voice flow. -->
+        <!-- Set value to true to cover original voice flow[NLU]. -->
         <meta-data
             android:name="@string/metadata_override_nlu"
             android:value="false" />
 
+        <!-- Set value to true to cover original voice flow[ASR]. -->
         <meta-data
             android:name="@string/metadata_override_stt"
-            android:value="true" />
+            android:value="false" />
 
         <meta-data
             android:name="@string/metadata_permissions"
