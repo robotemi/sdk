@@ -9,6 +9,7 @@
     <string name="metadata_open_without_internet" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OPEN_WITHOUT_INTERNET</string>
     <string name="metadata_assistant" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.ASSISTANT</string>
     <string name="metadata_override_nlu" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OVERRIDE_NLU</string>
+    <string name="metadata_override_stt" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OVERRIDE_STT</string>
     <string name="metadata_permissions" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.PERMISSIONS</string>
 
     <integer name="metadata_ui_flag_default">0</integer>
@@ -17,6 +18,7 @@
     <integer name="metadata_ui_mode_fullscreen">1</integer>
     <integer name="metadata_ui_mode_immersive">2</integer>
     <integer name="metadata_ui_mode_blend">3</integer>
+    <integer name="metadata_ui_mode_hide_all_top_bar_elements">4</integer>
 
     <string name="permission_face_recognition" tools:ignore="ExtraTranslation">com.robotemi.permission.face_recognition</string>
     <string name="permission_map" tools:ignore="ExtraTranslation">com.robotemi.permission.map</string>

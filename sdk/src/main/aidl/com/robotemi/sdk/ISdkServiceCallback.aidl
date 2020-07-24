@@ -9,6 +9,10 @@ import com.robotemi.sdk.NlpResult;
 import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.model.CallEventModel;
+import com.robotemi.sdk.navigation.model.Position;
+import com.robotemi.sdk.model.DetectionData;
+import com.robotemi.sdk.face.ContactModel;
+import com.robotemi.sdk.exception.SdkException;
 
 interface ISdkServiceCallback {
 
@@ -58,5 +62,19 @@ interface ISdkServiceCallback {
 
     boolean onTelepresenceEventChanged(in CallEventModel callEventModel);
 
-    boolean onRequestPermissionResult(in String permission, in int grantResult);
+    boolean onRequestPermissionResult(in String permission, int grantResult, int requestCode);
+
+    boolean onDistanceToLocationChanged(in Map distances);
+
+    boolean onCurrentPositionChanged(in Position position);
+
+    boolean onSequencePlayStatusChanged(int status);
+
+    boolean onRobotLifted(boolean isRobotLifted, String reason);
+
+    boolean onDetectionDataChanged(in DetectionData detectionData);
+
+    boolean onFaceRecognized(in List<ContactModel> contactModelList);
+
+    boolean onSdkError(in SdkException sdkException);
 }
