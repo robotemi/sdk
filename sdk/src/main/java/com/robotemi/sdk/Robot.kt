@@ -662,21 +662,13 @@ class Robot private constructor(context: Context) {
      *
      * @param text The text want to be NlU.
      */
-    fun startNlu(text: String) {
-        if (isMetaDataOverridingNlu) {
-            sdkServiceCallback.onSdkError(SdkException.operationConflict("Already override NLU"))
-            return
-        }
+    fun startDefaultNlu(text: String) {
         try {
-            sdkService?.startNlu(applicationInfo.packageName, text)
+            sdkService?.startDefaultNlu(applicationInfo.packageName, text)
         } catch (e: RemoteException) {
             Log.e(TAG, "startNlu() error")
         }
     }
-
-    private val isMetaDataOverridingNlu: Boolean
-        get() = applicationInfo.metaData != null
-                && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_NLU, false)
 
     @UiThread
     fun addConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {

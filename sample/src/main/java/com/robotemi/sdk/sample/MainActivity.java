@@ -37,6 +37,7 @@ import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
+import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.exception.OnSdkExceptionListener;
 import com.robotemi.sdk.exception.SdkException;
 import com.robotemi.sdk.face.ContactModel;
@@ -602,11 +603,11 @@ public class MainActivity extends AppCompatActivity implements
      * <pre>
      * <meta-data
      *     android:name="com.robotemi.sdk.metadata.KIOSK"
-     *     android:value="TRUE" />
+     *     android:value="true" />
      *
      * <meta-data
      *     android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
-     *     android:value="TRUE" />
+     *     android:value="true" />
      * <pre>
      * And also need to select this App as the Kiosk Mode App in Settings > Kiosk Mode.
      *
@@ -615,6 +616,18 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAsrResult(final @NonNull String asrResult) {
         printLog("onAsrResult", "asrResult = " + asrResult);
+        try {
+            Bundle metadata = getPackageManager()
+                    .getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA)
+                    .metaData;
+            if (metadata == null) return;
+            if (!robot.isSelectedKioskApp()) return;
+            if (!metadata.getBoolean(SdkConstants.METADATA_OVERRIDE_NLU)) return;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+
         if (asrResult.equalsIgnoreCase("Hello")) {
             robot.askQuestion("Hello, I'm temi, what can I do for you?");
         } else if (asrResult.equalsIgnoreCase("Play music")) {
@@ -1033,7 +1046,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public void startNlu(View view) {
         EditText editText = findViewById(R.id.etNlu);
-        robot.startNlu(editText.getText().toString());
+        robot.startDefaultNlu(editText.getText().toString());
     }
 
     @Override
