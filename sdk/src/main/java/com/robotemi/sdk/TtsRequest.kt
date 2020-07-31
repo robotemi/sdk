@@ -18,7 +18,7 @@ data class TtsRequest(
         id = source.readSerializable() as UUID,
         speech = source.readString()!!,
         packageName = source.readString()!!,
-        status = (if (source.readInt() == -1) null else Status.values()[source.readInt()])!!,
+        status = with(source.readInt()) { (if (this == -1) null else Status.values()[this])!! },
         drawableBitmap = source.readParcelable(Bitmap::class.java.classLoader),
         isShowOnConversationLayer = source.readByte().toInt() != 0
     )
