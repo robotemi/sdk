@@ -6,7 +6,7 @@ import android.os.Parcelable
 data class Position(
     var x: Float = 0F,
     var y: Float = 0F,
-    var theta: Float = 0F,
+    var yaw: Float = 0F,
     var tiltAngle: Int = 0
 ) : Parcelable {
 
@@ -22,7 +22,7 @@ data class Position(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeFloat(x)
         writeFloat(y)
-        writeFloat(theta)
+        writeFloat(yaw)
         writeInt(tiltAngle)
     }
 

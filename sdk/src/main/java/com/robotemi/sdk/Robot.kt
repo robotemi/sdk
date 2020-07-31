@@ -4,19 +4,18 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
-import androidx.annotation.CheckResult
-import androidx.annotation.RestrictTo
+import androidx.annotation.*
 import androidx.annotation.RestrictTo.Scope.LIBRARY
-import androidx.annotation.UiThread
-import androidx.annotation.WorkerThread
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
+import com.robotemi.sdk.constants.ContentType
 import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
@@ -42,12 +41,14 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
+import java.io.FileNotFoundException
+import java.io.InputStream
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.collections.HashMap
 
 @SuppressWarnings("unused")
-class Robot private constructor(context: Context) {
+class Robot private constructor(private val context: Context) {
 
     private val applicationInfo: ApplicationInfo
 
@@ -785,7 +786,7 @@ class Robot private constructor(context: Context) {
     }
 
     /**
-     * TBD. Go to a specific position with (x,y).
+     * Go to a specific position with (x,y).
      *
      * @param position Position holds (x,y).
      */
@@ -1857,6 +1858,23 @@ class Robot private constructor(context: Context) {
         } catch (e: RemoteException) {
             Log.e(TAG, "stopFaceRecognition() error")
         }
+    }
+
+    @Nullable
+    @WorkerThread
+    fun getInputStreamByMediaKey(contentType: ContentType, mediaKey: String): InputStream? {
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(contentType.path)
+            .append("?").append(SdkConstants.PROVIDER_PARAMETER_MEDIA_KEY)
+            .append("=").append(mediaKey)
+        try {
+            return context.contentResolver.openInputStream(Uri.parse(uriStr.toString()))
+        } catch (e: FileNotFoundException) {
+            Log.e(TAG, e.message)
+            sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))
+        }
+        return null
     }
 
     @UiThread
