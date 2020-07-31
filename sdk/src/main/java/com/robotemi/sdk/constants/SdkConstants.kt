@@ -68,4 +68,10 @@ object SdkConstants {
 
     const val DETECTION_DISTANCE_DEFAULT = 0.8F
 
+    const val PROVIDER_AUTHORITY = "com.robotemi.sdk.provider"
+    const val PROVIDER_PARAMETER_MEDIA_KEY = "mediaKey"
+}
+
+enum class ContentType(val path: String) {
+    FACE_RECOGNITION_IMAGE("face_recognition_image")
 }

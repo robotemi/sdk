@@ -27,6 +27,7 @@ import android.widget.Toast;
 import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.ActivityCompat;
 
 import com.robotemi.sdk.BatteryData;
@@ -37,6 +38,7 @@ import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
+import com.robotemi.sdk.constants.ContentType;
 import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.exception.OnSdkExceptionListener;
 import com.robotemi.sdk.exception.SdkException;
@@ -68,6 +70,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    private EditText etSpeak, etSaveLocation, etGoTo, etDistance;
+    private EditText etSpeak, etSaveLocation, etGoTo, etDistance, etX, etY, etYaw, etNlu;
 
     private List<String> locations;
 
@@ -127,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements
     private CustomAdapter mAdapter;
 
     private TextView tvLog;
+
+    private AppCompatImageView ivFace;
 
     /**
      * Hiding keyboard after every button press
@@ -252,6 +257,11 @@ public class MainActivity extends AppCompatActivity implements
         etDistance = findViewById(R.id.etDistance);
         tvLog = findViewById(R.id.tvLog);
         tvLog.setMovementMethod(new ScrollingMovementMethod());
+        etX = findViewById(R.id.etX);
+        etY = findViewById(R.id.etY);
+        etYaw = findViewById(R.id.etYaw);
+        etNlu = findViewById(R.id.etNlu);
+        ivFace = findViewById(R.id.imageViewFace);
     }
 
     /**
@@ -1027,7 +1037,22 @@ public class MainActivity extends AppCompatActivity implements
     public void onFaceRecognized(@NotNull List<ContactModel> contactModelList) {
         for (ContactModel contactModel : contactModelList) {
             printLog("onFaceRecognized", contactModel.toString());
+            showFaceRecognitionImage(contactModel.getImageKey());
         }
+    }
+
+    private void showFaceRecognitionImage(String mediaKey) {
+        if (mediaKey.isEmpty()) {
+            ivFace.setImageResource(R.drawable.app_icon);
+            return;
+        }
+        new Thread(() -> {
+            InputStream inputStream = robot.getInputStreamByMediaKey(ContentType.FACE_RECOGNITION_IMAGE, mediaKey);
+            if (inputStream == null) {
+                return;
+            }
+            runOnUiThread(() -> ivFace.setImageBitmap(BitmapFactory.decodeStream(inputStream)));
+        }).start();
     }
 
     private void printLog(String msg) {
@@ -1045,8 +1070,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void startNlu(View view) {
-        EditText editText = findViewById(R.id.etNlu);
-        robot.startDefaultNlu(editText.getText().toString());
+        robot.startDefaultNlu(etNlu.getText().toString());
     }
 
     @Override
@@ -1058,6 +1082,18 @@ public class MainActivity extends AppCompatActivity implements
         List<UserInfo> allContacts = robot.getAllContact();
         for (UserInfo userInfo : allContacts) {
             printLog("UserInfo: " + userInfo.toString());
+        }
+    }
+
+    public void goToPosition(View view) {
+        try {
+            float x = Float.parseFloat(etX.getText().toString());
+            float y = Float.parseFloat(etY.getText().toString());
+            float yaw = Float.parseFloat(etYaw.getText().toString());
+            robot.goToPosition(new Position(x, y, yaw, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            printLog(e.getMessage());
         }
     }
 }

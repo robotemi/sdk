@@ -93,7 +93,7 @@
                 android:textColorHint="@color/colorGrey" />
 
             <Button
-                android:id="@+id/btnGoToPosition"
+                android:id="@+id/btnStartDetectionModeWithDistance"
                 style="@style/ButtonCommon"
                 android:onClick="startDetectionModeWithDistance"
                 android:text="Start Detection Mode with Distance" />
@@ -115,6 +115,51 @@
                 style="@style/ButtonCommon"
                 android:onClick="startNlu"
                 android:text="Start NLU" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="50dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etX"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:hint="x"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="@color/colorGrey" />
+
+                <EditText
+                    android:id="@+id/etY"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:hint="y"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="@color/colorGrey" />
+
+                <EditText
+                    android:id="@+id/etYaw"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:hint="yaw"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="@color/colorGrey" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnGoToPosition"
+                style="@style/ButtonCommon"
+                android:onClick="goToPosition"
+                android:text="Go To Position" />
         </LinearLayout>
     </ScrollView>
 
@@ -387,10 +432,17 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewFace"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            tools:src="@mipmap/ic_launcher" />
+
         <TextView
             android:id="@+id/tvLog"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/imageViewFace"
             android:layout_marginBottom="50dp"
             android:lineSpacingExtra="5dp"
             android:padding="20dp"

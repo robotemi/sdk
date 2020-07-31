@@ -7,9 +7,12 @@ data class ContactModel(
     val firstName: String = "",
     val lastName: String = "",
     val gender: String = "",
+    val imageKey: String = "",
     val description: String = ""
 ) : Parcelable {
+
     constructor(source: Parcel) : this(
+        source.readString()!!,
         source.readString()!!,
         source.readString()!!,
         source.readString()!!,
@@ -22,6 +25,7 @@ data class ContactModel(
         writeString(firstName)
         writeString(lastName)
         writeString(gender)
+        writeString(imageKey)
         writeString(description)
     }
 
