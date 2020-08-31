@@ -12,6 +12,7 @@ import android.os.RemoteException
 import android.util.Log
 import androidx.annotation.*
 import androidx.annotation.RestrictTo.Scope.LIBRARY
+import com.google.gson.Gson
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
@@ -41,8 +42,11 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
+import org.json.JSONException
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.collections.HashMap
@@ -1826,12 +1830,21 @@ class Robot private constructor(private val context: Context) {
     @WorkerThread
     @CheckResult
     fun getMapData(): MapDataModel? {
-        try {
-            return sdkService?.getMapData(applicationInfo.packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "getMapDataString() error")
+        val inputStream = getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
+        val inputStreamReader = InputStreamReader(inputStream)
+        return try {
+            MapDataModel(Gson().fromJson(inputStreamReader, MapDataModel::class.java).mapImage)
+        } catch (e: JSONException) {
+            Log.e(TAG, "getMapData() - JSON parse error: ${e.message}")
+            null
+        } finally {
+            try {
+                inputStream.close()
+                inputStreamReader.close()
+            } catch (e: IOException) {
+                Log.e(TAG, "getMapData() - ${e.message}")
+            }
         }
-        return null
     }
 
     /*****************************************/

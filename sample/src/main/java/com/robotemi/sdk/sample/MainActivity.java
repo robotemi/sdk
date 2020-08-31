@@ -70,6 +70,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -209,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnDetectionDataChangedListener(this);
         robot.addOnUserInteractionChangedListener(this);
         robot.stopMovement();
+        robot.stopFaceRecognition();
     }
 
     /**
@@ -721,6 +723,7 @@ public class MainActivity extends AppCompatActivity implements
         if (grantResult == Permission.DENIED) {
             return;
         }
+        // Permission is granted. Continue the action or workflow in your app.
         switch (permission) {
             case FACE_RECOGNITION:
                 if (requestCode == REQUEST_CODE_FACE_START) {
@@ -1051,7 +1054,14 @@ public class MainActivity extends AppCompatActivity implements
             if (inputStream == null) {
                 return;
             }
-            runOnUiThread(() -> ivFace.setImageBitmap(BitmapFactory.decodeStream(inputStream)));
+            runOnUiThread(() -> {
+                ivFace.setImageBitmap(BitmapFactory.decodeStream(inputStream));
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }).start();
     }
 

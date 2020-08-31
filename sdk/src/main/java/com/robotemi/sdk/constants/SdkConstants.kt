@@ -73,5 +73,6 @@ object SdkConstants {
 }
 
 enum class ContentType(val path: String) {
-    FACE_RECOGNITION_IMAGE("face_recognition_image")
+    FACE_RECOGNITION_IMAGE("face_recognition_image"),
+    MAP_DATA_IMAGE("map_data_image")
 }
