@@ -15,7 +15,8 @@
         android:theme="@style/SkillTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MapActivity" />
-        <!--         Adding this meta-data is required in order to display this app in temi's launcher app -->
+
+        <!-- Adding this meta-data is required in order to display this app in temi's launcher app -->
         <meta-data
             android:name="com.robotemi.sdk.metadata.SKILL"
             android:value="@string/app_name" />
@@ -25,10 +26,9 @@
         -->
         <meta-data
             android:name="com.robotemi.sdk.metadata.ACTIONS"
-            android:value="
-                    home.welcome,
-                    home.dance,
-                    home.sleep" />
+            android:value="home.welcome,
+                           home.dance,
+                           home.sleep" />
 
         <meta-data
             android:name="com.robotemi.sdk.metadata.KIOSK"
