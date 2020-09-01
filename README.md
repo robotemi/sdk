@@ -11,7 +11,7 @@ Download
 
 Download the latest AAR from [Maven Central][2] or grab via Gradle:
 ```groovy
-implementation 'com.robotemi:sdk:0.10.65'   
+implementation 'com.robotemi:sdk:0.10.70'   
 ```
 
 or Maven:
@@ -19,40 +19,11 @@ or Maven:
 <dependency>
   <groupId>com.robotemi</groupId>
   <artifactId>sdk</artifactId>
-  <version>0.10.65</version>
+  <version>0.10.70</version>
 </dependency>
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
-
-
-Installing Applications
---------
-
-You can begin by downloading ADB (Android Debug Bridge) on the computer you wish to develop for temi. Please follow [this][3] tutorial on how to download and set up ADB on your computer.
-
-Once you have ADB set up on your computer, you can run your code on temi by:
-
-Step 1: Make sure you are connected to the same WiFi network as your robot. 
-
-Step 2: On temi - go to Settings -> temi Developer Tools -> tap on ADB Port Opening.
-
-Step 3: On computer - Using the IP address on the top right of temi’s screen you can connect to the robot and test your code. In order to establish a connection with the robot, type “```adb connect <IP_ADDRESS>:5555```” in Terminal on Mac or Command Prompt on Windows.
-
-
-Uninstalling Applications
---------
-
-Once you have ADB set up on your computer, you can uninstall your app on temi by:
-
-Step 1: Make sure you are connected to the same WiFi network as your robot. 
-
-Step 2: On temi - go to Settings -> temi Developer Tools -> tap on ADB Port Opening.
-
-Step 3: On computer - Using the IP address on the top right of temi’s screen you can connect to the robot and uninstall your app. In order to establish a connection with the robot, type “```adb connect <IP_ADDRESS>:5555```” in Terminal/Command Prompt.
-
-Step 4: Type "```adb uninstall PACKAGE_NAME```" in Terminal/Command Prompt. If you are not sure what your package name is, you can check from within your Android Project.
-
 
 Documentation
 --------
