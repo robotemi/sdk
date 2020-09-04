@@ -34,7 +34,7 @@ Documentation
 License
 -------
 
-    Copyright 2019 temi USA inc.
+    Copyright 2020 temi USA inc.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

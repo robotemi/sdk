@@ -70,6 +70,8 @@ object SdkConstants {
 
     const val PROVIDER_AUTHORITY = "com.robotemi.sdk.provider"
     const val PROVIDER_PARAMETER_MEDIA_KEY = "mediaKey"
+
+    const val LOCATION_HOME_BASE = "home base"
 }
 
 enum class ContentType(val path: String) {

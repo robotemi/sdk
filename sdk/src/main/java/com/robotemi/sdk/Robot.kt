@@ -747,6 +747,10 @@ class Robot private constructor(private val context: Context) {
      * @return Result of a successful or failed operation.
      */
     fun deleteLocation(name: String): Boolean {
+        if (name == SdkConstants.LOCATION_HOME_BASE) {
+            sdkServiceCallback.onSdkError(SdkException.illegalArgument("Can not delete $name"))
+            return false
+        }
         try {
             return sdkService?.deleteLocation(name) ?: false
         } catch (e: RemoteException) {
