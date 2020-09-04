@@ -78,6 +78,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -133,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements
     private TextView tvLog;
 
     private AppCompatImageView ivFace;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     /**
      * Hiding keyboard after every button press
@@ -211,6 +215,9 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnUserInteractionChangedListener(this);
         robot.stopMovement();
         robot.stopFaceRecognition();
+        if (!executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
     }
 
     /**
@@ -1049,7 +1056,7 @@ public class MainActivity extends AppCompatActivity implements
             ivFace.setImageResource(R.drawable.app_icon);
             return;
         }
-        new Thread(() -> {
+        executorService.execute(() -> {
             InputStream inputStream = robot.getInputStreamByMediaKey(ContentType.FACE_RECOGNITION_IMAGE, mediaKey);
             if (inputStream == null) {
                 return;
@@ -1062,7 +1069,7 @@ public class MainActivity extends AppCompatActivity implements
                     e.printStackTrace();
                 }
             });
-        }).start();
+        });
     }
 
     private void printLog(String msg) {

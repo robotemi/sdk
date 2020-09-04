@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.annotation.*
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import com.google.gson.Gson
+import com.google.gson.JsonParseException
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
@@ -42,7 +43,6 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
-import org.json.JSONException
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -1834,7 +1834,7 @@ class Robot private constructor(private val context: Context) {
         val inputStreamReader = InputStreamReader(inputStream)
         return try {
             MapDataModel(Gson().fromJson(inputStreamReader, MapDataModel::class.java).mapImage)
-        } catch (e: JSONException) {
+        } catch (e: JsonParseException) {
             Log.e(TAG, "getMapData() - JSON parse error: ${e.message}")
             null
         } finally {
