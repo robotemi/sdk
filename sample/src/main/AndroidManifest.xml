@@ -14,12 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/SkillTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MapActivity" />
 
         <!-- Adding this meta-data is required in order to display this app in temi's launcher app -->
         <meta-data
             android:name="com.robotemi.sdk.metadata.SKILL"
             android:value="@string/app_name" />
+
         <!--
         This meta-data is telling the launcher which nlp responses should
         invoke the NlpResponse listener's onNlpResponse method sending it these intents
@@ -64,6 +64,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MapActivity" />
+
     </application>
 
 </manifest>
