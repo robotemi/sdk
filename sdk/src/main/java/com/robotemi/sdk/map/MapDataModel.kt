@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class MapDataModel(
     @SerializedName("Map_Image")
-    val mapImage: MapImage
+    var mapImage: MapImage
 ) : Parcelable {
     constructor(source: Parcel) : this(
         source.readParcelable<MapImage>(MapImage::class.java.classLoader)!!

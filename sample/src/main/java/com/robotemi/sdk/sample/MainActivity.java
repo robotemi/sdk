@@ -78,6 +78,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -133,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements
     private TextView tvLog;
 
     private AppCompatImageView ivFace;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     /**
      * Hiding keyboard after every button press
@@ -249,6 +253,9 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnTelepresenceEventChangedListener(this);
         robot.removeOnFaceRecognizedListener(this);
         robot.removeOnSdkExceptionListener(this);
+        if (!executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
         super.onDestroy();
     }
 
@@ -723,6 +730,7 @@ public class MainActivity extends AppCompatActivity implements
         if (grantResult == Permission.DENIED) {
             return;
         }
+        // Permission is granted. Continue the action or workflow in your app.
         switch (permission) {
             case FACE_RECOGNITION:
                 if (requestCode == REQUEST_CODE_FACE_START) {
@@ -1048,19 +1056,20 @@ public class MainActivity extends AppCompatActivity implements
             ivFace.setImageResource(R.drawable.app_icon);
             return;
         }
-        new Thread(() -> {
+        executorService.execute(() -> {
             InputStream inputStream = robot.getInputStreamByMediaKey(ContentType.FACE_RECOGNITION_IMAGE, mediaKey);
             if (inputStream == null) {
                 return;
             }
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            runOnUiThread(() -> ivFace.setImageBitmap(bitmap));
-        }).start();
+            runOnUiThread(() -> {
+                ivFace.setImageBitmap(BitmapFactory.decodeStream(inputStream));
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 
     private void printLog(String msg) {

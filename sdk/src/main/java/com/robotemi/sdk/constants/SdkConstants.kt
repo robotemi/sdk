@@ -70,8 +70,11 @@ object SdkConstants {
 
     const val PROVIDER_AUTHORITY = "com.robotemi.sdk.provider"
     const val PROVIDER_PARAMETER_MEDIA_KEY = "mediaKey"
+
+    const val LOCATION_HOME_BASE = "home base"
 }
 
 enum class ContentType(val path: String) {
-    FACE_RECOGNITION_IMAGE("face_recognition_image")
+    FACE_RECOGNITION_IMAGE("face_recognition_image"),
+    MAP_DATA_IMAGE("map_data_image")
 }
