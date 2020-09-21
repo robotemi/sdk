@@ -27,10 +27,6 @@ class MapActivity : AppCompatActivity() {
         textViewMapJson.movementMethod = ScrollingMovementMethod()
         ibBack.setOnClickListener { finish() }
         imageViewMap.setOnClickListener { refreshMap() }
-    }
-
-    override fun onResume() {
-        super.onResume()
         refreshMap()
     }
 
@@ -54,13 +50,9 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        singleThreadExecutor.shutdownNow()
-        super.onPause()
-    }
-
     override fun onDestroy() {
         bitmap?.recycle()
+        singleThreadExecutor.shutdownNow()
         super.onDestroy()
     }
 }

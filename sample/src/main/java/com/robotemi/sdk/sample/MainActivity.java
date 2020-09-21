@@ -215,9 +215,6 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnUserInteractionChangedListener(this);
         robot.stopMovement();
         robot.stopFaceRecognition();
-        if (!executorService.isShutdown()) {
-            executorService.shutdownNow();
-        }
     }
 
     /**
@@ -256,6 +253,9 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnTelepresenceEventChangedListener(this);
         robot.removeOnFaceRecognizedListener(this);
         robot.removeOnSdkExceptionListener(this);
+        if (!executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
         super.onDestroy();
     }
 
