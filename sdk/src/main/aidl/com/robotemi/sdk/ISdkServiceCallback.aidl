@@ -77,4 +77,6 @@ interface ISdkServiceCallback {
     boolean onFaceRecognized(in List<ContactModel> contactModelList);
 
     boolean onSdkError(in SdkException sdkException);
+
+    boolean onConversationStatusChanged(int status, in String text);
 }

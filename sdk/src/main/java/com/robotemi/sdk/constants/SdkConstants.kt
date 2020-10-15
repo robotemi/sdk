@@ -14,6 +14,7 @@ object SdkConstants {
     const val METADATA_OPEN_WITHOUT_INTERNET = "com.robotemi.sdk.metadata.OPEN_WITHOUT_INTERNET"
     const val METADATA_OVERRIDE_NLU = "com.robotemi.sdk.metadata.OVERRIDE_NLU"
     const val METADATA_OVERRIDE_STT = "com.robotemi.sdk.metadata.OVERRIDE_STT"
+    const val METADATA_OVERRIDE_CONVERSATION_LAYER = "com.robotemi.sdk.metadata.OVERRIDE_CONVERSATION_LAYER"
     const val METADATA_PERMISSIONS = "com.robotemi.sdk.metadata.PERMISSIONS"
 
     /**

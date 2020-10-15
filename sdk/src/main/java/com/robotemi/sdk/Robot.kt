@@ -131,6 +131,9 @@ class Robot private constructor(private val context: Context) {
 
     private val onSdkExceptionListeners = CopyOnWriteArraySet<OnSdkExceptionListener>()
 
+    private val onConversationStatusChangedListeners =
+        CopyOnWriteArraySet<OnConversationStatusChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -203,6 +206,16 @@ class Robot private constructor(private val context: Context) {
 
         override fun hasActiveNlpListeners(): Boolean {
             return nlpListeners.isNotEmpty()
+        }
+
+        override fun onConversationStatusChanged(status: Int, text: String): Boolean {
+            if (onConversationStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (onConversationStatusChangedListener in onConversationStatusChangedListeners) {
+                    onConversationStatusChangedListener.onConversationStatusChanged(status, text)
+                }
+            }
+            return true
         }
 
         /*****************************************/
@@ -723,6 +736,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun addAsrListener(asrListener: AsrListener) {
         asrListeners.add(asrListener)
+    }
+
+    @UiThread
+    fun addOnConversationStatusChangedListener(onConversationStatusChangedListener: OnConversationStatusChangedListener) {
+        onConversationStatusChangedListeners.add(onConversationStatusChangedListener)
+    }
+
+    @UiThread
+    fun removeOnConversationStatusChangedListener(onConversationStatusChangedListener: OnConversationStatusChangedListener) {
+        onConversationStatusChangedListeners.remove(onConversationStatusChangedListener)
     }
 
     /*****************************************/

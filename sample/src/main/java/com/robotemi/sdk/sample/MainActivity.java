@@ -46,6 +46,7 @@ import com.robotemi.sdk.face.ContactModel;
 import com.robotemi.sdk.face.OnFaceRecognizedListener;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
+import com.robotemi.sdk.listeners.OnConversationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionDataChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements
         OnDetectionDataChangedListener,
         OnUserInteractionChangedListener,
         OnFaceRecognizedListener,
+        OnConversationStatusChangedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -188,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnRobotLiftedListener(this);
         robot.addOnDetectionDataChangedListener(this);
         robot.addOnUserInteractionChangedListener(this);
+        robot.addOnConversationStatusChangedListener(this);
         robot.showTopBar();
     }
 
@@ -215,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnUserInteractionChangedListener(this);
         robot.stopMovement();
         robot.stopFaceRecognition();
+        robot.removeOnConversationStatusChangedListener(this);
     }
 
     /**
@@ -1112,5 +1116,10 @@ public class MainActivity extends AppCompatActivity implements
             e.printStackTrace();
             printLog(e.getMessage());
         }
+    }
+
+    @Override
+    public void onConversationStatusChanged(int status, @NotNull String text) {
+        printLog("Conversation", "Status=" + status + ", text=" + text);
     }
 }
