@@ -54,6 +54,8 @@ import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotLiftedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
+import com.robotemi.sdk.listeners.OnTtsVisualizerFftDataChangedListener;
+import com.robotemi.sdk.listeners.OnTtsVisualizerWaveFormDataChangedListener;
 import com.robotemi.sdk.listeners.OnUserInteractionChangedListener;
 import com.robotemi.sdk.model.CallEventModel;
 import com.robotemi.sdk.model.DetectionData;
@@ -106,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements
         OnUserInteractionChangedListener,
         OnFaceRecognizedListener,
         OnConversationStatusChangedListener,
+        OnTtsVisualizerWaveFormDataChangedListener,
+        OnTtsVisualizerFftDataChangedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -121,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_CODE_SEQUENCE_PLAY = 5;
     private static final int REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6;
 
-    private static String[] PERMISSIONS_STORAGE = {
+    private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
@@ -138,7 +142,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private AppCompatImageView ivFace;
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    private TtsVisualizerView ttsVisualizerView;
 
     /**
      * Hiding keyboard after every button press
@@ -191,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnDetectionDataChangedListener(this);
         robot.addOnUserInteractionChangedListener(this);
         robot.addOnConversationStatusChangedListener(this);
+        robot.addOnTtsVisualizerWaveFormDataChangedListener(this);
         robot.showTopBar();
     }
 
@@ -219,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.stopMovement();
         robot.stopFaceRecognition();
         robot.removeOnConversationStatusChangedListener(this);
+        robot.removeOnTtsVisualizerWaveFormDataChangedListener(this);
     }
 
     /**
@@ -275,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements
         etYaw = findViewById(R.id.etYaw);
         etNlu = findViewById(R.id.etNlu);
         ivFace = findViewById(R.id.imageViewFace);
+        ttsVisualizerView = findViewById(R.id.visualizerView);
     }
 
     /**
@@ -1121,5 +1130,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConversationStatusChanged(int status, @NotNull String text) {
         printLog("Conversation", "Status=" + status + ", text=" + text);
+    }
+
+    @Override
+    public void onTtsVisualizerWaveFormDataChanged(@NotNull byte[] waveForm) {
+        ttsVisualizerView.updateVisualizer(waveForm);
+    }
+
+    @Override
+    public void onTtsVisualizerFftDataChanged(@NotNull byte[] fft) {
+        Log.d("TtsVisualizer", Arrays.toString(fft));
     }
 }

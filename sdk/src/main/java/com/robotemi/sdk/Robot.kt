@@ -134,6 +134,12 @@ class Robot private constructor(private val context: Context) {
     private val onConversationStatusChangedListeners =
         CopyOnWriteArraySet<OnConversationStatusChangedListener>()
 
+    private val onTtsVisualizerWaveFormDataChangedListeners =
+        CopyOnWriteArraySet<OnTtsVisualizerWaveFormDataChangedListener>()
+
+    private val onTtsVisualizerFftDataChangedListeners =
+        CopyOnWriteArraySet<OnTtsVisualizerFftDataChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -216,6 +222,26 @@ class Robot private constructor(private val context: Context) {
                 }
             }
             return true
+        }
+
+        override fun onTtsVisualizerWaveFormDataChanged(wave: ByteArray): Boolean {
+            if (onTtsVisualizerWaveFormDataChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (onTtsVisualizerWaveFormDataChangedListener in onTtsVisualizerWaveFormDataChangedListeners) {
+                    onTtsVisualizerWaveFormDataChangedListener.onTtsVisualizerWaveFormDataChanged(wave)
+                }
+            }
+            return true
+        }
+
+        override fun onTtsVisualizerFftDataChanged(fft: ByteArray): Boolean {
+            if (onTtsVisualizerFftDataChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (onTtsVisualizerFftDataChangedListener in onTtsVisualizerFftDataChangedListeners) {
+                    onTtsVisualizerFftDataChangedListener.onTtsVisualizerFftDataChanged(fft)
+                }
+            }
+            return false
         }
 
         /*****************************************/
@@ -746,6 +772,26 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnConversationStatusChangedListener(onConversationStatusChangedListener: OnConversationStatusChangedListener) {
         onConversationStatusChangedListeners.remove(onConversationStatusChangedListener)
+    }
+
+    @UiThread
+    fun addOnTtsVisualizerWaveFormDataChangedListener(onTtsVisualizerWaveFormDataChangedListener: OnTtsVisualizerWaveFormDataChangedListener) {
+        onTtsVisualizerWaveFormDataChangedListeners.add(onTtsVisualizerWaveFormDataChangedListener)
+    }
+
+    @UiThread
+    fun removeOnTtsVisualizerWaveFormDataChangedListener(onTtsVisualizerWaveFormDataChangedListener: OnTtsVisualizerWaveFormDataChangedListener) {
+        onTtsVisualizerWaveFormDataChangedListeners.remove(onTtsVisualizerWaveFormDataChangedListener)
+    }
+
+    @UiThread
+    fun addOnTtsVisualizerFftDataChangedListener(onTtsVisualizerFftDataChangedListener: OnTtsVisualizerFftDataChangedListener) {
+        onTtsVisualizerFftDataChangedListeners.add(onTtsVisualizerFftDataChangedListener)
+    }
+
+    @UiThread
+    fun removeOnTtsVisualizerFftDataChangedListener(onTtsVisualizerFftDataChangedListener: OnTtsVisualizerFftDataChangedListener) {
+        onTtsVisualizerFftDataChangedListeners.remove(onTtsVisualizerFftDataChangedListener)
     }
 
     /*****************************************/

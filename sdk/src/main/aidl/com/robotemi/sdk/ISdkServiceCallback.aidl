@@ -79,4 +79,8 @@ interface ISdkServiceCallback {
     boolean onSdkError(in SdkException sdkException);
 
     boolean onConversationStatusChanged(int status, in String text);
+
+    boolean onTtsVisualizerWaveFormDataChanged(in byte[] waveForm);
+
+    boolean onTtsVisualizerFftDataChanged(in byte[] fft);
 }
