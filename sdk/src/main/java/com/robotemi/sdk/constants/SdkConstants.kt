@@ -1,5 +1,12 @@
 package com.robotemi.sdk.constants
 
+import com.robotemi.sdk.constants.SdkConstants.PAGE_ALL_APPS
+import com.robotemi.sdk.constants.SdkConstants.PAGE_CONTACTS
+import com.robotemi.sdk.constants.SdkConstants.PAGE_HOME
+import com.robotemi.sdk.constants.SdkConstants.PAGE_LOCATIONS
+import com.robotemi.sdk.constants.SdkConstants.PAGE_MAP_EDITOR
+import com.robotemi.sdk.constants.SdkConstants.PAGE_SETTINGS
+
 object SdkConstants {
     // metadata key
     const val METADATA_ACTIONS = "com.robotemi.sdk.metadata.ACTIONS"
@@ -14,7 +21,8 @@ object SdkConstants {
     const val METADATA_OPEN_WITHOUT_INTERNET = "com.robotemi.sdk.metadata.OPEN_WITHOUT_INTERNET"
     const val METADATA_OVERRIDE_NLU = "com.robotemi.sdk.metadata.OVERRIDE_NLU"
     const val METADATA_OVERRIDE_STT = "com.robotemi.sdk.metadata.OVERRIDE_STT"
-    const val METADATA_OVERRIDE_CONVERSATION_LAYER = "com.robotemi.sdk.metadata.OVERRIDE_CONVERSATION_LAYER"
+    const val METADATA_OVERRIDE_CONVERSATION_LAYER =
+        "com.robotemi.sdk.metadata.OVERRIDE_CONVERSATION_LAYER"
     const val METADATA_PERMISSIONS = "com.robotemi.sdk.metadata.PERMISSIONS"
 
     /**
@@ -73,9 +81,30 @@ object SdkConstants {
     const val PROVIDER_PARAMETER_MEDIA_KEY = "mediaKey"
 
     const val LOCATION_HOME_BASE = "home base"
+
+    const val PAGE_SETTINGS = "com.robotemi.page.settings"
+    const val PAGE_MAP_EDITOR = "com.robotemi.page.map_editor"
+    const val PAGE_CONTACTS = "com.robotemi.page.contacts"
+    const val PAGE_LOCATIONS = "com.robotemi.page.locations"
+    const val PAGE_ALL_APPS = "com.robotemi.page.all_apps"
+    const val PAGE_HOME = "com.robotemi.page.home"
 }
 
 enum class ContentType(val path: String) {
     FACE_RECOGNITION_IMAGE("face_recognition_image"),
     MAP_DATA_IMAGE("map_data_image")
+}
+
+enum class Platform(val value: Int) {
+    MOBILE(0),
+    TEMI_CENTER(1)
+}
+
+enum class Page(val value: String) {
+    SETTINGS(PAGE_SETTINGS),
+    MAP_EDITOR(PAGE_MAP_EDITOR),
+    CONTACTS(PAGE_CONTACTS),
+    LOCATIONS(PAGE_LOCATIONS),
+    ALL_APPS(PAGE_ALL_APPS),
+    HOME(PAGE_HOME);
 }

@@ -39,6 +39,8 @@ import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.constants.ContentType;
+import com.robotemi.sdk.constants.Page;
+import com.robotemi.sdk.constants.Platform;
 import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.exception.OnSdkExceptionListener;
 import com.robotemi.sdk.exception.SdkException;
@@ -198,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnUserInteractionChangedListener(this);
         robot.addOnConversationStatusChangedListener(this);
         robot.addOnTtsVisualizerWaveFormDataChangedListener(this);
+        robot.addOnTtsVisualizerFftDataChangedListener(this);
         robot.showTopBar();
     }
 
@@ -227,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.stopFaceRecognition();
         robot.removeOnConversationStatusChangedListener(this);
         robot.removeOnTtsVisualizerWaveFormDataChangedListener(this);
+        robot.removeOnTtsVisualizerFftDataChangedListener(this);
     }
 
     /**
@@ -1129,7 +1133,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConversationStatusChanged(int status, @NotNull String text) {
-        printLog("Conversation", "Status=" + status + ", text=" + text);
+        printLog("Conversation", "status=" + status + ", text=" + text);
     }
 
     @Override
@@ -1140,5 +1144,32 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onTtsVisualizerFftDataChanged(@NotNull byte[] fft) {
         Log.d("TtsVisualizer", Arrays.toString(fft));
+//        ttsVisualizerView.updateVisualizer(fft);
+    }
+
+    public void startTelepresenceToCenter(View view) {
+        if (robot.getAdminInfo() == null) {
+            printLog("callOwner()", "adminInfo is null.");
+            return;
+        }
+        robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId(), Platform.TEMI_CENTER);
+    }
+
+    public void startPage(View view) {
+        List<String> systemPages = new ArrayList<>();
+        for (Page page : Page.values()) {
+            systemPages.add(page.toString());
+        }
+        final CustomAdapter adapter = new CustomAdapter(this, android.R.layout.simple_selectable_list_item, systemPages);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select System Page")
+                .setAdapter(adapter, null)
+                .create();
+        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
+            robot.startPage(Page.values()[position]);
+            Toast.makeText(MainActivity.this, adapter.getItem(position), Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        });
+        dialog.show();
     }
 }

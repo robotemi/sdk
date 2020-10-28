@@ -18,6 +18,8 @@ import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
 import com.robotemi.sdk.constants.ContentType
+import com.robotemi.sdk.constants.Page
+import com.robotemi.sdk.constants.Platform
 import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
@@ -32,6 +34,7 @@ import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
+import com.robotemi.sdk.navigation.listener.OnPositingStatusChangedListener
 import com.robotemi.sdk.navigation.model.Position
 import com.robotemi.sdk.navigation.model.SafetyLevel
 import com.robotemi.sdk.navigation.model.SpeedLevel
@@ -140,6 +143,9 @@ class Robot private constructor(private val context: Context) {
     private val onTtsVisualizerFftDataChangedListeners =
         CopyOnWriteArraySet<OnTtsVisualizerFftDataChangedListener>()
 
+    private val onPositingStatusChangedListeners =
+        CopyOnWriteArraySet<OnPositingStatusChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -228,7 +234,9 @@ class Robot private constructor(private val context: Context) {
             if (onTtsVisualizerWaveFormDataChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (onTtsVisualizerWaveFormDataChangedListener in onTtsVisualizerWaveFormDataChangedListeners) {
-                    onTtsVisualizerWaveFormDataChangedListener.onTtsVisualizerWaveFormDataChanged(wave)
+                    onTtsVisualizerWaveFormDataChangedListener.onTtsVisualizerWaveFormDataChanged(
+                        wave
+                    )
                 }
             }
             return true
@@ -294,6 +302,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onCurrentPositionChangedListeners) {
                     listener.onCurrentPositionChanged(position)
+                }
+            }
+            return true
+        }
+
+        override fun onPositingStatusChanged(status: Int): Boolean {
+            if (onPositingStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onPositingStatusChangedListeners) {
+                    listener.onPositingStatusChanged(status)
                 }
             }
             return true
@@ -704,7 +722,7 @@ class Robot private constructor(private val context: Context) {
     /**
      * Trigger temi Launcher's default NLU service.
      *
-     * @param text The text want to be NlU.
+     * @param text The text to be processed.
      */
     fun startDefaultNlu(text: String) {
         try {
@@ -781,7 +799,9 @@ class Robot private constructor(private val context: Context) {
 
     @UiThread
     fun removeOnTtsVisualizerWaveFormDataChangedListener(onTtsVisualizerWaveFormDataChangedListener: OnTtsVisualizerWaveFormDataChangedListener) {
-        onTtsVisualizerWaveFormDataChangedListeners.remove(onTtsVisualizerWaveFormDataChangedListener)
+        onTtsVisualizerWaveFormDataChangedListeners.remove(
+            onTtsVisualizerWaveFormDataChangedListener
+        )
     }
 
     @UiThread
@@ -921,6 +941,18 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    /**
+     * Start positing to locate the position of temi.
+     *
+     */
+    fun startPositing() {
+        try {
+            sdkService?.startPositing()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startPositing() error")
+        }
+    }
+
     @UiThread
     fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
         onGoToLocationStatusChangeListeners.add(listener)
@@ -959,6 +991,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
         onCurrentPositionChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnPositingStatusChangedListener(listener: OnPositingStatusChangedListener) {
+        onPositingStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnPositingStatusChangedListener(listener: OnPositingStatusChangedListener) {
+        onPositingStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -1164,15 +1206,21 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
-     * Start a video call to Admin.
+     * Start a video call to the administrator.
      *
      * @param displayName Name of admin user info.
      * @param peerId ID of admin user info.
-     * @return The sessionId of Telepresence call
+     * @param platform Platform of the target user.
+     * @return
      */
-    fun startTelepresence(displayName: String, peerId: String): String {
+    @JvmOverloads
+    fun startTelepresence(
+        displayName: String,
+        peerId: String,
+        platform: Platform = Platform.MOBILE
+    ): String {
         try {
-            return sdkService?.startTelepresence(displayName, peerId) ?: ""
+            return sdkService?.startTelepresence(displayName, peerId, platform.value) ?: ""
         } catch (e: RemoteException) {
             Log.e(TAG, "startTelepresence() error")
         }
@@ -1509,6 +1557,36 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    /**
+     * Restart temi.
+     *
+     */
+    fun restart() {
+        if (!isMetaDataKiosk) {
+            Log.w(TAG, "Only Kiosk App can restart temi")
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
+            return
+        }
+        try {
+            sdkService?.restart(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "restart() error")
+        }
+    }
+
+    /**
+     * Start Launcher's internal page.
+     *
+     * @param page Target page.
+     */
+    fun startPage(page: Page) {
+        try {
+            sdkService?.startPage(applicationInfo.packageName, page.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startPage() error")
+        }
+    }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -1812,11 +1890,6 @@ class Robot private constructor(private val context: Context) {
         for (permission in permissions) {
             if (!permissionsFromMetadata.contains(permission.value)) {
                 Log.w(TAG, "This permission $permission is not declared in AndroidManifest.xml")
-                continue
-            }
-            if (permission.isKioskPermission && !isMetaDataKiosk) {
-                Log.w(TAG, "Kiosk permission $permission should request in Kiosk Mode")
-                sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
                 continue
             }
             validPermissions.add(permission.value)

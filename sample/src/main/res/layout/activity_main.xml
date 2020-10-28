@@ -173,6 +173,18 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnStartPage"
+                style="@style/ButtonCommon"
+                android:onClick="startPage"
+                android:text="Start Page" />
+
+            <Button
+                android:id="@+id/btnStartTelepresenceToCenter"
+                style="@style/ButtonCommon"
+                android:onClick="startTelepresenceToCenter"
+                android:text="Start Telepresence to temi Center" />
+
+            <Button
                 android:id="@+id/btnFetchMap"
                 style="@style/ButtonCommon"
                 android:onClick="getMap"

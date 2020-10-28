@@ -125,10 +125,7 @@ interface ISdkService {
 
     void tiltBy(in int degrees, in float speed);
 
-    /**
-     * @return sessionId of telepresence call
-     */
-    String startTelepresence(in String displayName, in String peerId);
+    String startTelepresence(in String displayName, in String peerId, int platform);
 
     UserInfo getAdminInfo();
 
@@ -250,4 +247,10 @@ interface ISdkService {
     void startDefaultNlu(in String packageName, in String content);
 
     boolean isWakeupDisabled();
+
+    void startPositing();
+
+    void restart(in String packageName);
+
+    void startPage(in String packageName, in String page);
 }

@@ -83,4 +83,6 @@ interface ISdkServiceCallback {
     boolean onTtsVisualizerWaveFormDataChanged(in byte[] waveForm);
 
     boolean onTtsVisualizerFftDataChanged(in byte[] fft);
+
+    boolean onPositingStatusChanged(int status);
 }
