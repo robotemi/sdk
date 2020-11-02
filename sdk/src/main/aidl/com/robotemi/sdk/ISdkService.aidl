@@ -15,6 +15,7 @@ import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.sequence.SequenceModel;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.map.MapDataModel;
+import com.robotemi.sdk.model.MemberStatusModel;
 
 interface ISdkService {
 
@@ -253,4 +254,6 @@ interface ISdkService {
     void restart(in String packageName);
 
     void startPage(in String packageName, in String page);
+
+    List<MemberStatusModel> getMembersStatus();
 }

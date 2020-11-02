@@ -31,6 +31,7 @@ import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
+import com.robotemi.sdk.model.MemberStatusModel
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
@@ -1226,6 +1227,17 @@ class Robot private constructor(private val context: Context) {
         }
         return ""
     }
+
+    val membersStatus: List<MemberStatusModel>
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.membersStatus ?: emptyList()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getMembersStatus() error")
+            }
+            return emptyList()
+        }
 
     /**
      * Start listening for Telepresence Status changes.

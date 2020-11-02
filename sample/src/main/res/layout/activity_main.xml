@@ -173,6 +173,18 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnGetMembersStatus"
+                style="@style/ButtonCommon"
+                android:onClick="getMembersStatus"
+                android:text="Get Members' status" />
+
+            <Button
+                android:id="@+id/btnRestart"
+                style="@style/ButtonCommon"
+                android:onClick="restartTemi"
+                android:text="Restart temi" />
+
+            <Button
                 android:id="@+id/btnStartPage"
                 style="@style/ButtonCommon"
                 android:onClick="startPage"

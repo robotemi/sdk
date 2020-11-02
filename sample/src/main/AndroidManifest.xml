@@ -51,7 +51,7 @@
         <!-- Set value to true to cover original conversation layer -->
         <meta-data
             android:name="@string/metadata_override_conversation_layer"
-            android:value="false" />
+            android:value="true" />
 
         <meta-data
             android:name="@string/metadata_permissions"

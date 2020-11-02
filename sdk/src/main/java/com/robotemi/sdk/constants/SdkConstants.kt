@@ -106,5 +106,5 @@ enum class Page(val value: String) {
     CONTACTS(PAGE_CONTACTS),
     LOCATIONS(PAGE_LOCATIONS),
     ALL_APPS(PAGE_ALL_APPS),
-    HOME(PAGE_HOME);
+    HOME(PAGE_HOME)
 }

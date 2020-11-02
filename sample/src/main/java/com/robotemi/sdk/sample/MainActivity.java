@@ -61,6 +61,7 @@ import com.robotemi.sdk.listeners.OnTtsVisualizerWaveFormDataChangedListener;
 import com.robotemi.sdk.listeners.OnUserInteractionChangedListener;
 import com.robotemi.sdk.model.CallEventModel;
 import com.robotemi.sdk.model.DetectionData;
+import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener;
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener;
 import com.robotemi.sdk.navigation.model.Position;
@@ -1171,5 +1172,16 @@ public class MainActivity extends AppCompatActivity implements
             dialog.dismiss();
         });
         dialog.show();
+    }
+
+    public void restartTemi(View view) {
+        robot.restart();
+    }
+
+    public void getMembersStatus(View view) {
+        List<MemberStatusModel> memberStatusModels = robot.getMembersStatus();
+        for (MemberStatusModel memberStatusModel : memberStatusModels) {
+            printLog(memberStatusModel.toString());
+        }
     }
 }
