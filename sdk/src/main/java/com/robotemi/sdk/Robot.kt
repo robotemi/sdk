@@ -35,7 +35,7 @@ import com.robotemi.sdk.model.MemberStatusModel
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
-import com.robotemi.sdk.navigation.listener.OnPositingStatusChangedListener
+import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener
 import com.robotemi.sdk.navigation.model.Position
 import com.robotemi.sdk.navigation.model.SafetyLevel
 import com.robotemi.sdk.navigation.model.SpeedLevel
@@ -144,8 +144,8 @@ class Robot private constructor(private val context: Context) {
     private val onTtsVisualizerFftDataChangedListeners =
         CopyOnWriteArraySet<OnTtsVisualizerFftDataChangedListener>()
 
-    private val onPositingStatusChangedListeners =
-        CopyOnWriteArraySet<OnPositingStatusChangedListener>()
+    private val onReposeStatusChangedListeners =
+        CopyOnWriteArraySet<OnReposeStatusChangedListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -308,11 +308,11 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onPositingStatusChanged(status: Int): Boolean {
-            if (onPositingStatusChangedListeners.isEmpty()) return false
+        override fun onReposeStatusChanged(status: Int, description: String): Boolean {
+            if (onReposeStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
-                for (listener in onPositingStatusChangedListeners) {
-                    listener.onPositingStatusChanged(status)
+                for (listener in onReposeStatusChangedListeners) {
+                    listener.onReposeStatusChanged(status, description)
                 }
             }
             return true
@@ -946,11 +946,11 @@ class Robot private constructor(private val context: Context) {
      * Start positing to locate the position of temi.
      *
      */
-    fun startPositing() {
+    fun repose() {
         try {
-            sdkService?.startPositing()
+            sdkService?.repose()
         } catch (e: RemoteException) {
-            Log.e(TAG, "startPositing() error")
+            Log.e(TAG, "repose() error")
         }
     }
 
@@ -995,13 +995,13 @@ class Robot private constructor(private val context: Context) {
     }
 
     @UiThread
-    fun addOnPositingStatusChangedListener(listener: OnPositingStatusChangedListener) {
-        onPositingStatusChangedListeners.add(listener)
+    fun addOnReposeStatusChangedListener(listener: OnReposeStatusChangedListener) {
+        onReposeStatusChangedListeners.add(listener)
     }
 
     @UiThread
-    fun removeOnPositingStatusChangedListener(listener: OnPositingStatusChangedListener) {
-        onPositingStatusChangedListeners.remove(listener)
+    fun removeOnReposeStatusChangedListener(listener: OnReposeStatusChangedListener) {
+        onReposeStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/

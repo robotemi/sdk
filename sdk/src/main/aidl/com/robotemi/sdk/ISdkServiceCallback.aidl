@@ -84,5 +84,5 @@ interface ISdkServiceCallback {
 
     boolean onTtsVisualizerFftDataChanged(in byte[] fft);
 
-    boolean onPositingStatusChanged(int status);
+    boolean onReposeStatusChanged(int status, in String description);
 }

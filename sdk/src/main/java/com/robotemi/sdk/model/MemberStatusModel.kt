@@ -14,8 +14,7 @@ data class MemberStatusModel(
         parcel.readString()!!,
         parcel.readInt(),
         parcel.readInt()
-    ) {
-    }
+    )
 
     @IntDef(value = [STATUS_ONLINE, STATUS_OFFLINE, STATUS_BUSY])
     annotation class Status

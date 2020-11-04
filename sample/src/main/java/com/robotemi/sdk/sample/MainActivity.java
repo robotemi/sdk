@@ -64,6 +64,7 @@ import com.robotemi.sdk.model.DetectionData;
 import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener;
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener;
+import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.navigation.model.SafetyLevel;
 import com.robotemi.sdk.navigation.model.SpeedLevel;
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements
         OnConversationStatusChangedListener,
         OnTtsVisualizerWaveFormDataChangedListener,
         OnTtsVisualizerFftDataChangedListener,
+        OnReposeStatusChangedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -202,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnConversationStatusChangedListener(this);
         robot.addOnTtsVisualizerWaveFormDataChangedListener(this);
         robot.addOnTtsVisualizerFftDataChangedListener(this);
+        robot.addOnReposeStatusChangedListener(this);
         robot.showTopBar();
     }
 
@@ -232,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnConversationStatusChangedListener(this);
         robot.removeOnTtsVisualizerWaveFormDataChangedListener(this);
         robot.removeOnTtsVisualizerFftDataChangedListener(this);
+        robot.removeOnReposeStatusChangedListener(this);
     }
 
     /**
@@ -732,11 +736,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onTelepresenceEventChanged(@NotNull CallEventModel callEventModel) {
         printLog("onTelepresenceEvent", callEventModel.toString());
-        if (callEventModel.getType() == CallEventModel.TYPE_INCOMING) {
-            Toast.makeText(this, "Incoming call", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Outgoing call", Toast.LENGTH_LONG).show();
-        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -1183,5 +1182,14 @@ public class MainActivity extends AppCompatActivity implements
         for (MemberStatusModel memberStatusModel : memberStatusModels) {
             printLog(memberStatusModel.toString());
         }
+    }
+
+    public void repose(View view) {
+        robot.repose();
+    }
+
+    @Override
+    public void onReposeStatusChanged(int status, @NotNull String description) {
+        printLog("repose status: " + status + ", description: " + description);
     }
 }

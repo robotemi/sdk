@@ -249,7 +249,7 @@ interface ISdkService {
 
     boolean isWakeupDisabled();
 
-    void startPositing();
+    void repose();
 
     void restart(in String packageName);
 

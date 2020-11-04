@@ -173,6 +173,12 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnRepose"
+                style="@style/ButtonCommon"
+                android:onClick="repose"
+                android:text="Repose" />
+
+            <Button
                 android:id="@+id/btnGetMembersStatus"
                 style="@style/ButtonCommon"
                 android:onClick="getMembersStatus"
