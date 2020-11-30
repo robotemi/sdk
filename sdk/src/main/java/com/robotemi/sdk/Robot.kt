@@ -1207,10 +1207,10 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
-     * Start a video call to the administrator.
+     * Start a video call to the temi user.
      *
-     * @param displayName Name of admin user info.
-     * @param peerId ID of admin user info.
+     * @param displayName Name of temi user.
+     * @param peerId ID of temi user ID.
      * @param platform Platform of the target user.
      * @return
      */
@@ -1957,10 +1957,12 @@ class Robot private constructor(private val context: Context) {
      * Play sequence by sequence ID.
      *
      * @param sequenceId Sequence ID you want to play.
+     * @param withPlayer Whether to play sequence with the player panel.
      */
-    fun playSequence(sequenceId: String) {
+    @JvmOverloads
+    fun playSequence(sequenceId: String, withPlayer: Boolean = false) {
         try {
-            sdkService?.playSequence(applicationInfo.packageName, sequenceId)
+            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer)
         } catch (e: RemoteException) {
             Log.e(TAG, "playSequence() error")
         }

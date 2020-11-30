@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_CODE_SEQUENCE_FETCH_ALL = 4;
     private static final int REQUEST_CODE_SEQUENCE_PLAY = 5;
     private static final int REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6;
+    private static final int REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER = 7;
 
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -472,11 +473,12 @@ public class MainActivity extends AppCompatActivity implements
      * callOwner is an example of how to use telepresence to call an individual.
      */
     public void callOwner(View view) {
-        if (robot.getAdminInfo() == null) {
+        UserInfo admin = robot.getAdminInfo();
+        if (admin == null) {
             printLog("callOwner()", "adminInfo is null.");
             return;
         }
-        robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId());
+        robot.startTelepresence(admin.getName(), admin.getUserId());
     }
 
     /**
@@ -760,7 +762,9 @@ public class MainActivity extends AppCompatActivity implements
                 if (requestCode == REQUEST_CODE_SEQUENCE_FETCH_ALL) {
                     getAllSequences();
                 } else if (requestCode == REQUEST_CODE_SEQUENCE_PLAY) {
-                    playFirstSequence();
+                    playFirstSequence(true);
+                } else if (requestCode == REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER) {
+                    playFirstSequence(false);
                 }
                 break;
             case MAP:
@@ -770,7 +774,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case SETTINGS:
                 if (requestCode == REQUEST_CODE_START_DETECTION_WITH_DISTANCE) {
-                    startDetectionWishDistance();
+                    startDetectionWithDistance();
                 }
                 break;
         }
@@ -909,8 +913,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void getVolume(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL))
-            Toast.makeText(this, robot.getVolume() + "", Toast.LENGTH_SHORT).show();
+        printLog("Current volume is: " + robot.getVolume());
     }
 
     public void setVolume(View view) {
@@ -945,10 +948,10 @@ public class MainActivity extends AppCompatActivity implements
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_START_DETECTION_WITH_DISTANCE)) {
             return;
         }
-        startDetectionWishDistance();
+        startDetectionWithDistance();
     }
 
-    private void startDetectionWishDistance() {
+    private void startDetectionWithDistance() {
         String distanceStr = etDistance.getText().toString();
         if (distanceStr.isEmpty()) distanceStr = "0";
         try {
@@ -1040,12 +1043,19 @@ public class MainActivity extends AppCompatActivity implements
         if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY)) {
             return;
         }
-        playFirstSequence();
+        playFirstSequence(true);
     }
 
-    private void playFirstSequence() {
+    public void playFirstSequenceWithoutPlayer(View view) {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER)) {
+            return;
+        }
+        playFirstSequence(false);
+    }
+
+    private void playFirstSequence(boolean withPlayer) {
         if (allSequences != null && !allSequences.isEmpty()) {
-            robot.playSequence(allSequences.get(0).getId());
+            robot.playSequence(allSequences.get(0).getId(), withPlayer);
         }
     }
 
@@ -1148,11 +1158,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void startTelepresenceToCenter(View view) {
-        if (robot.getAdminInfo() == null) {
-            printLog("callOwner()", "adminInfo is null.");
+        UserInfo target = robot.getAdminInfo();
+        if (target == null) {
+            printLog("target is null.");
             return;
         }
-        robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId(), Platform.TEMI_CENTER);
+        robot.startTelepresence(target.getName(), target.getUserId(), Platform.TEMI_CENTER);
     }
 
     public void startPage(View view) {
@@ -1167,7 +1178,6 @@ public class MainActivity extends AppCompatActivity implements
                 .create();
         dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
             robot.startPage(Page.values()[position]);
-            Toast.makeText(MainActivity.this, adapter.getItem(position), Toast.LENGTH_SHORT).show();
             dialog.dismiss();
         });
         dialog.show();

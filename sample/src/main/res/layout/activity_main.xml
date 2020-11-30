@@ -215,6 +215,12 @@
                 android:text="Get All Sequences" />
 
             <Button
+                android:id="@+id/btnPlayFirstSequenceWithoutPlayer"
+                style="@style/ButtonCommon"
+                android:onClick="playFirstSequenceWithoutPlayer"
+                android:text="Play First Sequence without Player" />
+
+            <Button
                 android:id="@+id/btnPlayFirstSequence"
                 style="@style/ButtonCommon"
                 android:onClick="playFirstSequence"
