@@ -729,7 +729,7 @@ class Robot private constructor(private val context: Context) {
         try {
             sdkService?.startDefaultNlu(applicationInfo.packageName, text)
         } catch (e: RemoteException) {
-            Log.e(TAG, "startNlu() error")
+            Log.e(TAG, "startDefaultNlu() error")
         }
     }
 
