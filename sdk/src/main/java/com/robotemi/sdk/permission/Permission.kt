@@ -6,14 +6,14 @@ import androidx.annotation.IntDef
  * All permissions can be requested for now.
  *
  * @property value The String type value of the Permission.
- * @property isKioskPermission Is this permission only available in Kiosk Mode.
+ * @property isKioskPermission Deprecated.
  */
 enum class Permission(val value: String, val isKioskPermission: Boolean) {
 
-    FACE_RECOGNITION("com.robotemi.permission.face_recognition", true),
-    MAP("com.robotemi.permission.map", true),
-    SETTINGS("com.robotemi.permission.settings", true),
-    SEQUENCE("com.robotemi.permission.sequence", true),
+    FACE_RECOGNITION("com.robotemi.permission.face_recognition", false),
+    MAP("com.robotemi.permission.map", false),
+    SETTINGS("com.robotemi.permission.settings", false),
+    SEQUENCE("com.robotemi.permission.sequence", false),
     UNKNOWN("unknown", false);
 
     companion object {

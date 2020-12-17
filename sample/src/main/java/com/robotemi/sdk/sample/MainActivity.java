@@ -39,6 +39,8 @@ import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage;
 import com.robotemi.sdk.constants.ContentType;
+import com.robotemi.sdk.constants.Page;
+import com.robotemi.sdk.constants.Platform;
 import com.robotemi.sdk.constants.SdkConstants;
 import com.robotemi.sdk.exception.OnSdkExceptionListener;
 import com.robotemi.sdk.exception.SdkException;
@@ -46,6 +48,7 @@ import com.robotemi.sdk.face.ContactModel;
 import com.robotemi.sdk.face.OnFaceRecognizedListener;
 import com.robotemi.sdk.listeners.OnBeWithMeStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
+import com.robotemi.sdk.listeners.OnConversationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionDataChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
@@ -53,11 +56,15 @@ import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotLiftedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
+import com.robotemi.sdk.listeners.OnTtsVisualizerFftDataChangedListener;
+import com.robotemi.sdk.listeners.OnTtsVisualizerWaveFormDataChangedListener;
 import com.robotemi.sdk.listeners.OnUserInteractionChangedListener;
 import com.robotemi.sdk.model.CallEventModel;
 import com.robotemi.sdk.model.DetectionData;
+import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener;
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener;
+import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.navigation.model.SafetyLevel;
 import com.robotemi.sdk.navigation.model.SpeedLevel;
@@ -104,6 +111,10 @@ public class MainActivity extends AppCompatActivity implements
         OnDetectionDataChangedListener,
         OnUserInteractionChangedListener,
         OnFaceRecognizedListener,
+        OnConversationStatusChangedListener,
+        OnTtsVisualizerWaveFormDataChangedListener,
+        OnTtsVisualizerFftDataChangedListener,
+        OnReposeStatusChangedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -118,8 +129,9 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_CODE_SEQUENCE_FETCH_ALL = 4;
     private static final int REQUEST_CODE_SEQUENCE_PLAY = 5;
     private static final int REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6;
+    private static final int REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER = 7;
 
-    private static String[] PERMISSIONS_STORAGE = {
+    private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
@@ -136,7 +148,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private AppCompatImageView ivFace;
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    private TtsVisualizerView ttsVisualizerView;
 
     /**
      * Hiding keyboard after every button press
@@ -188,6 +202,10 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnRobotLiftedListener(this);
         robot.addOnDetectionDataChangedListener(this);
         robot.addOnUserInteractionChangedListener(this);
+        robot.addOnConversationStatusChangedListener(this);
+        robot.addOnTtsVisualizerWaveFormDataChangedListener(this);
+        robot.addOnTtsVisualizerFftDataChangedListener(this);
+        robot.addOnReposeStatusChangedListener(this);
         robot.showTopBar();
     }
 
@@ -215,6 +233,10 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnUserInteractionChangedListener(this);
         robot.stopMovement();
         robot.stopFaceRecognition();
+        robot.removeOnConversationStatusChangedListener(this);
+        robot.removeOnTtsVisualizerWaveFormDataChangedListener(this);
+        robot.removeOnTtsVisualizerFftDataChangedListener(this);
+        robot.removeOnReposeStatusChangedListener(this);
     }
 
     /**
@@ -271,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements
         etYaw = findViewById(R.id.etYaw);
         etNlu = findViewById(R.id.etNlu);
         ivFace = findViewById(R.id.imageViewFace);
+        ttsVisualizerView = findViewById(R.id.visualizerView);
     }
 
     /**
@@ -450,11 +473,12 @@ public class MainActivity extends AppCompatActivity implements
      * callOwner is an example of how to use telepresence to call an individual.
      */
     public void callOwner(View view) {
-        if (robot.getAdminInfo() == null) {
+        UserInfo admin = robot.getAdminInfo();
+        if (admin == null) {
             printLog("callOwner()", "adminInfo is null.");
             return;
         }
-        robot.startTelepresence(robot.getAdminInfo().getName(), robot.getAdminInfo().getUserId());
+        robot.startTelepresence(admin.getName(), admin.getUserId());
     }
 
     /**
@@ -714,11 +738,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onTelepresenceEventChanged(@NotNull CallEventModel callEventModel) {
         printLog("onTelepresenceEvent", callEventModel.toString());
-        if (callEventModel.getType() == CallEventModel.TYPE_INCOMING) {
-            Toast.makeText(this, "Incoming call", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Outgoing call", Toast.LENGTH_LONG).show();
-        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -743,7 +762,9 @@ public class MainActivity extends AppCompatActivity implements
                 if (requestCode == REQUEST_CODE_SEQUENCE_FETCH_ALL) {
                     getAllSequences();
                 } else if (requestCode == REQUEST_CODE_SEQUENCE_PLAY) {
-                    playFirstSequence();
+                    playFirstSequence(true);
+                } else if (requestCode == REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER) {
+                    playFirstSequence(false);
                 }
                 break;
             case MAP:
@@ -753,7 +774,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case SETTINGS:
                 if (requestCode == REQUEST_CODE_START_DETECTION_WITH_DISTANCE) {
-                    startDetectionWishDistance();
+                    startDetectionWithDistance();
                 }
                 break;
         }
@@ -892,8 +913,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void getVolume(View view) {
-        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL))
-            Toast.makeText(this, robot.getVolume() + "", Toast.LENGTH_SHORT).show();
+        printLog("Current volume is: " + robot.getVolume());
     }
 
     public void setVolume(View view) {
@@ -928,10 +948,10 @@ public class MainActivity extends AppCompatActivity implements
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_START_DETECTION_WITH_DISTANCE)) {
             return;
         }
-        startDetectionWishDistance();
+        startDetectionWithDistance();
     }
 
-    private void startDetectionWishDistance() {
+    private void startDetectionWithDistance() {
         String distanceStr = etDistance.getText().toString();
         if (distanceStr.isEmpty()) distanceStr = "0";
         try {
@@ -1023,12 +1043,19 @@ public class MainActivity extends AppCompatActivity implements
         if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY)) {
             return;
         }
-        playFirstSequence();
+        playFirstSequence(true);
     }
 
-    private void playFirstSequence() {
+    public void playFirstSequenceWithoutPlayer(View view) {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER)) {
+            return;
+        }
+        playFirstSequence(false);
+    }
+
+    private void playFirstSequence(boolean withPlayer) {
         if (allSequences != null && !allSequences.isEmpty()) {
-            robot.playSequence(allSequences.get(0).getId());
+            robot.playSequence(allSequences.get(0).getId(), withPlayer);
         }
     }
 
@@ -1112,5 +1139,67 @@ public class MainActivity extends AppCompatActivity implements
             e.printStackTrace();
             printLog(e.getMessage());
         }
+    }
+
+    @Override
+    public void onConversationStatusChanged(int status, @NotNull String text) {
+        printLog("Conversation", "status=" + status + ", text=" + text);
+    }
+
+    @Override
+    public void onTtsVisualizerWaveFormDataChanged(@NotNull byte[] waveForm) {
+        ttsVisualizerView.updateVisualizer(waveForm);
+    }
+
+    @Override
+    public void onTtsVisualizerFftDataChanged(@NotNull byte[] fft) {
+        Log.d("TtsVisualizer", Arrays.toString(fft));
+//        ttsVisualizerView.updateVisualizer(fft);
+    }
+
+    public void startTelepresenceToCenter(View view) {
+        UserInfo target = robot.getAdminInfo();
+        if (target == null) {
+            printLog("target is null.");
+            return;
+        }
+        robot.startTelepresence(target.getName(), target.getUserId(), Platform.TEMI_CENTER);
+    }
+
+    public void startPage(View view) {
+        List<String> systemPages = new ArrayList<>();
+        for (Page page : Page.values()) {
+            systemPages.add(page.toString());
+        }
+        final CustomAdapter adapter = new CustomAdapter(this, android.R.layout.simple_selectable_list_item, systemPages);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select System Page")
+                .setAdapter(adapter, null)
+                .create();
+        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
+            robot.startPage(Page.values()[position]);
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    public void restartTemi(View view) {
+        robot.restart();
+    }
+
+    public void getMembersStatus(View view) {
+        List<MemberStatusModel> memberStatusModels = robot.getMembersStatus();
+        for (MemberStatusModel memberStatusModel : memberStatusModels) {
+            printLog(memberStatusModel.toString());
+        }
+    }
+
+    public void repose(View view) {
+        robot.repose();
+    }
+
+    @Override
+    public void onReposeStatusChanged(int status, @NotNull String description) {
+        printLog("repose status: " + status + ", description: " + description);
     }
 }

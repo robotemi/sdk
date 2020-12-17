@@ -173,6 +173,36 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnRepose"
+                style="@style/ButtonCommon"
+                android:onClick="repose"
+                android:text="Repose" />
+
+            <Button
+                android:id="@+id/btnGetMembersStatus"
+                style="@style/ButtonCommon"
+                android:onClick="getMembersStatus"
+                android:text="Get Members' status" />
+
+            <Button
+                android:id="@+id/btnRestart"
+                style="@style/ButtonCommon"
+                android:onClick="restartTemi"
+                android:text="Restart temi" />
+
+            <Button
+                android:id="@+id/btnStartPage"
+                style="@style/ButtonCommon"
+                android:onClick="startPage"
+                android:text="Start Page" />
+
+            <Button
+                android:id="@+id/btnStartTelepresenceToCenter"
+                style="@style/ButtonCommon"
+                android:onClick="startTelepresenceToCenter"
+                android:text="Start Telepresence to temi Center" />
+
+            <Button
                 android:id="@+id/btnFetchMap"
                 style="@style/ButtonCommon"
                 android:onClick="getMap"
@@ -183,6 +213,12 @@
                 style="@style/ButtonCommon"
                 android:onClick="getAllSequences"
                 android:text="Get All Sequences" />
+
+            <Button
+                android:id="@+id/btnPlayFirstSequenceWithoutPlayer"
+                style="@style/ButtonCommon"
+                android:onClick="playFirstSequenceWithoutPlayer"
+                android:text="Play First Sequence without Player" />
 
             <Button
                 android:id="@+id/btnPlayFirstSequence"
@@ -435,14 +471,21 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageViewFace"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="150dp"
+            android:adjustViewBounds="true"
             tools:src="@mipmap/ic_launcher" />
+
+        <com.robotemi.sdk.sample.TtsVisualizerView
+            android:id="@+id/visualizerView"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/imageViewFace" />
 
         <TextView
             android:id="@+id/tvLog"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/imageViewFace"
+            android:layout_below="@id/visualizerView"
             android:layout_marginBottom="50dp"
             android:lineSpacingExtra="5dp"
             android:padding="20dp"

@@ -18,6 +18,8 @@ import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
 import com.robotemi.sdk.constants.ContentType
+import com.robotemi.sdk.constants.Page
+import com.robotemi.sdk.constants.Platform
 import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
@@ -29,9 +31,11 @@ import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
+import com.robotemi.sdk.model.MemberStatusModel
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
+import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener
 import com.robotemi.sdk.navigation.model.Position
 import com.robotemi.sdk.navigation.model.SafetyLevel
 import com.robotemi.sdk.navigation.model.SpeedLevel
@@ -131,6 +135,18 @@ class Robot private constructor(private val context: Context) {
 
     private val onSdkExceptionListeners = CopyOnWriteArraySet<OnSdkExceptionListener>()
 
+    private val onConversationStatusChangedListeners =
+        CopyOnWriteArraySet<OnConversationStatusChangedListener>()
+
+    private val onTtsVisualizerWaveFormDataChangedListeners =
+        CopyOnWriteArraySet<OnTtsVisualizerWaveFormDataChangedListener>()
+
+    private val onTtsVisualizerFftDataChangedListeners =
+        CopyOnWriteArraySet<OnTtsVisualizerFftDataChangedListener>()
+
+    private val onReposeStatusChangedListeners =
+        CopyOnWriteArraySet<OnReposeStatusChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -205,6 +221,38 @@ class Robot private constructor(private val context: Context) {
             return nlpListeners.isNotEmpty()
         }
 
+        override fun onConversationStatusChanged(status: Int, text: String): Boolean {
+            if (onConversationStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (onConversationStatusChangedListener in onConversationStatusChangedListeners) {
+                    onConversationStatusChangedListener.onConversationStatusChanged(status, text)
+                }
+            }
+            return true
+        }
+
+        override fun onTtsVisualizerWaveFormDataChanged(wave: ByteArray): Boolean {
+            if (onTtsVisualizerWaveFormDataChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (onTtsVisualizerWaveFormDataChangedListener in onTtsVisualizerWaveFormDataChangedListeners) {
+                    onTtsVisualizerWaveFormDataChangedListener.onTtsVisualizerWaveFormDataChanged(
+                        wave
+                    )
+                }
+            }
+            return true
+        }
+
+        override fun onTtsVisualizerFftDataChanged(fft: ByteArray): Boolean {
+            if (onTtsVisualizerFftDataChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (onTtsVisualizerFftDataChangedListener in onTtsVisualizerFftDataChangedListeners) {
+                    onTtsVisualizerFftDataChangedListener.onTtsVisualizerFftDataChanged(fft)
+                }
+            }
+            return false
+        }
+
         /*****************************************/
         /*               Navigation              */
         /*****************************************/
@@ -255,6 +303,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onCurrentPositionChangedListeners) {
                     listener.onCurrentPositionChanged(position)
+                }
+            }
+            return true
+        }
+
+        override fun onReposeStatusChanged(status: Int, description: String): Boolean {
+            if (onReposeStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onReposeStatusChangedListeners) {
+                    listener.onReposeStatusChanged(status, description)
                 }
             }
             return true
@@ -665,13 +723,13 @@ class Robot private constructor(private val context: Context) {
     /**
      * Trigger temi Launcher's default NLU service.
      *
-     * @param text The text want to be NlU.
+     * @param text The text to be processed.
      */
     fun startDefaultNlu(text: String) {
         try {
             sdkService?.startDefaultNlu(applicationInfo.packageName, text)
         } catch (e: RemoteException) {
-            Log.e(TAG, "startNlu() error")
+            Log.e(TAG, "startDefaultNlu() error")
         }
     }
 
@@ -723,6 +781,38 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun addAsrListener(asrListener: AsrListener) {
         asrListeners.add(asrListener)
+    }
+
+    @UiThread
+    fun addOnConversationStatusChangedListener(onConversationStatusChangedListener: OnConversationStatusChangedListener) {
+        onConversationStatusChangedListeners.add(onConversationStatusChangedListener)
+    }
+
+    @UiThread
+    fun removeOnConversationStatusChangedListener(onConversationStatusChangedListener: OnConversationStatusChangedListener) {
+        onConversationStatusChangedListeners.remove(onConversationStatusChangedListener)
+    }
+
+    @UiThread
+    fun addOnTtsVisualizerWaveFormDataChangedListener(onTtsVisualizerWaveFormDataChangedListener: OnTtsVisualizerWaveFormDataChangedListener) {
+        onTtsVisualizerWaveFormDataChangedListeners.add(onTtsVisualizerWaveFormDataChangedListener)
+    }
+
+    @UiThread
+    fun removeOnTtsVisualizerWaveFormDataChangedListener(onTtsVisualizerWaveFormDataChangedListener: OnTtsVisualizerWaveFormDataChangedListener) {
+        onTtsVisualizerWaveFormDataChangedListeners.remove(
+            onTtsVisualizerWaveFormDataChangedListener
+        )
+    }
+
+    @UiThread
+    fun addOnTtsVisualizerFftDataChangedListener(onTtsVisualizerFftDataChangedListener: OnTtsVisualizerFftDataChangedListener) {
+        onTtsVisualizerFftDataChangedListeners.add(onTtsVisualizerFftDataChangedListener)
+    }
+
+    @UiThread
+    fun removeOnTtsVisualizerFftDataChangedListener(onTtsVisualizerFftDataChangedListener: OnTtsVisualizerFftDataChangedListener) {
+        onTtsVisualizerFftDataChangedListeners.remove(onTtsVisualizerFftDataChangedListener)
     }
 
     /*****************************************/
@@ -852,6 +942,18 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    /**
+     * Start positing to locate the position of temi.
+     *
+     */
+    fun repose() {
+        try {
+            sdkService?.repose()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "repose() error")
+        }
+    }
+
     @UiThread
     fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
         onGoToLocationStatusChangeListeners.add(listener)
@@ -890,6 +992,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
         onCurrentPositionChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnReposeStatusChangedListener(listener: OnReposeStatusChangedListener) {
+        onReposeStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnReposeStatusChangedListener(listener: OnReposeStatusChangedListener) {
+        onReposeStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -1095,20 +1207,37 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
-     * Start a video call to Admin.
+     * Start a video call to the temi user.
      *
-     * @param displayName Name of admin user info.
-     * @param peerId ID of admin user info.
-     * @return The sessionId of Telepresence call
+     * @param displayName Name of temi user.
+     * @param peerId ID of temi user ID.
+     * @param platform Platform of the target user.
+     * @return
      */
-    fun startTelepresence(displayName: String, peerId: String): String {
+    @JvmOverloads
+    fun startTelepresence(
+        displayName: String,
+        peerId: String,
+        platform: Platform = Platform.MOBILE
+    ): String {
         try {
-            return sdkService?.startTelepresence(displayName, peerId) ?: ""
+            return sdkService?.startTelepresence(displayName, peerId, platform.value) ?: ""
         } catch (e: RemoteException) {
             Log.e(TAG, "startTelepresence() error")
         }
         return ""
     }
+
+    val membersStatus: List<MemberStatusModel>
+        @CheckResult
+        get() {
+            try {
+                return sdkService?.membersStatus ?: emptyList()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "getMembersStatus() error")
+            }
+            return emptyList()
+        }
 
     /**
      * Start listening for Telepresence Status changes.
@@ -1440,6 +1569,36 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    /**
+     * Restart temi.
+     *
+     */
+    fun restart() {
+        if (!isMetaDataKiosk) {
+            Log.w(TAG, "Only Kiosk App can restart temi")
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
+            return
+        }
+        try {
+            sdkService?.restart(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "restart() error")
+        }
+    }
+
+    /**
+     * Start Launcher's internal page.
+     *
+     * @param page Target page.
+     */
+    fun startPage(page: Page) {
+        try {
+            sdkService?.startPage(applicationInfo.packageName, page.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startPage() error")
+        }
+    }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -1745,11 +1904,6 @@ class Robot private constructor(private val context: Context) {
                 Log.w(TAG, "This permission $permission is not declared in AndroidManifest.xml")
                 continue
             }
-            if (permission.isKioskPermission && !isMetaDataKiosk) {
-                Log.w(TAG, "Kiosk permission $permission should request in Kiosk Mode")
-                sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
-                continue
-            }
             validPermissions.add(permission.value)
         }
 
@@ -1803,10 +1957,12 @@ class Robot private constructor(private val context: Context) {
      * Play sequence by sequence ID.
      *
      * @param sequenceId Sequence ID you want to play.
+     * @param withPlayer Whether to play sequence with the player panel.
      */
-    fun playSequence(sequenceId: String) {
+    @JvmOverloads
+    fun playSequence(sequenceId: String, withPlayer: Boolean = false) {
         try {
-            sdkService?.playSequence(applicationInfo.packageName, sequenceId)
+            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer)
         } catch (e: RemoteException) {
             Log.e(TAG, "playSequence() error")
         }

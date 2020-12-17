@@ -77,4 +77,12 @@ interface ISdkServiceCallback {
     boolean onFaceRecognized(in List<ContactModel> contactModelList);
 
     boolean onSdkError(in SdkException sdkException);
+
+    boolean onConversationStatusChanged(int status, in String text);
+
+    boolean onTtsVisualizerWaveFormDataChanged(in byte[] waveForm);
+
+    boolean onTtsVisualizerFftDataChanged(in byte[] fft);
+
+    boolean onReposeStatusChanged(int status, in String description);
 }

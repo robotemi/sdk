@@ -15,6 +15,7 @@ import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.sequence.SequenceModel;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.map.MapDataModel;
+import com.robotemi.sdk.model.MemberStatusModel;
 
 interface ISdkService {
 
@@ -125,10 +126,7 @@ interface ISdkService {
 
     void tiltBy(in int degrees, in float speed);
 
-    /**
-     * @return sessionId of telepresence call
-     */
-    String startTelepresence(in String displayName, in String peerId);
+    String startTelepresence(in String displayName, in String peerId, int platform);
 
     UserInfo getAdminInfo();
 
@@ -241,7 +239,7 @@ interface ISdkService {
 
     List<SequenceModel> getAllSequences(in String packageName);
 
-    void playSequence(in String packageName, in String sequenceId);
+    void playSequence(in String packageName, in String sequenceId, boolean withPlayer);
 
     void goToPosition(in Position position);
 
@@ -250,4 +248,12 @@ interface ISdkService {
     void startDefaultNlu(in String packageName, in String content);
 
     boolean isWakeupDisabled();
+
+    void repose();
+
+    void restart(in String packageName);
+
+    void startPage(in String packageName, in String page);
+
+    List<MemberStatusModel> getMembersStatus();
 }
