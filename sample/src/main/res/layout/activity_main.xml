@@ -173,6 +173,18 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnLoadMap"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMap"
+                android:text="Load Map" />
+
+            <Button
+                android:id="@+id/btnGetMapList"
+                style="@style/ButtonCommon"
+                android:onClick="getMapList"
+                android:text="Get Map List" />
+
+            <Button
                 android:id="@+id/btnRepose"
                 style="@style/ButtonCommon"
                 android:onClick="repose"

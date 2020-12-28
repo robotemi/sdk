@@ -33,10 +33,14 @@ class MapActivity : AppCompatActivity() {
         singleThreadExecutor.execute {
             val mapDataModel = Robot.getInstance().getMapData() ?: return@execute
             val mapImage = mapDataModel.mapImage
-            Log.i("Map", mapImage.toString())
+            Log.i("Map-mapImage", mapDataModel.mapImage.typeId)
+            Log.i("Map-mapId", mapDataModel.mapId)
+            Log.i("Map-mapInfo", mapDataModel.mapInfo.toString())
+            Log.i("Map-greenPaths", mapDataModel.greenPaths.toString())
+            Log.i("Map-virtualWalls", mapDataModel.virtualWalls.toString())
+            Log.i("Map-locations", mapDataModel.locations.toString())
             bitmap = Bitmap.createBitmap(
-                mapImage.data.map { Color.argb((it * 2.55).roundToInt(), 0, 0, 0) }
-                    .toIntArray(),
+                mapImage.data.map { Color.argb((it * 2.55).roundToInt(), 0, 0, 0) }.toIntArray(),
                 mapImage.cols,
                 mapImage.rows,
                 Bitmap.Config.ARGB_8888
