@@ -14,7 +14,8 @@ interface OnLoadMapStatusChangedListener {
         ERROR_ABORT_ON_NOT_CHARGING,
         ERROR_ABORT_BUSY,
         ERROR_ABORT_ON_TIMEOUT,
-        ERROR_PB_STREAM_FILE_INVALID
+        ERROR_PB_STREAM_FILE_INVALID,
+        ERROR_GET_MAP_DATA
     )
     annotation class Status
 
@@ -27,5 +28,6 @@ interface OnLoadMapStatusChangedListener {
         const val ERROR_ABORT_BUSY = 2002
         const val ERROR_ABORT_ON_TIMEOUT = 3000
         const val ERROR_PB_STREAM_FILE_INVALID = 4000
+        const val ERROR_GET_MAP_DATA = 5000
     }
 }

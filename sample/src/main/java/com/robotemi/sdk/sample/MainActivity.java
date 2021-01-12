@@ -5,11 +5,16 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
@@ -1223,7 +1228,8 @@ public class MainActivity extends AppCompatActivity implements
     List<MapModel> mapList = new ArrayList<>();
 
     public void getMapList(View view) {
-        mapList = robot.getMapList();
+        if (robot.checkSelfPermission(Permission.MAP) == Permission.GRANTED)
+            mapList = robot.getMapList();
         for (MapModel mapModel : mapList) {
             printLog("Map: " + mapModel);
         }
@@ -1241,5 +1247,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onDisabledFeatureListUpdated(@NotNull List<String> disabledFeatureList) {
         printLog("Disabled features: " + disabledFeatureList.toString());
+    }
+
+    public void btnLock(View view) {
+        robot.setLocked(true);
+        printLog("Is temi locked: " + robot.isLocked());
+    }
+
+    public void btnUnlock(View view) {
+        robot.setLocked(false);
+        printLog("Is temi locked: " + robot.isLocked());
     }
 }

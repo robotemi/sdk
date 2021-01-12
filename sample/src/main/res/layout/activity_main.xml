@@ -173,6 +173,18 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnLock"
+                style="@style/ButtonCommon"
+                android:onClick="btnLock"
+                android:text="Lock" />
+
+            <Button
+                android:id="@+id/btnUnlock"
+                style="@style/ButtonCommon"
+                android:onClick="btnUnlock"
+                android:text="Unlock" />
+
+            <Button
                 android:id="@+id/btnLoadMap"
                 style="@style/ButtonCommon"
                 android:onClick="btnLoadMap"

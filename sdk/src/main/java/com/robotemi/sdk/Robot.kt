@@ -1629,6 +1629,31 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Is temi locked
+     */
+    var locked: Boolean
+        @CheckResult
+        @JvmName("isLocked")
+        get() {
+            return try {
+                sdkService?.isLocked ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isLocked() error")
+                false
+            }
+        }
+        /**
+         * @param lock true(false) to lock(unlock) temi
+         */
+        set(lock) {
+            try {
+                sdkService?.lock(applicationInfo.packageName, lock)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setLocked() error")
+            }
+        }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -2069,7 +2094,7 @@ class Robot private constructor(private val context: Context) {
             )
             mapDataModel.mapId = mapId
             mapDataModel.mapInfo = mapInfo
-            mapElements.map {
+            mapElements?.map {
                 if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
                 if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
                 if (it.layerCategory == LOCATION) mapDataModel.locations.add(it)

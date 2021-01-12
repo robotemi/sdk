@@ -261,4 +261,8 @@ interface ISdkService {
     List<MapModel> getMapList(in String packageName);
 
     void loadMap(in String packageName, in String mapId);
+
+    void lock(in String packageName, boolean isForLocking);
+
+    boolean isLocked();
 }
