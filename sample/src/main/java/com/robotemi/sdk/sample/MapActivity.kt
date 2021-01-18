@@ -3,6 +3,7 @@ package com.robotemi.sdk.sample
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -27,9 +28,9 @@ class MapActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        Robot.getInstance().hideTopBar()
         ibBack.setOnClickListener { finish() }
-        imageViewMap.setOnClickListener { refreshMap() }
+        textViewMapElements.setOnClickListener { refreshMap() }
+        textViewMapElements.movementMethod = ScrollingMovementMethod()
         refreshMap()
     }
 

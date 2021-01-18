@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<String> {
 
-    private List<String> data;
+    private final List<String> data;
 
     CustomAdapter(Context context, int textViewResourceId, List<String> data) {
         super(context, textViewResourceId, data);

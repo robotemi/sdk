@@ -156,7 +156,7 @@ data class Layer(
 
         return """
             
-            { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": "Size : ${layerPoses?.size ?: 0}" }
+            { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": $layerPoses }
         """.trimIndent()
     }
 
@@ -221,53 +221,6 @@ data class LayerPose(
         }
 
         override fun newArray(size: Int): Array<LayerPose?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
-
-
-@Keep
-data class Location(
-    @SerializedName("x") val x: Float,
-    @SerializedName("y") val y: Float,
-    @SerializedName("yaw") val yaw: Float,
-    @SerializedName("name") val name: String,
-    @SerializedName("created") val created: Long = System.currentTimeMillis(),
-    @SerializedName("lastUsed") val lastUsed: Long = 0L,
-    @SerializedName("useNumber") val useNumber: Int = 0,
-    @SerializedName("tilt_angle") val tiltAngle: Float = 0f
-) : Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readFloat(),
-        parcel.readFloat(),
-        parcel.readFloat(),
-        parcel.readString() ?: "",
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readInt(),
-        parcel.readFloat()
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeFloat(x)
-        parcel.writeFloat(y)
-        parcel.writeFloat(yaw)
-        parcel.writeString(name)
-        parcel.writeLong(created)
-        parcel.writeLong(lastUsed)
-        parcel.writeInt(useNumber)
-        parcel.writeFloat(tiltAngle)
-    }
-
-    override fun describeContents() = 0
-
-    companion object CREATOR : Parcelable.Creator<Location> {
-        override fun createFromParcel(parcel: Parcel): Location {
-            return Location(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Location?> {
             return arrayOfNulls(size)
         }
     }
