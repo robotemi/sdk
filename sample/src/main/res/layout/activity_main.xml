@@ -179,6 +179,12 @@
                 android:text="Mute Alexa" />
 
             <Button
+                android:id="@+id/btnShutdown"
+                style="@style/ButtonCommon"
+                android:onClick="btnShutdown"
+                android:text="Shutdown" />
+
+            <Button
                 android:id="@+id/btnLock"
                 style="@style/ButtonCommon"
                 android:onClick="btnLock"

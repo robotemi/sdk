@@ -54,6 +54,7 @@ import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnDisabledFeatureListUpdatedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
+import com.robotemi.sdk.listeners.OnMovementVelocityChangedListener;
 import com.robotemi.sdk.listeners.OnRobotLiftedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
 import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements
         OnReposeStatusChangedListener,
         OnLoadMapStatusChangedListener,
         OnDisabledFeatureListUpdatedListener,
+        OnMovementVelocityChangedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnTtsVisualizerWaveFormDataChangedListener(this);
         robot.addOnTtsVisualizerFftDataChangedListener(this);
         robot.addOnReposeStatusChangedListener(this);
+        robot.addOnMovementVelocityChangedListener(this);
         robot.showTopBar();
     }
 
@@ -245,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnTtsVisualizerWaveFormDataChangedListener(this);
         robot.removeOnTtsVisualizerFftDataChangedListener(this);
         robot.removeOnReposeStatusChangedListener(this);
+        robot.removeOnMovementVelocityChangedListener(this);
     }
 
     /**
@@ -1285,5 +1289,23 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
         printLog("muteAlexa() is useful only for Global version");
+    }
+
+    public void btnShutdown(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Shutdown temi?").create();
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            printLog("shutdown");
+            robot.shutdown();
+        });
+        builder.setNegativeButton("No", (dialog, which) -> {
+            // no-ops
+        });
+        builder.create().show();
+    }
+
+    @Override
+    public void onMovementVelocityChanged(float velocity) {
+        printLog("Movement velocity: " + velocity + "m/s");
     }
 }

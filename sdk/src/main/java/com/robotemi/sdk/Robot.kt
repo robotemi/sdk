@@ -155,6 +155,9 @@ class Robot private constructor(private val context: Context) {
     private val onDisabledFeatureListUpdatedListeners =
         CopyOnWriteArraySet<OnDisabledFeatureListUpdatedListener>()
 
+    private val onMovementVelocityChangedListeners =
+        CopyOnWriteArraySet<OnMovementVelocityChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -355,6 +358,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onRobotLiftedListeners) {
                     listener.onRobotLifted(isLifted, reason)
+                }
+            }
+            return true
+        }
+
+        override fun onMovementVelocityChanged(linear: Float): Boolean {
+            if (onMovementVelocityChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onMovementVelocityChangedListeners) {
+                    listener.onMovementVelocityChanged(linear)
                 }
             }
             return true
@@ -1189,6 +1202,16 @@ class Robot private constructor(private val context: Context) {
         onRobotLiftedListeners.remove(listener)
     }
 
+    @UiThread
+    fun addOnMovementVelocityChangedListener(listener: OnMovementVelocityChangedListener) {
+        onMovementVelocityChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMovementVelocityChangedListener(listener: OnMovementVelocityChangedListener) {
+        onMovementVelocityChangedListeners.remove(listener)
+    }
+
     /*****************************************/
     /*           Users & Telepresence        */
     /*****************************************/
@@ -1630,7 +1653,7 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Is temi locked
+     * Check if temi is locked.
      */
     var locked: Boolean
         @CheckResult
@@ -1662,6 +1685,17 @@ class Robot private constructor(private val context: Context) {
             sdkService?.muteAlexa(applicationInfo.packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "muteAlexa() error")
+        }
+    }
+     /**
+     * Shut down temi.
+     *
+     */
+    fun shutdown() {
+        try {
+            sdkService?.shutdown(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "shutdown() error")
         }
     }
 

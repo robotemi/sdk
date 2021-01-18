@@ -89,4 +89,6 @@ interface ISdkServiceCallback {
     boolean onLoadMapStatusChanged(int status);
 
     boolean onDisabledFeatureListUpdated(in List<String> disabledFeatureList);
+
+    boolean onMovementVelocityChanged(float velocity);
 }
