@@ -90,7 +90,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -136,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_CODE_SEQUENCE_PLAY = 5;
     private static final int REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6;
     private static final int REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER = 7;
+    private static final int REQUEST_CODE_GET_MAP_LIST = 8;
 
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -782,6 +782,8 @@ public class MainActivity extends AppCompatActivity implements
             case MAP:
                 if (requestCode == REQUEST_CODE_MAP) {
                     getMap();
+                } else if (requestCode == REQUEST_CODE_GET_MAP_LIST) {
+                    getMapList();
                 }
                 break;
             case SETTINGS:
@@ -1222,9 +1224,15 @@ public class MainActivity extends AppCompatActivity implements
 
     List<MapModel> mapList = new ArrayList<>();
 
+    private void getMapList() {
+        if (requestPermissionIfNeeded(Permission.MAP, REQUEST_CODE_GET_MAP_LIST)) {
+            return;
+        }
+        mapList = robot.getMapList();
+    }
+
     public void getMapList(View view) {
-        if (robot.checkSelfPermission(Permission.MAP) == Permission.GRANTED)
-            mapList = robot.getMapList();
+        getMapList();
         for (MapModel mapModel : mapList) {
             printLog("Map: " + mapModel);
         }
@@ -1232,11 +1240,27 @@ public class MainActivity extends AppCompatActivity implements
 
     public void btnLoadMap(View view) {
         if (mapList.isEmpty()) {
+            getMapList();
+        }
+        if (robot.checkSelfPermission(Permission.MAP) != Permission.GRANTED) {
             return;
         }
-        int index = ThreadLocalRandom.current().nextInt(0, mapList.size() - 1);
-        printLog("Load map: " + mapList.get(index));
-        robot.loadMap(mapList.get(index).getId());
+        List<String> mapListString = new ArrayList<>();
+        for (int i = 0; i < mapList.size(); i++) {
+            mapListString.add(mapList.get(i).getName());
+        }
+        CustomAdapter customAdapter = new CustomAdapter(MainActivity.this, android.R.layout.simple_selectable_list_item, mapListString);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Click item to load specific map");
+        builder.setAdapter(customAdapter, null);
+        AlertDialog dialog = builder.create();
+        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
+            printLog("Loading map: " + mapList.get(position));
+            robot.loadMap(mapList.get(position).getId());
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     @Override
