@@ -1231,14 +1231,7 @@ public class MainActivity extends AppCompatActivity implements
         mapList = robot.getMapList();
     }
 
-    public void getMapList(View view) {
-        getMapList();
-        for (MapModel mapModel : mapList) {
-            printLog("Map: " + mapModel);
-        }
-    }
-
-    public void btnLoadMap(View view) {
+    private void loadMap(boolean reposeRequired, Position position) {
         if (mapList.isEmpty()) {
             getMapList();
         }
@@ -1254,13 +1247,28 @@ public class MainActivity extends AppCompatActivity implements
         builder.setTitle("Click item to load specific map");
         builder.setAdapter(customAdapter, null);
         AlertDialog dialog = builder.create();
-        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
-            printLog("Loading map: " + mapList.get(position));
-            robot.loadMap(mapList.get(position).getId());
+        dialog.getListView().setOnItemClickListener((parent, view1, pos, id) -> {
+            printLog("Loading map: " + mapList.get(pos));
+            if (position == null) {
+                robot.loadMap(mapList.get(pos).getId(), reposeRequired);
+            } else {
+                robot.loadMap(mapList.get(pos).getId(), reposeRequired, position);
+            }
             dialog.dismiss();
         });
 
         dialog.show();
+    }
+
+    public void getMapList(View view) {
+        getMapList();
+        for (MapModel mapModel : mapList) {
+            printLog("Map: " + mapModel);
+        }
+    }
+
+    public void btnLoadMap(View view) {
+        loadMap(false, null);
     }
 
     @Override
@@ -1285,5 +1293,30 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
         printLog("muteAlexa() is useful only for Global version");
+    }
+
+    public void btnLoadMapWithPosition(View view) {
+        loadMapWithPosition(false);
+    }
+
+    public void btnLoadMapWithReposePosition(View view) {
+        loadMapWithPosition(true);
+    }
+
+    public void btnLoadMapWithRepose(View view) {
+        loadMap(true, null);
+    }
+
+    private void loadMapWithPosition(boolean reposeRequired) {
+        try {
+            float x = Float.parseFloat(etX.getText().toString());
+            float y = Float.parseFloat(etY.getText().toString());
+            float yaw = Float.parseFloat(etYaw.getText().toString());
+            Position position = new Position(x, y, yaw, 0);
+            loadMap(reposeRequired, position);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printLog(e.getMessage());
+        }
     }
 }
