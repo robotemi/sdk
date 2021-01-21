@@ -2175,11 +2175,23 @@ class Robot private constructor(private val context: Context) {
     /**
      * Load map by map ID.
      *
-     * @param mapId Map ID
+     * @param mapId The map ID of the map to be loaded
+     * @param reposeRequired If needs to repose after loading map
+     * @param position The position for repose
      */
-    fun loadMap(mapId: String) {
+    @JvmOverloads
+    fun loadMap(mapId: String, reposeRequired: Boolean = false, position: Position? = null) {
         try {
-            sdkService?.loadMap(applicationInfo.packageName, mapId)
+            if (position == null) {
+                sdkService?.loadMap(applicationInfo.packageName, mapId, reposeRequired)
+            } else {
+                sdkService?.loadMapWithPosition(
+                    applicationInfo.packageName,
+                    mapId,
+                    reposeRequired,
+                    position
+                )
+            }
         } catch (e: RemoteException) {
             Log.e(TAG, "loadMap() error")
         }

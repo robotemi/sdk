@@ -197,6 +197,24 @@
                 android:text="Unlock" />
 
             <Button
+                android:id="@+id/btnLoadMapWithPosition"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMapWithPosition"
+                android:text="Load Map with Position" />
+
+            <Button
+                android:id="@+id/btnLoadMapWithReposePosition"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMapWithReposePosition"
+                android:text="Load Map with Repose Position" />
+
+            <Button
+                android:id="@+id/btnLoadMapWithRepose"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMapWithRepose"
+                android:text="Load Map with Repose" />
+
+            <Button
                 android:id="@+id/btnLoadMap"
                 style="@style/ButtonCommon"
                 android:onClick="btnLoadMap"

@@ -989,9 +989,12 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private Position mCurrentPosition = new Position();
+
     @Override
     public void onCurrentPositionChanged(@NotNull Position position) {
         printLog("onCurrentPosition", position.toString());
+        mCurrentPosition = position;
     }
 
     @SuppressLint("DefaultLocale")
@@ -1235,14 +1238,7 @@ public class MainActivity extends AppCompatActivity implements
         mapList = robot.getMapList();
     }
 
-    public void getMapList(View view) {
-        getMapList();
-        for (MapModel mapModel : mapList) {
-            printLog("Map: " + mapModel);
-        }
-    }
-
-    public void btnLoadMap(View view) {
+    private void loadMap(boolean reposeRequired, Position position) {
         if (mapList.isEmpty()) {
             getMapList();
         }
@@ -1258,13 +1254,28 @@ public class MainActivity extends AppCompatActivity implements
         builder.setTitle("Click item to load specific map");
         builder.setAdapter(customAdapter, null);
         AlertDialog dialog = builder.create();
-        dialog.getListView().setOnItemClickListener((parent, view1, position, id) -> {
-            printLog("Loading map: " + mapList.get(position));
-            robot.loadMap(mapList.get(position).getId());
+        dialog.getListView().setOnItemClickListener((parent, view1, pos, id) -> {
+            printLog("Loading map: " + mapList.get(pos));
+            if (position == null) {
+                robot.loadMap(mapList.get(pos).getId(), reposeRequired);
+            } else {
+                robot.loadMap(mapList.get(pos).getId(), reposeRequired, position);
+            }
             dialog.dismiss();
         });
 
         dialog.show();
+    }
+
+    public void getMapList(View view) {
+        getMapList();
+        for (MapModel mapModel : mapList) {
+            printLog("Map: " + mapModel);
+        }
+    }
+
+    public void btnLoadMap(View view) {
+        loadMap(false, null);
     }
 
     @Override
@@ -1292,6 +1303,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void btnShutdown(View view) {
+        if (!robot.isSelectedKioskApp()) {
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Shutdown temi?").create();
         builder.setPositiveButton("Yes", (dialog, which) -> {
@@ -1307,5 +1321,21 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onMovementVelocityChanged(float velocity) {
         printLog("Movement velocity: " + velocity + "m/s");
+    }
+
+    public void btnLoadMapWithPosition(View view) {
+        if (mCurrentPosition != null) {
+            loadMap(false, mCurrentPosition);
+        }
+    }
+
+    public void btnLoadMapWithReposePosition(View view) {
+        if (mCurrentPosition != null) {
+            loadMap(true, mCurrentPosition);
+        }
+    }
+
+    public void btnLoadMapWithRepose(View view) {
+        loadMap(true, null);
     }
 }

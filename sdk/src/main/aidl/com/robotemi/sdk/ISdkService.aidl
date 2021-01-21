@@ -260,7 +260,7 @@ interface ISdkService {
 
     List<MapModel> getMapList(in String packageName);
 
-    void loadMap(in String packageName, in String mapId);
+    void loadMap(in String packageName, in String mapId, boolean reposeRequired);
 
     void lock(in String packageName, boolean isForLocking);
 
@@ -269,4 +269,6 @@ interface ISdkService {
     void muteAlexa(in String packageName);
 
     void shutdown(in String packageName);
+
+    void loadMapWithPosition(in String packageName, in String mapId, boolean reposeRequired, in Position position);
 }
