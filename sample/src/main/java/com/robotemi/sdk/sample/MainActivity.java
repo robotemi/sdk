@@ -989,12 +989,9 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private Position mCurrentPosition = new Position();
-
     @Override
     public void onCurrentPositionChanged(@NotNull Position position) {
         printLog("onCurrentPosition", position.toString());
-        mCurrentPosition = position;
     }
 
     @SuppressLint("DefaultLocale")
@@ -1324,15 +1321,29 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void btnLoadMapWithPosition(View view) {
-        if (mCurrentPosition != null) {
-            loadMap(false, mCurrentPosition);
+        try {
+            float x = Float.parseFloat(etX.getText().toString());
+            float y = Float.parseFloat(etY.getText().toString());
+            float yaw = Float.parseFloat(etYaw.getText().toString());
+            loadMap(false, new Position(x, y, yaw, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            printLog(e.getMessage());
         }
+
     }
 
     public void btnLoadMapWithReposePosition(View view) {
-        if (mCurrentPosition != null) {
-            loadMap(true, mCurrentPosition);
+        try {
+            float x = Float.parseFloat(etX.getText().toString());
+            float y = Float.parseFloat(etY.getText().toString());
+            float yaw = Float.parseFloat(etYaw.getText().toString());
+            loadMap(true, new Position(x, y, yaw, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            printLog(e.getMessage());
         }
+
     }
 
     public void btnLoadMapWithRepose(View view) {
