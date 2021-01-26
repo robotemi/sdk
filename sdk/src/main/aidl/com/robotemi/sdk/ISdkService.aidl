@@ -265,4 +265,6 @@ interface ISdkService {
     void lock(in String packageName, boolean isForLocking);
 
     boolean isLocked();
+
+    void muteAlexa(in String packageName);
 }

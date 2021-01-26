@@ -1277,4 +1277,13 @@ public class MainActivity extends AppCompatActivity implements
         robot.setLocked(false);
         printLog("Is temi locked: " + robot.isLocked());
     }
+
+    public void btnMuteAlexa(View view) {
+        if (robot.getLauncherVersion().contains("usa")) {
+            printLog("Mute Alexa");
+            robot.muteAlexa();
+            return;
+        }
+        printLog("muteAlexa() is useful only for Global version");
+    }
 }

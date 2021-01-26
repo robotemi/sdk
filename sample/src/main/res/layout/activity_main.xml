@@ -173,6 +173,12 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnMuteAlexa"
+                style="@style/ButtonCommon"
+                android:onClick="btnMuteAlexa"
+                android:text="Mute Alexa" />
+
+            <Button
                 android:id="@+id/btnLock"
                 style="@style/ButtonCommon"
                 android:onClick="btnLock"

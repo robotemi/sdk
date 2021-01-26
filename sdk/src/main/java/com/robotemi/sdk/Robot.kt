@@ -1654,6 +1654,17 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    /**
+     * Mute Alexa's MIC. Only useful in Global version with Alexa assistant。
+     */
+    fun muteAlexa() {
+        try {
+            sdkService?.muteAlexa(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "muteAlexa() error")
+        }
+    }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
