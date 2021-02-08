@@ -91,4 +91,6 @@ interface ISdkServiceCallback {
     boolean onDisabledFeatureListUpdated(in List<String> disabledFeatureList);
 
     boolean onMovementVelocityChanged(float velocity);
+
+    boolean onGoToSessionStatusChanged(int status);
 }

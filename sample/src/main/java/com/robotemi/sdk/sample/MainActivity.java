@@ -68,6 +68,7 @@ import com.robotemi.sdk.model.DetectionData;
 import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener;
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener;
+import com.robotemi.sdk.navigation.listener.OnGoToSessionStatusChangedListener;
 import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.navigation.model.SafetyLevel;
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements
         OnLoadMapStatusChangedListener,
         OnDisabledFeatureListUpdatedListener,
         OnMovementVelocityChangedListener,
+        OnGoToSessionStatusChangedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -281,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnLoadMapStatusChangedListener(this);
         robot.addOnDisabledFeatureListUpdatedListener(this);
         robot.addOnSdkExceptionListener(this);
+        robot.addOnGoToSessionStatusChangedListener(this);
     }
 
     @Override
@@ -291,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnSdkExceptionListener(this);
         robot.removeOnLoadMapStatusChangedListener(this);
         robot.removeOnDisabledFeatureListUpdatedListener(this);
+        robot.removeOnGoToSessionStatusChangedListener(this);
         if (!executorService.isShutdown()) {
             executorService.shutdownNow();
         }
@@ -1122,7 +1126,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void printLog(String tag, String msg) {
-        Log.d(tag, msg);
+        Log.d(tag.isEmpty() ? "MainActivity" : tag, msg);
         tvLog.setGravity(Gravity.BOTTOM);
         tvLog.append(String.format("%s %s\n", "· ", msg));
     }
@@ -1348,5 +1352,10 @@ public class MainActivity extends AppCompatActivity implements
 
     public void btnLoadMapWithRepose(View view) {
         loadMap(true, null);
+    }
+
+    @Override
+    public void onGoToSessionStatusChanged(int status) {
+        printLog("Go to session status: " + status);
     }
 }
