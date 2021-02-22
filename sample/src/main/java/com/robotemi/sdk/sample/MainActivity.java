@@ -1325,33 +1325,29 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void btnLoadMapWithPosition(View view) {
-        try {
-            float x = Float.parseFloat(etX.getText().toString());
-            float y = Float.parseFloat(etY.getText().toString());
-            float yaw = Float.parseFloat(etYaw.getText().toString());
-            loadMap(false, new Position(x, y, yaw, 0));
-        } catch (Exception e) {
-            e.printStackTrace();
-            printLog(e.getMessage());
-        }
-
+        loadMapWithPosition(false);
     }
 
     public void btnLoadMapWithReposePosition(View view) {
+        loadMapWithPosition(true);
+    }
+
+    public void btnLoadMapWithRepose(View view) {
+        loadMap(true, null);
+    }
+
+    private void loadMapWithPosition(boolean reposeRequired) {
         try {
             float x = Float.parseFloat(etX.getText().toString());
             float y = Float.parseFloat(etY.getText().toString());
             float yaw = Float.parseFloat(etYaw.getText().toString());
             loadMap(true, new Position(x, y, yaw, 0));
+            Position position = new Position(x, y, yaw, 0);
+            loadMap(reposeRequired, position);
         } catch (Exception e) {
             e.printStackTrace();
             printLog(e.getMessage());
         }
-
-    }
-
-    public void btnLoadMapWithRepose(View view) {
-        loadMap(true, null);
     }
 
     @Override

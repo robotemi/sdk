@@ -268,7 +268,7 @@ interface ISdkService {
 
     void muteAlexa(in String packageName);
 
-    void shutdown(in String packageName);
-
     void loadMapWithPosition(in String packageName, in String mapId, boolean reposeRequired, in Position position);
+
+    void shutdown(in String packageName);
 }
