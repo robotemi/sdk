@@ -51,6 +51,7 @@ import com.robotemi.sdk.listeners.OnConstraintBeWithStatusChangedListener;
 import com.robotemi.sdk.listeners.OnConversationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionDataChangedListener;
 import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
+import com.robotemi.sdk.listeners.OnDisabledFeatureListUpdatedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
 import com.robotemi.sdk.listeners.OnRobotLiftedListener;
@@ -59,6 +60,8 @@ import com.robotemi.sdk.listeners.OnTelepresenceEventChangedListener;
 import com.robotemi.sdk.listeners.OnTtsVisualizerFftDataChangedListener;
 import com.robotemi.sdk.listeners.OnTtsVisualizerWaveFormDataChangedListener;
 import com.robotemi.sdk.listeners.OnUserInteractionChangedListener;
+import com.robotemi.sdk.map.MapModel;
+import com.robotemi.sdk.map.OnLoadMapStatusChangedListener;
 import com.robotemi.sdk.model.CallEventModel;
 import com.robotemi.sdk.model.DetectionData;
 import com.robotemi.sdk.model.MemberStatusModel;
@@ -115,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements
         OnTtsVisualizerWaveFormDataChangedListener,
         OnTtsVisualizerFftDataChangedListener,
         OnReposeStatusChangedListener,
+        OnLoadMapStatusChangedListener,
+        OnDisabledFeatureListUpdatedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -130,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_CODE_SEQUENCE_PLAY = 5;
     private static final int REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6;
     private static final int REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER = 7;
+    private static final int REQUEST_CODE_GET_MAP_LIST = 8;
 
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -232,7 +238,9 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnDetectionDataChangedListener(this);
         robot.addOnUserInteractionChangedListener(this);
         robot.stopMovement();
-        robot.stopFaceRecognition();
+        if (robot.checkSelfPermission(Permission.FACE_RECOGNITION) == Permission.GRANTED) {
+            robot.stopFaceRecognition();
+        }
         robot.removeOnConversationStatusChangedListener(this);
         robot.removeOnTtsVisualizerWaveFormDataChangedListener(this);
         robot.removeOnTtsVisualizerFftDataChangedListener(this);
@@ -266,6 +274,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnRequestPermissionResultListener(this);
         robot.addOnTelepresenceEventChangedListener(this);
         robot.addOnFaceRecognizedListener(this);
+        robot.addOnLoadMapStatusChangedListener(this);
+        robot.addOnDisabledFeatureListUpdatedListener(this);
         robot.addOnSdkExceptionListener(this);
     }
 
@@ -275,6 +285,8 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnTelepresenceEventChangedListener(this);
         robot.removeOnFaceRecognizedListener(this);
         robot.removeOnSdkExceptionListener(this);
+        robot.removeOnLoadMapStatusChangedListener(this);
+        robot.removeOnDisabledFeatureListUpdatedListener(this);
         if (!executorService.isShutdown()) {
             executorService.shutdownNow();
         }
@@ -652,7 +664,7 @@ public class MainActivity extends AppCompatActivity implements
      *     android:name="com.robotemi.sdk.metadata.OVERRIDE_NLU"
      *     android:value="true" />
      * <pre>
-     * And also need to select this App as the Kiosk Mode App in Settings > Kiosk Mode.
+     * And also need to select this App as the Kiosk Mode App in Settings > App > Kiosk.
      *
      * @param asrResult The result of the ASR after waking up temi.
      */
@@ -770,6 +782,8 @@ public class MainActivity extends AppCompatActivity implements
             case MAP:
                 if (requestCode == REQUEST_CODE_MAP) {
                     getMap();
+                } else if (requestCode == REQUEST_CODE_GET_MAP_LIST) {
+                    getMapList();
                 }
                 break;
             case SETTINGS:
@@ -1201,5 +1215,108 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onReposeStatusChanged(int status, @NotNull String description) {
         printLog("repose status: " + status + ", description: " + description);
+    }
+
+    @Override
+    public void onLoadMapStatusChanged(int status) {
+        printLog("load map status: " + status);
+    }
+
+    List<MapModel> mapList = new ArrayList<>();
+
+    private void getMapList() {
+        if (requestPermissionIfNeeded(Permission.MAP, REQUEST_CODE_GET_MAP_LIST)) {
+            return;
+        }
+        mapList = robot.getMapList();
+    }
+
+    private void loadMap(boolean reposeRequired, Position position) {
+        if (mapList.isEmpty()) {
+            getMapList();
+        }
+        if (robot.checkSelfPermission(Permission.MAP) != Permission.GRANTED) {
+            return;
+        }
+        List<String> mapListString = new ArrayList<>();
+        for (int i = 0; i < mapList.size(); i++) {
+            mapListString.add(mapList.get(i).getName());
+        }
+        CustomAdapter customAdapter = new CustomAdapter(MainActivity.this, android.R.layout.simple_selectable_list_item, mapListString);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Click item to load specific map");
+        builder.setAdapter(customAdapter, null);
+        AlertDialog dialog = builder.create();
+        dialog.getListView().setOnItemClickListener((parent, view1, pos, id) -> {
+            printLog("Loading map: " + mapList.get(pos));
+            if (position == null) {
+                robot.loadMap(mapList.get(pos).getId(), reposeRequired);
+            } else {
+                robot.loadMap(mapList.get(pos).getId(), reposeRequired, position);
+            }
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    public void getMapList(View view) {
+        getMapList();
+        for (MapModel mapModel : mapList) {
+            printLog("Map: " + mapModel);
+        }
+    }
+
+    public void btnLoadMap(View view) {
+        loadMap(false, null);
+    }
+
+    @Override
+    public void onDisabledFeatureListUpdated(@NotNull List<String> disabledFeatureList) {
+        printLog("Disabled features: " + disabledFeatureList.toString());
+    }
+
+    public void btnLock(View view) {
+        robot.setLocked(true);
+        printLog("Is temi locked: " + robot.isLocked());
+    }
+
+    public void btnUnlock(View view) {
+        robot.setLocked(false);
+        printLog("Is temi locked: " + robot.isLocked());
+    }
+
+    public void btnMuteAlexa(View view) {
+        if (robot.getLauncherVersion().contains("usa")) {
+            printLog("Mute Alexa");
+            robot.muteAlexa();
+            return;
+        }
+        printLog("muteAlexa() is useful only for Global version");
+    }
+
+    public void btnLoadMapWithPosition(View view) {
+        loadMapWithPosition(false);
+    }
+
+    public void btnLoadMapWithReposePosition(View view) {
+        loadMapWithPosition(true);
+    }
+
+    public void btnLoadMapWithRepose(View view) {
+        loadMap(true, null);
+    }
+
+    private void loadMapWithPosition(boolean reposeRequired) {
+        try {
+            float x = Float.parseFloat(etX.getText().toString());
+            float y = Float.parseFloat(etY.getText().toString());
+            float yaw = Float.parseFloat(etYaw.getText().toString());
+            Position position = new Position(x, y, yaw, 0);
+            loadMap(reposeRequired, position);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printLog(e.getMessage());
+        }
     }
 }

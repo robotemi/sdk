@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
@@ -14,6 +15,7 @@ import androidx.annotation.*
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
+import com.google.gson.reflect.TypeToken
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
@@ -26,7 +28,7 @@ import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
 import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.listeners.*
-import com.robotemi.sdk.map.MapDataModel
+import com.robotemi.sdk.map.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
@@ -146,6 +148,12 @@ class Robot private constructor(private val context: Context) {
 
     private val onReposeStatusChangedListeners =
         CopyOnWriteArraySet<OnReposeStatusChangedListener>()
+
+    private val onLoadMapStatusChangedListeners =
+        CopyOnWriteArraySet<OnLoadMapStatusChangedListener>()
+
+    private val onDisabledFeatureListUpdatedListeners =
+        CopyOnWriteArraySet<OnDisabledFeatureListUpdatedListener>()
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -427,6 +435,16 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        override fun onDisabledFeatureListUpdated(disabledFeatureList: MutableList<String>): Boolean {
+            if (onDisabledFeatureListUpdatedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onDisabledFeatureListUpdatedListeners) {
+                    listener.onDisabledFeatureListUpdated(disabledFeatureList)
+                }
+            }
+            return true
+        }
+
         /*****************************************/
         /*               Permission              */
         /*****************************************/
@@ -561,6 +579,18 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onSdkExceptionListeners) {
                     listener.onSdkError(sdkException)
+                }
+            }
+            return true
+        }
+
+        /*****************************************/
+        /*                  Map                  */
+        override fun onLoadMapStatusChanged(status: Int): Boolean {
+            if (onLoadMapStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onLoadMapStatusChangedListeners) {
+                    listener.onLoadMapStatusChanged(status)
                 }
             }
             return true
@@ -1599,6 +1629,42 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Is temi locked
+     */
+    var locked: Boolean
+        @CheckResult
+        @JvmName("isLocked")
+        get() {
+            return try {
+                sdkService?.isLocked ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isLocked() error")
+                false
+            }
+        }
+        /**
+         * @param lock true(false) to lock(unlock) temi
+         */
+        set(lock) {
+            try {
+                sdkService?.lock(applicationInfo.packageName, lock)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setLocked() error")
+            }
+        }
+
+    /**
+     * Mute Alexa's MIC. Only useful in Global version with Alexa assistant。
+     */
+    fun muteAlexa() {
+        try {
+            sdkService?.muteAlexa(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "muteAlexa() error")
+        }
+    }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -1648,6 +1714,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnBatteryStatusChangedListener(listener: OnBatteryStatusChangedListener) {
         onBatteryStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnDisabledFeatureListUpdatedListener(listener: OnDisabledFeatureListUpdatedListener) {
+        onDisabledFeatureListUpdatedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnDisabledFeatureListUpdatedListener(listener: OnDisabledFeatureListUpdatedListener) {
+        onDisabledFeatureListUpdatedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -1987,17 +2063,57 @@ class Robot private constructor(private val context: Context) {
      *
      * @return Map data.
      */
+    @Nullable
     @WorkerThread
     @CheckResult
     fun getMapData(): MapDataModel? {
-        val inputStream = getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
+        val gson = Gson()
+        var mapDataModel: MapDataModel? = null
+        val inputStream =
+            getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
         val inputStreamReader = InputStreamReader(inputStream)
-        return try {
-            MapDataModel(Gson().fromJson(inputStreamReader, MapDataModel::class.java).mapImage)
+
+        var cursor: Cursor? = null
+        try {
+            mapDataModel = MapDataModel(
+                gson.fromJson(
+                    inputStreamReader,
+                    MapDataModel::class.java
+                ).mapImage
+            )
+            val uriStr = StringBuffer("content://")
+                .append(SdkConstants.PROVIDER_AUTHORITY)
+                .append("/").append(SdkConstants.PROVIDER_PARAMETER_MAP_DATA)
+                .toString()
+            cursor = context.contentResolver.query(
+                Uri.parse(uriStr),
+                null,
+                null,
+                null,
+                null
+            )
+            if (cursor == null || !cursor.moveToFirst()) {
+                return mapDataModel
+            }
+            val mapId = cursor.getString(cursor.getColumnIndex(MAP_ID))
+            val mapInfoJson = cursor.getString(cursor.getColumnIndex(MAP_INFO))
+            val mapElementsJson = cursor.getString(cursor.getColumnIndex(MAP_ELEMENTS))
+            val mapInfo = gson.fromJson(mapInfoJson, MapInfo::class.java)
+            val mapElements = gson.fromJson<List<Layer>>(
+                mapElementsJson,
+                object : TypeToken<List<Layer>>() {}.type
+            )
+            mapDataModel.mapId = mapId
+            mapDataModel.mapInfo = mapInfo
+            mapElements?.map {
+                if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
+                if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
+                if (it.layerCategory == LOCATION) mapDataModel.locations.add(it)
+            }
         } catch (e: JsonParseException) {
             Log.e(TAG, "getMapData() - JSON parse error: ${e.message}")
-            null
         } finally {
+            cursor?.close()
             try {
                 inputStream.close()
                 inputStreamReader.close()
@@ -2005,6 +2121,56 @@ class Robot private constructor(private val context: Context) {
                 Log.e(TAG, "getMapData() - ${e.message}")
             }
         }
+        return mapDataModel
+    }
+
+    /**
+     * Get map list from server.
+     *
+     * @return Saved map
+     */
+    fun getMapList(): List<MapModel> {
+        try {
+            return sdkService?.getMapList(applicationInfo.packageName) ?: emptyList()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getMapList() error")
+        }
+        return emptyList()
+    }
+
+    /**
+     * Load map by map ID.
+     *
+     * @param mapId The map ID of the map to be loaded
+     * @param reposeRequired If needs to repose after loading map
+     * @param position The position for repose
+     */
+    @JvmOverloads
+    fun loadMap(mapId: String, reposeRequired: Boolean = false, position: Position? = null) {
+        try {
+            if (position == null) {
+                sdkService?.loadMap(applicationInfo.packageName, mapId, reposeRequired)
+            } else {
+                sdkService?.loadMapWithPosition(
+                    applicationInfo.packageName,
+                    mapId,
+                    reposeRequired,
+                    position
+                )
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "loadMap() error")
+        }
+    }
+
+    @UiThread
+    fun addOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
+        onLoadMapStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
+        onLoadMapStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -2041,8 +2207,9 @@ class Robot private constructor(private val context: Context) {
             .append("/").append(contentType.path)
             .append("?").append(SdkConstants.PROVIDER_PARAMETER_MEDIA_KEY)
             .append("=").append(mediaKey)
+            .toString()
         try {
-            return context.contentResolver.openInputStream(Uri.parse(uriStr.toString()))
+            return context.contentResolver.openInputStream(Uri.parse(uriStr))
         } catch (e: FileNotFoundException) {
             Log.e(TAG, e.message)
             sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))

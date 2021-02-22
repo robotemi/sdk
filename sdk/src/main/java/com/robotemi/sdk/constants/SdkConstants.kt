@@ -79,6 +79,7 @@ object SdkConstants {
 
     const val PROVIDER_AUTHORITY = "com.robotemi.sdk.provider"
     const val PROVIDER_PARAMETER_MEDIA_KEY = "mediaKey"
+    const val PROVIDER_PARAMETER_MAP_DATA = "mapData"
 
     const val LOCATION_HOME_BASE = "home base"
 

@@ -16,6 +16,7 @@ import com.robotemi.sdk.sequence.SequenceModel;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.map.MapDataModel;
 import com.robotemi.sdk.model.MemberStatusModel;
+import com.robotemi.sdk.map.MapModel;
 
 interface ISdkService {
 
@@ -256,4 +257,16 @@ interface ISdkService {
     void startPage(in String packageName, in String page);
 
     List<MemberStatusModel> getMembersStatus();
+
+    List<MapModel> getMapList(in String packageName);
+
+    void loadMap(in String packageName, in String mapId, boolean reposeRequired);
+
+    void lock(in String packageName, boolean isForLocking);
+
+    boolean isLocked();
+
+    void muteAlexa(in String packageName);
+
+    void loadMapWithPosition(in String packageName, in String mapId, boolean reposeRequired, in Position position);
 }

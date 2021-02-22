@@ -173,6 +173,54 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnMuteAlexa"
+                style="@style/ButtonCommon"
+                android:onClick="btnMuteAlexa"
+                android:text="Mute Alexa" />
+
+            <Button
+                android:id="@+id/btnLock"
+                style="@style/ButtonCommon"
+                android:onClick="btnLock"
+                android:text="Lock" />
+
+            <Button
+                android:id="@+id/btnUnlock"
+                style="@style/ButtonCommon"
+                android:onClick="btnUnlock"
+                android:text="Unlock" />
+
+            <Button
+                android:id="@+id/btnLoadMapWithPosition"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMapWithPosition"
+                android:text="Load Map with Position" />
+
+            <Button
+                android:id="@+id/btnLoadMapWithReposePosition"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMapWithReposePosition"
+                android:text="Load Map with Repose Position" />
+
+            <Button
+                android:id="@+id/btnLoadMapWithRepose"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMapWithRepose"
+                android:text="Load Map with Repose" />
+
+            <Button
+                android:id="@+id/btnLoadMap"
+                style="@style/ButtonCommon"
+                android:onClick="btnLoadMap"
+                android:text="Load Map" />
+
+            <Button
+                android:id="@+id/btnGetMapList"
+                style="@style/ButtonCommon"
+                android:onClick="getMapList"
+                android:text="Get Map List" />
+
+            <Button
                 android:id="@+id/btnRepose"
                 style="@style/ButtonCommon"
                 android:onClick="repose"

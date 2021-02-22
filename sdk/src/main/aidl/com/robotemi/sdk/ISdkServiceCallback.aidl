@@ -85,4 +85,8 @@ interface ISdkServiceCallback {
     boolean onTtsVisualizerFftDataChanged(in byte[] fft);
 
     boolean onReposeStatusChanged(int status, in String description);
+
+    boolean onLoadMapStatusChanged(int status);
+
+    boolean onDisabledFeatureListUpdated(in List<String> disabledFeatureList);
 }
