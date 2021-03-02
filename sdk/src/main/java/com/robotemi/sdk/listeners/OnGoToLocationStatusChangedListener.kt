@@ -21,7 +21,8 @@ interface OnGoToLocationStatusChangedListener {
      * @param status   Current status.
      */
     fun onGoToLocationStatusChanged(
-        location: String, @GoToLocationStatus status: String,
+        location: String,
+        @GoToLocationStatus status: String,
         descriptionId: Int,
         description: String
     )

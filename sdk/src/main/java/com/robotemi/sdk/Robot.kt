@@ -162,6 +162,9 @@ class Robot private constructor(private val context: Context) {
     private val onGoToSessionStatusChangedListeners =
         CopyOnWriteArraySet<OnGoToSessionStatusChangedListener>()
 
+    private val onMovementStatusChangedListeners =
+        CopyOnWriteArraySet<OnMovementStatusChangedListener>()
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -381,6 +384,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onMovementVelocityChangedListeners) {
                     listener.onMovementVelocityChanged(linear)
+                }
+            }
+            return true
+        }
+
+        override fun onMovementStatusChanged(type: String, status: String): Boolean {
+            if (onMovementStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onMovementStatusChangedListeners) {
+                    listener.onMovementStatusChanged(type, status)
                 }
             }
             return true
@@ -1233,6 +1246,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnMovementVelocityChangedListener(listener: OnMovementVelocityChangedListener) {
         onMovementVelocityChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnMovementStatusChangedListener(listener: OnMovementStatusChangedListener) {
+        onMovementStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMovementStatusChangedListener(listener: OnMovementStatusChangedListener) {
+        onMovementStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/

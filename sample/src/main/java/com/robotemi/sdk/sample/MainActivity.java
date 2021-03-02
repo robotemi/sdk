@@ -54,6 +54,7 @@ import com.robotemi.sdk.listeners.OnDetectionStateChangedListener;
 import com.robotemi.sdk.listeners.OnDisabledFeatureListUpdatedListener;
 import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 import com.robotemi.sdk.listeners.OnLocationsUpdatedListener;
+import com.robotemi.sdk.listeners.OnMovementStatusChangedListener;
 import com.robotemi.sdk.listeners.OnMovementVelocityChangedListener;
 import com.robotemi.sdk.listeners.OnRobotLiftedListener;
 import com.robotemi.sdk.listeners.OnRobotReadyListener;
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements
         OnDisabledFeatureListUpdatedListener,
         OnMovementVelocityChangedListener,
         OnGoToSessionStatusChangedListener,
+        OnMovementStatusChangedListener,
         OnSdkExceptionListener {
 
     public static final String ACTION_HOME_WELCOME = "home.welcome", ACTION_HOME_DANCE = "home.dance", ACTION_HOME_SLEEP = "home.sleep";
@@ -276,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         initViews();
         verifyStoragePermissions(this);
-        robot = Robot.getInstance(); // get an instance of the robot in order to begin using its features.
+        robot = Robot.getInstance();
         robot.addOnRequestPermissionResultListener(this);
         robot.addOnTelepresenceEventChangedListener(this);
         robot.addOnFaceRecognizedListener(this);
@@ -284,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addOnDisabledFeatureListUpdatedListener(this);
         robot.addOnSdkExceptionListener(this);
         robot.addOnGoToSessionStatusChangedListener(this);
+        robot.addOnMovementStatusChangedListener(this);
     }
 
     @Override
@@ -295,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeOnLoadMapStatusChangedListener(this);
         robot.removeOnDisabledFeatureListUpdatedListener(this);
         robot.removeOnGoToSessionStatusChangedListener(this);
+        robot.removeOnMovementStatusChangedListener(this);
         if (!executorService.isShutdown()) {
             executorService.shutdownNow();
         }
@@ -752,7 +756,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public void getOSVersion(View view) {
         String osVersion = String.format("LauncherOs: %s, RoboxVersion: %s", robot.getLauncherVersion(), robot.getRoboxVersion());
-        Toast.makeText(this, osVersion, Toast.LENGTH_LONG).show();
+        printLog(osVersion);
     }
 
     @Override
@@ -1353,5 +1357,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onGoToSessionStatusChanged(int status) {
         printLog("Go to session status: " + status);
+    }
+
+    @Override
+    public void onMovementStatusChanged(@NotNull String type, @NotNull String status) {
+        printLog("Movement response - " + type + " status: " + status);
     }
 }
