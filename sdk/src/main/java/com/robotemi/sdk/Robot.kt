@@ -23,6 +23,8 @@ import com.robotemi.sdk.constants.ContentType
 import com.robotemi.sdk.constants.Page
 import com.robotemi.sdk.constants.Platform
 import com.robotemi.sdk.constants.SdkConstants
+import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_DESCRIPTION
+import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_IMAGE_URL
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
@@ -50,6 +52,8 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -2103,7 +2107,21 @@ class Robot private constructor(private val context: Context) {
     @CheckResult
     fun getAllSequences(): List<SequenceModel> {
         try {
-            return sdkService?.getAllSequences(applicationInfo.packageName) ?: emptyList()
+            val temp = sdkService?.getAllSequences(applicationInfo.packageName) ?: emptyList()
+            return temp.map {
+                val json = JSONObject(it.description)
+                val desc = try {
+                    json.getString(JSON_KEY_SEQUENCE_MODEL_DESCRIPTION)
+                } catch (e: JSONException) {
+                    ""
+                }
+                val imgUrl = try {
+                    json.getString(JSON_KEY_SEQUENCE_MODEL_IMAGE_URL)
+                } catch (e: JSONException) {
+                    ""
+                }
+                return@map it.copy(description = desc, imageUrl = imgUrl)
+            }
         } catch (e: RemoteException) {
             Log.e(TAG, "fetchAllSequences() error")
         }

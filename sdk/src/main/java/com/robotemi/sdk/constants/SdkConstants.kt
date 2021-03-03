@@ -89,6 +89,9 @@ object SdkConstants {
     const val PAGE_LOCATIONS = "com.robotemi.page.locations"
     const val PAGE_ALL_APPS = "com.robotemi.page.all_apps"
     const val PAGE_HOME = "com.robotemi.page.home"
+
+    internal const val JSON_KEY_SEQUENCE_MODEL_DESCRIPTION = "description"
+    internal const val JSON_KEY_SEQUENCE_MODEL_IMAGE_URL = "imageUrl"
 }
 
 enum class ContentType(val path: String) {

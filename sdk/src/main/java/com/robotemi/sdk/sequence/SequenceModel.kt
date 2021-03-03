@@ -6,7 +6,8 @@ import android.os.Parcelable
 data class SequenceModel(
     val id: String,
     val name: String,
-    val description: String
+    val description: String,
+    val imageUrl: String? = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
