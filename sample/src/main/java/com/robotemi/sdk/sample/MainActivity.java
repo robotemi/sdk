@@ -94,6 +94,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import kotlin.Pair;
+
 
 public class MainActivity extends AppCompatActivity implements
         Robot.NlpListener,
@@ -201,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.addNlpListener(this);
         robot.addOnBeWithMeStatusChangedListener(this);
         robot.addOnGoToLocationStatusChangedListener(this);
-        robot.addConversationViewAttachesListenerListener(this);
+        robot.addConversationViewAttachesListener(this);
         robot.addWakeupWordListener(this);
         robot.addTtsListener(this);
         robot.addOnLocationsUpdatedListener(this);
@@ -232,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements
         robot.removeNlpListener(this);
         robot.removeOnBeWithMeStatusChangedListener(this);
         robot.removeOnGoToLocationStatusChangedListener(this);
-        robot.removeConversationViewAttachesListenerListener(this);
+        robot.removeConversationViewAttachesListener(this);
         robot.removeWakeupWordListener(this);
         robot.removeTtsListener(this);
         robot.removeOnLocationsUpdateListener(this);
@@ -1054,12 +1056,22 @@ public class MainActivity extends AppCompatActivity implements
     private void getAllSequences() {
         new Thread(() -> {
             allSequences = robot.getAllSequences();
+            List<String> imageKeys = new ArrayList<>();
+            for (SequenceModel sequenceModel : allSequences) {
+                if (sequenceModel.getImageKey().isEmpty()) continue;
+                imageKeys.add(sequenceModel.getImageKey());
+            }
+            List<Pair<String, String>> pairs = robot.getSignedUrlByMediaKey(imageKeys);
             runOnUiThread(() -> {
                 for (SequenceModel sequenceModel : allSequences) {
                     if (sequenceModel == null) {
                         continue;
                     }
                     printLog(sequenceModel.toString());
+                }
+
+                for (Pair<String, String> pair : pairs) {
+                    printLog(pair.component2());
                 }
             });
         }).start();

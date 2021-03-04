@@ -3,11 +3,11 @@ package com.robotemi.sdk.sequence
 import android.os.Parcel
 import android.os.Parcelable
 
-data class SequenceModel(
+data class SequenceModel @JvmOverloads constructor(
     val id: String,
     val name: String,
     val description: String,
-    val imageUrl: String? = ""
+    val imageKey: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,

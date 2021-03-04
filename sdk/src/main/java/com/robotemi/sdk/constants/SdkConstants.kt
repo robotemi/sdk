@@ -91,7 +91,7 @@ object SdkConstants {
     const val PAGE_HOME = "com.robotemi.page.home"
 
     internal const val JSON_KEY_SEQUENCE_MODEL_DESCRIPTION = "description"
-    internal const val JSON_KEY_SEQUENCE_MODEL_IMAGE_URL = "imageUrl"
+    internal const val JSON_KEY_SEQUENCE_MODEL_IMAGE_KEY = "imageKey"
 }
 
 enum class ContentType(val path: String) {

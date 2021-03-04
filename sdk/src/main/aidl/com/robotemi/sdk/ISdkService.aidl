@@ -271,4 +271,6 @@ interface ISdkService {
     void loadMapWithPosition(in String packageName, in String mapId, boolean reposeRequired, in Position position);
 
     void shutdown(in String packageName);
+
+    List<String> getSignedUrlByMediaKey(in String packageName, in List<String> mediaKeys, int width, int height);
 }

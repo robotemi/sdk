@@ -24,7 +24,7 @@ import com.robotemi.sdk.constants.Page
 import com.robotemi.sdk.constants.Platform
 import com.robotemi.sdk.constants.SdkConstants
 import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_DESCRIPTION
-import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_IMAGE_URL
+import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_IMAGE_KEY
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
@@ -629,6 +629,8 @@ class Robot private constructor(private val context: Context) {
 
         /*****************************************/
         /*                  Map                  */
+        /*****************************************/
+
         override fun onLoadMapStatusChanged(status: Int): Boolean {
             if (onLoadMapStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
@@ -806,13 +808,25 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    @Deprecated(message = "Use [addOnConversationStatusChangedListener] instead")
     @UiThread
     fun addConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
         conversationViewAttachesListeners.add(conversationViewAttachesListener)
     }
 
+    @Deprecated(message = "Use [removeConversationViewAttachesListener] instead")
     @UiThread
     fun removeConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
+        conversationViewAttachesListeners.remove(conversationViewAttachesListener)
+    }
+
+    @UiThread
+    fun addConversationViewAttachesListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
+        conversationViewAttachesListeners.add(conversationViewAttachesListener)
+    }
+
+    @UiThread
+    fun removeConversationViewAttachesListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
         conversationViewAttachesListeners.remove(conversationViewAttachesListener)
     }
 
@@ -2115,15 +2129,15 @@ class Robot private constructor(private val context: Context) {
                 } catch (e: JSONException) {
                     ""
                 }
-                val imgUrl = try {
-                    json.getString(JSON_KEY_SEQUENCE_MODEL_IMAGE_URL)
+                val imgKey = try {
+                    json.getString(JSON_KEY_SEQUENCE_MODEL_IMAGE_KEY)
                 } catch (e: JSONException) {
                     ""
                 }
-                return@map it.copy(description = desc, imageUrl = imgUrl)
+                return@map it.copy(description = desc, imageKey = imgKey)
             }
         } catch (e: RemoteException) {
-            Log.e(TAG, "fetchAllSequences() error")
+            Log.e(TAG, "getAllSequences() error")
         }
         return emptyList()
     }
@@ -2298,24 +2312,6 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    @Nullable
-    @WorkerThread
-    fun getInputStreamByMediaKey(contentType: ContentType, mediaKey: String): InputStream? {
-        val uriStr = StringBuffer("content://")
-            .append(SdkConstants.PROVIDER_AUTHORITY)
-            .append("/").append(contentType.path)
-            .append("?").append(SdkConstants.PROVIDER_PARAMETER_MEDIA_KEY)
-            .append("=").append(mediaKey)
-            .toString()
-        try {
-            return context.contentResolver.openInputStream(Uri.parse(uriStr))
-        } catch (e: FileNotFoundException) {
-            Log.e(TAG, e.message)
-            sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))
-        }
-        return null
-    }
-
     @UiThread
     fun addOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
         onFaceRecognizedListeners.add(listener)
@@ -2334,6 +2330,62 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnSdkExceptionListener(listener: OnSdkExceptionListener) {
         onSdkExceptionListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*                 Common                */
+    /*****************************************/
+
+    @Nullable
+    @WorkerThread
+    fun getInputStreamByMediaKey(contentType: ContentType, mediaKey: String): InputStream? {
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(contentType.path)
+            .append("?").append(SdkConstants.PROVIDER_PARAMETER_MEDIA_KEY)
+            .append("=").append(mediaKey)
+            .toString()
+        try {
+            return context.contentResolver.openInputStream(Uri.parse(uriStr))
+        } catch (e: FileNotFoundException) {
+            Log.e(TAG, e.message)
+            sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))
+        }
+        return null
+    }
+
+    @WorkerThread
+    @JvmOverloads
+    fun getSignedUrlByMediaKey(
+        mediaKeys: List<String>,
+        width: Int = -1,
+        height: Int = -1
+    ): List<Pair<String, String>> {
+        return try {
+            val results = sdkService?.getSignedUrlByMediaKey(
+                applicationInfo.packageName,
+                mediaKeys.filter { it.isNotBlank() },
+                width,
+                height
+            ) ?: emptyList()
+            return results.map {
+                val jsonObject = JSONObject(it)
+                val mediaKey = try {
+                    jsonObject.getString("mediaKey")
+                } catch (e: JSONException) {
+                    ""
+                }
+                val signedUrl = try {
+                    jsonObject.getString("signedUrl")
+                } catch (e: JSONException) {
+                    ""
+                }
+                return@map Pair(mediaKey, signedUrl)
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getSignedUrlByMediaKey() error")
+            emptyList()
+        }
     }
 
     /*****************************************/
