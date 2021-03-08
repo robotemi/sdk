@@ -34,7 +34,6 @@
             <Button
                 android:id="@+id/btnSaveLocation"
                 style="@style/ButtonCommon"
-                android:onClick="saveLocation"
                 android:text="@string/save_location" />
 
             <EditText
@@ -54,7 +53,6 @@
             <Button
                 android:id="@+id/btnGoTo"
                 style="@style/ButtonCommon"
-                android:onClick="goTo"
                 android:text="@string/go_to" />
 
             <EditText
@@ -74,7 +72,6 @@
             <Button
                 android:id="@+id/btnSpeak"
                 style="@style/ButtonCommon"
-                android:onClick="speak"
                 android:text="@string/speak" />
 
             <EditText
@@ -95,7 +92,6 @@
             <Button
                 android:id="@+id/btnStartDetectionModeWithDistance"
                 style="@style/ButtonCommon"
-                android:onClick="startDetectionModeWithDistance"
                 android:text="Start Detection Mode with Distance" />
 
             <EditText
@@ -113,7 +109,6 @@
             <Button
                 android:id="@+id/btnNlu"
                 style="@style/ButtonCommon"
-                android:onClick="startNlu"
                 android:text="Start NLU" />
 
             <LinearLayout
@@ -158,7 +153,6 @@
             <Button
                 android:id="@+id/btnGoToPosition"
                 style="@style/ButtonCommon"
-                android:onClick="goToPosition"
                 android:text="Go To Position" />
         </LinearLayout>
     </ScrollView>
@@ -175,344 +169,287 @@
             <Button
                 android:id="@+id/btnMuteAlexa"
                 style="@style/ButtonCommon"
-                android:onClick="btnMuteAlexa"
                 android:text="Mute Alexa" />
 
             <Button
                 android:id="@+id/btnShutdown"
                 style="@style/ButtonCommon"
-                android:onClick="btnShutdown"
                 android:text="Shutdown" />
 
             <Button
                 android:id="@+id/btnLock"
                 style="@style/ButtonCommon"
-                android:onClick="btnLock"
                 android:text="Lock" />
 
             <Button
                 android:id="@+id/btnUnlock"
                 style="@style/ButtonCommon"
-                android:onClick="btnUnlock"
                 android:text="Unlock" />
 
             <Button
                 android:id="@+id/btnLoadMapWithPosition"
                 style="@style/ButtonCommon"
-                android:onClick="btnLoadMapWithPosition"
                 android:text="Load Map with Position" />
 
             <Button
                 android:id="@+id/btnLoadMapWithReposePosition"
                 style="@style/ButtonCommon"
-                android:onClick="btnLoadMapWithReposePosition"
                 android:text="Load Map with Repose Position" />
 
             <Button
                 android:id="@+id/btnLoadMapWithRepose"
                 style="@style/ButtonCommon"
-                android:onClick="btnLoadMapWithRepose"
                 android:text="Load Map with Repose" />
 
             <Button
                 android:id="@+id/btnLoadMap"
                 style="@style/ButtonCommon"
-                android:onClick="btnLoadMap"
                 android:text="Load Map" />
 
             <Button
                 android:id="@+id/btnGetMapList"
                 style="@style/ButtonCommon"
-                android:onClick="getMapList"
                 android:text="Get Map List" />
 
             <Button
                 android:id="@+id/btnRepose"
                 style="@style/ButtonCommon"
-                android:onClick="repose"
                 android:text="Repose" />
 
             <Button
                 android:id="@+id/btnGetMembersStatus"
                 style="@style/ButtonCommon"
-                android:onClick="getMembersStatus"
                 android:text="Get Members' status" />
 
             <Button
                 android:id="@+id/btnRestart"
                 style="@style/ButtonCommon"
-                android:onClick="restartTemi"
                 android:text="Restart temi" />
 
             <Button
                 android:id="@+id/btnStartPage"
                 style="@style/ButtonCommon"
-                android:onClick="startPage"
                 android:text="Start Page" />
 
             <Button
                 android:id="@+id/btnStartTelepresenceToCenter"
                 style="@style/ButtonCommon"
-                android:onClick="startTelepresenceToCenter"
                 android:text="Start Telepresence to temi Center" />
 
             <Button
                 android:id="@+id/btnFetchMap"
                 style="@style/ButtonCommon"
-                android:onClick="getMap"
                 android:text="Get Map Data" />
 
             <Button
                 android:id="@+id/btnFetchSequence"
                 style="@style/ButtonCommon"
-                android:onClick="getAllSequences"
                 android:text="Get All Sequences" />
 
             <Button
                 android:id="@+id/btnPlayFirstSequenceWithoutPlayer"
                 style="@style/ButtonCommon"
-                android:onClick="playFirstSequenceWithoutPlayer"
                 android:text="Play First Sequence without Player" />
 
             <Button
                 android:id="@+id/btnPlayFirstSequence"
                 style="@style/ButtonCommon"
-                android:onClick="playFirstSequence"
                 android:text="Play First Sequence" />
 
             <Button
                 android:id="@+id/btnGetOSVersion"
                 style="@style/ButtonCommon"
-                android:onClick="getOSVersion"
                 android:text="Get OS Version" />
 
             <Button
                 android:id="@+id/btnCheckFace"
                 style="@style/ButtonCommon"
-                android:onClick="requestFace"
                 android:text="Request Permission: Face Recognition" />
 
             <Button
                 android:id="@+id/btnCheckMap"
                 style="@style/ButtonCommon"
-                android:onClick="requestMap"
                 android:text="Request Permission: Map" />
 
             <Button
                 android:id="@+id/btnCheckSettings"
                 style="@style/ButtonCommon"
-                android:onClick="requestSettings"
                 android:text="Request Permission: Settings" />
 
             <Button
                 android:id="@+id/btnCheckSequence"
                 style="@style/ButtonCommon"
-                android:onClick="requestSequence"
                 android:text="Request Permission: Sequence" />
 
             <Button
                 android:id="@+id/btnCheckAllPermission"
                 style="@style/ButtonCommon"
-                android:onClick="requestAll"
                 android:text="Request All Permissions" />
 
             <Button
                 android:id="@+id/btnStartFaceRecognition"
                 style="@style/ButtonCommon"
-                android:onClick="startFaceRecognition"
                 android:text="Start Face Recognition" />
 
             <Button
                 android:id="@+id/btnStopFaceRecognition"
                 style="@style/ButtonCommon"
-                android:onClick="stopFaceRecognition"
                 android:text="Stop Face Recognition" />
 
             <Button
                 android:id="@+id/btnSetGoToSpeed"
                 style="@style/ButtonCommon"
-                android:onClick="setGoToSpeed"
                 android:text="Set Go To Speed" />
 
             <Button
                 android:id="@+id/btnSetGoToSafety"
                 style="@style/ButtonCommon"
-                android:onClick="setGoToSafety"
                 android:text="Set Go To Safety" />
 
             <Button
                 android:id="@+id/btnToggleTopBadge"
                 style="@style/ButtonCommon"
-                android:onClick="toggleTopBadge"
                 android:text="Toggle Top Badge" />
 
             <Button
                 android:id="@+id/btnToggleDetectionMode"
                 style="@style/ButtonCommon"
-                android:onClick="toggleDetectionMode"
                 android:text="Toggle Detection Mode" />
 
             <Button
                 android:id="@+id/btnToggleAutoReturn"
                 style="@style/ButtonCommon"
-                android:onClick="toggleAutoReturn"
                 android:text="Toggle Auto Return" />
 
             <Button
                 android:id="@+id/btnTrackUser"
                 style="@style/ButtonCommon"
-                android:onClick="toggleTrackUser"
                 android:text="Toggle Track User" />
 
             <Button
                 android:id="@+id/btnGetVolume"
                 style="@style/ButtonCommon"
-                android:onClick="getVolume"
                 android:text="Get Volume" />
 
             <Button
                 android:id="@+id/btnSetVolume"
                 style="@style/ButtonCommon"
-                android:onClick="setVolume"
                 android:text="Set Volume" />
 
             <Button
                 android:id="@+id/btnRequestToBeKioskApp"
                 style="@style/ButtonCommon"
-                android:onClick="requestToBeKioskApp"
                 android:text="Request To Be Kiosk App" />
 
             <Button
                 android:id="@+id/btnSavedLocations"
                 style="@style/ButtonCommon"
-                android:onClick="savedLocationsDialog"
                 android:text="@string/saved_locations" />
 
             <Button
                 android:id="@+id/btnFollow"
                 style="@style/ButtonCommon"
-                android:onClick="followMe"
                 android:text="@string/follow_me" />
 
             <Button
                 android:id="@+id/btnskidJoy"
                 style="@style/ButtonCommon"
-                android:onClick="skidJoy"
                 android:text="@string/skidjoy" />
 
             <Button
                 android:id="@+id/btnTiltAngle"
                 style="@style/ButtonCommon"
-                android:onClick="tiltAngle"
                 android:text="@string/tiltangle" />
 
             <Button
                 android:id="@+id/btnTurnBy"
                 style="@style/ButtonCommon"
-                android:onClick="turnBy"
                 android:text="@string/turnby" />
 
             <Button
                 android:id="@+id/btnTiltBy"
                 style="@style/ButtonCommon"
-                android:onClick="tiltBy"
                 android:text="tiltBy" />
 
             <Button
                 android:id="@+id/btnDisableWakeup"
                 style="@style/ButtonCommon"
-                android:onClick="disableWakeup"
                 android:text="Disable Wakeup" />
 
             <Button
                 android:id="@+id/btnEnableWakeup"
                 style="@style/ButtonCommon"
-                android:onClick="enableWakeup"
                 android:text="Enable Wakeup" />
 
             <Button
                 android:id="@+id/btnToggleNavBillboard"
                 style="@style/ButtonCommon"
-                android:onClick="toggleNavBillboard"
                 android:text="Toggle navigation billboard" />
 
             <Button
                 android:id="@+id/btnBatteryInfo"
                 style="@style/ButtonCommon"
-                android:onClick="getBatteryData"
                 android:text="@string/battery_info" />
 
             <Button
-                android:id="@+id/btnStopFollow"
+                android:id="@+id/btnStopMovement"
                 style="@style/ButtonCommon"
-                android:onClick="stopMovement"
                 android:text="@string/stop_movement" />
 
             <Button
                 android:id="@+id/btnCallOwner"
                 style="@style/ButtonCommon"
-                android:onClick="callOwner"
                 android:text="@string/call_owner" />
 
             <Button
                 android:id="@+id/btnPublish"
                 style="@style/ButtonCommon"
-                android:onClick="publishToActivityStream"
                 android:text="@string/publish_to_activities" />
 
             <Button
                 android:id="@+id/btnHideTopBar"
                 style="@style/ButtonCommon"
-                android:onClick="hideTopBar"
                 android:text="Hide Top Bar" />
 
             <Button
                 android:id="@+id/btnShowTopBar"
                 style="@style/ButtonCommon"
-                android:onClick="showTopBar"
                 android:text="Show Top Bar" />
 
             <Button
                 android:id="@+id/btnTogglePrivacyModeOn"
                 style="@style/ButtonCommon"
-                android:onClick="privacyModeOn"
                 android:text="Turn on Privacy Mode" />
 
             <Button
                 android:id="@+id/btnTogglePrivacyModeOff"
                 style="@style/ButtonCommon"
-                android:onClick="privacyModeOff"
                 android:text="Turn off Privacy Mode" />
 
             <Button
                 android:id="@+id/btnGetPrivacyMode"
                 style="@style/ButtonCommon"
-                android:onClick="getPrivacyModeState"
                 android:text="Get Privacy Mode" />
 
             <Button
                 android:id="@+id/btnEnableHardButtons"
                 style="@style/ButtonCommon"
-                android:onClick="enableHardButtons"
                 android:text="Enable Hard Buttons" />
 
             <Button
                 android:id="@+id/btnDisableHardButtons"
                 style="@style/ButtonCommon"
-                android:onClick="disableHardButtons"
                 android:text="Disable Hard Buttons" />
 
             <Button
                 android:id="@+id/btnIsHardButtonsDisabled"
                 style="@style/ButtonCommon"
-                android:onClick="isHardButtonsEnabled"
                 android:text="Is Hard Buttons Disabled"
                 android:textSize="18sp" />
 
             <Button
                 android:id="@+id/btnGetAllContacts"
                 style="@style/ButtonCommon"
-                android:onClick="getAllContacts"
                 android:text="Get All Contacts" />
         </LinearLayout>
     </ScrollView>
@@ -551,7 +488,6 @@
             android:id="@+id/btnClearLog"
             style="@style/ButtonCommon"
             android:layout_alignParentBottom="true"
-            android:onClick="btnClearLog"
             android:text="Clear"
             android:textSize="18sp" />
     </RelativeLayout>

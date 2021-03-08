@@ -1158,21 +1158,11 @@ class Robot private constructor(private val context: Context) {
      * To turn temi by a specific degree.
      *
      * @param degrees the degree amount you want the robot to turn
-     * @param speed   deprecated
+     * @param speed Coefficient of maximum speed, between 0 to 1
      */
-    @Deprecated("Use turnBy(degrees) instead.", ReplaceWith("turnBy(degrees)"))
-    fun turnBy(degrees: Int, speed: Float) {
-        turnBy(degrees)
-    }
-
-    /**
-     * To turn temi by a specific degree.
-     *
-     * @param degrees the degree amount you want the robot to turn
-     */
-    fun turnBy(degrees: Int) {
+    fun turnBy(degrees: Int, speed: Float = 1f) {
         try {
-            sdkService?.turnBy(degrees, 1.0f)
+            sdkService?.turnBy(degrees, speed)
         } catch (e: RemoteException) {
             Log.e(TAG, "turnBy(int) (degrees=$degrees) error")
         }
@@ -1182,23 +1172,14 @@ class Robot private constructor(private val context: Context) {
      * To tilt temi's head to a specific angle.
      *
      * @param degrees the degree which you want the robot to tilt to, between 55 and -25
-     * @param speed   deprecated
+     * @param speed Coefficient of maximum speed, between 0 to 1
      */
-    @Deprecated("Use tiltAngle(degrees) instead.", ReplaceWith("tiltAngle(degrees)"))
-    fun tiltAngle(degrees: Int, speed: Float) {
-        tiltAngle(degrees)
-    }
-
-    /**
-     * To tilt temi's head to a specific angle.
-     *
-     * @param degrees the degree which you want the robot to tilt to, between 55 and -25
-     */
-    fun tiltAngle(degrees: Int) {
+    @JvmOverloads
+    fun tiltAngle(degrees: Int, speed: Float = 1f) {
         try {
-            sdkService?.tiltAngle(degrees, 1.0f)
+            sdkService?.tiltAngle(degrees, speed)
         } catch (e: RemoteException) {
-            Log.e(TAG, "turnBy(int) (degrees=$degrees) error")
+            Log.e(TAG, "turnBy(int, float) (degrees=$degrees, speed=$speed) error")
         }
     }
 
@@ -1206,23 +1187,14 @@ class Robot private constructor(private val context: Context) {
      * To tilt temi's head to by a specific degree.
      *
      * @param degrees The degree amount you want the robot to tilt
-     * @param speed Deprecated. The value will always be 1.
+     * @param speed Coefficient of maximum speed, between 0 to 1
      */
-    @Deprecated("Use tiltBy(degrees) instead.", ReplaceWith("tiltBy(degrees)"))
-    fun tiltBy(degrees: Int, speed: Float) {
-        tiltBy(degrees)
-    }
-
-    /**
-     * To tilt temi's head to by a specific degree.
-     *
-     * @param degrees The degree amount you want the robot to tilt
-     */
-    fun tiltBy(degrees: Int) {
+    @JvmOverloads
+    fun tiltBy(degrees: Int, speed: Float = 1f) {
         try {
-            sdkService?.tiltBy(degrees, 1.0f)
+            sdkService?.tiltBy(degrees, speed)
         } catch (e: RemoteException) {
-            Log.e(TAG, "tiltBy(int) (degrees=$degrees) error")
+            Log.e(TAG, "tiltBy(int, float) (degrees=$degrees, speed=$speed) error")
         }
     }
 
@@ -2242,6 +2214,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @return Saved map
      */
+    @WorkerThread
     fun getMapList(): List<MapModel> {
         try {
             return sdkService?.getMapList(applicationInfo.packageName) ?: emptyList()
