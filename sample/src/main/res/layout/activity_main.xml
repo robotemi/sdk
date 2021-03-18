@@ -20,10 +20,8 @@
 
             <EditText
                 android:id="@+id/etSaveLocation"
-                android:layout_width="325dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginRight="50dp"
                 android:ems="10"
                 android:gravity="center_horizontal"
                 android:hint="@string/enter_location"
@@ -40,9 +38,7 @@
                 android:id="@+id/etGoTo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
                 android:ems="10"
                 android:gravity="center_horizontal"
                 android:hint="@string/go_to_location"
@@ -59,9 +55,7 @@
                 android:id="@+id/etSpeak"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
                 android:ems="10"
                 android:gravity="center_horizontal"
                 android:hint="@string/enter_speech"
@@ -78,9 +72,7 @@
                 android:id="@+id/etDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
                 android:ems="10"
                 android:gravity="center_horizontal"
                 android:hint="Please enter the distance"
@@ -98,9 +90,7 @@
                 android:id="@+id/etNlu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="50dp"
                 android:gravity="center_horizontal"
                 android:hint="@string/enter_speech"
                 android:textColor="@color/colorWhite"
@@ -464,13 +454,15 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:adjustViewBounds="true"
+            android:visibility="gone"
             tools:src="@mipmap/ic_launcher" />
 
         <com.robotemi.sdk.sample.TtsVisualizerView
             android:id="@+id/visualizerView"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:layout_below="@id/imageViewFace" />
+            android:layout_below="@id/imageViewFace"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvLog"
@@ -482,12 +474,15 @@
             android:padding="20dp"
             android:scrollbars="vertical"
             android:textColor="@color/colorWhite"
-            tools:text="log panel" />
+            android:textSize="16sp"
+            tools:text="log pasdfasfasdfasfasdfanel" />
 
         <Button
             android:id="@+id/btnClearLog"
             style="@style/ButtonCommon"
             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="0dp"
             android:text="Clear"
             android:textSize="18sp" />
     </RelativeLayout>

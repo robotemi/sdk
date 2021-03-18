@@ -12,7 +12,6 @@ interface OnBeWithMeStatusChangedListener {
      *
      *  * [OnBeWithMeStatusChangedListener.ABORT]
      *  * [OnBeWithMeStatusChangedListener.CALCULATING]
-     *  * [OnBeWithMeStatusChangedListener.LOCK]
      *  * [OnBeWithMeStatusChangedListener.SEARCH]
      *  * [OnBeWithMeStatusChangedListener.START]
      *  * [OnBeWithMeStatusChangedListener.TRACK]
@@ -23,7 +22,7 @@ interface OnBeWithMeStatusChangedListener {
      */
     fun onBeWithMeStatusChanged(@BeWithMeStatus status: String)
 
-    @StringDef(ABORT, CALCULATING, LOCK, SEARCH, START, TRACK, OBSTACLE_DETECTED)
+    @StringDef(ABORT, CALCULATING, SEARCH, START, TRACK, OBSTACLE_DETECTED)
     @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
     annotation class BeWithMeStatus
 
@@ -32,8 +31,6 @@ interface OnBeWithMeStatusChangedListener {
         const val ABORT = "abort"
 
         const val CALCULATING = "calculating"
-
-        const val LOCK = "lock"
 
         const val SEARCH = "search"
 

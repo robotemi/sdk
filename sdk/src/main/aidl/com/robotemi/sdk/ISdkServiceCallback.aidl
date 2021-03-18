@@ -92,7 +92,5 @@ interface ISdkServiceCallback {
 
     boolean onMovementVelocityChanged(float velocity);
 
-    boolean onGoToSessionStatusChanged(int status);
-
     boolean onMovementStatusChanged(in String type, in String status);
 }

@@ -15,6 +15,7 @@ interface OnGoToLocationStatusChangedListener {
      *  * [OnGoToLocationStatusChangedListener.GOING]
      *  * [OnGoToLocationStatusChangedListener.COMPLETE]
      *  * [OnGoToLocationStatusChangedListener.ABORT]
+     *  * [OnGoToLocationStatusChangedListener.REPOSING]
      *
      *
      * @param location Location of GoTo response.
@@ -27,7 +28,7 @@ interface OnGoToLocationStatusChangedListener {
         description: String
     )
 
-    @StringDef(START, CALCULATING, GOING, COMPLETE, ABORT)
+    @StringDef(START, CALCULATING, GOING, COMPLETE, ABORT, REPOSING)
     @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
     annotation class GoToLocationStatus
 
@@ -42,5 +43,7 @@ interface OnGoToLocationStatusChangedListener {
         const val COMPLETE = "complete"
 
         const val ABORT = "abort"
+
+        const val REPOSING = "reposing"
     }
 }

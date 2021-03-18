@@ -27,8 +27,7 @@
         <meta-data
             android:name="com.robotemi.sdk.metadata.ACTIONS"
             android:value="home.welcome,
-                           home.dance,
-                           home.sleep" />
+            yudinghuiyishi.book.meeting" />
 
         <meta-data
             android:name="com.robotemi.sdk.metadata.KIOSK"
@@ -68,6 +67,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="com.robotemi.sdk.metadata.UI_MODE"
+                android:value="4" />
         </activity>
 
         <activity android:name=".MapActivity" />

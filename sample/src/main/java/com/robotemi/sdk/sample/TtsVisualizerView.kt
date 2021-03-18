@@ -28,7 +28,7 @@ class TtsVisualizerView constructor(context: Context?, attrs: AttributeSet?) :
         mForePaint.color = context.getColor(R.color.temi_primary_green)
     }
 
-    fun updateVisualizer(bytes: ByteArray?) {
+    fun  updateVisualizer(bytes: ByteArray?) {
         mBytes = bytes
         invalidate()
     }

@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
 import android.os.RemoteException
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
@@ -44,7 +45,6 @@ import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
-import com.robotemi.sdk.navigation.listener.OnGoToSessionStatusChangedListener
 import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener
 import com.robotemi.sdk.navigation.model.Position
 import com.robotemi.sdk.navigation.model.SafetyLevel
@@ -71,8 +71,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnConversationStatusChangedListener, OnTtsVisualizerWaveFormDataChangedListener,
     OnTtsVisualizerFftDataChangedListener, OnReposeStatusChangedListener,
     OnLoadMapStatusChangedListener, OnDisabledFeatureListUpdatedListener,
-    OnMovementVelocityChangedListener, OnGoToSessionStatusChangedListener,
-    OnMovementStatusChangedListener, OnSdkExceptionListener {
+    OnMovementVelocityChangedListener, OnMovementStatusChangedListener, OnSdkExceptionListener {
 
     private lateinit var robot: Robot
 
@@ -147,13 +146,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         verifyStoragePermissions(this)
         robot = getInstance()
         initOnClickListener()
+        tvLog.movementMethod = ScrollingMovementMethod.getInstance()
         robot.addOnRequestPermissionResultListener(this)
         robot.addOnTelepresenceEventChangedListener(this)
         robot.addOnFaceRecognizedListener(this)
         robot.addOnLoadMapStatusChangedListener(this)
         robot.addOnDisabledFeatureListUpdatedListener(this)
         robot.addOnSdkExceptionListener(this)
-        robot.addOnGoToSessionStatusChangedListener(this)
         robot.addOnMovementStatusChangedListener(this)
     }
 
@@ -164,7 +163,6 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnSdkExceptionListener(this)
         robot.removeOnLoadMapStatusChangedListener(this)
         robot.removeOnDisabledFeatureListUpdatedListener(this)
-        robot.removeOnGoToSessionStatusChangedListener(this)
         robot.removeOnMovementStatusChangedListener(this)
         if (!executorService.isShutdown) {
             executorService.shutdownNow()
@@ -367,7 +365,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         } catch (e: Exception) {
             1f
         }
-        robot.turnBy(180, speed)
+        robot.turnBy(90, speed)
     }
 
     /**
@@ -446,6 +444,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     override fun onNlpCompleted(nlpResult: NlpResult) {
         //do something with nlp result. Base the action specified in the AndroidManifest.xml
         Toast.makeText(this@MainActivity, nlpResult.action, Toast.LENGTH_SHORT).show()
+        printLog("NlpCompleted: $nlpResult")
         when (nlpResult.action) {
             ACTION_HOME_WELCOME -> robot.tiltAngle(23)
             ACTION_HOME_DANCE -> {
@@ -523,20 +522,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onBeWithMeStatusChanged(status: String) {
         //  When status changes to "lock" the robot recognizes the user and begin to follow.
-        when (status) {
-            OnBeWithMeStatusChangedListener.ABORT ->                 // do something i.e. speak
-                robot.speak(create("Abort", false))
-            OnBeWithMeStatusChangedListener.CALCULATING -> robot.speak(
-                create(
-                    "Calculating",
-                    false
-                )
-            )
-            OnBeWithMeStatusChangedListener.LOCK -> robot.speak(create("Lock", false))
-            OnBeWithMeStatusChangedListener.SEARCH -> robot.speak(create("search", false))
-            OnBeWithMeStatusChangedListener.START -> robot.speak(create("Start", false))
-            OnBeWithMeStatusChangedListener.TRACK -> robot.speak(create("Track", false))
-        }
+        printLog("BeWithMeStatus: $status")
     }
 
     override fun onGoToLocationStatusChanged(
@@ -545,27 +531,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         descriptionId: Int,
         description: String
     ) {
-        printLog(
-            "GoToStatusChanged",
-            "status=$status, descriptionId=$descriptionId, description=$description"
-        )
-        robot.speak(create(description, false))
-        when (status) {
-            OnGoToLocationStatusChangedListener.START -> robot.speak(create("Starting", false))
-            OnGoToLocationStatusChangedListener.CALCULATING -> robot.speak(
-                create(
-                    "Calculating",
-                    false
-                )
-            )
-            OnGoToLocationStatusChangedListener.GOING -> robot.speak(create("Going", false))
-            OnGoToLocationStatusChangedListener.COMPLETE -> robot.speak(
-                create(
-                    "Completed",
-                    false
-                )
-            )
-            OnGoToLocationStatusChangedListener.ABORT -> robot.speak(create("Cancelled", false))
+        printLog("GoToStatusChanged: status=$status, descriptionId=$descriptionId, description=$description")
+        robot.speak(create(status, false))
+        if (description.isNotBlank()) {
+            robot.speak(create(description, false))
         }
     }
 
@@ -939,7 +908,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             robot.setDetectionModeOn(true, distance)
             printLog("Start detection mode with distance: $distance")
         } catch (e: Exception) {
-            printLog("startDetectionModeWithDistance", e.message)
+            printLog("startDetectionModeWithDistance", e.message ?: "")
         }
     }
 
@@ -1058,6 +1027,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private fun showFaceRecognitionImage(mediaKey: String) {
         if (mediaKey.isEmpty()) {
             imageViewFace.setImageResource(R.drawable.app_icon)
+            imageViewFace.visibility = View.GONE
             return
         }
         executorService.execute {
@@ -1065,6 +1035,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 robot.getInputStreamByMediaKey(ContentType.FACE_RECOGNITION_IMAGE, mediaKey)
                     ?: return@execute
             runOnUiThread {
+                imageViewFace.visibility = View.VISIBLE
                 imageViewFace.setImageBitmap(BitmapFactory.decodeStream(inputStream))
                 try {
                     inputStream.close()
@@ -1075,12 +1046,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
     }
 
-    private fun printLog(msg: String?) {
+    private fun printLog(msg: String) {
         printLog("", msg)
     }
 
-    private fun printLog(tag: String, msg: String?) {
+    private fun printLog(tag: String, msg: String) {
         Log.d(if (tag.isEmpty()) "MainActivity" else tag, msg)
+//        if (!msg.contains("GoToStatusChanged", true)) return
         tvLog.gravity = Gravity.BOTTOM
         tvLog.append("· $msg \n")
     }
@@ -1112,7 +1084,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             robot.goToPosition(Position(x, y, yaw, 0))
         } catch (e: Exception) {
             e.printStackTrace()
-            printLog(e.message)
+            printLog(e.message ?: "")
         }
     }
 
@@ -1121,6 +1093,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onTtsVisualizerWaveFormDataChanged(waveForm: ByteArray) {
+        visualizerView.visibility = View.VISIBLE
         visualizerView.updateVisualizer(waveForm)
     }
 
@@ -1292,12 +1265,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             loadMap(reposeRequired, position)
         } catch (e: Exception) {
             e.printStackTrace()
-            printLog(e.message)
+            printLog(e.message ?: "")
         }
-    }
-
-    override fun onGoToSessionStatusChanged(status: Int) {
-        printLog("Go to session status: $status")
     }
 
     override fun onMovementStatusChanged(type: String, status: String) {

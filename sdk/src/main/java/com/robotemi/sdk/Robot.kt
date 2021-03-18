@@ -39,7 +39,6 @@ import com.robotemi.sdk.model.MemberStatusModel
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
-import com.robotemi.sdk.navigation.listener.OnGoToSessionStatusChangedListener
 import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener
 import com.robotemi.sdk.navigation.model.Position
 import com.robotemi.sdk.navigation.model.SafetyLevel
@@ -162,9 +161,6 @@ class Robot private constructor(private val context: Context) {
 
     private val onMovementVelocityChangedListeners =
         CopyOnWriteArraySet<OnMovementVelocityChangedListener>()
-
-    private val onGoToSessionStatusChangedListeners =
-        CopyOnWriteArraySet<OnGoToSessionStatusChangedListener>()
 
     private val onMovementStatusChangedListeners =
         CopyOnWriteArraySet<OnMovementStatusChangedListener>()
@@ -340,15 +336,6 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onGoToSessionStatusChanged(status: Int): Boolean {
-            if (onGoToSessionStatusChangedListeners.isEmpty()) return false
-            uiHandler.post {
-                for (listener in onGoToSessionStatusChangedListeners) {
-                    listener.onGoToSessionStatusChanged(status)
-                }
-            }
-            return true
-        }
         /*****************************************/
         /*            Movement & Follow          */
         /*****************************************/
@@ -1089,16 +1076,6 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnReposeStatusChangedListener(listener: OnReposeStatusChangedListener) {
         onReposeStatusChangedListeners.remove(listener)
-    }
-
-    @UiThread
-    fun addOnGoToSessionStatusChangedListener(listener: OnGoToSessionStatusChangedListener) {
-        onGoToSessionStatusChangedListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnGoToSessionStatusChangedListener(listener: OnGoToSessionStatusChangedListener) {
-        onGoToSessionStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
