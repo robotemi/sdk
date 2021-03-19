@@ -30,10 +30,7 @@ import com.robotemi.sdk.Robot.Companion.getInstance
 import com.robotemi.sdk.TtsRequest.Companion.create
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
-import com.robotemi.sdk.constants.ContentType
-import com.robotemi.sdk.constants.Page
-import com.robotemi.sdk.constants.Platform
-import com.robotemi.sdk.constants.SdkConstants
+import com.robotemi.sdk.constants.*
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
@@ -59,6 +56,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     ConversationViewAttachesListener, WakeupWordListener, ActivityStreamPublishListener,
@@ -235,6 +233,28 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnLoadMapWithPosition.setOnClickListener { loadMapWithPosition() }
         btnLoadMapWithReposePosition.setOnClickListener { loadMapWithReposePosition() }
         btnLoadMapWithRepose.setOnClickListener { loadMapWithRepose() }
+        btnSetSoundMode.setOnClickListener { setSoundMode() }
+    }
+
+    private fun setSoundMode() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        val soundModes: MutableList<SoundMode> = ArrayList()
+        soundModes.add(SoundMode.NORMAL)
+        soundModes.add(SoundMode.VIDEO_CALL)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, soundModes)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Sound Mode")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                robot.setSoundMode(adapter.getItem(position)!!)
+                printLog("Set Sound Mode to: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
     }
 
     private fun hideKeyboard() {
@@ -266,8 +286,58 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * Have the robot speak while displaying what is being said.
      */
     private fun speak() {
-        val ttsRequest = create(etSpeak.text.toString().trim { it <= ' ' }, true)
-        robot.speak(ttsRequest)
+        val text = "나 아닌 남을 위해 눈물 흘리며 기도하는 손\n" +
+                "\n" +
+                "그 손은 아름다운 손입니다.\n" +
+                "\n" +
+                "그 아름다운 손은 지금 당신에게 있습니다.\n" +
+                "\n" +
+                "당신의 그 아름다운그 손을 더 아름답게 빛내시길\n" +
+                "\n" +
+                "님의 손만 아름다운 것이 아닌\n" +
+                "\n" +
+                "그 마음도 아름답습니다.\n" +
+                "\n" +
+                "넘어진 친구를 위해 내미는 손\n" +
+                "그 손은 아름다운 손입니다.\n" +
+                "외로움에 허덕이는 사람을 위해 편지를 쓰는 손\n" +
+                "그 손은 아름다운 손입니다.\n" +
+                "하루종일 수고한 아버지의 어깨를 주무르는 손\n" +
+                "그 손은 아름다운 손입니다.\n" +
+                "낙망하고 좌절한 이에게 내미는 격려의 손\n" +
+                "그 손은 아름다운 손입니다.\n" +
+                "사랑하는 사람이 흘리는 눈물을 닦아주는 손"
+        val languages = ArrayList<TtsRequest.Language>()
+        languages.add(TtsRequest.Language.SYSTEM)
+        languages.add(TtsRequest.Language.EN_US)
+        languages.add(TtsRequest.Language.ZH_CN)
+        languages.add(TtsRequest.Language.ZH_HK)
+        languages.add(TtsRequest.Language.ZH_TW)
+        languages.add(TtsRequest.Language.TH_TH)
+        languages.add(TtsRequest.Language.HE_IL)
+        languages.add(TtsRequest.Language.KO_KR)
+        languages.add(TtsRequest.Language.JA_JP)
+        languages.add(TtsRequest.Language.IN_ID)
+        languages.add(TtsRequest.Language.ID_ID)
+        languages.add(TtsRequest.Language.DE_DE)
+        languages.add(TtsRequest.Language.FR_FR)
+        languages.add(TtsRequest.Language.PT_BR)
+        languages.add(TtsRequest.Language.AR_EG)
+        languages.add(TtsRequest.Language.AR_AE)
+        languages.add(TtsRequest.Language.AR_XA)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, languages)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Speaking Language")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                val ttsRequest = create(text, language = adapter.getItem(position)!!)
+                robot.speak(ttsRequest)
+                printLog("Speak: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
         hideKeyboard()
     }
 
@@ -406,7 +476,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private fun savedLocationsDialog() {
         hideKeyboard()
         val locations = robot.locations.toMutableList()
-        val locationAdapter = ArrayAdapter(this, R.layout.location_row, R.id.name, locations)
+        val locationAdapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, locations)
         val versionsDialog = AlertDialog.Builder(this@MainActivity)
         versionsDialog.setTitle("Saved Locations: (Click to delete the location)")
         versionsDialog.setPositiveButton("OK", null)
@@ -518,6 +588,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
         // Do whatever you like upon the status changing. after the robot finishes speaking
+        printLog("onTtsStatusChanged: $ttsRequest")
     }
 
     override fun onBeWithMeStatusChanged(status: String) {
@@ -797,7 +868,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         speedLevels.add(SpeedLevel.HIGH.value)
         speedLevels.add(SpeedLevel.MEDIUM.value)
         speedLevels.add(SpeedLevel.SLOW.value)
-        val adapter = ArrayAdapter(this, R.layout.location_row, R.id.name, speedLevels)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, speedLevels)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Select Go To Speed Level")
             .setAdapter(adapter, null)
@@ -818,7 +889,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         val safetyLevel: MutableList<String> = ArrayList()
         safetyLevel.add(SafetyLevel.HIGH.value)
         safetyLevel.add(SafetyLevel.MEDIUM.value)
-        val adapter = ArrayAdapter(this, R.layout.location_row, R.id.name, safetyLevel)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, safetyLevel)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Select Go To Safety Level")
             .setAdapter(adapter, null)
@@ -870,7 +941,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
         val volumeList: List<String> =
             ArrayList(listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"))
-        val adapter = ArrayAdapter(this, R.layout.location_row, R.id.name, volumeList)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, volumeList)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Set Volume")
             .setAdapter(adapter, null)
@@ -1098,8 +1169,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onTtsVisualizerFftDataChanged(fft: ByteArray) {
-        Log.d("TtsVisualizer", fft.contentToString())
-        //        ttsVisualizerView.updateVisualizer(fft);
+//        Log.d("TtsVisualizer", fft.contentToString())
+//        ttsVisualizerView.updateVisualizer(fft);
     }
 
     private fun startTelepresenceToCenter() {
@@ -1116,7 +1187,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         for (page in Page.values()) {
             systemPages.add(page.toString())
         }
-        val arrayAdapter = ArrayAdapter(this, R.layout.location_row, R.id.name, systemPages)
+        val arrayAdapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, systemPages)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Select System Page")
             .setAdapter(arrayAdapter, null)
@@ -1173,7 +1244,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         for (i in mapList.indices) {
             mapListString.add(mapList[i].name)
         }
-        val mapListAdapter = ArrayAdapter(this, R.layout.location_row, R.id.name, mapListString)
+        val mapListAdapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, mapListString)
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Click item to load specific map")
         builder.setAdapter(mapListAdapter, null)

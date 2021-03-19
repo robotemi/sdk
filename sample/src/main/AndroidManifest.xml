@@ -67,10 +67,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <meta-data
-                android:name="com.robotemi.sdk.metadata.UI_MODE"
-                android:value="4" />
         </activity>
 
         <activity android:name=".MapActivity" />

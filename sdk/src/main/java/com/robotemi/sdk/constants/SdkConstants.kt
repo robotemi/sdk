@@ -112,3 +112,17 @@ enum class Page(val value: String) {
     ALL_APPS(PAGE_ALL_APPS),
     HOME(PAGE_HOME)
 }
+
+enum class SoundMode(val value: Int) {
+    NORMAL(0),
+    VIDEO_CALL(1);
+
+    companion object {
+
+        @JvmField
+        val DEFAULT = NORMAL
+
+        @JvmStatic
+        fun valueToEnum(value: Int? = 0) = if (value == 1) VIDEO_CALL else DEFAULT
+    }
+}

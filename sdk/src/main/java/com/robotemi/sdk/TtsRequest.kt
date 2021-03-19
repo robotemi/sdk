@@ -11,7 +11,8 @@ data class TtsRequest(
     var packageName: String = "",
     var status: Status = Status.PENDING,
     val drawableBitmap: Bitmap? = null,
-    val isShowOnConversationLayer: Boolean
+    val isShowOnConversationLayer: Boolean,
+    val language: Int = 0
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -20,7 +21,8 @@ data class TtsRequest(
         packageName = source.readString()!!,
         status = with(source.readInt()) { (if (this == -1) null else Status.values()[this])!! },
         drawableBitmap = source.readParcelable(Bitmap::class.java.classLoader),
-        isShowOnConversationLayer = source.readByte().toInt() != 0
+        isShowOnConversationLayer = source.readByte().toInt() != 0,
+        language = source.readInt()
     )
 
     override fun equals(other: Any?): Boolean {
@@ -41,6 +43,7 @@ data class TtsRequest(
                 ", packageName='" + packageName + '\'' +
                 ", status=" + status +
                 ", isShowOnConversationLayer=" + isShowOnConversationLayer +
+                ", language=" + language +
                 '}'
     }
 
@@ -55,16 +58,63 @@ data class TtsRequest(
         dest.writeInt(status.ordinal)
         dest.writeParcelable(drawableBitmap, flags)
         dest.writeByte(if (isShowOnConversationLayer) 1.toByte() else 0.toByte())
+        dest.writeInt(language)
     }
 
     enum class Status {
         PENDING, PROCESSING, STARTED, COMPLETED, ERROR, NOT_ALLOWED
     }
 
+    enum class Language(val value: Int) {
+        SYSTEM(0),
+        EN_US(1),
+        ZH_CN(2),
+        ZH_HK(3),
+        ZH_TW(4),
+        TH_TH(5),
+        HE_IL(6),
+        KO_KR(7),
+        JA_JP(8),
+        IN_ID(9),
+        ID_ID(10),
+        DE_DE(11),
+        FR_FR(12),
+        PT_BR(13),
+        AR_EG(14),
+        AR_AE(15),
+        AR_XA(16);
+
+        companion object {
+
+            @JvmStatic
+            fun valueToEnum(value: Int): Language {
+                return when (value) {
+                    1 -> EN_US
+                    2 -> ZH_CN
+                    3 -> ZH_HK
+                    4 -> ZH_TW
+                    5 -> TH_TH
+                    6 -> HE_IL
+                    7 -> KO_KR
+                    8 -> JA_JP
+                    9 -> IN_ID
+                    10 -> ID_ID
+                    11 -> DE_DE
+                    12 -> FR_FR
+                    13 -> PT_BR
+                    14 -> AR_EG
+                    15 -> AR_AE
+                    16 -> AR_XA
+                    else -> SYSTEM
+                }
+            }
+        }
+    }
+
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<TtsRequest> = object : Parcelable.Creator<TtsRequest> {
-            override fun createFromParcel(source: Parcel): TtsRequest? {
+            override fun createFromParcel(source: Parcel): TtsRequest {
                 return TtsRequest(source)
             }
 
@@ -73,10 +123,17 @@ data class TtsRequest(
             }
         }
 
+        @JvmOverloads
         @JvmStatic
-        fun create(speech: String, isShowOnConversationLayer: Boolean): TtsRequest {
+        fun create(
+            speech: String,
+            isShowOnConversationLayer: Boolean = true,
+            language: Language = Language.SYSTEM
+        ): TtsRequest {
             return TtsRequest(
-                speech = speech, isShowOnConversationLayer = isShowOnConversationLayer
+                speech = speech,
+                isShowOnConversationLayer = isShowOnConversationLayer,
+                language = language.value
             )
         }
     }

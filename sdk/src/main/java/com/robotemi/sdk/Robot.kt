@@ -19,10 +19,7 @@ import com.google.gson.reflect.TypeToken
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
-import com.robotemi.sdk.constants.ContentType
-import com.robotemi.sdk.constants.Page
-import com.robotemi.sdk.constants.Platform
-import com.robotemi.sdk.constants.SdkConstants
+import com.robotemi.sdk.constants.*
 import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_DESCRIPTION
 import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_IMAGE_KEY
 import com.robotemi.sdk.exception.OnSdkExceptionListener
@@ -1710,6 +1707,19 @@ class Robot private constructor(private val context: Context) {
             sdkService?.shutdown(applicationInfo.packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "shutdown() error")
+        }
+    }
+
+    /**
+     * Sound mode
+     *
+     * @param soundMode
+     */
+    fun setSoundMode(soundMode: SoundMode) {
+        try {
+            sdkService?.setSoundMode(applicationInfo.packageName, soundMode.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setSoundMode() error")
         }
     }
 
