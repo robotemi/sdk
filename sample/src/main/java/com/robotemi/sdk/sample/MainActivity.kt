@@ -234,6 +234,62 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnLoadMapWithReposePosition.setOnClickListener { loadMapWithReposePosition() }
         btnLoadMapWithRepose.setOnClickListener { loadMapWithRepose() }
         btnSetSoundMode.setOnClickListener { setSoundMode() }
+        btnSetHardBtnMainMode.setOnClickListener { setHardBtnMainMode() }
+        btnToggleHardBtnPower.setOnClickListener { toggleHardBtnPower() }
+        btnToggleHardBtnVolume.setOnClickListener { toggleHardBtnVolume() }
+        btnGetNickName.setOnClickListener { getNickName() }
+    }
+
+    private fun getNickName() {
+        printLog("temi's nick name: ${robot.getNickName()}")
+    }
+
+    private fun toggleHardBtnVolume() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        val currentMode = robot.getHardButtonMode(HardButton.VOLUME)
+        robot.setHardButtonMode(
+            HardButton.VOLUME,
+            if (currentMode == HardButton.Mode.ENABLED) HardButton.Mode.DISABLED
+            else HardButton.Mode.ENABLED
+        )
+        printLog("Set hard button volume: ${robot.getHardButtonMode(HardButton.VOLUME)}")
+    }
+
+    private fun toggleHardBtnPower() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        val currentMode = robot.getHardButtonMode(HardButton.POWER)
+        robot.setHardButtonMode(
+            HardButton.POWER,
+            if (currentMode == HardButton.Mode.ENABLED) HardButton.Mode.DISABLED
+            else HardButton.Mode.ENABLED
+        )
+        printLog("Set hard button power: ${robot.getHardButtonMode(HardButton.POWER)}")
+    }
+
+    private fun setHardBtnMainMode() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        val modes: MutableList<HardButton.Mode> = ArrayList()
+        modes.add(HardButton.Mode.ENABLED)
+        modes.add(HardButton.Mode.DISABLED)
+        modes.add(HardButton.Mode.MAIN_BLOCK_FOLLOW)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, modes)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Main Hard Button Mode")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                robot.setHardButtonMode(HardButton.MAIN, adapter.getItem(position)!!)
+                printLog("Set Main Hard Button Mode to: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
     }
 
     private fun setSoundMode() {
@@ -286,27 +342,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * Have the robot speak while displaying what is being said.
      */
     private fun speak() {
-        val text = "나 아닌 남을 위해 눈물 흘리며 기도하는 손\n" +
-                "\n" +
-                "그 손은 아름다운 손입니다.\n" +
-                "\n" +
-                "그 아름다운 손은 지금 당신에게 있습니다.\n" +
-                "\n" +
-                "당신의 그 아름다운그 손을 더 아름답게 빛내시길\n" +
-                "\n" +
-                "님의 손만 아름다운 것이 아닌\n" +
-                "\n" +
-                "그 마음도 아름답습니다.\n" +
-                "\n" +
-                "넘어진 친구를 위해 내미는 손\n" +
-                "그 손은 아름다운 손입니다.\n" +
-                "외로움에 허덕이는 사람을 위해 편지를 쓰는 손\n" +
-                "그 손은 아름다운 손입니다.\n" +
-                "하루종일 수고한 아버지의 어깨를 주무르는 손\n" +
-                "그 손은 아름다운 손입니다.\n" +
-                "낙망하고 좌절한 이에게 내미는 격려의 손\n" +
-                "그 손은 아름다운 손입니다.\n" +
-                "사랑하는 사람이 흘리는 눈물을 닦아주는 손"
+        val text = etSpeak.text.toString()
         val languages = ArrayList<TtsRequest.Language>()
         languages.add(TtsRequest.Language.SYSTEM)
         languages.add(TtsRequest.Language.EN_US)

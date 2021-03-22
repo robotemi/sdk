@@ -157,6 +157,26 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnGetNickName"
+                style="@style/ButtonCommon"
+                android:text="Get temi's nick name" />
+
+            <Button
+                android:id="@+id/btnToggleHardBtnVolume"
+                style="@style/ButtonCommon"
+                android:text="Toggle Hard Button Volume" />
+
+            <Button
+                android:id="@+id/btnToggleHardBtnPower"
+                style="@style/ButtonCommon"
+                android:text="Toggle Hard Button Power" />
+
+            <Button
+                android:id="@+id/btnSetHardBtnMainMode"
+                style="@style/ButtonCommon"
+                android:text="Set Hard Button Main Mode" />
+
+            <Button
                 android:id="@+id/btnSetSoundMode"
                 style="@style/ButtonCommon"
                 android:text="Set Sound Mode" />

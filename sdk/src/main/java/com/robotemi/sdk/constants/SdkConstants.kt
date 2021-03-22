@@ -126,3 +126,37 @@ enum class SoundMode(val value: Int) {
         fun valueToEnum(value: Int? = 0) = if (value == 1) VIDEO_CALL else DEFAULT
     }
 }
+
+enum class HardButton(val value: Int) {
+    MAIN(1),
+    POWER(2),
+    VOLUME(3);
+
+    companion object {
+        @JvmStatic
+        fun valueToEnum(value: Int? = 1) = when (value) {
+            2 -> POWER
+            3 -> VOLUME
+            else -> MAIN
+        }
+    }
+
+    enum class Mode(val value: Int) {
+        ENABLED(0),
+        DISABLED(1),
+        MAIN_BLOCK_FOLLOW(2);  // Only works for the main button.
+
+        companion object {
+
+            @JvmField
+            val DEFAULT = ENABLED
+
+            @JvmStatic
+            fun valueToEnum(value: Int? = 0) = when (value) {
+                1 -> DISABLED
+                2 -> MAIN_BLOCK_FOLLOW
+                else -> DEFAULT
+            }
+        }
+    }
+}

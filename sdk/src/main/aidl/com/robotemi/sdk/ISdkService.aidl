@@ -275,4 +275,10 @@ interface ISdkService {
     List<String> getSignedUrlByMediaKey(in String packageName, in List<String> mediaKeys, int width, int height);
 
     void setSoundMode(in String packageName, int mode);
+
+    void setHardButtonMode(in String packageName, int type, int mode);
+
+    int getHardButtonMode(int type);
+
+    String getNickName(in String packageName);
 }

@@ -1463,6 +1463,23 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    fun setHardButtonMode(type: HardButton, mode: HardButton.Mode) {
+        try {
+            sdkService?.setHardButtonMode(applicationInfo.packageName, type.value, mode.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setHardButtonMode() error")
+        }
+    }
+
+    fun getHardButtonMode(type: HardButton): HardButton.Mode {
+        return try {
+            HardButton.Mode.valueToEnum(sdkService?.getHardButtonMode(type.value))
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getHardButtonMode() error")
+            HardButton.Mode.DEFAULT
+        }
+    }
+
     /**
      * Get version of the Launcher.
      */
@@ -1720,6 +1737,15 @@ class Robot private constructor(private val context: Context) {
             sdkService?.setSoundMode(applicationInfo.packageName, soundMode.value)
         } catch (e: RemoteException) {
             Log.e(TAG, "setSoundMode() error")
+        }
+    }
+
+    fun getNickName(): String {
+        return try {
+            sdkService?.getNickName(applicationInfo.packageName) ?: ""
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getNickName() error")
+            ""
         }
     }
 
