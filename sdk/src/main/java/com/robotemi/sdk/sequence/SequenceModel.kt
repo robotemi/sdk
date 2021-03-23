@@ -25,13 +25,20 @@ data class SequenceModel @JvmOverloads constructor(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<SequenceModel> {
-        override fun createFromParcel(parcel: Parcel): SequenceModel {
-            return SequenceModel(parcel)
-        }
+    companion object {
+        @JvmField
+        val CREATOR: Parcelable.Creator<SequenceModel> =
+            object : Parcelable.Creator<SequenceModel> {
+                override fun createFromParcel(parcel: Parcel): SequenceModel {
+                    return SequenceModel(parcel)
+                }
 
-        override fun newArray(size: Int): Array<SequenceModel?> {
-            return arrayOfNulls(size)
-        }
+                override fun newArray(size: Int): Array<SequenceModel?> {
+                    return arrayOfNulls(size)
+                }
+            }
+
+        const val JSON_KEY_DESCRIPTION = "description"
+        const val JSON_KEY_IMAGE_KEY = "imageKey"
     }
 }

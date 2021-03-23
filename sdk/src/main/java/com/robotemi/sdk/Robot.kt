@@ -20,8 +20,6 @@ import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
 import com.robotemi.sdk.constants.*
-import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_DESCRIPTION
-import com.robotemi.sdk.constants.SdkConstants.JSON_KEY_SEQUENCE_MODEL_IMAGE_KEY
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
@@ -591,11 +589,27 @@ class Robot private constructor(private val context: Context) {
         /*****************************************/
         /*            Face Recognition           */
         /*****************************************/
+
         override fun onFaceRecognized(contactModelList: MutableList<ContactModel>): Boolean {
             if (onFaceRecognizedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onFaceRecognizedListeners) {
-                    listener.onFaceRecognized(contactModelList)
+                    val contactModels = contactModelList.map {
+                        if (it.description.isBlank()) return@map it
+                        val json = JSONObject(it.description)
+                        val desc = try {
+                            json.getString(ContactModel.JSON_KEY_DESCRIPTION)
+                        } catch (e: JSONException) {
+                            it.description
+                        }
+                        val userId = try {
+                            json.getString(ContactModel.JSON_KEY_USER_ID)
+                        } catch (e: JSONException) {
+                            ""
+                        }
+                        return@map it.copy(description = desc, userId = userId)
+                    }
+                    listener.onFaceRecognized(contactModels)
                 }
             }
             return false
@@ -2108,14 +2122,15 @@ class Robot private constructor(private val context: Context) {
         try {
             val temp = sdkService?.getAllSequences(applicationInfo.packageName) ?: emptyList()
             return temp.map {
+                if (it.description.isBlank()) return@map it
                 val json = JSONObject(it.description)
                 val desc = try {
-                    json.getString(JSON_KEY_SEQUENCE_MODEL_DESCRIPTION)
+                    json.getString(SequenceModel.JSON_KEY_DESCRIPTION)
                 } catch (e: JSONException) {
                     ""
                 }
                 val imgKey = try {
-                    json.getString(JSON_KEY_SEQUENCE_MODEL_IMAGE_KEY)
+                    json.getString(SequenceModel.JSON_KEY_IMAGE_KEY)
                 } catch (e: JSONException) {
                     ""
                 }
