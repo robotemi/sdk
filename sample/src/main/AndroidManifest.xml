@@ -27,7 +27,8 @@
         <meta-data
             android:name="com.robotemi.sdk.metadata.ACTIONS"
             android:value="home.welcome,
-            yudinghuiyishi.book.meeting" />
+                           home.dance,
+                           home.sleep" />
 
         <meta-data
             android:name="com.robotemi.sdk.metadata.KIOSK"

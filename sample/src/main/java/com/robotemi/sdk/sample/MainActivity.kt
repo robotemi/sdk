@@ -357,6 +357,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         languages.add(TtsRequest.Language.ID_ID)
         languages.add(TtsRequest.Language.DE_DE)
         languages.add(TtsRequest.Language.FR_FR)
+        languages.add(TtsRequest.Language.FR_CA)
         languages.add(TtsRequest.Language.PT_BR)
         languages.add(TtsRequest.Language.AR_EG)
         languages.add(TtsRequest.Language.AR_AE)

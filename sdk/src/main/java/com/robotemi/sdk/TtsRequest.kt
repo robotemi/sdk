@@ -79,10 +79,11 @@ data class TtsRequest(
         ID_ID(10),
         DE_DE(11),
         FR_FR(12),
-        PT_BR(13),
-        AR_EG(14),
-        AR_AE(15),
-        AR_XA(16);
+        FR_CA(13),
+        PT_BR(14),
+        AR_EG(15),
+        AR_AE(16),
+        AR_XA(17);
 
         companion object {
 
