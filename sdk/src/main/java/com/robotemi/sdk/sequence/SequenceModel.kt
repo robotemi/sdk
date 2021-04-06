@@ -7,7 +7,8 @@ data class SequenceModel @JvmOverloads constructor(
     val id: String,
     val name: String,
     val description: String,
-    val imageKey: String = ""
+    val imageKey: String = "",
+    val tags: List<String> = emptyList()
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -40,5 +41,6 @@ data class SequenceModel @JvmOverloads constructor(
 
         const val JSON_KEY_DESCRIPTION = "description"
         const val JSON_KEY_IMAGE_KEY = "imageKey"
+        const val JSON_KEY_TAGS = "tags"
     }
 }

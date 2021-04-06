@@ -238,7 +238,7 @@ interface ISdkService {
 
     void stopFaceRecognition(in String packageName);
 
-    List<SequenceModel> getAllSequences(in String packageName);
+    List<SequenceModel> getAllSequences(in String packageName, in List<String> tags);
 
     void playSequence(in String packageName, in String sequenceId, boolean withPlayer);
 

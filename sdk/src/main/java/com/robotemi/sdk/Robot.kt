@@ -1754,6 +1754,11 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Get temi's nick name
+     *
+     * @return
+     */
     fun getNickName(): String {
         return try {
             sdkService?.getNickName(applicationInfo.packageName) ?: ""
@@ -2118,9 +2123,12 @@ class Robot private constructor(private val context: Context) {
      */
     @WorkerThread
     @CheckResult
-    fun getAllSequences(): List<SequenceModel> {
+    @JvmOverloads
+    fun getAllSequences(tags: List<String> = emptyList()): List<SequenceModel> {
         try {
-            val temp = sdkService?.getAllSequences(applicationInfo.packageName) ?: emptyList()
+            val temp =
+                sdkService?.getAllSequences(applicationInfo.packageName, tags.filter { it != "" })
+                    ?: emptyList()
             return temp.map {
                 if (it.description.isBlank()) return@map it
                 val json = JSONObject(it.description)
@@ -2134,7 +2142,21 @@ class Robot private constructor(private val context: Context) {
                 } catch (e: JSONException) {
                     ""
                 }
-                return@map it.copy(description = desc, imageKey = imgKey)
+                val tagList = try {
+                    val jsonArray = json.getJSONArray(SequenceModel.JSON_KEY_TAGS)
+                    if (jsonArray == null) {
+                        emptyList<String>()
+                    } else {
+                        val result = mutableListOf<String>()
+                        for (i in 0 until jsonArray.length()) {
+                            result.add(jsonArray.getString(i))
+                        }
+                        result
+                    }
+                } catch (e: JSONException) {
+                    emptyList<String>()
+                }
+                return@map it.copy(description = desc, imageKey = imgKey, tags = tagList)
             }
         } catch (e: RemoteException) {
             Log.e(TAG, "getAllSequences() error")

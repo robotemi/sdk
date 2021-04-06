@@ -1076,19 +1076,20 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             return
         }
         Thread {
-            allSequences = robot.getAllSequences()
+            allSequences = robot.getAllSequences(etNlu.text?.split(",") ?: emptyList())
             val imageKeys: MutableList<String> = ArrayList()
             for ((_, _, _, imageKey) in allSequences) {
                 if (imageKey.isEmpty()) continue
                 imageKeys.add(imageKey)
             }
-            val pairs = robot.getSignedUrlByMediaKey(imageKeys)
+            val pairs = if (imageKeys.isEmpty()) emptyList()
+            else robot.getSignedUrlByMediaKey(imageKeys)
             runOnUiThread {
                 for (sequenceModel in allSequences) {
                     printLog(sequenceModel.toString())
                 }
                 for (pair in pairs) {
-                    printLog(pair.component2())
+                    printLog(pair.component2(), false)
                 }
             }
         }.start()
@@ -1154,13 +1155,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
     }
 
-    private fun printLog(msg: String) {
-        printLog("", msg)
+    private fun printLog(msg: String, show: Boolean = true) {
+        printLog("", msg, show)
     }
 
-    private fun printLog(tag: String, msg: String) {
+    private fun printLog(tag: String, msg: String, show: Boolean = true) {
         Log.d(if (tag.isEmpty()) "MainActivity" else tag, msg)
-//        if (!msg.contains("GoToStatusChanged", true)) return
+        if (!show) return
         tvLog.gravity = Gravity.BOTTOM
         tvLog.append("· $msg \n")
     }
