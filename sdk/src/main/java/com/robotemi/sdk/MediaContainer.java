@@ -1,8 +1,6 @@
 package com.robotemi.sdk;
 
 
-import com.robotemi.sdk.MediaObject;
-
 public interface MediaContainer {
 
     String getMediaUri();

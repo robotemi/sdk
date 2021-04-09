@@ -93,4 +93,6 @@ interface ISdkServiceCallback {
     boolean onMovementVelocityChanged(float velocity);
 
     boolean onMovementStatusChanged(in String type, in String status);
+
+    boolean onContinuousFaceRecognized(in List<ContactModel> contactModelList);
 }

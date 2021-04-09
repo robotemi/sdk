@@ -281,4 +281,8 @@ interface ISdkService {
     int getHardButtonMode(int type);
 
     String getNickName(in String packageName);
+
+    void setMode(in String packageName, int mode);
+
+    int getMode();
 }

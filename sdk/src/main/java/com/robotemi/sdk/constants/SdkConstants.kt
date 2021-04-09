@@ -120,7 +120,7 @@ enum class SoundMode(val value: Int) {
         val DEFAULT = NORMAL
 
         @JvmStatic
-        fun valueToEnum(value: Int? = 0) = if (value == 1) VIDEO_CALL else DEFAULT
+        fun valueToEnum(value: Int) = if (value == 1) VIDEO_CALL else DEFAULT
     }
 }
 
@@ -154,6 +154,21 @@ enum class HardButton(val value: Int) {
                 2 -> MAIN_BLOCK_FOLLOW
                 else -> DEFAULT
             }
+        }
+    }
+}
+
+enum class Mode(val value: Int) {
+    DEFAULT(0),
+    GREET(1),
+    PRIVACY(2);
+
+    companion object {
+        @JvmStatic
+        fun valueToEnum(value: Int? = 0) = when (value) {
+            1 -> GREET
+            2 -> PRIVACY
+            else -> DEFAULT
         }
     }
 }

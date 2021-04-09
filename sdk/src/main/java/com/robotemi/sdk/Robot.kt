@@ -23,7 +23,9 @@ import com.robotemi.sdk.constants.*
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
+import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
 import com.robotemi.sdk.face.OnFaceRecognizedListener
+import com.robotemi.sdk.face.compatible
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
@@ -45,6 +47,7 @@ import com.robotemi.sdk.permission.OnRequestPermissionResultListener
 import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
+import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
 import org.json.JSONException
 import org.json.JSONObject
@@ -133,6 +136,9 @@ class Robot private constructor(private val context: Context) {
         CopyOnWriteArraySet<OnDetectionDataChangedListener>()
 
     private val onFaceRecognizedListeners = CopyOnWriteArraySet<OnFaceRecognizedListener>()
+
+    private val onContinuousFaceRecognizedListeners =
+        CopyOnWriteArraySet<OnContinuousFaceRecognizedListener>()
 
     private val onSdkExceptionListeners = CopyOnWriteArraySet<OnSdkExceptionListener>()
 
@@ -594,26 +600,25 @@ class Robot private constructor(private val context: Context) {
             if (onFaceRecognizedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onFaceRecognizedListeners) {
-                    val contactModels = contactModelList.map {
-                        if (it.description.isBlank()) return@map it
-                        val json = JSONObject(it.description)
-                        val desc = try {
-                            json.getString(ContactModel.JSON_KEY_DESCRIPTION)
-                        } catch (e: JSONException) {
-                            it.description
-                        }
-                        val userId = try {
-                            json.getString(ContactModel.JSON_KEY_USER_ID)
-                        } catch (e: JSONException) {
-                            ""
-                        }
-                        return@map it.copy(description = desc, userId = userId)
-                    }
-                    listener.onFaceRecognized(contactModels)
+                    listener.onFaceRecognized(contactModelList.map { it.compatible() })
                 }
             }
-            return false
+            return true
         }
+
+        override fun onContinuousFaceRecognized(contactModelList: MutableList<ContactModel>): Boolean {
+            if (onContinuousFaceRecognizedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onContinuousFaceRecognizedListeners) {
+                    listener.onContinuousFaceRecognized(contactModelList.map { it.compatible() })
+                }
+            }
+            return true
+        }
+
+        /*****************************************/
+        /*                 Common                */
+        /*****************************************/
 
         override fun onSdkError(sdkException: SdkException): Boolean {
             if (onSdkExceptionListeners.isEmpty()) return false
@@ -1768,6 +1773,33 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Set system mode.
+     *
+     * @param mode Default, Greet, Privacy
+     */
+    fun setMode(mode: Mode) {
+        try {
+            sdkService?.setMode(applicationInfo.packageName, mode.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setMode() error")
+        }
+    }
+
+    /**
+     * Get system mode.
+     *
+     * @return Default, Greet, Privacy
+     */
+    fun getMode(): Mode {
+        return try {
+            Mode.valueToEnum(sdkService?.mode)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getMode() error")
+            Mode.DEFAULT
+        }
+    }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -2125,43 +2157,13 @@ class Robot private constructor(private val context: Context) {
     @CheckResult
     @JvmOverloads
     fun getAllSequences(tags: List<String> = emptyList()): List<SequenceModel> {
-        try {
-            val temp =
-                sdkService?.getAllSequences(applicationInfo.packageName, tags.filter { it != "" })
-                    ?: emptyList()
-            return temp.map {
-                if (it.description.isBlank()) return@map it
-                val json = JSONObject(it.description)
-                val desc = try {
-                    json.getString(SequenceModel.JSON_KEY_DESCRIPTION)
-                } catch (e: JSONException) {
-                    ""
-                }
-                val imgKey = try {
-                    json.getString(SequenceModel.JSON_KEY_IMAGE_KEY)
-                } catch (e: JSONException) {
-                    ""
-                }
-                val tagList = try {
-                    val jsonArray = json.getJSONArray(SequenceModel.JSON_KEY_TAGS)
-                    if (jsonArray == null) {
-                        emptyList<String>()
-                    } else {
-                        val result = mutableListOf<String>()
-                        for (i in 0 until jsonArray.length()) {
-                            result.add(jsonArray.getString(i))
-                        }
-                        result
-                    }
-                } catch (e: JSONException) {
-                    emptyList<String>()
-                }
-                return@map it.copy(description = desc, imageKey = imgKey, tags = tagList)
-            }
+        return try {
+            (sdkService?.getAllSequences(applicationInfo.packageName, tags.filter { it != "" })
+                ?: emptyList<SequenceModel>()).map { it.compatible() }
         } catch (e: RemoteException) {
             Log.e(TAG, "getAllSequences() error")
+            emptyList()
         }
-        return emptyList()
     }
 
     /**
@@ -2346,13 +2348,13 @@ class Robot private constructor(private val context: Context) {
     }
 
     @UiThread
-    fun addOnSdkExceptionListener(listener: OnSdkExceptionListener) {
-        onSdkExceptionListeners.add(listener)
+    fun addOnContinuousFaceRecognizedListener(listener: OnContinuousFaceRecognizedListener) {
+        onContinuousFaceRecognizedListeners.add(listener)
     }
 
     @UiThread
-    fun removeOnSdkExceptionListener(listener: OnSdkExceptionListener) {
-        onSdkExceptionListeners.remove(listener)
+    fun removeOnContinuousFaceRecognizedListener(listener: OnContinuousFaceRecognizedListener) {
+        onContinuousFaceRecognizedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -2373,6 +2375,8 @@ class Robot private constructor(private val context: Context) {
         } catch (e: FileNotFoundException) {
             Log.e(TAG, e.message)
             sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "getInputStreamByMediaKey error.\n ${e.message}")
         }
         return null
     }
@@ -2409,6 +2413,16 @@ class Robot private constructor(private val context: Context) {
             Log.e(TAG, "getSignedUrlByMediaKey() error")
             emptyList()
         }
+    }
+
+    @UiThread
+    fun addOnSdkExceptionListener(listener: OnSdkExceptionListener) {
+        onSdkExceptionListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnSdkExceptionListener(listener: OnSdkExceptionListener) {
+        onSdkExceptionListeners.remove(listener)
     }
 
     /*****************************************/

@@ -34,6 +34,7 @@ import com.robotemi.sdk.constants.*
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
+import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
 import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.MapModel
@@ -69,11 +70,30 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnConversationStatusChangedListener, OnTtsVisualizerWaveFormDataChangedListener,
     OnTtsVisualizerFftDataChangedListener, OnReposeStatusChangedListener,
     OnLoadMapStatusChangedListener, OnDisabledFeatureListUpdatedListener,
-    OnMovementVelocityChangedListener, OnMovementStatusChangedListener, OnSdkExceptionListener {
+    OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
+    OnContinuousFaceRecognizedListener, OnSdkExceptionListener {
 
     private lateinit var robot: Robot
 
     private val executorService = Executors.newSingleThreadExecutor()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+        verifyStoragePermissions(this)
+        robot = getInstance()
+        initOnClickListener()
+        tvLog.movementMethod = ScrollingMovementMethod.getInstance()
+        robot.addOnRequestPermissionResultListener(this)
+        robot.addOnTelepresenceEventChangedListener(this)
+        robot.addOnFaceRecognizedListener(this)
+        robot.addOnContinuousFaceRecognizedListener(this)
+        robot.addOnLoadMapStatusChangedListener(this)
+        robot.addOnDisabledFeatureListUpdatedListener(this)
+        robot.addOnSdkExceptionListener(this)
+        robot.addOnMovementStatusChangedListener(this)
+    }
 
     /**
      * Setting up all the event listeners
@@ -137,27 +157,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnMovementVelocityChangedListener(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-        verifyStoragePermissions(this)
-        robot = getInstance()
-        initOnClickListener()
-        tvLog.movementMethod = ScrollingMovementMethod.getInstance()
-        robot.addOnRequestPermissionResultListener(this)
-        robot.addOnTelepresenceEventChangedListener(this)
-        robot.addOnFaceRecognizedListener(this)
-        robot.addOnLoadMapStatusChangedListener(this)
-        robot.addOnDisabledFeatureListUpdatedListener(this)
-        robot.addOnSdkExceptionListener(this)
-        robot.addOnMovementStatusChangedListener(this)
-    }
-
     override fun onDestroy() {
         robot.removeOnRequestPermissionResultListener(this)
         robot.removeOnTelepresenceEventChangedListener(this)
         robot.removeOnFaceRecognizedListener(this)
+        robot.removeOnContinuousFaceRecognizedListener(this)
         robot.removeOnSdkExceptionListener(this)
         robot.removeOnLoadMapStatusChangedListener(this)
         robot.removeOnDisabledFeatureListUpdatedListener(this)
@@ -238,6 +242,34 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnToggleHardBtnPower.setOnClickListener { toggleHardBtnPower() }
         btnToggleHardBtnVolume.setOnClickListener { toggleHardBtnVolume() }
         btnGetNickName.setOnClickListener { getNickName() }
+        btnSetMode.setOnClickListener { setMode() }
+        btnGetMode.setOnClickListener { getMode() }
+    }
+
+    private fun getMode() {
+        printLog("System mode: ${robot.getMode()}")
+    }
+
+    private fun setMode() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        val modes: MutableList<Mode> = ArrayList()
+        modes.add(Mode.DEFAULT)
+        modes.add(Mode.GREET)
+        modes.add(Mode.PRIVACY)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, modes)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Mode")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                robot.setMode(adapter.getItem(position)!!)
+                printLog("Set Mode to: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
     }
 
     private fun getNickName() {
@@ -362,6 +394,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         languages.add(TtsRequest.Language.AR_EG)
         languages.add(TtsRequest.Language.AR_AE)
         languages.add(TtsRequest.Language.AR_XA)
+        languages.add(TtsRequest.Language.RU_RU)
+        languages.add(TtsRequest.Language.IT_IT)
+        languages.add(TtsRequest.Language.PL_PL)
+        languages.add(TtsRequest.Language.ES_ES)
         val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, languages)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Select Speaking Language")
@@ -689,11 +725,6 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onDetectionStateChanged(state: Int) {
         printLog("onDetectionStateChanged: state = $state")
-        if (state == OnDetectionStateChangedListener.DETECTED) {
-            robot.constraintBeWith()
-        } else if (state == OnDetectionStateChangedListener.IDLE) {
-            robot.stopMovement()
-        }
     }
 
     /**
@@ -1077,6 +1108,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
         Thread {
             allSequences = robot.getAllSequences(etNlu.text?.split(",") ?: emptyList())
+            printLog("allSequences: ${allSequences.size}", false)
             val imageKeys: MutableList<String> = ArrayList()
             for ((_, _, _, imageKey) in allSequences) {
                 if (imageKey.isEmpty()) continue
@@ -1127,9 +1159,50 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onFaceRecognized(contactModelList: List<ContactModel>) {
+        if (contactModelList.isEmpty()) {
+            printLog("onFaceRecognized: User left")
+            imageViewFace.visibility = View.GONE
+            return
+        }
+
+        val imageKey = contactModelList.find { it.imageKey.isNotBlank() }?.imageKey
+        if (!imageKey.isNullOrBlank()) {
+            showFaceRecognitionImage(imageKey)
+        } else {
+            imageViewFace.setImageResource(R.drawable.app_icon)
+            imageViewFace.visibility = View.VISIBLE
+        }
+
         for (contactModel in contactModelList) {
-            printLog("onFaceRecognized", contactModel.toString())
-            showFaceRecognitionImage(contactModel.imageKey)
+            if (contactModel.userId.isBlank()) {
+                printLog("onFaceRecognized: Unknown face")
+            } else {
+                printLog("onFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+            }
+        }
+    }
+
+    override fun onContinuousFaceRecognized(contactModelList: List<ContactModel>) {
+        if (contactModelList.isEmpty()) {
+            printLog("onContinuousFaceRecognized: User left")
+            imageViewFace.visibility = View.GONE
+            return
+        }
+
+        val imageKey = contactModelList.find { it.imageKey.isNotBlank() }?.imageKey
+        if (!imageKey.isNullOrBlank()) {
+            showFaceRecognitionImage(imageKey)
+        } else {
+            imageViewFace.setImageResource(R.drawable.app_icon)
+            imageViewFace.visibility = View.VISIBLE
+        }
+
+        for (contactModel in contactModelList) {
+            if (contactModel.userId.isBlank()) {
+                printLog("onContinuousFaceRecognized: Unknown face")
+            } else {
+                printLog("onContinuousFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+            }
         }
     }
 

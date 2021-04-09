@@ -157,6 +157,16 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnGetMode"
+                style="@style/ButtonCommon"
+                android:text="Get Mode" />
+
+            <Button
+                android:id="@+id/btnSetMode"
+                style="@style/ButtonCommon"
+                android:text="Set Mode" />
+
+            <Button
                 android:id="@+id/btnGetNickName"
                 style="@style/ButtonCommon"
                 android:text="Get temi's nick name" />

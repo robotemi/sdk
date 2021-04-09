@@ -2,6 +2,8 @@ package com.robotemi.sdk.sequence
 
 import android.os.Parcel
 import android.os.Parcelable
+import org.json.JSONException
+import org.json.JSONObject
 
 data class SequenceModel @JvmOverloads constructor(
     val id: String,
@@ -43,4 +45,34 @@ data class SequenceModel @JvmOverloads constructor(
         const val JSON_KEY_IMAGE_KEY = "imageKey"
         const val JSON_KEY_TAGS = "tags"
     }
+}
+
+internal fun SequenceModel.compatible(): SequenceModel {
+    if (this.description.isBlank()) return this
+    val json = JSONObject(this.description)
+    val desc = try {
+        json.getString(SequenceModel.JSON_KEY_DESCRIPTION)
+    } catch (e: JSONException) {
+        ""
+    }
+    val imgKey = try {
+        json.getString(SequenceModel.JSON_KEY_IMAGE_KEY)
+    } catch (e: JSONException) {
+        ""
+    }
+    val tagList = try {
+        val jsonArray = json.getJSONArray(SequenceModel.JSON_KEY_TAGS)
+        if (jsonArray == null) {
+            emptyList<String>()
+        } else {
+            val result = mutableListOf<String>()
+            for (i in 0 until jsonArray.length()) {
+                result.add(jsonArray.getString(i))
+            }
+            result
+        }
+    } catch (e: JSONException) {
+        emptyList<String>()
+    }
+    return this.copy(description = desc, imageKey = imgKey, tags = tagList)
 }
