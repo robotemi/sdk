@@ -1800,6 +1800,34 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Get the supported latin keyboards
+     *
+     * @return
+     */
+    fun getSupportedLatinKeyboards(): Map<String, Boolean> {
+        return try {
+            sdkService?.supportedLatinKeyboards as Map<String, Boolean>
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getSupportedLatinKeyboards() error")
+            emptyMap()
+        }
+    }
+
+    /**
+     * Enabled latin keyboards
+     *
+     * @param keyboards should be from the keys of map by [getSupportedLatinKeyboards]
+     * And the first element will be the selected keyboard
+     */
+    fun enabledLatinKeyboards(keyboards: List<String>) {
+        try {
+            sdkService?.enabledLatinKeyboards(applicationInfo.packageName, keyboards)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "enabledLatinKeyboards() error")
+        }
+    }
+
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
         if (sdkService != null) {
@@ -1939,7 +1967,6 @@ class Robot private constructor(private val context: Context) {
      */
     fun requestToBeKioskApp() {
         if (!isMetaDataKiosk) {
-            Log.e(TAG, "No kiosk mode declaration in meta data")
             sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
             return
         }
@@ -1965,6 +1992,27 @@ class Robot private constructor(private val context: Context) {
             Log.e(TAG, "isSelectedKioskApp() error")
         }
         return false
+    }
+
+    fun setKioskModeOn(on: Boolean = true) {
+        if (!isMetaDataKiosk) {
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
+            return
+        }
+        try {
+            sdkService?.setKioskModeOn(applicationInfo.packageName, on)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setKioskModeOn() error")
+        }
+    }
+
+    fun isKioskModeOn(): Boolean {
+        return try {
+            sdkService?.isKioskModeOn ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isKioskModeOn() error")
+            false
+        }
     }
 
     /*****************************************/

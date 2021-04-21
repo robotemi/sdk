@@ -285,4 +285,12 @@ interface ISdkService {
     void setMode(in String packageName, int mode);
 
     int getMode();
+
+    void setKioskModeOn(in String packageName, boolean on);
+
+    boolean isKioskModeOn();
+
+    Map getSupportedLatinKeyboards();
+
+    void enabledLatinKeyboards(in String packageName, in List<String> keyboards);
 }

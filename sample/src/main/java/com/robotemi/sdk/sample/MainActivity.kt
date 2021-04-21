@@ -244,6 +244,37 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetNickName.setOnClickListener { getNickName() }
         btnSetMode.setOnClickListener { setMode() }
         btnGetMode.setOnClickListener { getMode() }
+        btnToggleKioskMode.setOnClickListener { toggleKiosk() }
+        btnIsKioskModeOn.setOnClickListener { isKioskModeOn() }
+        btnEnabledLatinKeyboards.setOnClickListener { enabledLatinKeyboards() }
+        btnGetSupportedKeyboard.setOnClickListener { getSupportedLatinKeyboards() }
+    }
+
+    private fun getSupportedLatinKeyboards() {
+        val supportedLatinKeyboards = robot.getSupportedLatinKeyboards()
+        var count = 0
+        supportedLatinKeyboards.iterator()
+            .forEach {
+                printLog("No.${++count} Latin keyboard: ${it.key}, enabled: ${it.value}")
+            }
+    }
+
+    private fun enabledLatinKeyboards() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        /**
+         * list should be got from the keys of the map via method [com.robotemi.sdk.Robot.getSupportedLatinKeyboards]
+         */
+        robot.enabledLatinKeyboards(robot.getSupportedLatinKeyboards().keys.toList().subList(0, 5))
+    }
+
+    private fun isKioskModeOn() {
+        printLog("Is kiosk mode on: ${robot.isKioskModeOn()}")
+    }
+
+    private fun toggleKiosk() {
+        robot.setKioskModeOn(!robot.isKioskModeOn())
     }
 
     private fun getMode() {

@@ -157,6 +157,26 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnGetSupportedKeyboard"
+                style="@style/ButtonCommon"
+                android:text="Get Supported Latin Keyboards" />
+
+            <Button
+                android:id="@+id/btnEnabledLatinKeyboards"
+                style="@style/ButtonCommon"
+                android:text="Enabled Latin Keyboards" />
+
+            <Button
+                android:id="@+id/btnToggleKioskMode"
+                style="@style/ButtonCommon"
+                android:text="Toggle Kiosk Mode" />
+
+            <Button
+                android:id="@+id/btnIsKioskModeOn"
+                style="@style/ButtonCommon"
+                android:text="Is Kiosk Mode On" />
+
+            <Button
                 android:id="@+id/btnGetMode"
                 style="@style/ButtonCommon"
                 android:text="Get Mode" />
