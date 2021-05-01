@@ -293,4 +293,6 @@ interface ISdkService {
     Map getSupportedLatinKeyboards();
 
     void enabledLatinKeyboards(in String packageName, in List<String> keyboards);
+
+    void publishTtsStatus(in String packageName, in TtsRequest ttsRequest);
 }

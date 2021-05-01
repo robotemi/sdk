@@ -95,4 +95,12 @@ interface ISdkServiceCallback {
     boolean onMovementStatusChanged(in String type, in String status);
 
     boolean onContinuousFaceRecognized(in List<ContactModel> contactModelList);
+
+    void onTtsSpeak(in TtsRequest ttsRequest);
+
+    void onTtsCancel();
+
+    void onTtsPause();
+
+    void onTtsResume();
 }

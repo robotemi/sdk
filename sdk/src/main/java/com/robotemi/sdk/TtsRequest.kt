@@ -62,7 +62,7 @@ data class TtsRequest(
     }
 
     enum class Status {
-        PENDING, PROCESSING, STARTED, COMPLETED, ERROR, NOT_ALLOWED
+        PENDING, PROCESSING, STARTED, COMPLETED, ERROR, NOT_ALLOWED, CANCELED
     }
 
     enum class Language(val value: Int) {

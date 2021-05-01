@@ -49,6 +49,7 @@ import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
+import com.robotemi.sdk.voice.ITtsService
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.FileNotFoundException
@@ -166,6 +167,8 @@ class Robot private constructor(private val context: Context) {
     private val onMovementStatusChangedListeners =
         CopyOnWriteArraySet<OnMovementStatusChangedListener>()
 
+    private var ttsService: ITtsService? = null
+
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
     init {
@@ -270,6 +273,22 @@ class Robot private constructor(private val context: Context) {
                 }
             }
             return false
+        }
+
+        override fun onTtsSpeak(ttsRequest: TtsRequest) {
+            ttsService?.speak(ttsRequest)
+        }
+
+        override fun onTtsCancel() {
+            ttsService?.cancel()
+        }
+
+        override fun onTtsPause() {
+            ttsService?.pause()
+        }
+
+        override fun onTtsResume() {
+            ttsService?.resume()
         }
 
         /*****************************************/
@@ -706,6 +725,29 @@ class Robot private constructor(private val context: Context) {
             sdkService?.speak(ttsRequest.apply { packageName = applicationInfo.packageName })
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to invoke remote call speak()")
+        }
+    }
+
+    private val isOverridingTts = applicationInfo.metaData != null
+            && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
+
+    fun setTtsService(ttsService: ITtsService?) {
+        if (!isOverridingTts) {
+            sdkServiceCallback.onSdkError(SdkException.illegalArgument("'com.robotemi.sdk.metadata.OVERRIDE_TTS' should be declared in AndroidManifest.xml"))
+            return
+        }
+        this.ttsService = ttsService
+    }
+
+    fun publishTtsStatus(ttsRequest: TtsRequest) {
+        if (!isOverridingTts) {
+            sdkServiceCallback.onSdkError(SdkException.illegalArgument("'com.robotemi.sdk.metadata.OVERRIDE_TTS' should be declared in AndroidManifest.xml"))
+            return
+        }
+        try {
+            sdkService?.publishTtsStatus(applicationInfo.packageName, ttsRequest)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "publishTtsStatus() error")
         }
     }
 
@@ -1818,6 +1860,7 @@ class Robot private constructor(private val context: Context) {
      * Enabled latin keyboards
      *
      * @param keyboards should be from the keys of map by [getSupportedLatinKeyboards]
+     *
      * And the first element will be the selected keyboard
      */
     fun enabledLatinKeyboards(keyboards: List<String>) {

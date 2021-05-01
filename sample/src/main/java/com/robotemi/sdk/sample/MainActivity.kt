@@ -12,6 +12,8 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
 import android.os.RemoteException
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.Gravity
@@ -51,6 +53,7 @@ import com.robotemi.sdk.permission.OnRequestPermissionResultListener
 import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
+import com.robotemi.sdk.voice.ITtsService
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
@@ -71,11 +74,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnTtsVisualizerFftDataChangedListener, OnReposeStatusChangedListener,
     OnLoadMapStatusChangedListener, OnDisabledFeatureListUpdatedListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
-    OnContinuousFaceRecognizedListener, OnSdkExceptionListener {
+    OnContinuousFaceRecognizedListener, ITtsService,
+    TextToSpeech.OnInitListener, OnSdkExceptionListener {
 
     private lateinit var robot: Robot
 
     private val executorService = Executors.newSingleThreadExecutor()
+
+    private var tts: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +99,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.addOnDisabledFeatureListUpdatedListener(this)
         robot.addOnSdkExceptionListener(this)
         robot.addOnMovementStatusChangedListener(this)
+        val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        if (appInfo.metaData != null
+            && appInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
+        ) {
+            printLog("Override tts")
+            tts = TextToSpeech(this, this)
+            robot.setTtsService(this)
+        }
     }
 
     /**
@@ -129,7 +143,6 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * Removing the event listeners upon leaving the app.
      */
     override fun onStop() {
-        super.onStop()
         robot.removeOnRobotReadyListener(this)
         robot.removeNlpListener(this)
         robot.removeOnBeWithMeStatusChangedListener(this)
@@ -155,6 +168,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnTtsVisualizerFftDataChangedListener(this)
         robot.removeOnReposeStatusChangedListener(this)
         robot.removeOnMovementVelocityChangedListener(this)
+        super.onStop()
     }
 
     override fun onDestroy() {
@@ -169,6 +183,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (!executorService.isShutdown) {
             executorService.shutdownNow()
         }
+        tts?.shutdown()
         super.onDestroy()
     }
 
@@ -786,13 +801,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 robot.askQuestion("Hello, I'm temi, what can I do for you?")
             }
             asrResult.equals("Play music", ignoreCase = true) -> {
-                robot.speak(create("Okay, please enjoy.", false))
                 robot.finishConversation()
+                robot.speak(create("Okay, please enjoy.", false))
                 playMusic()
             }
             asrResult.equals("Play movie", ignoreCase = true) -> {
-                robot.speak(create("Okay, please enjoy.", false))
                 robot.finishConversation()
+                robot.speak(create("Okay, please enjoy.", false))
                 playMovie()
             }
             asrResult.toLowerCase(Locale.getDefault()).contains("follow me") -> {
@@ -1266,8 +1281,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private fun printLog(tag: String, msg: String, show: Boolean = true) {
         Log.d(if (tag.isEmpty()) "MainActivity" else tag, msg)
         if (!show) return
-        tvLog.gravity = Gravity.BOTTOM
-        tvLog.append("· $msg \n")
+        runOnUiThread {
+            tvLog.gravity = Gravity.BOTTOM
+            tvLog.append("· $msg \n")
+        }
     }
 
     private fun clearLog() {
@@ -1527,5 +1544,148 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 )
             }
         }
+    }
+
+    private var mTtsRequest: TtsRequest? = null
+    override fun speak(ttsRequest: TtsRequest) {
+        printLog("custom tts speak --> ttsRequest=$ttsRequest")
+        mTtsRequest = ttsRequest
+        val language = when (TtsRequest.Language.valueToEnum(ttsRequest.language)) {
+            TtsRequest.Language.ZH_CN -> Locale.SIMPLIFIED_CHINESE
+            TtsRequest.Language.EN_US -> Locale.US
+            TtsRequest.Language.ZH_HK -> Locale("zh", "HK")
+            TtsRequest.Language.ZH_TW -> Locale("zh", "Taiwan")
+            TtsRequest.Language.TH_TH -> Locale("th", "TH")
+            TtsRequest.Language.HE_IL -> Locale("iw", "IL")
+            TtsRequest.Language.KO_KR -> Locale("ko", "ka")
+            TtsRequest.Language.JA_JP -> Locale("ja", "JP")
+            TtsRequest.Language.IN_ID -> Locale("in", "ID")
+            TtsRequest.Language.ID_ID -> Locale("in", "ID")
+            TtsRequest.Language.DE_DE -> Locale("de", "DE")
+            TtsRequest.Language.FR_FR -> Locale("fr", "FR")
+            TtsRequest.Language.FR_CA -> Locale("fr", "CA")
+            TtsRequest.Language.PT_BR -> Locale("pt", "BR")
+            TtsRequest.Language.AR_EG -> Locale("ar", "EG")
+            TtsRequest.Language.AR_AE -> Locale("ar", "AE")
+            TtsRequest.Language.AR_XA -> Locale("ar", "XA")
+            TtsRequest.Language.RU_RU -> Locale("ru", "RU")
+            TtsRequest.Language.IT_IT -> Locale("it", "IT")
+            TtsRequest.Language.PL_PL -> Locale("pl", "PL")
+            TtsRequest.Language.ES_ES -> Locale("ES", "ES")
+            else -> if (robot.launcherVersion.contains("china")) {
+                Locale.SIMPLIFIED_CHINESE
+            } else {
+                Locale.US
+            }
+        }
+        tts?.language = language
+        tts?.speak(ttsRequest.speech, TextToSpeech.QUEUE_ADD, Bundle(), ttsRequest.id.toString())
+    }
+
+    override fun cancel() {
+        printLog("custom tts cancel")
+        tts?.stop()
+    }
+
+    override fun pause() {
+        printLog("custom tts pause")
+    }
+
+    override fun resume() {
+        printLog("custom tts resume")
+    }
+
+    override fun onInit(status: Int) {
+        printLog("TTS init status: $status")
+        tts?.setPitch(0.5f)
+        tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {
+                printLog("custom tts start")
+                if (mTtsRequest == null || utteranceId == null) {
+                    return
+                }
+                robot.publishTtsStatus(
+                    mTtsRequest!!.copy(
+                        id = UUID.fromString(utteranceId),
+                        status = TtsRequest.Status.STARTED
+                    )
+                )
+            }
+
+            override fun onDone(utteranceId: String?) {
+                printLog("custom tts done")
+                if (mTtsRequest == null || utteranceId == null) {
+                    return
+                }
+                robot.publishTtsStatus(
+                    mTtsRequest!!.copy(
+                        id = UUID.fromString(utteranceId),
+                        status = TtsRequest.Status.COMPLETED
+                    )
+                )
+            }
+
+            override fun onError(utteranceId: String?) {
+                printLog("custom tts error")
+                if (mTtsRequest == null || utteranceId == null) {
+                    return
+                }
+                robot.publishTtsStatus(
+                    mTtsRequest!!.copy(
+                        id = UUID.fromString(utteranceId),
+                        status = TtsRequest.Status.ERROR
+                    )
+                )
+            }
+
+            override fun onAudioAvailable(utteranceId: String?, audio: ByteArray?) {
+                super.onAudioAvailable(utteranceId, audio)
+                printLog("custom tts error")
+            }
+
+            override fun onStop(utteranceId: String?, interrupted: Boolean) {
+                super.onStop(utteranceId, interrupted)
+                printLog("custom tts error")
+                if (mTtsRequest == null || utteranceId == null) {
+                    return
+                }
+                robot.publishTtsStatus(
+                    mTtsRequest!!.copy(
+                        id = UUID.fromString(utteranceId),
+                        status = TtsRequest.Status.CANCELED
+                    )
+                )
+            }
+
+            override fun onBeginSynthesis(
+                utteranceId: String?,
+                sampleRateInHz: Int,
+                audioFormat: Int,
+                channelCount: Int
+            ) {
+                super.onBeginSynthesis(utteranceId, sampleRateInHz, audioFormat, channelCount)
+                printLog("custom tts onBeginSynthesis")
+            }
+
+            override fun onError(utteranceId: String?, errorCode: Int) {
+                super.onError(utteranceId, errorCode)
+                printLog("custom tts onError")
+                if (mTtsRequest == null || utteranceId == null) {
+                    return
+                }
+                robot.publishTtsStatus(
+                    mTtsRequest!!.copy(
+                        id = UUID.fromString(utteranceId),
+                        status = TtsRequest.Status.ERROR
+                    )
+                )
+            }
+
+            override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
+                super.onRangeStart(utteranceId, start, end, frame)
+                printLog("custom tts onRangeStart")
+            }
+
+        })
     }
 }
