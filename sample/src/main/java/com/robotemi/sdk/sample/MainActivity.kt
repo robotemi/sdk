@@ -184,6 +184,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             executorService.shutdownNow()
         }
         tts?.shutdown()
+        val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        if (appInfo.metaData != null
+            && appInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
+        ) {
+            printLog("Unbind TTS service")
+            tts = TextToSpeech(this, this)
+            robot.setTtsService(null)
+        }
         super.onDestroy()
     }
 

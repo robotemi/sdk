@@ -173,9 +173,3 @@ enum class Mode(val value: Int) {
         }
     }
 }
-
-sealed class Keyboard(val local: Int) {
-    object English : Keyboard(1)
-    object ChinesePinyin : Keyboard(2)
-    object Hebrew : Keyboard(3)
-}
