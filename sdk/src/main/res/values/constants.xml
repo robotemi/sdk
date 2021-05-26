@@ -10,6 +10,7 @@
     <string name="metadata_assistant" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.ASSISTANT</string>
     <string name="metadata_override_nlu" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OVERRIDE_NLU</string>
     <string name="metadata_override_stt" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OVERRIDE_STT</string>
+    <string name="metadata_override_tts" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OVERRIDE_TTS</string>
     <string name="metadata_override_conversation_layer" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.OVERRIDE_CONVERSATION_LAYER</string>
     <string name="metadata_permissions" tools:ignore="ExtraTranslation">com.robotemi.sdk.metadata.PERMISSIONS</string>
 

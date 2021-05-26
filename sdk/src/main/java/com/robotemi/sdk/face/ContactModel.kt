@@ -2,13 +2,16 @@ package com.robotemi.sdk.face
 
 import android.os.Parcel
 import android.os.Parcelable
+import org.json.JSONException
+import org.json.JSONObject
 
-data class ContactModel(
+data class ContactModel @JvmOverloads constructor(
     val firstName: String = "",
     val lastName: String = "",
     val gender: String = "",
     val imageKey: String = "",
-    val description: String = ""
+    val description: String = "",
+    val userId: String = ""
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -35,5 +38,24 @@ data class ContactModel(
             override fun createFromParcel(source: Parcel): ContactModel = ContactModel(source)
             override fun newArray(size: Int): Array<ContactModel?> = arrayOfNulls(size)
         }
+
+        const val JSON_KEY_DESCRIPTION = "description"
+        const val JSON_KEY_USER_ID = "userId"
     }
+}
+
+internal fun ContactModel.compatible(): ContactModel {
+    if (this.description.isBlank()) return this
+    val json = JSONObject(this.description)
+    val desc = try {
+        json.getString(ContactModel.JSON_KEY_DESCRIPTION)
+    } catch (e: JSONException) {
+        this.description
+    }
+    val userId = try {
+        json.getString(ContactModel.JSON_KEY_USER_ID)
+    } catch (e: JSONException) {
+        ""
+    }
+    return this.copy(description = desc, userId = userId)
 }

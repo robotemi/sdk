@@ -11,7 +11,7 @@ Download
 
 Download the latest AAR from [Maven Central][2] or grab via Gradle:
 ```groovy
-implementation 'com.robotemi:sdk:0.10.76'
+implementation 'com.robotemi:sdk:0.10.77'
 ```
 
 or Maven:
@@ -19,7 +19,7 @@ or Maven:
 <dependency>
   <groupId>com.robotemi</groupId>
   <artifactId>sdk</artifactId>
-  <version>0.10.76</version>
+  <version>0.10.77</version>
 </dependency>
 ```
 
@@ -28,8 +28,8 @@ Snapshots of the development version are available in [Sonatype's `snapshots` re
 Documentation
 --------
 
-* [Getting Started][4]
-* [中文文档][5]
+* [English][4]
+* [简体中文][5]
 
 License
 -------

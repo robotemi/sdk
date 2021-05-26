@@ -21,6 +21,7 @@ object SdkConstants {
     const val METADATA_OPEN_WITHOUT_INTERNET = "com.robotemi.sdk.metadata.OPEN_WITHOUT_INTERNET"
     const val METADATA_OVERRIDE_NLU = "com.robotemi.sdk.metadata.OVERRIDE_NLU"
     const val METADATA_OVERRIDE_STT = "com.robotemi.sdk.metadata.OVERRIDE_STT"
+    const val METADATA_OVERRIDE_TTS = "com.robotemi.sdk.metadata.OVERRIDE_TTS"
     const val METADATA_OVERRIDE_CONVERSATION_LAYER =
         "com.robotemi.sdk.metadata.OVERRIDE_CONVERSATION_LAYER"
     const val METADATA_PERMISSIONS = "com.robotemi.sdk.metadata.PERMISSIONS"
@@ -108,4 +109,67 @@ enum class Page(val value: String) {
     LOCATIONS(PAGE_LOCATIONS),
     ALL_APPS(PAGE_ALL_APPS),
     HOME(PAGE_HOME)
+}
+
+enum class SoundMode(val value: Int) {
+    NORMAL(0),
+    VIDEO_CALL(1);
+
+    companion object {
+
+        @JvmField
+        val DEFAULT = NORMAL
+
+        @JvmStatic
+        fun valueToEnum(value: Int) = if (value == 1) VIDEO_CALL else DEFAULT
+    }
+}
+
+enum class HardButton(val value: Int) {
+    MAIN(1),
+    POWER(2),
+    VOLUME(3);
+
+    companion object {
+        @JvmStatic
+        fun valueToEnum(value: Int? = 1) = when (value) {
+            2 -> POWER
+            3 -> VOLUME
+            else -> MAIN
+        }
+    }
+
+    enum class Mode(val value: Int) {
+        ENABLED(0),
+        DISABLED(1),
+        MAIN_BLOCK_FOLLOW(2);  // Only works for the main button.
+
+        companion object {
+
+            @JvmField
+            val DEFAULT = ENABLED
+
+            @JvmStatic
+            fun valueToEnum(value: Int? = 0) = when (value) {
+                1 -> DISABLED
+                2 -> MAIN_BLOCK_FOLLOW
+                else -> DEFAULT
+            }
+        }
+    }
+}
+
+enum class Mode(val value: Int) {
+    DEFAULT(0),
+    GREET(1),
+    PRIVACY(2);
+
+    companion object {
+        @JvmStatic
+        fun valueToEnum(value: Int? = 0) = when (value) {
+            1 -> GREET
+            2 -> PRIVACY
+            else -> DEFAULT
+        }
+    }
 }

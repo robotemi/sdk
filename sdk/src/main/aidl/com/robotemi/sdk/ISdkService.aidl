@@ -238,7 +238,7 @@ interface ISdkService {
 
     void stopFaceRecognition(in String packageName);
 
-    List<SequenceModel> getAllSequences(in String packageName);
+    List<SequenceModel> getAllSequences(in String packageName, in List<String> tags);
 
     void playSequence(in String packageName, in String sequenceId, boolean withPlayer);
 
@@ -269,4 +269,30 @@ interface ISdkService {
     void muteAlexa(in String packageName);
 
     void loadMapWithPosition(in String packageName, in String mapId, boolean reposeRequired, in Position position);
+
+    void shutdown(in String packageName);
+
+    List<String> getSignedUrlByMediaKey(in String packageName, in List<String> mediaKeys, int width, int height);
+
+    void setSoundMode(in String packageName, int mode);
+
+    void setHardButtonMode(in String packageName, int type, int mode);
+
+    int getHardButtonMode(int type);
+
+    String getNickName(in String packageName);
+
+    void setMode(in String packageName, int mode);
+
+    int getMode();
+
+    void setKioskModeOn(in String packageName, boolean on);
+
+    boolean isKioskModeOn();
+
+    Map getSupportedLatinKeyboards();
+
+    void enabledLatinKeyboards(in String packageName, in List<String> keyboards);
+
+    void publishTtsStatus(in String packageName, in TtsRequest ttsRequest);
 }

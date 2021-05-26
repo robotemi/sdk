@@ -48,6 +48,11 @@
             android:name="@string/metadata_override_stt"
             android:value="false" />
 
+        <!-- Set value to true to cover original voice flow[TTS]. -->
+        <meta-data
+            android:name="@string/metadata_override_tts"
+            android:value="false" />
+
         <!-- Set value to true to cover original conversation layer -->
         <meta-data
             android:name="@string/metadata_override_conversation_layer"

@@ -19,14 +19,13 @@ import com.google.gson.reflect.TypeToken
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
-import com.robotemi.sdk.constants.ContentType
-import com.robotemi.sdk.constants.Page
-import com.robotemi.sdk.constants.Platform
-import com.robotemi.sdk.constants.SdkConstants
+import com.robotemi.sdk.constants.*
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
+import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
 import com.robotemi.sdk.face.OnFaceRecognizedListener
+import com.robotemi.sdk.face.compatible
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.*
 import com.robotemi.sdk.mediabar.AidlMediaBarController
@@ -48,7 +47,11 @@ import com.robotemi.sdk.permission.OnRequestPermissionResultListener
 import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
+import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
+import com.robotemi.sdk.voice.ITtsService
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -135,6 +138,9 @@ class Robot private constructor(private val context: Context) {
 
     private val onFaceRecognizedListeners = CopyOnWriteArraySet<OnFaceRecognizedListener>()
 
+    private val onContinuousFaceRecognizedListeners =
+        CopyOnWriteArraySet<OnContinuousFaceRecognizedListener>()
+
     private val onSdkExceptionListeners = CopyOnWriteArraySet<OnSdkExceptionListener>()
 
     private val onConversationStatusChangedListeners =
@@ -154,6 +160,14 @@ class Robot private constructor(private val context: Context) {
 
     private val onDisabledFeatureListUpdatedListeners =
         CopyOnWriteArraySet<OnDisabledFeatureListUpdatedListener>()
+
+    private val onMovementVelocityChangedListeners =
+        CopyOnWriteArraySet<OnMovementVelocityChangedListener>()
+
+    private val onMovementStatusChangedListeners =
+        CopyOnWriteArraySet<OnMovementStatusChangedListener>()
+
+    private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
@@ -261,6 +275,22 @@ class Robot private constructor(private val context: Context) {
             return false
         }
 
+        override fun onTtsSpeak(ttsRequest: TtsRequest) {
+            ttsService?.speak(ttsRequest)
+        }
+
+        override fun onTtsCancel() {
+            ttsService?.cancel()
+        }
+
+        override fun onTtsPause() {
+            ttsService?.pause()
+        }
+
+        override fun onTtsResume() {
+            ttsService?.resume()
+        }
+
         /*****************************************/
         /*               Navigation              */
         /*****************************************/
@@ -355,6 +385,26 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onRobotLiftedListeners) {
                     listener.onRobotLifted(isLifted, reason)
+                }
+            }
+            return true
+        }
+
+        override fun onMovementVelocityChanged(linear: Float): Boolean {
+            if (onMovementVelocityChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onMovementVelocityChangedListeners) {
+                    listener.onMovementVelocityChanged(linear)
+                }
+            }
+            return true
+        }
+
+        override fun onMovementStatusChanged(type: String, status: String): Boolean {
+            if (onMovementStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onMovementStatusChangedListeners) {
+                    listener.onMovementStatusChanged(type, status)
                 }
             }
             return true
@@ -564,15 +614,30 @@ class Robot private constructor(private val context: Context) {
         /*****************************************/
         /*            Face Recognition           */
         /*****************************************/
+
         override fun onFaceRecognized(contactModelList: MutableList<ContactModel>): Boolean {
             if (onFaceRecognizedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onFaceRecognizedListeners) {
-                    listener.onFaceRecognized(contactModelList)
+                    listener.onFaceRecognized(contactModelList.map { it.compatible() })
                 }
             }
-            return false
+            return true
         }
+
+        override fun onContinuousFaceRecognized(contactModelList: MutableList<ContactModel>): Boolean {
+            if (onContinuousFaceRecognizedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onContinuousFaceRecognizedListeners) {
+                    listener.onContinuousFaceRecognized(contactModelList.map { it.compatible() })
+                }
+            }
+            return true
+        }
+
+        /*****************************************/
+        /*                 Common                */
+        /*****************************************/
 
         override fun onSdkError(sdkException: SdkException): Boolean {
             if (onSdkExceptionListeners.isEmpty()) return false
@@ -586,6 +651,8 @@ class Robot private constructor(private val context: Context) {
 
         /*****************************************/
         /*                  Map                  */
+        /*****************************************/
+
         override fun onLoadMapStatusChanged(status: Int): Boolean {
             if (onLoadMapStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
@@ -658,6 +725,29 @@ class Robot private constructor(private val context: Context) {
             sdkService?.speak(ttsRequest.apply { packageName = applicationInfo.packageName })
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to invoke remote call speak()")
+        }
+    }
+
+    private val isOverridingTts = applicationInfo.metaData != null
+            && applicationInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
+
+    fun setTtsService(ttsService: ITtsService?) {
+        if (!isOverridingTts) {
+            sdkServiceCallback.onSdkError(SdkException.illegalArgument("'com.robotemi.sdk.metadata.OVERRIDE_TTS' should be declared in AndroidManifest.xml"))
+            return
+        }
+        this.ttsService = ttsService
+    }
+
+    fun publishTtsStatus(ttsRequest: TtsRequest) {
+        if (!isOverridingTts) {
+            sdkServiceCallback.onSdkError(SdkException.illegalArgument("'com.robotemi.sdk.metadata.OVERRIDE_TTS' should be declared in AndroidManifest.xml"))
+            return
+        }
+        try {
+            sdkService?.publishTtsStatus(applicationInfo.packageName, ttsRequest)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "publishTtsStatus() error")
         }
     }
 
@@ -763,13 +853,25 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    @Deprecated(message = "Use [addOnConversationStatusChangedListener] instead")
     @UiThread
     fun addConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
         conversationViewAttachesListeners.add(conversationViewAttachesListener)
     }
 
+    @Deprecated(message = "Use [removeConversationViewAttachesListener] instead")
     @UiThread
     fun removeConversationViewAttachesListenerListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
+        conversationViewAttachesListeners.remove(conversationViewAttachesListener)
+    }
+
+    @UiThread
+    fun addConversationViewAttachesListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
+        conversationViewAttachesListeners.add(conversationViewAttachesListener)
+    }
+
+    @UiThread
+    fun removeConversationViewAttachesListener(conversationViewAttachesListener: ConversationViewAttachesListener) {
         conversationViewAttachesListeners.remove(conversationViewAttachesListener)
     }
 
@@ -1091,21 +1193,11 @@ class Robot private constructor(private val context: Context) {
      * To turn temi by a specific degree.
      *
      * @param degrees the degree amount you want the robot to turn
-     * @param speed   deprecated
+     * @param speed Coefficient of maximum speed, between 0 to 1
      */
-    @Deprecated("Use turnBy(degrees) instead.", ReplaceWith("turnBy(degrees)"))
-    fun turnBy(degrees: Int, speed: Float) {
-        turnBy(degrees)
-    }
-
-    /**
-     * To turn temi by a specific degree.
-     *
-     * @param degrees the degree amount you want the robot to turn
-     */
-    fun turnBy(degrees: Int) {
+    fun turnBy(degrees: Int, speed: Float = 1f) {
         try {
-            sdkService?.turnBy(degrees, 1.0f)
+            sdkService?.turnBy(degrees, speed)
         } catch (e: RemoteException) {
             Log.e(TAG, "turnBy(int) (degrees=$degrees) error")
         }
@@ -1115,23 +1207,14 @@ class Robot private constructor(private val context: Context) {
      * To tilt temi's head to a specific angle.
      *
      * @param degrees the degree which you want the robot to tilt to, between 55 and -25
-     * @param speed   deprecated
+     * @param speed Coefficient of maximum speed, between 0 to 1
      */
-    @Deprecated("Use tiltAngle(degrees) instead.", ReplaceWith("tiltAngle(degrees)"))
-    fun tiltAngle(degrees: Int, speed: Float) {
-        tiltAngle(degrees)
-    }
-
-    /**
-     * To tilt temi's head to a specific angle.
-     *
-     * @param degrees the degree which you want the robot to tilt to, between 55 and -25
-     */
-    fun tiltAngle(degrees: Int) {
+    @JvmOverloads
+    fun tiltAngle(degrees: Int, speed: Float = 1f) {
         try {
-            sdkService?.tiltAngle(degrees, 1.0f)
+            sdkService?.tiltAngle(degrees, speed)
         } catch (e: RemoteException) {
-            Log.e(TAG, "turnBy(int) (degrees=$degrees) error")
+            Log.e(TAG, "turnBy(int, float) (degrees=$degrees, speed=$speed) error")
         }
     }
 
@@ -1139,23 +1222,14 @@ class Robot private constructor(private val context: Context) {
      * To tilt temi's head to by a specific degree.
      *
      * @param degrees The degree amount you want the robot to tilt
-     * @param speed Deprecated. The value will always be 1.
+     * @param speed Coefficient of maximum speed, between 0 to 1
      */
-    @Deprecated("Use tiltBy(degrees) instead.", ReplaceWith("tiltBy(degrees)"))
-    fun tiltBy(degrees: Int, speed: Float) {
-        tiltBy(degrees)
-    }
-
-    /**
-     * To tilt temi's head to by a specific degree.
-     *
-     * @param degrees The degree amount you want the robot to tilt
-     */
-    fun tiltBy(degrees: Int) {
+    @JvmOverloads
+    fun tiltBy(degrees: Int, speed: Float = 1f) {
         try {
-            sdkService?.tiltBy(degrees, 1.0f)
+            sdkService?.tiltBy(degrees, speed)
         } catch (e: RemoteException) {
-            Log.e(TAG, "tiltBy(int) (degrees=$degrees) error")
+            Log.e(TAG, "tiltBy(int, float) (degrees=$degrees, speed=$speed) error")
         }
     }
 
@@ -1187,6 +1261,26 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnRobotLiftedListener(listener: OnRobotLiftedListener) {
         onRobotLiftedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnMovementVelocityChangedListener(listener: OnMovementVelocityChangedListener) {
+        onMovementVelocityChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMovementVelocityChangedListener(listener: OnMovementVelocityChangedListener) {
+        onMovementVelocityChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnMovementStatusChangedListener(listener: OnMovementStatusChangedListener) {
+        onMovementStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMovementStatusChangedListener(listener: OnMovementStatusChangedListener) {
+        onMovementStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -1430,6 +1524,23 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+    fun setHardButtonMode(type: HardButton, mode: HardButton.Mode) {
+        try {
+            sdkService?.setHardButtonMode(applicationInfo.packageName, type.value, mode.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setHardButtonMode() error")
+        }
+    }
+
+    fun getHardButtonMode(type: HardButton): HardButton.Mode {
+        return try {
+            HardButton.Mode.valueToEnum(sdkService?.getHardButtonMode(type.value))
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getHardButtonMode() error")
+            HardButton.Mode.DEFAULT
+        }
+    }
+
     /**
      * Get version of the Launcher.
      */
@@ -1630,7 +1741,7 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Is temi locked
+     * Check if temi is locked.
      */
     var locked: Boolean
         @CheckResult
@@ -1662,6 +1773,101 @@ class Robot private constructor(private val context: Context) {
             sdkService?.muteAlexa(applicationInfo.packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "muteAlexa() error")
+        }
+    }
+
+    /**
+     * Shut down temi.
+     *
+     */
+    fun shutdown() {
+        try {
+            sdkService?.shutdown(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "shutdown() error")
+        }
+    }
+
+    /**
+     * Sound mode
+     *
+     * @param soundMode
+     */
+    fun setSoundMode(soundMode: SoundMode) {
+        try {
+            sdkService?.setSoundMode(applicationInfo.packageName, soundMode.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setSoundMode() error")
+        }
+    }
+
+    /**
+     * Get temi's nick name
+     *
+     * @return
+     */
+    fun getNickName(): String {
+        return try {
+            sdkService?.getNickName(applicationInfo.packageName) ?: ""
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getNickName() error")
+            ""
+        }
+    }
+
+    /**
+     * Set system mode.
+     *
+     * @param mode Default, Greet, Privacy
+     */
+    fun setMode(mode: Mode) {
+        try {
+            sdkService?.setMode(applicationInfo.packageName, mode.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setMode() error")
+        }
+    }
+
+    /**
+     * Get system mode.
+     *
+     * @return Default, Greet, Privacy
+     */
+    fun getMode(): Mode {
+        return try {
+            Mode.valueToEnum(sdkService?.mode)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getMode() error")
+            Mode.DEFAULT
+        }
+    }
+
+    /**
+     * Get the supported latin keyboards
+     *
+     * @return
+     */
+    fun getSupportedLatinKeyboards(): Map<String, Boolean> {
+        return try {
+            sdkService?.supportedLatinKeyboards as Map<String, Boolean>
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getSupportedLatinKeyboards() error")
+            emptyMap()
+        }
+    }
+
+    /**
+     * Enabled latin keyboards
+     *
+     * @param keyboards should be from the keys of map by [getSupportedLatinKeyboards]
+     *
+     * And the first element will be the selected keyboard
+     */
+    fun enabledLatinKeyboards(keyboards: List<String>) {
+        try {
+            sdkService?.enabledLatinKeyboards(applicationInfo.packageName, keyboards)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "enabledLatinKeyboards() error")
         }
     }
 
@@ -1804,7 +2010,6 @@ class Robot private constructor(private val context: Context) {
      */
     fun requestToBeKioskApp() {
         if (!isMetaDataKiosk) {
-            Log.e(TAG, "No kiosk mode declaration in meta data")
             sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
             return
         }
@@ -1830,6 +2035,27 @@ class Robot private constructor(private val context: Context) {
             Log.e(TAG, "isSelectedKioskApp() error")
         }
         return false
+    }
+
+    fun setKioskModeOn(on: Boolean = true) {
+        if (!isMetaDataKiosk) {
+            sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
+            return
+        }
+        try {
+            sdkService?.setKioskModeOn(applicationInfo.packageName, on)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setKioskModeOn() error")
+        }
+    }
+
+    fun isKioskModeOn(): Boolean {
+        return try {
+            sdkService?.isKioskModeOn ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isKioskModeOn() error")
+            false
+        }
     }
 
     /*****************************************/
@@ -2020,13 +2246,15 @@ class Robot private constructor(private val context: Context) {
      */
     @WorkerThread
     @CheckResult
-    fun getAllSequences(): List<SequenceModel> {
-        try {
-            return sdkService?.getAllSequences(applicationInfo.packageName) ?: emptyList()
+    @JvmOverloads
+    fun getAllSequences(tags: List<String> = emptyList()): List<SequenceModel> {
+        return try {
+            (sdkService?.getAllSequences(applicationInfo.packageName, tags.filter { it != "" })
+                ?: emptyList<SequenceModel>()).map { it.compatible() }
         } catch (e: RemoteException) {
-            Log.e(TAG, "fetchAllSequences() error")
+            Log.e(TAG, "getAllSequences() error")
+            emptyList()
         }
-        return emptyList()
     }
 
     /**
@@ -2129,6 +2357,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @return Saved map
      */
+    @WorkerThread
     fun getMapList(): List<MapModel> {
         try {
             return sdkService?.getMapList(applicationInfo.packageName) ?: emptyList()
@@ -2199,6 +2428,30 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    @UiThread
+    fun addOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
+        onFaceRecognizedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
+        onFaceRecognizedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnContinuousFaceRecognizedListener(listener: OnContinuousFaceRecognizedListener) {
+        onContinuousFaceRecognizedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnContinuousFaceRecognizedListener(listener: OnContinuousFaceRecognizedListener) {
+        onContinuousFaceRecognizedListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*                 Common                */
+    /*****************************************/
+
     @Nullable
     @WorkerThread
     fun getInputStreamByMediaKey(contentType: ContentType, mediaKey: String): InputStream? {
@@ -2213,18 +2466,44 @@ class Robot private constructor(private val context: Context) {
         } catch (e: FileNotFoundException) {
             Log.e(TAG, e.message)
             sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "getInputStreamByMediaKey error.\n ${e.message}")
         }
         return null
     }
 
-    @UiThread
-    fun addOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
-        onFaceRecognizedListeners.add(listener)
-    }
-
-    @UiThread
-    fun removeOnFaceRecognizedListener(listener: OnFaceRecognizedListener) {
-        onFaceRecognizedListeners.remove(listener)
+    @WorkerThread
+    @JvmOverloads
+    fun getSignedUrlByMediaKey(
+        mediaKeys: List<String>,
+        width: Int = -1,
+        height: Int = -1
+    ): List<Pair<String, String>> {
+        return try {
+            val results = sdkService?.getSignedUrlByMediaKey(
+                applicationInfo.packageName,
+                mediaKeys.filter { it.isNotBlank() },
+                width,
+                height
+            ) ?: emptyList()
+            return results.map {
+                val jsonObject = JSONObject(it)
+                val mediaKey = try {
+                    jsonObject.getString("mediaKey")
+                } catch (e: JSONException) {
+                    ""
+                }
+                val signedUrl = try {
+                    jsonObject.getString("signedUrl")
+                } catch (e: JSONException) {
+                    ""
+                }
+                return@map Pair(mediaKey, signedUrl)
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getSignedUrlByMediaKey() error")
+            emptyList()
+        }
     }
 
     @UiThread

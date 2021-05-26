@@ -89,4 +89,18 @@ interface ISdkServiceCallback {
     boolean onLoadMapStatusChanged(int status);
 
     boolean onDisabledFeatureListUpdated(in List<String> disabledFeatureList);
+
+    boolean onMovementVelocityChanged(float velocity);
+
+    boolean onMovementStatusChanged(in String type, in String status);
+
+    boolean onContinuousFaceRecognized(in List<ContactModel> contactModelList);
+
+    void onTtsSpeak(in TtsRequest ttsRequest);
+
+    void onTtsCancel();
+
+    void onTtsPause();
+
+    void onTtsResume();
 }
