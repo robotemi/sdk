@@ -240,7 +240,7 @@ interface ISdkService {
 
     List<SequenceModel> getAllSequences(in String packageName, in List<String> tags);
 
-    void playSequence(in String packageName, in String sequenceId, boolean withPlayer);
+    void playSequence(in String packageName, in String sequenceId, boolean withPlayer, int repeat);
 
     void goToPosition(in Position position);
 
@@ -295,4 +295,28 @@ interface ISdkService {
     void enabledLatinKeyboards(in String packageName, in List<String> keyboards);
 
     void publishTtsStatus(in String packageName, in TtsRequest ttsRequest);
+
+    void controlSequence(in String packageName, int command);
+
+    void setGroundDepthCliffDetectionEnabled(in String packageName, boolean enabled);
+
+    boolean isGroundDepthCliffDetectionEnabled();
+
+    boolean hasCliffSensor();
+
+    void setCliffSensorMode(in String packageName, int mode);
+
+    int getCliffSensorMode();
+
+    void setHeadDepthSensitivity(in String packageName, int level);
+
+    int getHeadDepthSensitivity();
+
+    void setFrontTOFEnabled(in String packageName, boolean enabled);
+
+    boolean isFrontTOFEnabled();
+
+    void setBackTOFEnabled(in String packageName, boolean enabled);
+
+    boolean isBackTOFEnabled();
 }

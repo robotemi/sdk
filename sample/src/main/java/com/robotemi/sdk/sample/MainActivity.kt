@@ -4,8 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -83,6 +82,34 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private var tts: TextToSpeech? = null
 
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            printLog("Received broadcast, $intent", false)
+            if (intent == null) {
+                return
+            }
+            val command = intent.getStringExtra("control")
+            when {
+                SequenceCommand.STOP.name.equals(command, true) -> {
+                    robot.controlSequence(SequenceCommand.STOP)
+                }
+                SequenceCommand.PAUSE.name.equals(command, true) -> {
+                    robot.controlSequence(SequenceCommand.PAUSE)
+                }
+                SequenceCommand.PLAY.name.equals(command, true) -> {
+                    robot.controlSequence(SequenceCommand.PLAY)
+                }
+                SequenceCommand.STEP_BACKWARD.name.equals(command, true) -> {
+                    robot.controlSequence(SequenceCommand.STEP_BACKWARD)
+                }
+                SequenceCommand.STEP_FORWARD.name.equals(command, true) -> {
+                    robot.controlSequence(SequenceCommand.STEP_FORWARD)
+                }
+            }
+        }
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -107,6 +134,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             tts = TextToSpeech(this, this)
             robot.setTtsService(this)
         }
+        registerBroadcast()
     }
 
     /**
@@ -192,6 +220,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             tts = TextToSpeech(this, this)
             robot.setTtsService(null)
         }
+        unregisterBroadcast()
         super.onDestroy()
     }
 
@@ -271,6 +300,115 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnIsKioskModeOn.setOnClickListener { isKioskModeOn() }
         btnEnabledLatinKeyboards.setOnClickListener { enabledLatinKeyboards() }
         btnGetSupportedKeyboard.setOnClickListener { getSupportedLatinKeyboards() }
+        btnToggleGroundDepthCliff.setOnClickListener { toggleGroundDepthCliff() }
+        btnIsGroundDepthCliff.setOnClickListener { isGroundDepthCliffEnabled() }
+        btnHasCliffSensor.setOnClickListener { hasCliffSensor() }
+        btnSetCliffSensorMode.setOnClickListener { setCliffSensorMode() }
+        btnGetCliffSensorMode.setOnClickListener { getCliffSensorMode() }
+        btnSetHeadDepthSensitivity.setOnClickListener { setHeadDepthSensitivity() }
+        btnGetHeadDepthSensitivity.setOnClickListener { getHeadDepthSensitivity() }
+        btnToggleFrontTOF.setOnClickListener { toggleFrontTOF() }
+        btnIsFrontTOFEnabled.setOnClickListener { isFrontTOFEnabled() }
+        btnToggleBackTOF.setOnClickListener { toggleBackTOF() }
+        btnIsBackTOFEnabled.setOnClickListener { isBackTOFEnabled() }
+    }
+
+    private fun registerBroadcast() {
+        val intentFilter = IntentFilter().apply {
+            addAction("com.robotemi.sdk.action.sequence")
+        }
+        registerReceiver(receiver, intentFilter)
+    }
+
+    private fun unregisterBroadcast() {
+        unregisterReceiver(receiver)
+    }
+
+    private fun isBackTOFEnabled() {
+        printLog("Back TOF enabled: ${robot.backTOFEnabled}")
+    }
+
+    private fun toggleBackTOF() {
+        robot.backTOFEnabled = !robot.backTOFEnabled
+        isBackTOFEnabled()
+    }
+
+    private fun isFrontTOFEnabled() {
+        printLog("Front TOF enabled: ${robot.frontTOFEnabled}")
+    }
+
+    private fun toggleFrontTOF() {
+        robot.frontTOFEnabled = !robot.frontTOFEnabled
+        isFrontTOFEnabled()
+    }
+
+    private fun getHeadDepthSensitivity() {
+        printLog("Head depth sensitivity: ${robot.headDepthSensitivity}")
+    }
+
+    private fun setHeadDepthSensitivity() {
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.item_dialog_row,
+            R.id.name,
+            listOf(SensitivityLevel.HIGH, SensitivityLevel.LOW)
+        )
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Head Depth Sensitivity")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                robot.headDepthSensitivity = adapter.getItem(position)!!
+                printLog("Set Head Depth Sensitivity to: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private fun getCliffSensorMode() {
+        printLog("Cliff sensor mode: ${robot.cliffSensorMode.name}")
+    }
+
+    private fun setCliffSensorMode() {
+        if (!robot.hasCliffSensor()) {
+            printLog("No cliff sensor, invalid operation.")
+            return
+        }
+        val adapter = ArrayAdapter(
+            this,
+            R.layout.item_dialog_row,
+            R.id.name,
+            listOf(
+                CliffSensorMode.HIGH_SENSITIVITY,
+                CliffSensorMode.LOW_SENSITIVITY,
+                CliffSensorMode.OFF
+            )
+        )
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Cliff Sensor Mode")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                robot.cliffSensorMode = adapter.getItem(position)!!
+                printLog("Set Cliff Sensor Mode to: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private fun hasCliffSensor() {
+        printLog("Has cliff sensor: ${robot.hasCliffSensor()}")
+    }
+
+    private fun isGroundDepthCliffEnabled() {
+        printLog("Ground depth cliff enabled: ${robot.groundDepthCliffDetectionEnabled}")
+    }
+
+    private fun toggleGroundDepthCliff() {
+        robot.groundDepthCliffDetectionEnabled = !robot.groundDepthCliffDetectionEnabled
+        isGroundDepthCliffEnabled()
     }
 
     private fun getSupportedLatinKeyboards() {
@@ -459,7 +597,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             .create()
         dialog.listView.onItemClickListener =
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-                val ttsRequest = create(text, language = adapter.getItem(position)!!)
+                val ttsRequest = create(text, language = adapter.getItem(position)!!, showAnimationOnly = true)
                 robot.speak(ttsRequest)
                 printLog("Speak: ${adapter.getItem(position)}")
                 dialog.dismiss()

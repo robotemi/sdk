@@ -12,7 +12,8 @@ data class TtsRequest(
     var status: Status = Status.PENDING,
     val drawableBitmap: Bitmap? = null,
     val isShowOnConversationLayer: Boolean,
-    val language: Int = 0
+    val language: Int = 0,
+    val showAnimationOnly: Boolean = false
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -22,7 +23,8 @@ data class TtsRequest(
         status = with(source.readInt()) { (if (this == -1) null else Status.values()[this])!! },
         drawableBitmap = source.readParcelable(Bitmap::class.java.classLoader),
         isShowOnConversationLayer = source.readByte().toInt() != 0,
-        language = source.readInt()
+        language = source.readInt(),
+        showAnimationOnly = source.readByte().toInt() != 0
     )
 
     override fun equals(other: Any?): Boolean {
@@ -34,17 +36,6 @@ data class TtsRequest(
 
     override fun hashCode(): Int {
         return id.hashCode()
-    }
-
-    override fun toString(): String {
-        return "TtsRequest{" +
-                "id=" + id +
-                ", speech='" + speech + '\'' +
-                ", packageName='" + packageName + '\'' +
-                ", status=" + status +
-                ", isShowOnConversationLayer=" + isShowOnConversationLayer +
-                ", language=" + language +
-                '}'
     }
 
     override fun describeContents(): Int {
@@ -59,6 +50,7 @@ data class TtsRequest(
         dest.writeParcelable(drawableBitmap, flags)
         dest.writeByte(if (isShowOnConversationLayer) 1.toByte() else 0.toByte())
         dest.writeInt(language)
+        dest.writeByte(if (showAnimationOnly) 1.toByte() else 0.toByte())
     }
 
     enum class Status {
@@ -120,12 +112,14 @@ data class TtsRequest(
         fun create(
             speech: String,
             isShowOnConversationLayer: Boolean = true,
-            language: Language = Language.SYSTEM
+            language: Language = Language.SYSTEM,
+            showAnimationOnly: Boolean = false
         ): TtsRequest {
             return TtsRequest(
                 speech = speech,
                 isShowOnConversationLayer = isShowOnConversationLayer,
-                language = language.value
+                language = language.value,
+                showAnimationOnly = showAnimationOnly
             )
         }
     }

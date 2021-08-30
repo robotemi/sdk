@@ -173,3 +173,31 @@ enum class Mode(val value: Int) {
         }
     }
 }
+
+/**
+ * Commands for sequence controller [com.robotemi.sdk.Robot.controlSequence]
+ */
+enum class SequenceCommand {
+    STOP,
+    PLAY,
+    PAUSE,
+    STEP_FORWARD,
+    STEP_BACKWARD;
+}
+
+/**
+ * Mode for cliff sensor, for [com.robotemi.sdk.Robot.cliffSensorMode]
+ */
+enum class CliffSensorMode {
+    OFF,
+    LOW_SENSITIVITY,
+    HIGH_SENSITIVITY
+}
+
+/**
+ * Sensitivity level.
+ */
+enum class SensitivityLevel {
+    HIGH,
+    LOW
+}
