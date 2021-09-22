@@ -2,7 +2,7 @@
 
 # getNickName
 
-`fun getNickName(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+`@CheckResult fun getNickName(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
 
 Get temi's nick name
 

@@ -14,6 +14,7 @@
 | [com.robotemi.sdk.notification.BillboardNotification](../com.robotemi.sdk.notification/-billboard-notification/index.md) |  |
 | [com.robotemi.sdk.model.CallEventModel](../com.robotemi.sdk.model/-call-event-model/index.md) |  |
 | [com.robotemi.sdk.telepresence.CallState](../com.robotemi.sdk.telepresence/-call-state/index.md) |  |
+| [com.robotemi.sdk.constants.CliffSensorMode](../com.robotemi.sdk.constants/-cliff-sensor-mode/index.md) | Mode for cliff sensor, for [com.robotemi.sdk.Robot.cliffSensorMode](../com.robotemi.sdk/-robot/cliff-sensor-mode.md) |
 | [com.robotemi.sdk.face.ContactModel](../com.robotemi.sdk.face/-contact-model/index.md) |  |
 | [com.robotemi.sdk.constants.ContentType](../com.robotemi.sdk.constants/-content-type/index.md) |  |
 | [com.robotemi.sdk.model.DetectionData](../com.robotemi.sdk.model/-detection-data/index.md) |  |
@@ -73,6 +74,8 @@
 | [com.robotemi.sdk.navigation.model.SafetyLevel](../com.robotemi.sdk.navigation.model/-safety-level/index.md) |  |
 | [com.robotemi.sdk.constants.SdkConstants](../com.robotemi.sdk.constants/-sdk-constants/index.md) |  |
 | [com.robotemi.sdk.exception.SdkException](../com.robotemi.sdk.exception/-sdk-exception/index.md) |  |
+| [com.robotemi.sdk.constants.SensitivityLevel](../com.robotemi.sdk.constants/-sensitivity-level/index.md) | Sensitivity level. |
+| [com.robotemi.sdk.constants.SequenceCommand](../com.robotemi.sdk.constants/-sequence-command/index.md) | Commands for sequence controller [com.robotemi.sdk.Robot.controlSequence](../com.robotemi.sdk/-robot/control-sequence.md) |
 | [com.robotemi.sdk.sequence.SequenceModel](../com.robotemi.sdk.sequence/-sequence-model/index.md) |  |
 | [com.robotemi.sdk.constants.SoundMode](../com.robotemi.sdk.constants/-sound-mode/index.md) |  |
 | [com.robotemi.sdk.SourceObject](../com.robotemi.sdk/-source-object/index.md) |  |
