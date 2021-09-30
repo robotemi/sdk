@@ -39,7 +39,9 @@ import com.robotemi.sdk.face.ContactModel
 import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
 import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.listeners.*
+import com.robotemi.sdk.map.Floor
 import com.robotemi.sdk.map.MapModel
+import com.robotemi.sdk.map.OnLoadFloorStatusChangedListener
 import com.robotemi.sdk.map.OnLoadMapStatusChangedListener
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnLoadMapStatusChangedListener, OnDisabledFeatureListUpdatedListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
     OnContinuousFaceRecognizedListener, ITtsService, OnGreetModeStateChangedListener,
-    TextToSpeech.OnInitListener, OnSdkExceptionListener {
+    TextToSpeech.OnInitListener, OnLoadFloorStatusChangedListener, OnSdkExceptionListener {
 
     private lateinit var robot: Robot
 
@@ -131,6 +133,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.addOnSdkExceptionListener(this)
         robot.addOnMovementStatusChangedListener(this)
         robot.addOnGreetModeStateChangedListener(this)
+        robot.addOnLoadFloorStatusChangedListener(this)
         val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
         if (appInfo.metaData != null
             && appInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
@@ -222,6 +225,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnDisabledFeatureListUpdatedListener(this)
         robot.removeOnMovementStatusChangedListener(this)
         robot.removeOnGreetModeStateChangedListener(this)
+        robot.removeOnLoadFloorStatusChangedListener(this)
         if (!executorService.isShutdown) {
             executorService.shutdownNow()
         }
@@ -325,6 +329,68 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnIsFrontTOFEnabled.setOnClickListener { isFrontTOFEnabled() }
         btnToggleBackTOF.setOnClickListener { toggleBackTOF() }
         btnIsBackTOFEnabled.setOnClickListener { isBackTOFEnabled() }
+        btnGetAllFloors.setOnClickListener { getAllFloors() }
+        btnLoadFloorAtElevator.setOnClickListener { loadFloorAtElevator() }
+        btnGetCurrentFloor.setOnClickListener {
+            printLog("click")
+        }
+        btnGetCurrentFloor.setOnLongClickListener {
+            printLog("Long click")
+            true
+        }
+    }
+
+    private fun getCurrentFloor() {
+        printLog(robot.getCurrentFloor()?.toString() ?: "Get current floor failed")
+    }
+
+    private fun loadFloorAtElevator() {
+        if (floorList.isEmpty()) {
+            getAllFloors()
+        }
+        if (robot.checkSelfPermission(Permission.MAP) != Permission.GRANTED) {
+            return
+        }
+        val floorListString: MutableList<String> = ArrayList()
+        floorList.forEach {
+            floorListString.add(it.name)
+        }
+        val floorListAdapter =
+            ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, floorListString)
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Click item to load specific floor")
+        builder.setAdapter(floorListAdapter, null)
+        val dialog = builder.create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, pos: Int, _: Long ->
+                val targetFloor = floorList[pos]
+                if (targetFloor.id == null) {
+                    printLog("Floor id is null")
+                    return@OnItemClickListener
+                }
+                printLog("Loading floor: " + targetFloor.name)
+                val elevator = targetFloor.locations.find { it.name == "elevator" }
+                if (elevator == null || targetFloor.id == null) {
+                    printLog("No location $elevator exists")
+                    return@OnItemClickListener
+                }
+                robot.loadFloor(targetFloor.id!!, Position(elevator.x, elevator.y, elevator.yaw))
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private var floorList = emptyList<Floor>()
+
+    private fun getAllFloors() {
+        if (requestPermissionIfNeeded(Permission.MAP, REQUEST_CODE_GET_ALL_FLOORS)) {
+            return
+        }
+        floorList = robot.getAllFloors()
+//        printLog(floorList.toString())
+        floorList.forEach {
+            printLog(it.toString())
+        }
     }
 
     private fun registerBroadcast() {
@@ -1062,10 +1128,16 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     playFirstSequence(false)
                 }
             }
-            Permission.MAP -> if (requestCode == REQUEST_CODE_MAP) {
-                getMap()
-            } else if (requestCode == REQUEST_CODE_GET_MAP_LIST) {
-                getMapList()
+            Permission.MAP -> when (requestCode) {
+                REQUEST_CODE_MAP -> {
+                    getMap()
+                }
+                REQUEST_CODE_GET_MAP_LIST -> {
+                    getMapList()
+                }
+                REQUEST_CODE_GET_ALL_FLOORS -> {
+                    getAllFloors()
+                }
             }
             Permission.SETTINGS -> if (requestCode == REQUEST_CODE_START_DETECTION_WITH_DISTANCE) {
                 startDetectionWithDistance()
@@ -1685,6 +1757,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         private const val REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6
         private const val REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER = 7
         private const val REQUEST_CODE_GET_MAP_LIST = 8
+        private const val REQUEST_CODE_GET_ALL_FLOORS = 9
         private val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -1856,5 +1929,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onGreetModeStateChanged(state: Int) {
         printLog("onGreetModeStateChanged: $state")
+    }
+
+    override fun onLoadFloorStatusChanged(status: Int) {
+        printLog("onLoadFloorStatusChanged: $status")
     }
 }

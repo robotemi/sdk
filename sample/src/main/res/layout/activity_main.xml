@@ -157,6 +157,21 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btnGetCurrentFloor"
+                style="@style/ButtonCommon"
+                android:text="Current Floor" />
+
+            <Button
+                android:id="@+id/btnLoadFloorAtElevator"
+                style="@style/ButtonCommon"
+                android:text="Load Floor At Elevator" />
+
+            <Button
+                android:id="@+id/btnGetAllFloors"
+                style="@style/ButtonCommon"
+                android:text="Get All Floors" />
+
+            <Button
                 android:id="@+id/btnIsBackTOFEnabled"
                 style="@style/ButtonCommon"
                 android:text="Is Back TOF Enabled" />

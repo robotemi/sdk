@@ -170,6 +170,9 @@ class Robot private constructor(private val context: Context) {
     private val onGreetModeStateChangedListeners =
         CopyOnWriteArraySet<OnGreetModeStateChangedListener>()
 
+    private val onLoadFloorStatusChangedListeners =
+        CopyOnWriteArraySet<OnLoadFloorStatusChangedListener>()
+
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
@@ -671,6 +674,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onLoadMapStatusChangedListeners) {
                     listener.onLoadMapStatusChanged(status)
+                }
+            }
+            return true
+        }
+
+        override fun onLoadFloorStatusChanged(status: Int): Boolean {
+            if (onLoadFloorStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onLoadFloorStatusChangedListeners.forEach {
+                    it.onLoadFloorStatusChanged(status)
                 }
             }
             return true
@@ -2579,6 +2592,32 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    fun getCurrentFloor(): Floor? {
+        return try {
+            sdkService?.getCurrentFloor(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentFloor() error")
+            null
+        }
+    }
+
+    fun getAllFloors(): List<Floor> {
+        return try {
+            sdkService?.getAllFloors(applicationInfo.packageName) ?: emptyList()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getAllFloors() error")
+            emptyList()
+        }
+    }
+
+    fun loadFloor(floorId: Int, position: Position) {
+        try {
+            sdkService?.loadFloor(applicationInfo.packageName, floorId, position)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "loadFloor() error")
+        }
+    }
+
     @UiThread
     fun addOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
         onLoadMapStatusChangedListeners.add(listener)
@@ -2587,6 +2626,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
         onLoadMapStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnLoadFloorStatusChangedListener(listener: OnLoadFloorStatusChangedListener) {
+        onLoadFloorStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnLoadFloorStatusChangedListener(listener: OnLoadFloorStatusChangedListener) {
+        onLoadFloorStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
