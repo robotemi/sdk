@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener
 import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.google.gson.Gson
 import com.robotemi.sdk.*
 import com.robotemi.sdk.Robot.*
 import com.robotemi.sdk.Robot.Companion.getInstance
@@ -164,6 +165,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.addOnTtsVisualizerFftDataChangedListener(this)
         robot.addOnReposeStatusChangedListener(this)
         robot.addOnMovementVelocityChangedListener(this)
+        robot.setActivityStreamPublishListener(this)
         robot.showTopBar()
     }
 
@@ -196,6 +198,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnTtsVisualizerFftDataChangedListener(this)
         robot.removeOnReposeStatusChangedListener(this)
         robot.removeOnMovementVelocityChangedListener(this)
+        robot.setActivityStreamPublishListener(null)
         super.onStop()
     }
 
@@ -597,7 +600,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             .create()
         dialog.listView.onItemClickListener =
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
-                val ttsRequest = create(text, language = adapter.getItem(position)!!, showAnimationOnly = true)
+                val ttsRequest =
+                    create(text, language = adapter.getItem(position)!!, showAnimationOnly = true)
                 robot.speak(ttsRequest)
                 printLog("Speak: ${adapter.getItem(position)}")
                 dialog.dismiss()
@@ -810,32 +814,35 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * and uploads it to the mobile application under the Activities tab.
      */
     private fun publishToActivityStream() {
-        val activityStreamObject: ActivityStreamObject
-        val fileName = "puppy.png"
-        val bm = BitmapFactory.decodeResource(resources, R.drawable.puppy)
-        val puppiesFile = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath,
-            fileName
-        )
-        val fileOutputStream: FileOutputStream
-        try {
-            fileOutputStream = FileOutputStream(puppiesFile)
-            bm.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
-            fileOutputStream.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        executorService.execute {
+            val activityStreamObject: ActivityStreamObject
+            val fileName = "puppy.png"
+            val bm = BitmapFactory.decodeResource(resources, R.drawable.puppy)
+            val puppiesFile = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath,
+                fileName
+            )
+            val fileOutputStream: FileOutputStream
+            try {
+                fileOutputStream = FileOutputStream(puppiesFile)
+                bm.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+                fileOutputStream.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            activityStreamObject = ActivityStreamObject.builder()
+                .activityType(ActivityStreamObject.ActivityType.PHOTO)
+                .media(MediaObject.create(MediaObject.MimeType.IMAGE, puppiesFile))
+                .title("Puppy")
+                .source(SourceObject.create("", ""))
+                .build()
+            try {
+                printLog(Gson().toJson(activityStreamObject), false)
+                robot.shareActivityObject(activityStreamObject)
+            } catch (e: RemoteException) {
+                e.printStackTrace()
+            }
         }
-        activityStreamObject = ActivityStreamObject.builder()
-            .activityType(ActivityStreamObject.ActivityType.PHOTO)
-            .title("Puppy")
-            .media(MediaObject.create(MediaObject.MimeType.IMAGE, puppiesFile))
-            .build()
-        try {
-            robot.shareActivityObject(activityStreamObject)
-        } catch (e: RemoteException) {
-            e.printStackTrace()
-        }
-        robot.speak(create("Uploading Image", false))
     }
 
     private fun hideTopBar() {
@@ -882,7 +889,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     override fun onPublish(message: ActivityStreamPublishMessage) {
         //After the activity stream finished publishing (photo or otherwise).
         //Do what you want based on the message returned.
-        robot.speak(create("Uploaded.", false))
+        printLog("onActivityPublish - $message")
     }
 
     override fun onLocationsUpdated(locations: List<String>) {
