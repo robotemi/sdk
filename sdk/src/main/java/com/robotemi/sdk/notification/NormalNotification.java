@@ -7,6 +7,7 @@ import android.os.Parcelable;
 
 import java.util.UUID;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -54,6 +55,10 @@ public class NormalNotification implements Notification, Parcelable {
 
     private int timeout;
 
+    private int backgroundColor;
+
+    private int textColor;
+
     private NormalNotification(NormalNotification.Builder builder) {
         this.type = builder.type == null ? Type.INFO : builder.type;
         this.title = builder.title;
@@ -67,6 +72,8 @@ public class NormalNotification implements Notification, Parcelable {
         this.primaryPendingIntent = builder.primaryPendingIntent;
         this.secondaryPendingIntent = builder.secondaryPendingIntent;
         this.timeout = builder.timeout;
+        this.backgroundColor = builder.backgroundColor;
+        this.textColor = builder.textColor;
         this.notificationId = UUID.randomUUID().toString();
     }
 
@@ -146,6 +153,14 @@ public class NormalNotification implements Notification, Parcelable {
         return timeout;
     }
 
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public int getTextColor() {
+        return textColor;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -165,6 +180,8 @@ public class NormalNotification implements Notification, Parcelable {
         dest.writeParcelable(this.primaryPendingIntent, flags);
         dest.writeParcelable(this.secondaryPendingIntent, flags);
         dest.writeInt(this.timeout);
+        dest.writeInt(this.backgroundColor);
+        dest.writeInt(this.textColor);
     }
 
     public static class Builder {
@@ -195,6 +212,10 @@ public class NormalNotification implements Notification, Parcelable {
         public PendingIntent secondaryPendingIntent;
 
         public int timeout;
+
+        int backgroundColor = Integer.MAX_VALUE;
+
+        int textColor = Integer.MAX_VALUE;
 
         public Builder(String title) {
             this.title = title;
@@ -257,6 +278,16 @@ public class NormalNotification implements Notification, Parcelable {
 
         public NormalNotification.Builder timeout(int timeout) {
             this.timeout = timeout;
+            return this;
+        }
+
+        public NormalNotification.Builder backgroundColor(@ColorInt int backgroundColor) {
+            this.backgroundColor = backgroundColor;
+            return this;
+        }
+
+        public NormalNotification.Builder textColor(@ColorInt int textColor) {
+            this.textColor = textColor;
             return this;
         }
 

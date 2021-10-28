@@ -28,6 +28,7 @@
 |---|---|
 | [builder](builder.md) | `open static fun builder(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](-builder/index.md)`!` |
 | [describeContents](describe-contents.md) | `open fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [getBackgroundColor](get-background-color.md) | `open fun getBackgroundColor(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
 | [getBitmap](get-bitmap.md) | `open fun getBitmap(): `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`?` |
 | [getIconResource](get-icon-resource.md) | `open fun getIconResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
 | [getNotificationId](get-notification-id.md) | `open fun getNotificationId(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
@@ -37,6 +38,7 @@
 | [getSecondaryPendingIntent](get-secondary-pending-intent.md) | `open fun getSecondaryPendingIntent(): `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!` |
 | [getSubtitle](get-subtitle.md) | `open fun getSubtitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
 | [getSubtitleResource](get-subtitle-resource.md) | `open fun getSubtitleResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [getTextColor](get-text-color.md) | `open fun getTextColor(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
 | [getTimeout](get-timeout.md) | `open fun getTimeout(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
 | [getTitle](get-title.md) | `open fun getTitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
 | [getTitleResource](get-title-resource.md) | `open fun getTitleResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |

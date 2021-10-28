@@ -31,6 +31,7 @@
 
 | Name | Summary |
 |---|---|
+| [backgroundColor](background-color.md) | `open fun backgroundColor(backgroundColor: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
 | [bitmap](bitmap.md) | `open fun bitmap(bitmap: `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
 | [build](build.md) | `open fun build(): `[`NormalNotification`](../index.md)`!` |
 | [iconResource](icon-resource.md) | `open fun iconResource(iconResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
@@ -40,6 +41,7 @@
 | [secondaryPendingIntent](secondary-pending-intent.md) | `open fun secondaryPendingIntent(secondaryPendingIntent: `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
 | [subtitle](subtitle.md) | `open fun subtitle(subtitle: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
 | [subtitleResource](subtitle-resource.md) | `open fun subtitleResource(subtitleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
+| [textColor](text-color.md) | `open fun textColor(textColor: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
 | [timeout](timeout.md) | `open fun timeout(timeout: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
 | [title](title.md) | `open fun title(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
 | [titleResource](title-resource.md) | `open fun titleResource(titleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |

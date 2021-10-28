@@ -669,8 +669,8 @@ class Robot private constructor(private val context: Context) {
     /*                  Init                 */
     /*****************************************/
 
+    @get:CheckResult
     val isReady
-        @CheckResult
         get() = sdkService != null
 
     @UiThread
@@ -754,8 +754,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * The wakeup word of the temi's assistant.
      */
+    @get:CheckResult
     val wakeupWord: String
-        @CheckResult
         get() {
             try {
                 return sdkService?.wakeupWord ?: ""
@@ -990,8 +990,8 @@ class Robot private constructor(private val context: Context) {
      *
      * @return List of saved locations.
      */
+    @get:CheckResult
     val locations: List<String>
-        @CheckResult
         get() {
             try {
                 return sdkService?.locations ?: emptyList()
@@ -1031,8 +1031,8 @@ class Robot private constructor(private val context: Context) {
     /**
      *  Set navigation safety level.
      */
+    @get:CheckResult
     var navigationSafety: SafetyLevel
-        @CheckResult
         get() {
             try {
                 return SafetyLevel.valueToEnum(
@@ -1054,8 +1054,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Set navigation speed level.
      */
+    @get:CheckResult
     var goToSpeed: SpeedLevel
-        @CheckResult
         get() {
             try {
                 return SpeedLevel.valueToEnum(
@@ -1195,6 +1195,7 @@ class Robot private constructor(private val context: Context) {
      * @param degrees the degree amount you want the robot to turn
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
+    @JvmOverloads
     fun turnBy(degrees: Int, speed: Float = 1f) {
         try {
             sdkService?.turnBy(degrees, speed)
@@ -1290,8 +1291,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Get the information of temi's admin.
      */
+    @get:CheckResult
     val adminInfo: UserInfo?
-        @CheckResult
         get() {
             try {
                 return sdkService?.adminInfo
@@ -1304,8 +1305,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Fetch all the temi contacts.
      */
+    @get:CheckResult
     val allContact: List<UserInfo>
-        @CheckResult
         get() {
             val contactList = ArrayList<UserInfo>()
             try {
@@ -1319,8 +1320,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Fetch recent calls.
      */
+    @get:CheckResult
     val recentCalls: List<RecentCallModel>
-        @CheckResult
         get() {
             try {
                 return sdkService?.recentCalls ?: emptyList()
@@ -1352,8 +1353,8 @@ class Robot private constructor(private val context: Context) {
         return ""
     }
 
+    @get:CheckResult
     val membersStatus: List<MemberStatusModel>
-        @CheckResult
         get() {
             try {
                 return sdkService?.membersStatus ?: emptyList()
@@ -1422,8 +1423,8 @@ class Robot private constructor(private val context: Context) {
      *
      * @return The serial number of the robot.
      */
+    @get:CheckResult
     val serialNumber: String?
-        @CheckResult
         get() {
             try {
                 return sdkService?.serialNumber
@@ -1438,8 +1439,8 @@ class Robot private constructor(private val context: Context) {
      *
      * @return The battery data the robot.
      */
+    @get:CheckResult
     val batteryData: BatteryData?
-        @CheckResult
         get() {
             try {
                 return sdkService?.batteryData
@@ -1485,8 +1486,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Toggle privacy mode on temi.
      */
+    @get:CheckResult
     var privacyMode: Boolean
-        @CheckResult
         get() {
             try {
                 return sdkService?.privacyModeState ?: false
@@ -1506,8 +1507,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Get(Set) HardButtons enabled(disabled).
      */
+    @get:CheckResult
     var isHardButtonsDisabled: Boolean
-        @CheckResult
         get() {
             try {
                 return sdkService?.isHardButtonsDisabled ?: false
@@ -1532,6 +1533,13 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Get current mode of the specific hard button.
+     *
+     * @param type See [HardButton.MAIN], [HardButton.POWER], [HardButton.VOLUME]
+     * @return
+     */
+    @CheckResult
     fun getHardButtonMode(type: HardButton): HardButton.Mode {
         return try {
             HardButton.Mode.valueToEnum(sdkService?.getHardButtonMode(type.value))
@@ -1544,8 +1552,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Get version of the Launcher.
      */
+    @get:CheckResult
     val launcherVersion: String
-        @CheckResult
         get() {
             try {
                 return sdkService?.launcherVersion ?: ""
@@ -1558,8 +1566,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Get version of the Robox.
      */
+    @get:CheckResult
     val roboxVersion: String
-        @CheckResult
         get() {
             try {
                 return sdkService?.roboxVersion ?: ""
@@ -1573,8 +1581,8 @@ class Robot private constructor(private val context: Context) {
      * Show or hide the green badge(Movement indicator such as navigation, follow...) at the top of the screen.
      */
     @get:JvmName("isTopBadgeEnabled")
+    @get:CheckResult
     var topBadgeEnabled: Boolean
-        @CheckResult
         get() {
             try {
                 return sdkService?.isTopBadgeEnabled ?: true
@@ -1598,9 +1606,9 @@ class Robot private constructor(private val context: Context) {
     /**
      * Turn on/off detection mode.
      */
-    @get: JvmName("isDetectionModeOn")
+    @get:JvmName("isDetectionModeOn")
+    @get:CheckResult
     var detectionModeOn: Boolean
-        @CheckResult
         get() {
             try {
                 return sdkService?.isDetectionModeOn ?: false
@@ -1635,8 +1643,8 @@ class Robot private constructor(private val context: Context) {
      * Turn on/off track user(welcome mode).
      */
     @get:JvmName("isTrackUserOn")
+    @get:CheckResult
     var trackUserOn: Boolean
-        @CheckResult
         get() {
             try {
                 return sdkService?.isTrackUserOn ?: false
@@ -1684,8 +1692,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Volume of Launcher OS.
      */
+    @get:CheckResult
     var volume: Int
-        @CheckResult
         get() {
             try {
                 return sdkService?.volume ?: 0
@@ -1743,9 +1751,9 @@ class Robot private constructor(private val context: Context) {
     /**
      * Check if temi is locked.
      */
+    @get:JvmName("isLocked")
+    @get:CheckResult
     var locked: Boolean
-        @CheckResult
-        @JvmName("isLocked")
         get() {
             return try {
                 sdkService?.isLocked ?: false
@@ -1806,6 +1814,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @return
      */
+    @CheckResult
     fun getNickName(): String {
         return try {
             sdkService?.getNickName(applicationInfo.packageName) ?: ""
@@ -1833,6 +1842,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @return Default, Greet, Privacy
      */
+    @CheckResult
     fun getMode(): Mode {
         return try {
             Mode.valueToEnum(sdkService?.mode)
@@ -1847,6 +1857,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @return
      */
+    @CheckResult
     fun getSupportedLatinKeyboards(): Map<String, Boolean> {
         return try {
             sdkService?.supportedLatinKeyboards as Map<String, Boolean>
@@ -1870,6 +1881,144 @@ class Robot private constructor(private val context: Context) {
             Log.e(TAG, "enabledLatinKeyboards() error")
         }
     }
+
+    /**
+     * Check if the ground depth cliff detection is enabled.
+     */
+    @get:JvmName("isGroundDepthCliffDetectionEnabled")
+    @get:CheckResult
+    var groundDepthCliffDetectionEnabled: Boolean
+        get() {
+            return try {
+                sdkService?.isGroundDepthCliffDetectionEnabled ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isGroundDepthCliffDetectionEnabled() error")
+                false
+            }
+        }
+        /**
+         * @param enabled Set `true` to enabled the ground depth cliff detection, `false` otherwise.
+         */
+        set(enabled) {
+            try {
+                sdkService?.setGroundDepthCliffDetectionEnabled(
+                    applicationInfo.packageName,
+                    enabled
+                )
+            } catch (e: RemoteException) {
+                Log.e(TAG, "setGroundDepthCliffDetectionEnabled() error")
+            }
+        }
+
+    /**
+     * Check if the robot has the cliff sensor.
+     */
+    @CheckResult
+    fun hasCliffSensor(): Boolean {
+        return try {
+            sdkService?.hasCliffSensor() ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "hasCliffSensor() error")
+            false
+        }
+    }
+
+    /**
+     * Check and set the mode of cliff sensor, see [CliffSensorMode]
+     */
+    @get:CheckResult
+    var cliffSensorMode: CliffSensorMode
+        get() {
+            var mode = try {
+                sdkService?.cliffSensorMode ?: 0
+            } catch (e: RemoteException) {
+                Log.d(TAG, "getCliffSensorMode() error")
+                0
+            }
+            if (mode < 0 || mode >= CliffSensorMode.values().size) {
+                mode = 0
+            }
+            return CliffSensorMode.values()[mode]
+        }
+        set(mode) {
+            try {
+                sdkService?.setCliffSensorMode(applicationInfo.packageName, mode.ordinal)
+            } catch (e: RemoteException) {
+                Log.d(TAG, "setCliffSensorMode() error")
+            }
+        }
+
+    /**
+     * Get or set the sensitivity of head depth.
+     */
+    @get:CheckResult
+    var headDepthSensitivity: SensitivityLevel
+        get() {
+            var level = try {
+                sdkService?.headDepthSensitivity ?: 0
+            } catch (e: RemoteException) {
+                Log.d(TAG, "getHeadDepthSensitivity() error")
+                0
+            }
+            if (level < 0 || level >= SensitivityLevel.values().size) {
+                level = 0
+            }
+            return SensitivityLevel.values()[level]
+        }
+        set(sensitivityLevel) {
+            try {
+                sdkService?.setHeadDepthSensitivity(
+                    applicationInfo.packageName,
+                    sensitivityLevel.ordinal
+                )
+            } catch (e: RemoteException) {
+                Log.d(TAG, "setHeadDepthSensitivity() error")
+            }
+        }
+
+    /**
+     * Check or set if the front TOF is enabled.
+     */
+    @get:JvmName("isFrontTOFEnabled")
+    @get:CheckResult
+    var frontTOFEnabled: Boolean
+        get() {
+            return try {
+                sdkService?.isFrontTOFEnabled ?: true
+            } catch (e: RemoteException) {
+                Log.d(TAG, "isFrontTOFEnabled() error")
+                true
+            }
+        }
+        set(enabled) {
+            try {
+                sdkService?.setFrontTOFEnabled(applicationInfo.packageName, enabled)
+            } catch (e: RemoteException) {
+                Log.d(TAG, "setFrontTOFEnabled() error")
+            }
+        }
+
+    /**
+     * Check or set if the back TOF is enabled.
+     */
+    @get:JvmName("isBackTOFEnabled")
+    @get:CheckResult
+    var backTOFEnabled: Boolean
+        get() {
+            return try {
+                sdkService?.isBackTOFEnabled ?: true
+            } catch (e: RemoteException) {
+                Log.d(TAG, "isBackTOFEnabled() error")
+                true
+            }
+        }
+        set(enabled) {
+            try {
+                sdkService?.setBackTOFEnabled(applicationInfo.packageName, enabled)
+            } catch (e: RemoteException) {
+                Log.d(TAG, "setBackTOFEnabled() error")
+            }
+        }
 
     @Throws(RemoteException::class)
     fun showNormalNotification(notification: NormalNotification) {
@@ -1963,9 +2112,9 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    @get:JvmName("isWakeupDisabled")
     val wakeupWordDisabled: Boolean
         @CheckResult
+        @JvmName("isWakeupDisabled")
         get() {
             try {
                 return sdkService?.isWakeupDisabled ?: false
@@ -2049,6 +2198,7 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    @CheckResult
     fun isKioskModeOn(): Boolean {
         return try {
             sdkService?.isKioskModeOn ?: false
@@ -2262,13 +2412,27 @@ class Robot private constructor(private val context: Context) {
      *
      * @param sequenceId Sequence ID you want to play.
      * @param withPlayer Whether to play sequence with the player panel.
+     * @param repeat How many times will this sequence be played after the first playing.
      */
     @JvmOverloads
-    fun playSequence(sequenceId: String, withPlayer: Boolean = false) {
+    fun playSequence(sequenceId: String, withPlayer: Boolean = false, repeat: Int = 0) {
         try {
-            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer)
+            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer, repeat)
         } catch (e: RemoteException) {
             Log.e(TAG, "playSequence() error")
+        }
+    }
+
+    /**
+     * Control current playing sequence.
+     *
+     * @param sequenceCommand Operations for controlling sequence, see [SequenceCommand].
+     */
+    fun controlSequence(sequenceCommand: SequenceCommand) {
+        try {
+            sdkService?.controlSequence(applicationInfo.packageName, sequenceCommand.ordinal)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "controlSequence() error")
         }
     }
 

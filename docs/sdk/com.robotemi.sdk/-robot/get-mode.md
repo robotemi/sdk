@@ -2,7 +2,7 @@
 
 # getMode
 
-`fun getMode(): `[`Mode`](../../com.robotemi.sdk.constants/-mode/index.md)
+`@CheckResult fun getMode(): `[`Mode`](../../com.robotemi.sdk.constants/-mode/index.md)
 
 Get system mode.
 
