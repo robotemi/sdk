@@ -13,6 +13,7 @@
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/SkillTheme"
+        android:largeHeap="true"
         tools:ignore="GoogleAppIndexingWarning">
 
         <!-- Adding this meta-data is required in order to display this app in temi's launcher app -->

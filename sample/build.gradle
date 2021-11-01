@@ -43,5 +43,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // temi SDK
-    implementation project(':sdk')
+//    implementation project(':sdk')
+    implementation fileTree(dir: 'libs', include: ['sdk-debug.aar'])
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

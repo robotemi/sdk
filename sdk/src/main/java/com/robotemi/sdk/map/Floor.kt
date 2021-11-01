@@ -2,46 +2,49 @@ package com.robotemi.sdk.map
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.annotation.Keep
+import android.util.Log
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 
 data class Floor(
-    val index: Int, // for sorting
-    val name: String = "", // floor name
-    val mapId: String? = null, // robox map id
-//    val mapElements: List<Layer> = emptyList(), // virtual wall, green path
-    val locations: List<Location> = listOf(),
-    val mongoId: String = "",
-//    val createdAt: Long = System.currentTimeMillis(),
-//    val lastEdited: Long = System.currentTimeMillis(),
-    val id: Int? = null
+    val id: Int = -1,
+    val name: String = "",
+    val mapId: String = "",
+    private val data: String = ""
 ) : Parcelable {
+
+    val locations: List<Location>
+        get() {
+            val locations = JSONObject(data).getString("locations")
+            Log.d("Floor", locations)
+            return Gson().fromJson<List<Location>>(
+                locations,
+                object : TypeToken<List<Location>>() {}.type
+            )
+        }
+
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString() ?: "",
-        parcel.readString(),
-//        parcel.createTypedArrayList(Layer) ?: emptyList(),
-        parcel.createTypedArrayList(Location) ?: emptyList(),
         parcel.readString() ?: "",
-//        parcel.readLong(),
-//        parcel.readLong(),
-        parcel.readValue(Int::class.java.classLoader) as? Int
+        parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(index)
+        parcel.writeInt(id)
         parcel.writeString(name)
         parcel.writeString(mapId)
-//        parcel.writeTypedList(mapElements)
-        parcel.writeTypedList(locations)
-        parcel.writeString(mongoId)
-//        parcel.writeLong(createdAt)
-//        parcel.writeLong(lastEdited)
-        parcel.writeValue(id)
+        parcel.writeString(data)
     }
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    override fun toString(): String {
+        return "Floor(id=$id, name='$name', mapId='$mapId', locations=$locations)"
     }
 
     companion object CREATOR : Parcelable.Creator<Floor> {
@@ -53,17 +56,14 @@ data class Floor(
             return arrayOfNulls(size)
         }
     }
+
 }
 
-@Keep
 data class Location(
     val x: Float,
     val y: Float,
     val yaw: Float,
     val name: String,
-    val created: Long = System.currentTimeMillis(),
-    val lastUsed: Long = 0L,
-    val useNumber: Int = 0,
     @SerializedName("tilt_angle") val tiltAngle: Float = 0f
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
@@ -71,9 +71,6 @@ data class Location(
         parcel.readFloat(),
         parcel.readFloat(),
         parcel.readString() ?: "",
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readInt(),
         parcel.readFloat()
     )
 
@@ -82,9 +79,6 @@ data class Location(
         parcel.writeFloat(y)
         parcel.writeFloat(yaw)
         parcel.writeString(name)
-        parcel.writeLong(created)
-        parcel.writeLong(lastUsed)
-        parcel.writeInt(useNumber)
         parcel.writeFloat(tiltAngle)
     }
 

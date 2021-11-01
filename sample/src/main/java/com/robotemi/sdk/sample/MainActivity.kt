@@ -332,11 +332,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetAllFloors.setOnClickListener { getAllFloors() }
         btnLoadFloorAtElevator.setOnClickListener { loadFloorAtElevator() }
         btnGetCurrentFloor.setOnClickListener {
-            printLog("click")
-        }
-        btnGetCurrentFloor.setOnLongClickListener {
-            printLog("Long click")
-            true
+            getCurrentFloor()
         }
     }
 
@@ -387,6 +383,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             return
         }
         floorList = robot.getAllFloors()
+        Log.d("MainActivity", "floor list size: ${floorList.size}")
 //        printLog(floorList.toString())
         floorList.forEach {
             printLog(it.toString())
@@ -1000,8 +997,16 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog("onConstraintBeWith", "status = $isConstraint")
     }
 
+    private var detectionState = OnDetectionStateChangedListener.IDLE
+
     override fun onDetectionStateChanged(state: Int) {
         printLog("onDetectionStateChanged: state = $state")
+        if (state == OnDetectionStateChangedListener.IDLE) {
+            stopMovement()
+        } else if (detectionState == OnDetectionStateChangedListener.IDLE && state == OnDetectionStateChangedListener.DETECTED) {
+            followMe()
+        }
+        detectionState = state
     }
 
     /**
@@ -1518,6 +1523,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private fun printLog(tag: String, msg: String, show: Boolean = true) {
         Log.d(if (tag.isEmpty()) "MainActivity" else tag, msg)
         if (!show) return
+        if (!msg.contains("onDetectionStateChanged")) return
         runOnUiThread {
             tvLog.gravity = Gravity.BOTTOM
             tvLog.append("· $msg \n")
