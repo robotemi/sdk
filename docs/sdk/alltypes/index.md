@@ -48,6 +48,7 @@
 | [com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener](../com.robotemi.sdk.navigation.listener/-on-distance-to-location-changed-listener/index.md) |  |
 | [com.robotemi.sdk.face.OnFaceRecognizedListener](../com.robotemi.sdk.face/-on-face-recognized-listener/index.md) |  |
 | [com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener](../com.robotemi.sdk.listeners/-on-go-to-location-status-changed-listener/index.md) |  |
+| [com.robotemi.sdk.listeners.OnGreetModeStateChangedListener](../com.robotemi.sdk.listeners/-on-greet-mode-state-changed-listener/index.md) |  |
 | [com.robotemi.sdk.map.OnLoadMapStatusChangedListener](../com.robotemi.sdk.map/-on-load-map-status-changed-listener/index.md) |  |
 | [com.robotemi.sdk.listeners.OnLocationsUpdatedListener](../com.robotemi.sdk.listeners/-on-locations-updated-listener/index.md) |  |
 | [com.robotemi.sdk.listeners.OnMovementStatusChangedListener](../com.robotemi.sdk.listeners/-on-movement-status-changed-listener/index.md) |  |

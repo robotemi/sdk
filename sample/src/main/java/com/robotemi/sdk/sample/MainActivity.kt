@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnTtsVisualizerFftDataChangedListener, OnReposeStatusChangedListener,
     OnLoadMapStatusChangedListener, OnDisabledFeatureListUpdatedListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
-    OnContinuousFaceRecognizedListener, ITtsService,
+    OnContinuousFaceRecognizedListener, ITtsService, OnGreetModeStateChangedListener,
     TextToSpeech.OnInitListener, OnSdkExceptionListener {
 
     private lateinit var robot: Robot
@@ -83,6 +83,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private var tts: TextToSpeech? = null
 
+    /**
+     * adb shell am broadcast -a com.robotemi.sdk.action.sequence --es control "pause|play|step_forward|step_backward"
+     */
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             printLog("Received broadcast, $intent", false)
@@ -127,6 +130,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.addOnDisabledFeatureListUpdatedListener(this)
         robot.addOnSdkExceptionListener(this)
         robot.addOnMovementStatusChangedListener(this)
+        robot.addOnGreetModeStateChangedListener(this)
         val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
         if (appInfo.metaData != null
             && appInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
@@ -136,6 +140,12 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             robot.setTtsService(this)
         }
         registerBroadcast()
+        val greetModeState = intent.extras?.getInt(SdkConstants.INTENT_ACTION_GREET_MODE_STATE)
+        if (greetModeState != null) {
+            printLog("greetModeState: $greetModeState")
+        } else {
+            printLog("greetModeState: null")
+        }
     }
 
     /**
@@ -211,6 +221,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnLoadMapStatusChangedListener(this)
         robot.removeOnDisabledFeatureListUpdatedListener(this)
         robot.removeOnMovementStatusChangedListener(this)
+        robot.removeOnGreetModeStateChangedListener(this)
         if (!executorService.isShutdown) {
             executorService.shutdownNow()
         }
@@ -220,7 +231,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             && appInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
         ) {
             printLog("Unbind TTS service")
-            tts = TextToSpeech(this, this)
+            tts = null
             robot.setTtsService(null)
         }
         unregisterBroadcast()
@@ -559,6 +570,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA)
                 // Robot.getInstance().onStart() method may change the visibility of top bar.
                 robot.onStart(activityInfo)
+                robot.wakeup()
             } catch (e: PackageManager.NameNotFoundException) {
                 throw RuntimeException(e)
             }
@@ -1840,5 +1852,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             }
 
         })
+    }
+
+    override fun onGreetModeStateChanged(state: Int) {
+        printLog("onGreetModeStateChanged: $state")
     }
 }

@@ -167,6 +167,9 @@ class Robot private constructor(private val context: Context) {
     private val onMovementStatusChangedListeners =
         CopyOnWriteArraySet<OnMovementStatusChangedListener>()
 
+    private val onGreetModeStateChangedListeners =
+        CopyOnWriteArraySet<OnGreetModeStateChangedListener>()
+
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
@@ -490,6 +493,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onDisabledFeatureListUpdatedListeners) {
                     listener.onDisabledFeatureListUpdated(disabledFeatureList)
+                }
+            }
+            return true
+        }
+
+        override fun onGreetModeStateChanged(state: Int): Boolean {
+            if (onGreetModeStateChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onGreetModeStateChangedListeners.forEach {
+                    it.onGreetModeStateChanged(state)
                 }
             }
             return true
@@ -2079,6 +2092,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnDisabledFeatureListUpdatedListener(listener: OnDisabledFeatureListUpdatedListener) {
         onDisabledFeatureListUpdatedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnGreetModeStateChangedListener(listener: OnGreetModeStateChangedListener) {
+        onGreetModeStateChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnGreetModeStateChangedListener(listener: OnGreetModeStateChangedListener) {
+        onGreetModeStateChangedListeners.remove(listener)
     }
 
     /*****************************************/

@@ -103,4 +103,6 @@ interface ISdkServiceCallback {
     void onTtsPause();
 
     void onTtsResume();
+
+    boolean onGreetModeStateChanged(int state);
 }

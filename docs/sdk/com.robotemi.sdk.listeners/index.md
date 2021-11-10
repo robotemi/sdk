@@ -14,6 +14,7 @@
 | [OnDetectionStateChangedListener](-on-detection-state-changed-listener/index.md) | `interface OnDetectionStateChangedListener` |
 | [OnDisabledFeatureListUpdatedListener](-on-disabled-feature-list-updated-listener/index.md) | `interface OnDisabledFeatureListUpdatedListener` |
 | [OnGoToLocationStatusChangedListener](-on-go-to-location-status-changed-listener/index.md) | `interface OnGoToLocationStatusChangedListener` |
+| [OnGreetModeStateChangedListener](-on-greet-mode-state-changed-listener/index.md) | `interface OnGreetModeStateChangedListener` |
 | [OnLocationsUpdatedListener](-on-locations-updated-listener/index.md) | `interface OnLocationsUpdatedListener` |
 | [OnMovementStatusChangedListener](-on-movement-status-changed-listener/index.md) | `interface OnMovementStatusChangedListener` |
 | [OnMovementVelocityChangedListener](-on-movement-velocity-changed-listener/index.md) | `interface OnMovementVelocityChangedListener` |
