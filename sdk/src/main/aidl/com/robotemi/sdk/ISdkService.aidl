@@ -120,7 +120,7 @@ interface ISdkService {
      */
     void beWithMe();
 
-    void skidJoy(in float x, in float y);
+    void skidJoy(in float x, in float y, in boolean smart);
 
     void turnBy(in int azimuth, in float speed);
 

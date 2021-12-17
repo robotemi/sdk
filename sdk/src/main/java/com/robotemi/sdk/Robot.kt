@@ -1206,12 +1206,14 @@ class Robot private constructor(private val context: Context) {
      *
      * @param x Move on the x axis from -1 to 1.
      * @param y Move on the y axis from -1 to 1.
+     * @param smart Moving with bypassing the obstacles
      */
-    fun skidJoy(x: Float, y: Float) {
+    @JvmOverloads
+    fun skidJoy(x: Float, y: Float, smart: Boolean = false) {
         try {
-            sdkService?.skidJoy(x, y)
+            sdkService?.skidJoy(x, y, smart)
         } catch (e: RemoteException) {
-            Log.e(TAG, "skidJoy(float, float) (x=$x, y=$y) error")
+            Log.e(TAG, "skidJoy(float, float, smart) (x=$x, y=$y, smart=$smart) error")
         }
     }
 
