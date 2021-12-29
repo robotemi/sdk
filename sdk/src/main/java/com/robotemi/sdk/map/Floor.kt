@@ -18,7 +18,6 @@ data class Floor(
     val locations: List<Location>
         get() {
             val locations = JSONObject(data).getString("locations")
-            Log.d("Floor", locations)
             return Gson().fromJson<List<Location>>(
                 locations,
                 object : TypeToken<List<Location>>() {}.type
