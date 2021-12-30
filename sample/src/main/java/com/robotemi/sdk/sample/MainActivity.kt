@@ -48,6 +48,7 @@ import com.robotemi.sdk.map.OnLoadMapStatusChangedListener
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
+import com.robotemi.sdk.navigation.listener.OnDistanceToDestinationChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
 import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener
 import com.robotemi.sdk.navigation.model.Position
@@ -79,7 +80,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnLoadMapStatusChangedListener, OnDisabledFeatureListUpdatedListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
     OnContinuousFaceRecognizedListener, ITtsService, OnGreetModeStateChangedListener,
-    TextToSpeech.OnInitListener, OnLoadFloorStatusChangedListener, OnSdkExceptionListener {
+    TextToSpeech.OnInitListener, OnLoadFloorStatusChangedListener,
+    OnDistanceToDestinationChangedListener, OnSdkExceptionListener {
 
     private lateinit var robot: Robot
 
@@ -181,6 +183,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.addOnReposeStatusChangedListener(this)
         robot.addOnMovementVelocityChangedListener(this)
         robot.setActivityStreamPublishListener(this)
+        robot.addOnDistanceToDestinationChangedListener(this)
         robot.showTopBar()
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -220,6 +223,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnReposeStatusChangedListener(this)
         robot.removeOnMovementVelocityChangedListener(this)
         robot.setActivityStreamPublishListener(null)
+        robot.removeOnDistanceToDestinationChangedListener(this)
         super.onStop()
     }
 
@@ -1937,5 +1941,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onLoadFloorStatusChanged(status: Int) {
         printLog("onLoadFloorStatusChanged: $status")
+    }
+
+    override fun onDistanceToDestinationChanged(location: String, distance: Float) {
+        printLog("distance to destination: destination=$location, distance=$distance")
     }
 }

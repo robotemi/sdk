@@ -39,6 +39,7 @@ import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.model.MemberStatusModel
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
+import com.robotemi.sdk.navigation.listener.OnDistanceToDestinationChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToLocationChangedListener
 import com.robotemi.sdk.navigation.listener.OnReposeStatusChangedListener
 import com.robotemi.sdk.navigation.model.Position
@@ -174,6 +175,9 @@ class Robot private constructor(private val context: Context) {
 
     private val onLoadFloorStatusChangedListeners =
         CopyOnWriteArraySet<OnLoadFloorStatusChangedListener>()
+
+    private val onDistanceToDestinationChangedListeners =
+        CopyOnWriteArraySet<OnDistanceToDestinationChangedListener>()
 
     private var ttsService: ITtsService? = null
 
@@ -359,6 +363,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onReposeStatusChangedListeners) {
                     listener.onReposeStatusChanged(status, description)
+                }
+            }
+            return true
+        }
+
+        override fun onDistanceToDestinationChanged(location: String, distance: Float): Boolean {
+            if (onDistanceToDestinationChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onDistanceToDestinationChangedListeners) {
+                    listener.onDistanceToDestinationChanged(location, distance)
                 }
             }
             return true
@@ -1191,6 +1205,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnReposeStatusChangedListener(listener: OnReposeStatusChangedListener) {
         onReposeStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnDistanceToDestinationChangedListener(listener: OnDistanceToDestinationChangedListener) {
+        onDistanceToDestinationChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnDistanceToDestinationChangedListener(listener: OnDistanceToDestinationChangedListener) {
+        onDistanceToDestinationChangedListeners.remove(listener)
     }
 
     /*****************************************/
