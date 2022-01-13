@@ -11,6 +11,7 @@
 | [BACK](-b-a-c-k.md) | `const val BACK: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
 | [DETECTION_DISTANCE_DEFAULT](-d-e-t-e-c-t-i-o-n_-d-i-s-t-a-n-c-e_-d-e-f-a-u-l-t.md) | `const val DETECTION_DISTANCE_DEFAULT: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) |
 | [EXTRA_NLP_RESULT](-e-x-t-r-a_-n-l-p_-r-e-s-u-l-t.md) | `const val EXTRA_NLP_RESULT: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [INTENT_ACTION_GREET_MODE_STATE](-i-n-t-e-n-t_-a-c-t-i-o-n_-g-r-e-e-t_-m-o-d-e_-s-t-a-t-e.md) | `const val INTENT_ACTION_GREET_MODE_STATE: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [LOCATION_HOME_BASE](-l-o-c-a-t-i-o-n_-h-o-m-e_-b-a-s-e.md) | `const val LOCATION_HOME_BASE: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [METADATA_ACTIONS](-m-e-t-a-d-a-t-a_-a-c-t-i-o-n-s.md) | `const val METADATA_ACTIONS: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [METADATA_ASSISTANT](-m-e-t-a-d-a-t-a_-a-s-s-i-s-t-a-n-t.md) | `const val METADATA_ASSISTANT: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

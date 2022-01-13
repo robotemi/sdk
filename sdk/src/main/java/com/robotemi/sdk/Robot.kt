@@ -167,6 +167,12 @@ class Robot private constructor(private val context: Context) {
     private val onMovementStatusChangedListeners =
         CopyOnWriteArraySet<OnMovementStatusChangedListener>()
 
+    private val onGreetModeStateChangedListeners =
+        CopyOnWriteArraySet<OnGreetModeStateChangedListener>()
+
+    private val onLoadFloorStatusChangedListeners =
+        CopyOnWriteArraySet<OnLoadFloorStatusChangedListener>()
+
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
@@ -495,6 +501,16 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        override fun onGreetModeStateChanged(state: Int): Boolean {
+            if (onGreetModeStateChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onGreetModeStateChangedListeners.forEach {
+                    it.onGreetModeStateChanged(state)
+                }
+            }
+            return true
+        }
+
         /*****************************************/
         /*               Permission              */
         /*****************************************/
@@ -658,6 +674,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onLoadMapStatusChangedListeners) {
                     listener.onLoadMapStatusChanged(status)
+                }
+            }
+            return true
+        }
+
+        override fun onLoadFloorStatusChanged(status: Int): Boolean {
+            if (onLoadFloorStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onLoadFloorStatusChangedListeners.forEach {
+                    it.onLoadFloorStatusChanged(status)
                 }
             }
             return true
@@ -1180,12 +1206,14 @@ class Robot private constructor(private val context: Context) {
      *
      * @param x Move on the x axis from -1 to 1.
      * @param y Move on the y axis from -1 to 1.
+     * @param smart Moving with bypassing the obstacles
      */
-    fun skidJoy(x: Float, y: Float) {
+    @JvmOverloads
+    fun skidJoy(x: Float, y: Float, smart: Boolean = false) {
         try {
-            sdkService?.skidJoy(x, y)
+            sdkService?.skidJoy(x, y, smart)
         } catch (e: RemoteException) {
-            Log.e(TAG, "skidJoy(float, float) (x=$x, y=$y) error")
+            Log.e(TAG, "skidJoy(float, float, smart) (x=$x, y=$y, smart=$smart) error")
         }
     }
 
@@ -2081,6 +2109,16 @@ class Robot private constructor(private val context: Context) {
         onDisabledFeatureListUpdatedListeners.remove(listener)
     }
 
+    @UiThread
+    fun addOnGreetModeStateChangedListener(listener: OnGreetModeStateChangedListener) {
+        onGreetModeStateChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnGreetModeStateChangedListener(listener: OnGreetModeStateChangedListener) {
+        onGreetModeStateChangedListeners.remove(listener)
+    }
+
     /*****************************************/
     /*               Kiosk Mode              */
     /*****************************************/
@@ -2556,6 +2594,32 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    fun getCurrentFloor(): Floor? {
+        return try {
+            sdkService?.getCurrentFloor(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentFloor() error")
+            null
+        }
+    }
+
+    fun getAllFloors(): List<Floor> {
+        return try {
+            sdkService?.getAllFloors(applicationInfo.packageName) ?: emptyList()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getAllFloors() error")
+            emptyList()
+        }
+    }
+
+    fun loadFloor(floorId: Int, position: Position) {
+        try {
+            sdkService?.loadFloor(applicationInfo.packageName, floorId, position)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "loadFloor() error")
+        }
+    }
+
     @UiThread
     fun addOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
         onLoadMapStatusChangedListeners.add(listener)
@@ -2564,6 +2628,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
         onLoadMapStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnLoadFloorStatusChangedListener(listener: OnLoadFloorStatusChangedListener) {
+        onLoadFloorStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnLoadFloorStatusChangedListener(listener: OnLoadFloorStatusChangedListener) {
+        onLoadFloorStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/

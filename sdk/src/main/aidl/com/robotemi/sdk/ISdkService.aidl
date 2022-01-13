@@ -17,6 +17,7 @@ import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.map.MapDataModel;
 import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.map.MapModel;
+import com.robotemi.sdk.map.Floor;
 
 interface ISdkService {
 
@@ -119,7 +120,7 @@ interface ISdkService {
      */
     void beWithMe();
 
-    void skidJoy(in float x, in float y);
+    void skidJoy(in float x, in float y, in boolean smart);
 
     void turnBy(in int azimuth, in float speed);
 
@@ -319,4 +320,10 @@ interface ISdkService {
     void setBackTOFEnabled(in String packageName, boolean enabled);
 
     boolean isBackTOFEnabled();
+
+    Floor getCurrentFloor(in String packageName);
+
+    List<Floor> getAllFloors(in String packageName);
+
+    void loadFloor(in String packageName, int floorId, in Position position);
 }
