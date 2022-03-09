@@ -1,5 +1,6 @@
 package com.robotemi.sdk
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
@@ -20,6 +21,9 @@ import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
 import com.robotemi.sdk.activitystream.ActivityStreamUtils
 import com.robotemi.sdk.constants.*
+import com.robotemi.sdk.constants.SdkConstants.FALSE
+import com.robotemi.sdk.constants.SdkConstants.NOT_SET
+import com.robotemi.sdk.constants.SdkConstants.TRUE
 import com.robotemi.sdk.exception.OnSdkExceptionListener
 import com.robotemi.sdk.exception.SdkException
 import com.robotemi.sdk.face.ContactModel
@@ -56,9 +60,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.collections.HashMap
 
 @SuppressWarnings("unused")
 class Robot private constructor(private val context: Context) {
@@ -86,7 +88,7 @@ class Robot private constructor(private val context: Context) {
 
     private val wakeUpWordListeners = CopyOnWriteArraySet<WakeupWordListener>()
 
-    private val onRobotReadyListeners = HashSet<OnRobotReadyListener>()
+    private val onRobotReadyListeners = CopyOnWriteArraySet<OnRobotReadyListener>()
 
     private val onBeWithMeStatusChangeListeners =
         CopyOnWriteArraySet<OnBeWithMeStatusChangedListener>()
@@ -1031,11 +1033,23 @@ class Robot private constructor(private val context: Context) {
      * Send robot to previously saved location.
      *
      * @param location Saved location name.
+     * @param backwards if true will allow go backwards during go to
+     * @param noBypass if true will disallow bypass the obstacles during go to
+     * @param speedLevel the speed level of this single go to session
      */
-    fun goTo(location: String) {
+    @JvmOverloads
+    fun goTo(
+        location: String,
+        backwards: Boolean? = null,
+        noBypass: Boolean? = null,
+        speedLevel: SpeedLevel? = null
+    ) {
         require(location.isNotBlank()) { "Location can not be null or empty." }
         try {
-            sdkService?.goTo(location)
+            val allowBackwardsInt =
+                if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
+            val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
+            sdkService?.goTo(location, allowBackwardsInt, noBypassInt, speedLevel?.value ?: "")
         } catch (e: RemoteException) {
             Log.e(TAG, "goTo(String) error")
         }
@@ -1045,10 +1059,27 @@ class Robot private constructor(private val context: Context) {
      * Go to a specific position with (x,y).
      *
      * @param position Position holds (x,y).
+     * @param backwards if true will allow go backwards during go to
+     * @param noBypass if true will disallow bypass the obstacles during go to
+     * @param speedLevel the speed level of this single go to session
      */
-    fun goToPosition(position: Position) {
+    @JvmOverloads
+    fun goToPosition(
+        position: Position,
+        backwards: Boolean? = null,
+        noBypass: Boolean? = null,
+        speedLevel: SpeedLevel? = null
+    ) {
         try {
-            sdkService?.goToPosition(position)
+            val allowBackwardsInt =
+                if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
+            val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
+            sdkService?.goToPosition(
+                position,
+                allowBackwardsInt,
+                noBypassInt,
+                speedLevel?.value ?: ""
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "goToPosition() error")
         }
@@ -2801,6 +2832,8 @@ class Robot private constructor(private val context: Context) {
 
         private const val TAG = "Robot"
 
+        @SuppressLint("StaticFieldLeak")
+        @Volatile
         private var instance: Robot? = null
 
         @JvmStatic
