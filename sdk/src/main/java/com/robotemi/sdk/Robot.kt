@@ -1047,9 +1047,11 @@ class Robot private constructor(private val context: Context) {
      * Send robot to previously saved location.
      *
      * @param location Saved location name.
-     * @param backwards if true will allow go backwards during go to
-     * @param noBypass if true will disallow bypass the obstacles during go to
-     * @param speedLevel the speed level of this single go to session
+     * @param backwards if `true` will walk backwards to the destination. `false` by default.
+     * @param noBypass if `true` will disallow bypass the obstacles during go to.
+     *   Pass `null` to follow the  *Settings -> Navigation Settings*
+     * @param speedLevel the speed level of this single go to session.
+     *   Pass `null` to start with the speed level in *Settings -> Navigation Settings* (see [speedLevel]).
      */
     @JvmOverloads
     fun goTo(
@@ -1073,9 +1075,11 @@ class Robot private constructor(private val context: Context) {
      * Go to a specific position with (x,y).
      *
      * @param position Position holds (x,y).
-     * @param backwards if true will allow go backwards during go to
-     * @param noBypass if true will disallow bypass the obstacles during go to
-     * @param speedLevel the speed level of this single go to session
+     * @param backwards if `true` will walk backwards to the destination. `false` by default.
+     * @param noBypass if `true` will disallow bypass the obstacles during go to.
+     *   Pass `null` to follow the  *Settings -> Navigation Settings*
+     * @param speedLevel the speed level of this single go to session.
+     *   Pass `null` to start with the speed level in *Settings -> Navigation Settings* (see [speedLevel]).
      */
     @JvmOverloads
     fun goToPosition(
