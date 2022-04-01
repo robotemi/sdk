@@ -6,12 +6,15 @@
 
 | Name | Summary |
 |---|---|
+| [Floor](-floor/index.md) | `data class Floor : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
 | [Layer](-layer/index.md) | `data class Layer : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
 | [LayerPose](-layer-pose/index.md) | `data class LayerPose : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
+| [Location](-location/index.md) | `data class Location : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
 | [MapDataModel](-map-data-model/index.md) | `data class MapDataModel : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
 | [MapImage](-map-image/index.md) | `data class MapImage : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
 | [MapInfo](-map-info/index.md) | `data class MapInfo : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
 | [MapModel](-map-model/index.md) | `data class MapModel : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
+| [OnLoadFloorStatusChangedListener](-on-load-floor-status-changed-listener/index.md) | `interface OnLoadFloorStatusChangedListener` |
 | [OnLoadMapStatusChangedListener](-on-load-map-status-changed-listener/index.md) | `interface OnLoadMapStatusChangedListener` |
 
 ### Properties

@@ -107,4 +107,6 @@ interface ISdkServiceCallback {
     boolean onGreetModeStateChanged(int state);
 
     boolean onLoadFloorStatusChanged(int status);
+
+    boolean onDistanceToDestinationChanged(in String location, float distance);
 }

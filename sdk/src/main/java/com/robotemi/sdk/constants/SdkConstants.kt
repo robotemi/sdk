@@ -92,6 +92,10 @@ object SdkConstants {
     const val PAGE_HOME = "com.robotemi.page.home"
 
     const val INTENT_ACTION_GREET_MODE_STATE = "greet_mode_state"
+
+    const val NOT_SET = 0
+    const val TRUE = 1
+    const val FALSE = -1
 }
 
 enum class ContentType(val path: String) {
