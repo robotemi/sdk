@@ -685,11 +685,11 @@ class Robot private constructor(private val context: Context) {
         /*                  Map                  */
         /*****************************************/
 
-        override fun onLoadMapStatusChanged(status: Int): Boolean {
+        override fun onLoadMapStatusChanged(status: Int, requestId: String): Boolean {
             if (onLoadMapStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onLoadMapStatusChangedListeners) {
-                    listener.onLoadMapStatusChanged(status)
+                    listener.onLoadMapStatusChanged(status, requestId)
                 }
             }
             return true
@@ -2630,26 +2630,58 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Load map by map ID.
+     * The result is broadcast from onLoadMapStatusChanged
      *
      * @param mapId The map ID of the map to be loaded
-     * @param reposeRequired If needs to repose after loading map
+     * @param reposeRequired If needs to repose after loading map, default as false
      * @param position The position for repose
+     * @param offline Skip fetching the latest map data of target mapId, default as false.
+     * @param offline Skip fetching the latest map data of target mapId, default as false.
+     * @param withoutUI Load the map in the background without showing any blocking UI, default as false.
+     * @return Request id. In the format of UUID, e.g. 538b44c9-fdcf-426a-9693-d72e9c0f9550. Used in onLoadMapStatusChanged callback.
      */
     @JvmOverloads
-    fun loadMap(mapId: String, reposeRequired: Boolean = false, position: Position? = null) {
-        try {
+    fun loadMap(mapId: String,
+                reposeRequired: Boolean = false,
+                position: Position? = null,
+                offline: Boolean = false,
+                withoutUI: Boolean = false
+    ): String {
+
+        return try {
             if (position == null) {
-                sdkService?.loadMap(applicationInfo.packageName, mapId, reposeRequired)
+                sdkService?.loadMap(applicationInfo.packageName, mapId, reposeRequired, offline, withoutUI) ?: ""
             } else {
                 sdkService?.loadMapWithPosition(
                     applicationInfo.packageName,
                     mapId,
                     reposeRequired,
-                    position
-                )
+                    position,
+                    offline,
+                    withoutUI
+                ) ?: ""
             }
         } catch (e: RemoteException) {
             Log.e(TAG, "loadMap() error")
+            ""
+        }
+    }
+
+    /**
+     * Load map to cache for offline use.
+     *
+     * @param mapId The map ID of the map to be loaded into cache
+     * @return RequestId
+     */
+    fun loadMapToCache(mapId: String): String {
+        return try {
+            sdkService?.loadMapToCache(
+                applicationInfo.packageName,
+                mapId
+            ) ?: ""
+        } catch (e: RemoteException) {
+            Log.e(TAG, "loadMap() error")
+            ""
         }
     }
 

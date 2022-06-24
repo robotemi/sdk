@@ -261,7 +261,7 @@ interface ISdkService {
 
     List<MapModel> getMapList(in String packageName);
 
-    void loadMap(in String packageName, in String mapId, boolean reposeRequired);
+    String loadMap(in String packageName, in String mapId, boolean reposeRequired, boolean offline, boolean withouUI);
 
     void lock(in String packageName, boolean isForLocking);
 
@@ -269,7 +269,7 @@ interface ISdkService {
 
     void muteAlexa(in String packageName);
 
-    void loadMapWithPosition(in String packageName, in String mapId, boolean reposeRequired, in Position position);
+    String loadMapWithPosition(in String packageName, in String mapId, boolean reposeRequired, in Position position, boolean offline, boolean withouUI);
 
     void shutdown(in String packageName);
 
@@ -326,4 +326,6 @@ interface ISdkService {
     List<Floor> getAllFloors(in String packageName);
 
     void loadFloor(in String packageName, int floorId, in Position position);
+
+    String loadMapToCache(in String packageName, in String mapId);
 }
