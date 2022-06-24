@@ -86,7 +86,7 @@ interface ISdkServiceCallback {
 
     boolean onReposeStatusChanged(int status, in String description);
 
-    boolean onLoadMapStatusChanged(int status);
+    boolean onLoadMapStatusChanged(int status, String requestId);
 
     boolean onDisabledFeatureListUpdated(in List<String> disabledFeatureList);
 

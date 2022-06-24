@@ -322,6 +322,21 @@
                 android:text="Load Map" />
 
             <Button
+                android:id="@+id/btnLoadMapToCache"
+                style="@style/ButtonCommon"
+                android:text="Load Map To Cache" />
+
+            <Button
+                android:id="@+id/btnLoadMapOffline"
+                style="@style/ButtonCommon"
+                android:text="Load Map Offline" />
+
+            <Button
+                android:id="@+id/btnLoadMapWithoutUI"
+                style="@style/ButtonCommon"
+                android:text="Load Map Without UI" />
+
+            <Button
                 android:id="@+id/btnGetMapList"
                 style="@style/ButtonCommon"
                 android:text="Get Map List" />

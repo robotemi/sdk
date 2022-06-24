@@ -312,6 +312,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnRepose.setOnClickListener { repose() }
         btnGetMapList.setOnClickListener { getMapListBtn() }
         btnLoadMap.setOnClickListener { loadMap() }
+        btnLoadMapToCache.setOnClickListener { loadMapToCache() }
+        btnLoadMapOffline.setOnClickListener { loadMap(false, null, true) }
+        btnLoadMapWithoutUI.setOnClickListener { loadMap(false, null, false, true) }
         btnLock.setOnClickListener { lock() }
         btnUnlock.setOnClickListener { unlock() }
         btnMuteAlexa.setOnClickListener { muteAlexa() }
@@ -1627,8 +1630,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog("repose status: $status, description: $description")
     }
 
-    override fun onLoadMapStatusChanged(status: Int) {
-        printLog("load map status: $status")
+    override fun onLoadMapStatusChanged(status: Int, requestId: String) {
+        printLog("load map status: $status, requestId: $requestId")
     }
 
     private var mapList: List<MapModel> = ArrayList()
@@ -1639,7 +1642,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         mapList = robot.getMapList()
     }
 
-    private fun loadMap(reposeRequired: Boolean, position: Position?) {
+    private fun loadMap(reposeRequired: Boolean, position: Position?, offline: Boolean = false, withoutUI: Boolean = false) {
         if (mapList.isEmpty()) {
             getMapList()
         }
@@ -1656,13 +1659,35 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         builder.setAdapter(mapListAdapter, null)
         val dialog = builder.create()
         dialog.listView.onItemClickListener =
-            OnItemClickListener { _: AdapterView<*>?, _: View?, pos: Int, _: Long ->
-                printLog("Loading map: " + mapList[pos])
-                if (position == null) {
-                    robot.loadMap(mapList[pos].id, reposeRequired)
-                } else {
-                    robot.loadMap(mapList[pos].id, reposeRequired, position)
-                }
+            OnItemClickListener { _, _, pos: Int, _ ->
+                val requestId =
+                    robot.loadMap(mapList[pos].id, reposeRequired, position, offline = offline, withoutUI = withoutUI)
+                printLog("Loading map: ${mapList[pos]}, request id $requestId, reposeRequired $reposeRequired, position $position, offline $offline, withoutUI $withoutUI")
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private fun loadMapToCache() {
+        if (mapList.isEmpty()) {
+            getMapList()
+        }
+        if (robot.checkSelfPermission(Permission.MAP) != Permission.GRANTED) {
+            return
+        }
+        val mapListString: MutableList<String> = ArrayList()
+        for (i in mapList.indices) {
+            mapListString.add(mapList[i].name)
+        }
+        val mapListAdapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, mapListString)
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Click item to load specific map")
+        builder.setAdapter(mapListAdapter, null)
+        val dialog = builder.create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _, _, pos: Int, _ ->
+                val requestId = robot.loadMapToCache(mapList[pos].id)
+                printLog("Loading map to cache: " + mapList[pos] + " request id " + requestId)
                 dialog.dismiss()
             }
         dialog.show()
