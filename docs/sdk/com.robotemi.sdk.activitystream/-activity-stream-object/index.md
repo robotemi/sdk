@@ -1,35 +1,38 @@
-[sdk](../../index.md) / [com.robotemi.sdk.activitystream](../index.md) / [ActivityStreamObject](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.activitystream](../index.md)/[ActivityStreamObject](index.md)
 
 # ActivityStreamObject
 
-`open class ActivityStreamObject : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+open class [ActivityStreamObject](index.md) : Parcelable
 
-### Types
-
-| Name | Summary |
-|---|---|
-| [ActivityType](-activity-type/index.md) | `class ActivityType` |
-| [Builder](-builder/index.md) | `open class Builder` |
-
-### Properties
+## Types
 
 | Name | Summary |
 |---|---|
-| [CREATOR](-c-r-e-a-t-o-r.md) | `static val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`ActivityStreamObject`](./index.md)`!>!` |
+| [ActivityType](-activity-type/index.md) | [androidJvm]<br>enum [ActivityType](-activity-type/index.md) |
+| [Builder](-builder/index.md) | [androidJvm]<br>open class [Builder](-builder/index.md) |
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [builder](builder.md) | `open static fun builder(): `[`ActivityStreamObject.Builder`](-builder/index.md)`!` |
-| [describeContents](describe-contents.md) | `open fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getActivityType](get-activity-type.md) | `open fun getActivityType(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getDate](get-date.md) | `open fun getDate(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getItems](get-items.md) | `open fun getItems(): `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`ActivityStreamListItem`](../-activity-stream-list-item/index.md)`!>!` |
-| [getMediaObject](get-media-object.md) | `open fun getMediaObject(): `[`MediaObject`](../../com.robotemi.sdk/-media-object/index.md)`!` |
-| [getMessage](get-message.md) | `open fun getMessage(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getNumOfProvidedFiles](get-num-of-provided-files.md) | `open fun getNumOfProvidedFiles(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getSourceObject](get-source-object.md) | `open fun getSourceObject(): `[`SourceObject`](../../com.robotemi.sdk/-source-object/index.md)`!` |
-| [getTitle](get-title.md) | `open fun getTitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getUuid](get-uuid.md) | `open fun getUuid(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [writeToParcel](write-to-parcel.md) | `open fun writeToParcel(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`!, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [builder](builder.md) | [androidJvm]<br>open fun [builder](builder.md)(): [ActivityStreamObject.Builder](-builder/index.md) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open fun [writeToParcel](write-to-parcel.md)(dest: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
+
+## Properties
+
+| Name | Summary |
+|---|---|
+| [activityType](activity-type.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;type&quot;)<br>open val [activityType](activity-type.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411) | [androidJvm]<br>val [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [CREATOR](-c-r-e-a-t-o-r.md) | [androidJvm]<br>val [CREATOR](-c-r-e-a-t-o-r.md): Parcelable.Creator&lt;[ActivityStreamObject](index.md)&gt; |
+| [date](date.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;date&quot;)<br>open val [date](date.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [items](items.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;items&quot;)<br>open val [items](items.md): [List](https://docs.oracle.com/javase/8/docs/api/java/util/List.html)&lt;[ActivityStreamListItem](../-activity-stream-list-item/index.md)&gt; |
+| [mediaObject](media-object.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;media&quot;)<br>open val [mediaObject](media-object.md): [MediaObject](../../com.robotemi.sdk/-media-object/index.md) |
+| [message](message.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;message&quot;)<br>open val [message](message.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [numOfProvidedFiles](num-of-provided-files.md) | [androidJvm]<br>open val [numOfProvidedFiles](num-of-provided-files.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411) | [androidJvm]<br>val [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [sourceObject](source-object.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;source&quot;)<br>open val [sourceObject](source-object.md): [SourceObject](../../com.robotemi.sdk/-source-object/index.md) |
+| [title](title.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;title&quot;)<br>open val [title](title.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [uuid](uuid.md) | [androidJvm]<br>open val [uuid](uuid.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |

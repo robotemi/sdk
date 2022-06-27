@@ -1,11 +1,16 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [controlSequence](./control-sequence.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[controlSequence](control-sequence.md)
 
 # controlSequence
 
-`fun controlSequence(sequenceCommand: `[`SequenceCommand`](../../com.robotemi.sdk.constants/-sequence-command/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+fun [controlSequence](control-sequence.md)(sequenceCommand: [SequenceCommand](../../com.robotemi.sdk.constants/-sequence-command/index.md))
 
 Control current playing sequence.
 
-### Parameters
+## Parameters
 
-`sequenceCommand` - Operations for controlling sequence, see [SequenceCommand](../../com.robotemi.sdk.constants/-sequence-command/index.md).
+androidJvm
+
+| | |
+|---|---|
+| sequenceCommand | Operations for controlling sequence, see [SequenceCommand](../../com.robotemi.sdk.constants/-sequence-command/index.md). |

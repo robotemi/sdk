@@ -1,18 +1,23 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [startTelepresence](./start-telepresence.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[startTelepresence](start-telepresence.md)
 
 # startTelepresence
 
-`@JvmOverloads fun startTelepresence(displayName: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, peerId: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, platform: `[`Platform`](../../com.robotemi.sdk.constants/-platform/index.md)` = Platform.MOBILE): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+[androidJvm]\
+
+@[JvmOverloads](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html)
+
+fun [startTelepresence](start-telepresence.md)(displayName: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), peerId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), platform: [Platform](../../com.robotemi.sdk.constants/-platform/index.md) = Platform.MOBILE): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
 
 Start a video call to the temi user.
 
-### Parameters
+#### Return
 
-`displayName` - Name of temi user.
+## Parameters
 
-`peerId` - ID of temi user ID.
+androidJvm
 
-`platform` - Platform of the target user.
-
-**Return**
-
+| | |
+|---|---|
+| displayName | Name of temi user. |
+| peerId | ID of temi user ID. |
+| platform | Platform of the target user. |

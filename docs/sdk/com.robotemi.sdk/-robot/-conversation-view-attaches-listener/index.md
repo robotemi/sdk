@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk](../../index.md) / [Robot](../index.md) / [ConversationViewAttachesListener](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk](../../index.md)/[Robot](../index.md)/[ConversationViewAttachesListener](index.md)
 
 # ConversationViewAttachesListener
 
-`interface ConversationViewAttachesListener`
+[androidJvm]\
+interface [ConversationViewAttachesListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onConversationAttaches](on-conversation-attaches.md) | `abstract fun onConversationAttaches(isAttached: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onConversationAttaches](on-conversation-attaches.md) | [androidJvm]<br>abstract fun [onConversationAttaches](on-conversation-attaches.md)(isAttached: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)) |

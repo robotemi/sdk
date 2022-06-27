@@ -1,8 +1,8 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [showAppList](./show-app-list.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[showAppList](show-app-list.md)
 
 # showAppList
 
-`fun showAppList(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+fun [showAppList](show-app-list.md)()
 
 Go to the App list of Launcher.
-

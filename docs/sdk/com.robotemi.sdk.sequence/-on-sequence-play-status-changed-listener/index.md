@@ -1,26 +1,19 @@
-[sdk](../../index.md) / [com.robotemi.sdk.sequence](../index.md) / [OnSequencePlayStatusChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.sequence](../index.md)/[OnSequencePlayStatusChangedListener](index.md)
 
 # OnSequencePlayStatusChangedListener
 
-`interface OnSequencePlayStatusChangedListener`
+[androidJvm]\
+interface [OnSequencePlayStatusChangedListener](index.md)
 
-### Annotations
-
-| Name | Summary |
-|---|---|
-| [Status](-status/index.md) | `annotation class Status` |
-
-### Functions
+## Types
 
 | Name | Summary |
 |---|---|
-| [onSequencePlayStatusChanged](on-sequence-play-status-changed.md) | `abstract fun onSequencePlayStatusChanged(status: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
+| [Status](-status/index.md) | [androidJvm]<br>annotation class [Status](-status/index.md) |
 
-### Companion Object Properties
+## Functions
 
 | Name | Summary |
 |---|---|
-| [ERROR](-e-r-r-o-r.md) | `const val ERROR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [IDLE](-i-d-l-e.md) | `const val IDLE: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [PLAYING](-p-l-a-y-i-n-g.md) | `const val PLAYING: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [PREPARING](-p-r-e-p-a-r-i-n-g.md) | `const val PREPARING: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [onSequencePlayStatusChanged](on-sequence-play-status-changed.md) | [androidJvm]<br>abstract fun [onSequencePlayStatusChanged](on-sequence-play-status-changed.md)(status: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |

@@ -1,12 +1,13 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.map](../../index.md) / [Layer](../index.md) / [CREATOR](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.map](../../index.md)/[Layer](../index.md)/[CREATOR](index.md)
 
 # CREATOR
 
-`companion object CREATOR : `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`Layer`](../index.md)`>`
+[androidJvm]\
+object [CREATOR](index.md) : Parcelable.Creator&lt;[Layer](../index.md)&gt;
 
-### Companion Object Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [createFromParcel](create-from-parcel.md) | `fun createFromParcel(parcel: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`): `[`Layer`](../index.md) |
-| [newArray](new-array.md) | `fun newArray(size: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Array`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)`<`[`Layer`](../index.md)`?>` |
+| [createFromParcel](create-from-parcel.md) | [androidJvm]<br>open override fun [createFromParcel](create-from-parcel.md)(parcel: Parcel): [Layer](../index.md) |
+| [newArray](new-array.md) | [androidJvm]<br>open override fun [newArray](new-array.md)(size: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)&lt;[Layer](../index.md)?&gt; |

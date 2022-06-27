@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.navigation.listener](../index.md) / [OnCurrentPositionChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.navigation.listener](../index.md)/[OnCurrentPositionChangedListener](index.md)
 
 # OnCurrentPositionChangedListener
 
-`interface OnCurrentPositionChangedListener`
+[androidJvm]\
+interface [OnCurrentPositionChangedListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onCurrentPositionChanged](on-current-position-changed.md) | `abstract fun onCurrentPositionChanged(position: `[`Position`](../../com.robotemi.sdk.navigation.model/-position/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onCurrentPositionChanged](on-current-position-changed.md) | [androidJvm]<br>abstract fun [onCurrentPositionChanged](on-current-position-changed.md)(position: [Position](../../com.robotemi.sdk.navigation.model/-position/index.md)) |

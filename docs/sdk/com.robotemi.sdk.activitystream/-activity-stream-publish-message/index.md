@@ -1,25 +1,28 @@
-[sdk](../../index.md) / [com.robotemi.sdk.activitystream](../index.md) / [ActivityStreamPublishMessage](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.activitystream](../index.md)/[ActivityStreamPublishMessage](index.md)
 
 # ActivityStreamPublishMessage
 
-`open class ActivityStreamPublishMessage : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+open class [ActivityStreamPublishMessage](index.md) : Parcelable
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [CREATOR](-c-r-e-a-t-o-r.md) | `static val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`ActivityStreamPublishMessage`](./index.md)`!>!` |
-
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [create](create.md) | `open static fun create(uuid: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`ActivityStreamPublishMessage`](./index.md)`!` |
-| [describeContents](describe-contents.md) | `open fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [numOfUploadedFiles](num-of-uploaded-files.md) | `open fun numOfUploadedFiles(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [setNumOfUploadedFiles](set-num-of-uploaded-files.md) | `open fun setNumOfUploadedFiles(numOfUploadedFiles: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [setSuccess](set-success.md) | `open fun setSuccess(success: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [success](success.md) | `open fun success(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [toString](to-string.md) | `open fun toString(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [uuid](uuid.md) | `open fun uuid(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [writeToParcel](write-to-parcel.md) | `open fun writeToParcel(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`!, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [create](create.md) | [androidJvm]<br>open fun [create](create.md)(uuid: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [ActivityStreamPublishMessage](index.md) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [numOfUploadedFiles](num-of-uploaded-files.md) | [androidJvm]<br>open fun [numOfUploadedFiles](num-of-uploaded-files.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [setNumOfUploadedFiles](set-num-of-uploaded-files.md) | [androidJvm]<br>open fun [setNumOfUploadedFiles](set-num-of-uploaded-files.md)(numOfUploadedFiles: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
+| [setSuccess](set-success.md) | [androidJvm]<br>open fun [setSuccess](set-success.md)(success: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)) |
+| [success](success.md) | [androidJvm]<br>open fun [success](success.md)(): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
+| [toString](to-string.md) | [androidJvm]<br>open fun [toString](to-string.md)(): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [uuid](uuid.md) | [androidJvm]<br>open fun [uuid](uuid.md)(): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open fun [writeToParcel](write-to-parcel.md)(dest: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
+
+## Properties
+
+| Name | Summary |
+|---|---|
+| [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411) | [androidJvm]<br>val [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [CREATOR](-c-r-e-a-t-o-r.md) | [androidJvm]<br>val [CREATOR](-c-r-e-a-t-o-r.md): Parcelable.Creator&lt;[ActivityStreamPublishMessage](index.md)&gt; |
+| [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411) | [androidJvm]<br>val [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |

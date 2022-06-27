@@ -1,5 +1,6 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [BillboardNotification](../index.md) / [Builder](index.md) / [title](./title.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[BillboardNotification](../index.md)/[Builder](index.md)/[title](title.md)
 
 # title
 
-`open fun title(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`BillboardNotification.Builder`](index.md)`!`
+[androidJvm]\
+open fun [title](title.md)(title: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [BillboardNotification.Builder](index.md)

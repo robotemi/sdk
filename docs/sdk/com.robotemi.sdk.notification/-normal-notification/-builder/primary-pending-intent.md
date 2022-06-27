@@ -1,6 +1,8 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [NormalNotification](../index.md) / [Builder](index.md) / [primaryPendingIntent](./primary-pending-intent.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[NormalNotification](../index.md)/[Builder](index.md)/[primaryPendingIntent](primary-pending-intent.md)
 
 # primaryPendingIntent
 
-`open fun primaryPendingIntent(primaryPendingIntent: `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!): `[`NormalNotification.Builder`](index.md)`!`
-`var primaryPendingIntent: `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!`
+[androidJvm]\
+open fun [primaryPendingIntent](primary-pending-intent.md)(primaryPendingIntent: PendingIntent): [NormalNotification.Builder](index.md)
+
+open var [primaryPendingIntent](primary-pending-intent.md): PendingIntent

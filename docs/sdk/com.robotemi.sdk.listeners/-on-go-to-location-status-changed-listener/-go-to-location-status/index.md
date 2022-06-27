@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.listeners](../../index.md) / [OnGoToLocationStatusChangedListener](../index.md) / [GoToLocationStatus](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.listeners](../../index.md)/[OnGoToLocationStatusChangedListener](../index.md)/[GoToLocationStatus](index.md)
 
 # GoToLocationStatus
 
-`annotation class GoToLocationStatus`
+[androidJvm]\
+annotation class [GoToLocationStatus](index.md)
 
-### Constructors
+## Constructors
 
-| Name | Summary |
+| | |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `GoToLocationStatus()` |
+| [GoToLocationStatus](-go-to-location-status.md) | [androidJvm]<br>fun [GoToLocationStatus](-go-to-location-status.md)() |

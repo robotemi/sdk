@@ -1,31 +1,33 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [BatteryData](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[BatteryData](index.md)
 
 # BatteryData
 
-`data class BatteryData : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+data class [BatteryData](index.md)(val level: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val isCharging: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)) : Parcelable
 
-### Constructors
+## Constructors
+
+| | |
+|---|---|
+| [BatteryData](-battery-data.md) | [androidJvm]<br>fun [BatteryData](-battery-data.md)(source: Parcel) |
+| [BatteryData](-battery-data.md) | [androidJvm]<br>fun [BatteryData](-battery-data.md)(level: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), isCharging: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)) |
+
+## Types
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `BatteryData(source: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`)`<br>`BatteryData(level: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, isCharging: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`)` |
+| [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [isCharging](is-charging.md) | `val isCharging: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [level](level.md) | `val level: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [describeContents](describe-contents.md) | `fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [writeToParcel](write-to-parcel.md) | `fun writeToParcel(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open override fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open override fun [writeToParcel](write-to-parcel.md)(dest: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
 
-### Companion Object Properties
+## Properties
 
 | Name | Summary |
 |---|---|
-| [CREATOR](-c-r-e-a-t-o-r.md) | `val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`BatteryData`](./index.md)`>` |
+| [isCharging](is-charging.md) | [androidJvm]<br>val [isCharging](is-charging.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
+| [level](level.md) | [androidJvm]<br>@get:[JvmName](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-name/index.html)(name = &quot;getBatteryPercentage&quot;)<br>val [level](level.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |

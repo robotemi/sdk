@@ -1,14 +1,15 @@
-[sdk](../../index.md) / [com.robotemi.sdk.voice](../index.md) / [ITtsService](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.voice](../index.md)/[ITtsService](index.md)
 
 # ITtsService
 
-`interface ITtsService`
+[androidJvm]\
+interface [ITtsService](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [cancel](cancel.md) | `abstract fun cancel(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [pause](pause.md) | `abstract fun pause(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [resume](resume.md) | `abstract fun resume(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [speak](speak.md) | `abstract fun speak(ttsRequest: `[`TtsRequest`](../../com.robotemi.sdk/-tts-request/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [cancel](cancel.md) | [androidJvm]<br>abstract fun [cancel](cancel.md)() |
+| [pause](pause.md) | [androidJvm]<br>abstract fun [pause](pause.md)() |
+| [resume](resume.md) | [androidJvm]<br>abstract fun [resume](resume.md)() |
+| [speak](speak.md) | [androidJvm]<br>abstract fun [speak](speak.md)(ttsRequest: [TtsRequest](../../com.robotemi.sdk/-tts-request/index.md)) |

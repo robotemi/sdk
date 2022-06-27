@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.constants](../index.md) / [Platform](index.md) / [value](./value.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.constants](../index.md)/[Platform](index.md)/[value](value.md)
 
 # value
 
-`val value: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+[androidJvm]\
+val [value](value.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)

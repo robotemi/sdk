@@ -1,5 +1,6 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [BillboardNotification](../index.md) / [Builder](index.md) / [build](./build.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[BillboardNotification](../index.md)/[Builder](index.md)/[build](build.md)
 
 # build
 
-`open fun build(): `[`BillboardNotification`](../index.md)`!`
+[androidJvm]\
+open fun [build](build.md)(): [BillboardNotification](../index.md)

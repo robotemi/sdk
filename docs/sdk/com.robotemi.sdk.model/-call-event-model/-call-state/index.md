@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.model](../../index.md) / [CallEventModel](../index.md) / [CallState](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.model](../../index.md)/[CallEventModel](../index.md)/[CallState](index.md)
 
 # CallState
 
-`annotation class CallState`
+[androidJvm]\
+annotation class [CallState](index.md)
 
-### Constructors
+## Constructors
 
-| Name | Summary |
+| | |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `CallState()` |
+| [CallState](-call-state.md) | [androidJvm]<br>fun [CallState](-call-state.md)() |

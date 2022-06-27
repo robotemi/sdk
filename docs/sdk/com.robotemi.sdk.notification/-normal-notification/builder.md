@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.notification](../index.md) / [NormalNotification](index.md) / [builder](./builder.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.notification](../index.md)/[NormalNotification](index.md)/[builder](builder.md)
 
 # builder
 
-`open static fun builder(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](-builder/index.md)`!`
+[androidJvm]\
+open fun [builder](builder.md)(title: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [NormalNotification.Builder](-builder/index.md)

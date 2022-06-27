@@ -1,30 +1,27 @@
-[sdk](../../index.md) / [com.robotemi.sdk.navigation.model](../index.md) / [SafetyLevel](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.navigation.model](../index.md)/[SafetyLevel](index.md)
 
 # SafetyLevel
 
-`enum class SafetyLevel`
+[androidJvm]\
+enum [SafetyLevel](index.md) : [Enum](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html)&lt;[SafetyLevel](index.md)&gt;
 
-### Enum Values
+## Entries
+
+| | |
+|---|---|
+| [HIGH](-h-i-g-h/index.md) | [androidJvm]<br>[HIGH](-h-i-g-h/index.md) |
+| [MEDIUM](-m-e-d-i-u-m/index.md) | [androidJvm]<br>[MEDIUM](-m-e-d-i-u-m/index.md) |
+
+## Types
 
 | Name | Summary |
 |---|---|
-| [HIGH](-h-i-g-h.md) |  |
-| [MEDIUM](-m-e-d-i-u-m.md) |  |
+| [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [value](value.md) | `val value: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-
-### Companion Object Properties
+## Properties
 
 | Name | Summary |
 |---|---|
-| [DEFAULT](-d-e-f-a-u-l-t.md) | `val DEFAULT: `[`SafetyLevel`](./index.md) |
-
-### Companion Object Functions
-
-| Name | Summary |
-|---|---|
-| [valueToEnum](value-to-enum.md) | `fun valueToEnum(value: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`SafetyLevel`](./index.md) |
+| [name](../../com.robotemi.sdk.permission/-permission/-u-n-k-n-o-w-n/index.md#-372974862%2FProperties%2F462465411) | [androidJvm]<br>val [name](../../com.robotemi.sdk.permission/-permission/-u-n-k-n-o-w-n/index.md#-372974862%2FProperties%2F462465411): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [ordinal](../../com.robotemi.sdk.permission/-permission/-u-n-k-n-o-w-n/index.md#-739389684%2FProperties%2F462465411) | [androidJvm]<br>val [ordinal](../../com.robotemi.sdk.permission/-permission/-u-n-k-n-o-w-n/index.md#-739389684%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [value](value.md) | [androidJvm]<br>val [value](value.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

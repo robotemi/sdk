@@ -1,8 +1,11 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [cliffSensorMode](./cliff-sensor-mode.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[cliffSensorMode](cliff-sensor-mode.md)
 
 # cliffSensorMode
 
-`var cliffSensorMode: `[`CliffSensorMode`](../../com.robotemi.sdk.constants/-cliff-sensor-mode/index.md)
+[androidJvm]\
+
+@get:CheckResult
+
+var [cliffSensorMode](cliff-sensor-mode.md): [CliffSensorMode](../../com.robotemi.sdk.constants/-cliff-sensor-mode/index.md)
 
 Check and set the mode of cliff sensor, see [CliffSensorMode](../../com.robotemi.sdk.constants/-cliff-sensor-mode/index.md)
-

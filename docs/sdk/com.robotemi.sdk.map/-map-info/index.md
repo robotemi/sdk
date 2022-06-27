@@ -1,41 +1,36 @@
-[sdk](../../index.md) / [com.robotemi.sdk.map](../index.md) / [MapInfo](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.map](../index.md)/[MapInfo](index.md)
 
 # MapInfo
 
-`data class MapInfo : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+data class [MapInfo](index.md)(val height: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, val width: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, val originX: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f, val originY: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f, val resolution: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f) : Parcelable
 
-### Types
+## Constructors
+
+| | |
+|---|---|
+| [MapInfo](-map-info.md) | [androidJvm]<br>fun [MapInfo](-map-info.md)(parcel: Parcel) |
+| [MapInfo](-map-info.md) | [androidJvm]<br>fun [MapInfo](-map-info.md)(height: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, width: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, originX: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f, originY: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f, resolution: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f) |
+
+## Types
 
 | Name | Summary |
 |---|---|
-| [CREATOR](-c-r-e-a-t-o-r/index.md) | `companion object CREATOR : `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`MapInfo`](./index.md)`>` |
+| [CREATOR](-c-r-e-a-t-o-r/index.md) | [androidJvm]<br>object [CREATOR](-c-r-e-a-t-o-r/index.md) : Parcelable.Creator&lt;[MapInfo](index.md)&gt; |
 
-### Constructors
-
-| Name | Summary |
-|---|---|
-| [&lt;init&gt;](-init-.md) | `MapInfo(parcel: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`)`<br>`MapInfo(height: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)` = 0, width: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)` = 0, originX: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)` = 0f, originY: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)` = 0f, resolution: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)` = 0f)` |
-
-### Properties
+## Functions
 
 | Name | Summary |
 |---|---|
-| [height](height.md) | `val height: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [originX](origin-x.md) | `val originX: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) |
-| [originY](origin-y.md) | `val originY: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) |
-| [resolution](resolution.md) | `val resolution: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) |
-| [width](width.md) | `val width: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open override fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open override fun [writeToParcel](write-to-parcel.md)(parcel: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
 
-### Functions
+## Properties
 
 | Name | Summary |
 |---|---|
-| [describeContents](describe-contents.md) | `fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [writeToParcel](write-to-parcel.md) | `fun writeToParcel(parcel: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-
-### Companion Object Functions
-
-| Name | Summary |
-|---|---|
-| [createFromParcel](create-from-parcel.md) | `fun createFromParcel(parcel: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`): `[`MapInfo`](./index.md) |
-| [newArray](new-array.md) | `fun newArray(size: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Array`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)`<`[`MapInfo`](./index.md)`?>` |
+| [height](height.md) | [androidJvm]<br>@SerializedName(value = &quot;height&quot;)<br>val [height](height.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0 |
+| [originX](origin-x.md) | [androidJvm]<br>@SerializedName(value = &quot;origin_x&quot;)<br>val [originX](origin-x.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f |
+| [originY](origin-y.md) | [androidJvm]<br>@SerializedName(value = &quot;origin_y&quot;)<br>val [originY](origin-y.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f |
+| [resolution](resolution.md) | [androidJvm]<br>@SerializedName(value = &quot;resolution&quot;)<br>val [resolution](resolution.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f |
+| [width](width.md) | [androidJvm]<br>@SerializedName(value = &quot;width&quot;)<br>val [width](width.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0 |

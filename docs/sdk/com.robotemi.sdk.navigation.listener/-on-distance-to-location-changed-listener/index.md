@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.navigation.listener](../index.md) / [OnDistanceToLocationChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.navigation.listener](../index.md)/[OnDistanceToLocationChangedListener](index.md)
 
 # OnDistanceToLocationChangedListener
 
-`interface OnDistanceToLocationChangedListener`
+[androidJvm]\
+interface [OnDistanceToLocationChangedListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onDistanceToLocationChanged](on-distance-to-location-changed.md) | `abstract fun onDistanceToLocationChanged(distances: `[`Map`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)`>): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onDistanceToLocationChanged](on-distance-to-location-changed.md) | [androidJvm]<br>abstract fun [onDistanceToLocationChanged](on-distance-to-location-changed.md)(distances: [Map](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html)&lt;[String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)&gt;) |

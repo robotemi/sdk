@@ -1,43 +1,38 @@
-[sdk](../../index.md) / [com.robotemi.sdk.map](../index.md) / [Layer](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.map](../index.md)/[Layer](index.md)
 
 # Layer
 
-`data class Layer : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+data class [Layer](index.md)(val layerCreationUTC: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val layerCategory: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val layerId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, val layerThickness: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), val layerStatus: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val layerPoses: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[LayerPose](../-layer-pose/index.md)&gt;?) : Parcelable
 
-### Types
+## Constructors
+
+| | |
+|---|---|
+| [Layer](-layer.md) | [androidJvm]<br>fun [Layer](-layer.md)(parcel: Parcel) |
+| [Layer](-layer.md) | [androidJvm]<br>fun [Layer](-layer.md)(layerCreationUTC: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), layerCategory: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), layerId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, layerThickness: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), layerStatus: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), layerPoses: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[LayerPose](../-layer-pose/index.md)&gt;?) |
+
+## Types
 
 | Name | Summary |
 |---|---|
-| [CREATOR](-c-r-e-a-t-o-r/index.md) | `companion object CREATOR : `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`Layer`](./index.md)`>` |
+| [CREATOR](-c-r-e-a-t-o-r/index.md) | [androidJvm]<br>object [CREATOR](-c-r-e-a-t-o-r/index.md) : Parcelable.Creator&lt;[Layer](index.md)&gt; |
 
-### Constructors
-
-| Name | Summary |
-|---|---|
-| [&lt;init&gt;](-init-.md) | `Layer(parcel: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`)`<br>`Layer(layerCreationUTC: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, layerCategory: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, layerId: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)` = "", layerThickness: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)`, layerStatus: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, layerPoses: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`LayerPose`](../-layer-pose/index.md)`>?)` |
-
-### Properties
+## Functions
 
 | Name | Summary |
 |---|---|
-| [layerCategory](layer-category.md) | `val layerCategory: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [layerCreationUTC](layer-creation-u-t-c.md) | `val layerCreationUTC: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [layerId](layer-id.md) | `val layerId: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [layerPoses](layer-poses.md) | `val layerPoses: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`LayerPose`](../-layer-pose/index.md)`>?` |
-| [layerStatus](layer-status.md) | `val layerStatus: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [layerThickness](layer-thickness.md) | `val layerThickness: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open override fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [toString](to-string.md) | [androidJvm]<br>open override fun [toString](to-string.md)(): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open override fun [writeToParcel](write-to-parcel.md)(parcel: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
 
-### Functions
+## Properties
 
 | Name | Summary |
 |---|---|
-| [describeContents](describe-contents.md) | `fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [toString](to-string.md) | `fun toString(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [writeToParcel](write-to-parcel.md) | `fun writeToParcel(parcel: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-
-### Companion Object Functions
-
-| Name | Summary |
-|---|---|
-| [createFromParcel](create-from-parcel.md) | `fun createFromParcel(parcel: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`): `[`Layer`](./index.md) |
-| [newArray](new-array.md) | `fun newArray(size: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Array`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)`<`[`Layer`](./index.md)`?>` |
+| [layerCategory](layer-category.md) | [androidJvm]<br>@SerializedName(value = &quot;layer_category&quot;)<br>val [layerCategory](layer-category.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [layerCreationUTC](layer-creation-u-t-c.md) | [androidJvm]<br>@SerializedName(value = &quot;layer_creation_universal_time&quot;)<br>val [layerCreationUTC](layer-creation-u-t-c.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [layerId](layer-id.md) | [androidJvm]<br>@SerializedName(value = &quot;layer_id&quot;)<br>val [layerId](layer-id.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [layerPoses](layer-poses.md) | [androidJvm]<br>@SerializedName(value = &quot;layer_poses&quot;)<br>val [layerPoses](layer-poses.md): [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[LayerPose](../-layer-pose/index.md)&gt;? |
+| [layerStatus](layer-status.md) | [androidJvm]<br>@SerializedName(value = &quot;layer_status&quot;)<br>val [layerStatus](layer-status.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [layerThickness](layer-thickness.md) | [androidJvm]<br>@SerializedName(value = &quot;layer_thickness&quot;)<br>val [layerThickness](layer-thickness.md): [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) |

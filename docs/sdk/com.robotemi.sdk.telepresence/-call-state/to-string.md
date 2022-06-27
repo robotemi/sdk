@@ -1,5 +1,9 @@
-[sdk](../../index.md) / [com.robotemi.sdk.telepresence](../index.md) / [CallState](index.md) / [toString](./to-string.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.telepresence](../index.md)/[CallState](index.md)/[toString](to-string.md)
 
 # toString
 
-`@NonNull open fun toString(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+[androidJvm]\
+
+@NonNull
+
+open fun [toString](to-string.md)(): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)

@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.exception](../index.md) / [SdkException](index.md) / [message](./message.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.exception](../index.md)/[SdkException](index.md)/[message](message.md)
 
 # message
 
-`var message: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+[androidJvm]\
+var [message](message.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
