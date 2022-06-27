@@ -1,11 +1,16 @@
-[sdk](../../index.md) / [com.robotemi.sdk.listeners](../index.md) / [OnConstraintBeWithStatusChangedListener](index.md) / [onConstraintBeWithStatusChanged](./on-constraint-be-with-status-changed.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.listeners](../index.md)/[OnConstraintBeWithStatusChangedListener](index.md)/[onConstraintBeWithStatusChanged](on-constraint-be-with-status-changed.md)
 
 # onConstraintBeWithStatusChanged
 
-`abstract fun onConstraintBeWithStatusChanged(isConstraint: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+abstract fun [onConstraintBeWithStatusChanged](on-constraint-be-with-status-changed.md)(isConstraint: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html))
 
 Listen for Constraint Follow state.
 
-### Parameters
+## Parameters
 
-`isConstraint` - true if temi is in constraint follow state, false if is in any other state.
+androidJvm
+
+| | |
+|---|---|
+| isConstraint | true if temi is in constraint follow state, false if is in any other state. |

@@ -1,33 +1,33 @@
-[sdk](../index.md) / [com.robotemi.sdk.map](./index.md)
+//[sdk](../../index.md)/[com.robotemi.sdk.map](index.md)
 
-## Package com.robotemi.sdk.map
+# Package com.robotemi.sdk.map
 
-### Types
-
-| Name | Summary |
-|---|---|
-| [Floor](-floor/index.md) | `data class Floor : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [Layer](-layer/index.md) | `data class Layer : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [LayerPose](-layer-pose/index.md) | `data class LayerPose : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [Location](-location/index.md) | `data class Location : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [MapDataModel](-map-data-model/index.md) | `data class MapDataModel : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [MapImage](-map-image/index.md) | `data class MapImage : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [MapInfo](-map-info/index.md) | `data class MapInfo : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [MapModel](-map-model/index.md) | `data class MapModel : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
-| [OnLoadFloorStatusChangedListener](-on-load-floor-status-changed-listener/index.md) | `interface OnLoadFloorStatusChangedListener` |
-| [OnLoadMapStatusChangedListener](-on-load-map-status-changed-listener/index.md) | `interface OnLoadMapStatusChangedListener` |
-
-### Properties
+## Types
 
 | Name | Summary |
 |---|---|
-| [GREEN_PATH](-g-r-e-e-n_-p-a-t-h.md) | `const val GREEN_PATH: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [LOCATION](-l-o-c-a-t-i-o-n.md) | `const val LOCATION: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [MAP_ELEMENTS](-m-a-p_-e-l-e-m-e-n-t-s.md) | `const val MAP_ELEMENTS: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [MAP_ID](-m-a-p_-i-d.md) | `const val MAP_ID: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [MAP_INFO](-m-a-p_-i-n-f-o.md) | `const val MAP_INFO: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [STATUS_ADD_POSE](-s-t-a-t-u-s_-a-d-d_-p-o-s-e.md) | `const val STATUS_ADD_POSE: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [STATUS_CURRENT](-s-t-a-t-u-s_-c-u-r-r-e-n-t.md) | `const val STATUS_CURRENT: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [STATUS_DELETE](-s-t-a-t-u-s_-d-e-l-e-t-e.md) | `const val STATUS_DELETE: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [STATUS_UPDATE](-s-t-a-t-u-s_-u-p-d-a-t-e.md) | `const val STATUS_UPDATE: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [VIRTUAL_WALL](-v-i-r-t-u-a-l_-w-a-l-l.md) | `const val VIRTUAL_WALL: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [Floor](-floor/index.md) | [androidJvm]<br>data class [Floor](-floor/index.md)(val id: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = -1, val name: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, val mapId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, data: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;) : Parcelable |
+| [Layer](-layer/index.md) | [androidJvm]<br>data class [Layer](-layer/index.md)(val layerCreationUTC: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val layerCategory: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val layerId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, val layerThickness: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), val layerStatus: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val layerPoses: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[LayerPose](-layer-pose/index.md)&gt;?) : Parcelable |
+| [LayerPose](-layer-pose/index.md) | [androidJvm]<br>data class [LayerPose](-layer-pose/index.md)(val x: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), val y: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), val theta: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)) : Parcelable |
+| [Location](-location/index.md) | [androidJvm]<br>data class [Location](-location/index.md)(val x: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), val y: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), val yaw: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html), val name: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), val tiltAngle: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f) : Parcelable |
+| [MapDataModel](-map-data-model/index.md) | [androidJvm]<br>data class [MapDataModel](-map-data-model/index.md)(var mapImage: [MapImage](-map-image/index.md), var mapId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, var mapInfo: [MapInfo](-map-info/index.md) = MapInfo(), var virtualWalls: [MutableList](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)&lt;[Layer](-layer/index.md)&gt; = mutableListOf(), var greenPaths: [MutableList](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)&lt;[Layer](-layer/index.md)&gt; = mutableListOf(), var locations: [MutableList](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)&lt;[Layer](-layer/index.md)&gt; = mutableListOf()) : Parcelable |
+| [MapImage](-map-image/index.md) | [androidJvm]<br>data class [MapImage](-map-image/index.md)(val typeId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), val rows: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val cols: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), val dt: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), val data: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)&gt;) : Parcelable |
+| [MapInfo](-map-info/index.md) | [androidJvm]<br>data class [MapInfo](-map-info/index.md)(val height: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, val width: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, val originX: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f, val originY: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f, val resolution: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f) : Parcelable |
+| [MapModel](-map-model/index.md) | [androidJvm]<br>data class [MapModel](-map-model/index.md)(val id: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html), val name: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) : Parcelable |
+| [OnLoadFloorStatusChangedListener](-on-load-floor-status-changed-listener/index.md) | [androidJvm]<br>interface [OnLoadFloorStatusChangedListener](-on-load-floor-status-changed-listener/index.md) |
+| [OnLoadMapStatusChangedListener](-on-load-map-status-changed-listener/index.md) | [androidJvm]<br>interface [OnLoadMapStatusChangedListener](-on-load-map-status-changed-listener/index.md) |
+
+## Properties
+
+| Name | Summary |
+|---|---|
+| [GREEN_PATH](-g-r-e-e-n_-p-a-t-h.md) | [androidJvm]<br>const val [GREEN_PATH](-g-r-e-e-n_-p-a-t-h.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0 |
+| [LOCATION](-l-o-c-a-t-i-o-n.md) | [androidJvm]<br>const val [LOCATION](-l-o-c-a-t-i-o-n.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 4 |
+| [MAP_ELEMENTS](-m-a-p_-e-l-e-m-e-n-t-s.md) | [androidJvm]<br>const val [MAP_ELEMENTS](-m-a-p_-e-l-e-m-e-n-t-s.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [MAP_ID](-m-a-p_-i-d.md) | [androidJvm]<br>const val [MAP_ID](-m-a-p_-i-d.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [MAP_INFO](-m-a-p_-i-n-f-o.md) | [androidJvm]<br>const val [MAP_INFO](-m-a-p_-i-n-f-o.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [STATUS_ADD_POSE](-s-t-a-t-u-s_-a-d-d_-p-o-s-e.md) | [androidJvm]<br>const val [STATUS_ADD_POSE](-s-t-a-t-u-s_-a-d-d_-p-o-s-e.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 2 |
+| [STATUS_CURRENT](-s-t-a-t-u-s_-c-u-r-r-e-n-t.md) | [androidJvm]<br>const val [STATUS_CURRENT](-s-t-a-t-u-s_-c-u-r-r-e-n-t.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0 |
+| [STATUS_DELETE](-s-t-a-t-u-s_-d-e-l-e-t-e.md) | [androidJvm]<br>const val [STATUS_DELETE](-s-t-a-t-u-s_-d-e-l-e-t-e.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 3 |
+| [STATUS_UPDATE](-s-t-a-t-u-s_-u-p-d-a-t-e.md) | [androidJvm]<br>const val [STATUS_UPDATE](-s-t-a-t-u-s_-u-p-d-a-t-e.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 1 |
+| [VIRTUAL_WALL](-v-i-r-t-u-a-l_-w-a-l-l.md) | [androidJvm]<br>const val [VIRTUAL_WALL](-v-i-r-t-u-a-l_-w-a-l-l.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 3 |

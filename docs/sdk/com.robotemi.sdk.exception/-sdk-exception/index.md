@@ -1,44 +1,33 @@
-[sdk](../../index.md) / [com.robotemi.sdk.exception](../index.md) / [SdkException](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.exception](../index.md)/[SdkException](index.md)
 
 # SdkException
 
-`data class SdkException : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+data class [SdkException](index.md)(var code: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), var message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) : Parcelable
 
-### Constructors
+## Constructors
+
+| | |
+|---|---|
+| [SdkException](-sdk-exception.md) | [androidJvm]<br>fun [SdkException](-sdk-exception.md)(source: Parcel) |
+| [SdkException](-sdk-exception.md) | [androidJvm]<br>fun [SdkException](-sdk-exception.md)(code: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), message: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) |
+
+## Types
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `SdkException(source: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`)`<br>`SdkException(code: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, message: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`)` |
+| [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [code](code.md) | `var code: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [message](message.md) | `var message: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [describeContents](describe-contents.md) | `fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [writeToParcel](write-to-parcel.md) | `fun writeToParcel(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open override fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open override fun [writeToParcel](write-to-parcel.md)(dest: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
 
-### Companion Object Properties
-
-| Name | Summary |
-|---|---|
-| [CODE_ILLEGAL_ARGUMENT](-c-o-d-e_-i-l-l-e-g-a-l_-a-r-g-u-m-e-n-t.md) | `const val CODE_ILLEGAL_ARGUMENT: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [CODE_LAUNCHER_ERROR](-c-o-d-e_-l-a-u-n-c-h-e-r_-e-r-r-o-r.md) | `const val CODE_LAUNCHER_ERROR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [CODE_OPERATION_CONFLICT](-c-o-d-e_-o-p-e-r-a-t-i-o-n_-c-o-n-f-l-i-c-t.md) | `const val CODE_OPERATION_CONFLICT: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [CODE_PERMISSION_DENIED](-c-o-d-e_-p-e-r-m-i-s-s-i-o-n_-d-e-n-i-e-d.md) | `const val CODE_PERMISSION_DENIED: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [CREATOR](-c-r-e-a-t-o-r.md) | `val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`SdkException`](./index.md)`>` |
-
-### Companion Object Functions
+## Properties
 
 | Name | Summary |
 |---|---|
-| [illegalArgument](illegal-argument.md) | `fun illegalArgument(msg: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`SdkException`](./index.md) |
-| [launcherError](launcher-error.md) | `fun launcherError(msg: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`SdkException`](./index.md) |
-| [operationConflict](operation-conflict.md) | `fun operationConflict(msg: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`SdkException`](./index.md) |
-| [permissionDenied](permission-denied.md) | `fun permissionDenied(permission: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`SdkException`](./index.md) |
+| [code](code.md) | [androidJvm]<br>var [code](code.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [message](message.md) | [androidJvm]<br>var [message](message.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

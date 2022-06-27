@@ -1,23 +1,24 @@
-[sdk](../../index.md) / [com.robotemi.sdk.listeners](../index.md) / [OnTelepresenceStatusChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.listeners](../index.md)/[OnTelepresenceStatusChangedListener](index.md)
 
 # OnTelepresenceStatusChangedListener
 
-`abstract class OnTelepresenceStatusChangedListener`
+[androidJvm]\
+abstract class [OnTelepresenceStatusChangedListener](index.md)(var sessionId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html))
 
-### Constructors
+## Constructors
+
+| | |
+|---|---|
+| [OnTelepresenceStatusChangedListener](-on-telepresence-status-changed-listener.md) | [androidJvm]<br>fun [OnTelepresenceStatusChangedListener](-on-telepresence-status-changed-listener.md)(sessionId: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) |
+
+## Functions
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `OnTelepresenceStatusChangedListener(sessionId: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`)` |
+| [onTelepresenceStatusChanged](on-telepresence-status-changed.md) | [androidJvm]<br>abstract fun [onTelepresenceStatusChanged](on-telepresence-status-changed.md)(callState: [CallState](../../com.robotemi.sdk.telepresence/-call-state/index.md))<br>Called when Telepresence status was changed. |
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [sessionId](session-id.md) | `var sessionId: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-
-### Functions
+## Properties
 
 | Name | Summary |
 |---|---|
-| [onTelepresenceStatusChanged](on-telepresence-status-changed.md) | `abstract fun onTelepresenceStatusChanged(callState: `[`CallState`](../../com.robotemi.sdk.telepresence/-call-state/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>Called when Telepresence status was changed. |
+| [sessionId](session-id.md) | [androidJvm]<br>var [sessionId](session-id.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

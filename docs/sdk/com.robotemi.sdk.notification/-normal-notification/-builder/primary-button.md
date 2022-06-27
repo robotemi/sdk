@@ -1,6 +1,8 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [NormalNotification](../index.md) / [Builder](index.md) / [primaryButton](./primary-button.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[NormalNotification](../index.md)/[Builder](index.md)/[primaryButton](primary-button.md)
 
 # primaryButton
 
-`open fun primaryButton(primaryButton: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](index.md)`!`
-`var primaryButton: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!`
+[androidJvm]\
+open fun [primaryButton](primary-button.md)(primaryButton: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [NormalNotification.Builder](index.md)
+
+open var [primaryButton](primary-button.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)

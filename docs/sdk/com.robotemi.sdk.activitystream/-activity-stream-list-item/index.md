@@ -1,41 +1,43 @@
-[sdk](../../index.md) / [com.robotemi.sdk.activitystream](../index.md) / [ActivityStreamListItem](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.activitystream](../index.md)/[ActivityStreamListItem](index.md)
 
 # ActivityStreamListItem
 
-`open class ActivityStreamListItem : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)`, `[`MediaContainer`](../../com.robotemi.sdk/-media-container/index.md)
+[androidJvm]\
+open class [ActivityStreamListItem](index.md) : Parcelable, [MediaContainer](../../com.robotemi.sdk/-media-container/index.md)
 
-### Types
+## Constructors
+
+| | |
+|---|---|
+| [ActivityStreamListItem](-activity-stream-list-item.md) | [androidJvm]<br>open fun [ActivityStreamListItem](-activity-stream-list-item.md)(@NonNulltitle: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html), @NonNullmessage: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html), @NonNullfile: [File](https://docs.oracle.com/javase/8/docs/api/java/io/File.html), @Nullableurl: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html), @Nullabledate: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html), @NullablemimeType: [MediaObject.MimeType](../../com.robotemi.sdk/-media-object/-mime-type/index.md)) |
+
+## Types
 
 | Name | Summary |
 |---|---|
-| [Builder](-builder/index.md) | `open class Builder` |
+| [Builder](-builder/index.md) | [androidJvm]<br>open class [Builder](-builder/index.md) |
 
-### Constructors
-
-| Name | Summary |
-|---|---|
-| [&lt;init&gt;](-init-.md) | `ActivityStreamListItem(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, message: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, file: `[`File`](https://developer.android.com/reference/java/io/File.html)`, url: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?, date: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?, mimeType: `[`MediaObject.MimeType`](../../com.robotemi.sdk/-media-object/-mime-type/index.md)`?)` |
-
-### Properties
+## Functions
 
 | Name | Summary |
 |---|---|
-| [CREATOR](-c-r-e-a-t-o-r.md) | `static val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`ActivityStreamListItem`](./index.md)`!>!` |
+| [builder](builder.md) | [androidJvm]<br>open fun [builder](builder.md)(): [ActivityStreamListItem.Builder](-builder/index.md) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open fun [writeToParcel](write-to-parcel.md)(dest: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
 
-### Functions
+## Properties
 
 | Name | Summary |
 |---|---|
-| [builder](builder.md) | `open static fun builder(): `[`ActivityStreamListItem.Builder`](-builder/index.md)`!` |
-| [describeContents](describe-contents.md) | `open fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getDate](get-date.md) | `open fun getDate(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
-| [getFile](get-file.md) | `open fun getFile(): `[`File`](https://developer.android.com/reference/java/io/File.html)`?` |
-| [getLocalPath](get-local-path.md) | `open fun getLocalPath(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getMediaUri](get-media-uri.md) | `open fun getMediaUri(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
-| [getMessage](get-message.md) | `open fun getMessage(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [getMimeType](get-mime-type.md) | `open fun getMimeType(): `[`MediaObject.MimeType`](../../com.robotemi.sdk/-media-object/-mime-type/index.md)`!` |
-| [getTitle](get-title.md) | `open fun getTitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [getUrl](get-url.md) | `open fun getUrl(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
-| [isFileProvided](is-file-provided.md) | `open fun isFileProvided(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [setMediaUri](set-media-uri.md) | `open fun setMediaUri(uri: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [writeToParcel](write-to-parcel.md) | `open fun writeToParcel(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`!, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411) | [androidJvm]<br>val [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [CREATOR](-c-r-e-a-t-o-r.md) | [androidJvm]<br>val [CREATOR](-c-r-e-a-t-o-r.md): Parcelable.Creator&lt;[ActivityStreamListItem](index.md)&gt; |
+| [date](date.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;date&quot;)<br>@get:Nullable<br>open val [date](date.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [file](file.md) | [androidJvm]<br>@get:Nullable<br>open val [file](file.md): [File](https://docs.oracle.com/javase/8/docs/api/java/io/File.html) |
+| [isFileProvided](is-file-provided.md) | [androidJvm]<br>open val [isFileProvided](is-file-provided.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
+| [localPath](local-path.md) | [androidJvm]<br>open val [localPath](local-path.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [mediaUri](media-uri.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;mediaUrl&quot;)<br>@get:Nullable<br>open var [mediaUri](media-uri.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [message](message.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;message&quot;)<br>@get:NonNull<br>open val [message](message.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [mimeType](mime-type.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;mimetype&quot;)<br>open val [mimeType](mime-type.md): [MediaObject.MimeType](../../com.robotemi.sdk/-media-object/-mime-type/index.md) |
+| [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411) | [androidJvm]<br>val [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [title](title.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;title&quot;)<br>@get:NonNull<br>open val [title](title.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [url](url.md) | [androidJvm]<br>@Expose<br>@SerializedName(value = &quot;url&quot;)<br>@get:Nullable<br>open val [url](url.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |

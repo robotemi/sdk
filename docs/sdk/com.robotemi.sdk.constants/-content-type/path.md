@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.constants](../index.md) / [ContentType](index.md) / [path](./path.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.constants](../index.md)/[ContentType](index.md)/[path](path.md)
 
 # path
 
-`val path: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+[androidJvm]\
+val [path](path.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)

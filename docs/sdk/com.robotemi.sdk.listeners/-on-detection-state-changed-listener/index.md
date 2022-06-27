@@ -1,25 +1,19 @@
-[sdk](../../index.md) / [com.robotemi.sdk.listeners](../index.md) / [OnDetectionStateChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.listeners](../index.md)/[OnDetectionStateChangedListener](index.md)
 
 # OnDetectionStateChangedListener
 
-`interface OnDetectionStateChangedListener`
+[androidJvm]\
+interface [OnDetectionStateChangedListener](index.md)
 
-### Annotations
-
-| Name | Summary |
-|---|---|
-| [DetectionStatus](-detection-status/index.md) | `annotation class DetectionStatus` |
-
-### Functions
+## Types
 
 | Name | Summary |
 |---|---|
-| [onDetectionStateChanged](on-detection-state-changed.md) | `abstract fun onDetectionStateChanged(state: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>Available status: |
+| [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
+| [DetectionStatus](-detection-status/index.md) | [androidJvm]<br>annotation class [DetectionStatus](-detection-status/index.md) |
 
-### Companion Object Properties
+## Functions
 
 | Name | Summary |
 |---|---|
-| [DETECTED](-d-e-t-e-c-t-e-d.md) | `const val DETECTED: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [IDLE](-i-d-l-e.md) | `const val IDLE: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [LOST](-l-o-s-t.md) | `const val LOST: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [onDetectionStateChanged](on-detection-state-changed.md) | [androidJvm]<br>abstract fun [onDetectionStateChanged](on-detection-state-changed.md)(state: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html))<br>Available status: |

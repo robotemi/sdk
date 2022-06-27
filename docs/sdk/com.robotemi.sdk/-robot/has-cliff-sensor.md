@@ -1,8 +1,11 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [hasCliffSensor](./has-cliff-sensor.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[hasCliffSensor](has-cliff-sensor.md)
 
 # hasCliffSensor
 
-`@CheckResult fun hasCliffSensor(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)
+[androidJvm]\
+
+@CheckResult
+
+fun [hasCliffSensor](has-cliff-sensor.md)(): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)
 
 Check if the robot has the cliff sensor.
-

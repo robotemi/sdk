@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.notification](../index.md) / [Notification](index.md) / [getNotificationId](./get-notification-id.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.notification](../index.md)/[Notification](index.md)/[getNotificationId](get-notification-id.md)
 
 # getNotificationId
 
-`abstract fun getNotificationId(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!`
+[androidJvm]\
+abstract fun [getNotificationId](get-notification-id.md)(): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)

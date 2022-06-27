@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'org.jetbrains.dokka'
 
 android {
     compileSdkVersion 28
@@ -35,9 +35,16 @@ android {
         experimental = true
     }
 
-    dokka {
-        outputFormat = 'gfm'
-        outputDirectory = "../docs"
+    dokkaGfm.configure {
+        dokkaSourceSets {
+            named("main") {
+                noAndroidSdkLink.set(false)
+            }
+        }
+    }
+
+    tasks.named("dokkaGfm") {
+        outputDirectory.set(file("../docs"))
     }
 
     lintOptions {

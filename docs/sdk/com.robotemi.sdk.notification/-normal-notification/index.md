@@ -1,46 +1,43 @@
-[sdk](../../index.md) / [com.robotemi.sdk.notification](../index.md) / [NormalNotification](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.notification](../index.md)/[NormalNotification](index.md)
 
 # NormalNotification
 
-`open class NormalNotification : `[`Notification`](../-notification/index.md)`, `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+open class [NormalNotification](index.md) : [Notification](../-notification/index.md), Parcelable
 
-### Types
-
-| Name | Summary |
-|---|---|
-| [Builder](-builder/index.md) | `open class Builder` |
-
-### Constructors
+## Types
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `NormalNotification(in: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`!)` |
+| [Builder](-builder/index.md) | [androidJvm]<br>open class [Builder](-builder/index.md) |
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [CREATOR](-c-r-e-a-t-o-r.md) | `static val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`NormalNotification`](./index.md)`!>!` |
-
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [builder](builder.md) | `open static fun builder(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](-builder/index.md)`!` |
-| [describeContents](describe-contents.md) | `open fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getBackgroundColor](get-background-color.md) | `open fun getBackgroundColor(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getBitmap](get-bitmap.md) | `open fun getBitmap(): `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`?` |
-| [getIconResource](get-icon-resource.md) | `open fun getIconResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getNotificationId](get-notification-id.md) | `open fun getNotificationId(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getPrimaryButton](get-primary-button.md) | `open fun getPrimaryButton(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getPrimaryPendingIntent](get-primary-pending-intent.md) | `open fun getPrimaryPendingIntent(): `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!` |
-| [getSecondaryButton](get-secondary-button.md) | `open fun getSecondaryButton(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getSecondaryPendingIntent](get-secondary-pending-intent.md) | `open fun getSecondaryPendingIntent(): `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!` |
-| [getSubtitle](get-subtitle.md) | `open fun getSubtitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getSubtitleResource](get-subtitle-resource.md) | `open fun getSubtitleResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getTextColor](get-text-color.md) | `open fun getTextColor(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getTimeout](get-timeout.md) | `open fun getTimeout(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getTitle](get-title.md) | `open fun getTitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getTitleResource](get-title-resource.md) | `open fun getTitleResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getType](get-type.md) | `open fun getType(): `[`Notification.Type`](../-notification/-type/index.md)`!` |
-| [writeToParcel](write-to-parcel.md) | `open fun writeToParcel(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`!, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [builder](builder.md) | [androidJvm]<br>open fun [builder](builder.md)(title: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [NormalNotification.Builder](-builder/index.md) |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open fun [writeToParcel](write-to-parcel.md)(dest: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
+
+## Properties
+
+| Name | Summary |
+|---|---|
+| [backgroundColor](background-color.md) | [androidJvm]<br>open val [backgroundColor](background-color.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [bitmap](bitmap.md) | [androidJvm]<br>@get:Nullable<br>open val [bitmap](bitmap.md): Bitmap |
+| [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411) | [androidJvm]<br>val [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [CREATOR](-c-r-e-a-t-o-r.md) | [androidJvm]<br>val [CREATOR](-c-r-e-a-t-o-r.md): Parcelable.Creator&lt;[NormalNotification](index.md)&gt; |
+| [iconResource](icon-resource.md) | [androidJvm]<br>@DrawableRes<br>open val [iconResource](icon-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [notificationId](notification-id.md) | [androidJvm]<br>open val [notificationId](notification-id.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411) | [androidJvm]<br>val [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [primaryButton](primary-button.md) | [androidJvm]<br>open val [primaryButton](primary-button.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [primaryPendingIntent](primary-pending-intent.md) | [androidJvm]<br>open val [primaryPendingIntent](primary-pending-intent.md): PendingIntent |
+| [secondaryButton](secondary-button.md) | [androidJvm]<br>open val [secondaryButton](secondary-button.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [secondaryPendingIntent](secondary-pending-intent.md) | [androidJvm]<br>open val [secondaryPendingIntent](secondary-pending-intent.md): PendingIntent |
+| [subtitle](subtitle.md) | [androidJvm]<br>open val [subtitle](subtitle.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [subtitleResource](subtitle-resource.md) | [androidJvm]<br>@StringRes<br>open val [subtitleResource](subtitle-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [textColor](text-color.md) | [androidJvm]<br>open val [textColor](text-color.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [timeout](timeout.md) | [androidJvm]<br>open val [timeout](timeout.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [title](title.md) | [androidJvm]<br>open val [title](title.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [titleResource](title-resource.md) | [androidJvm]<br>@StringRes<br>open val [titleResource](title-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [type](type.md) | [androidJvm]<br>open val [type](type.md): [Notification.Type](../-notification/-type/index.md) |

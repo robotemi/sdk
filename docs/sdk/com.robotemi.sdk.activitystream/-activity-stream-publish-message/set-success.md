@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.activitystream](../index.md) / [ActivityStreamPublishMessage](index.md) / [setSuccess](./set-success.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.activitystream](../index.md)/[ActivityStreamPublishMessage](index.md)/[setSuccess](set-success.md)
 
 # setSuccess
 
-`open fun setSuccess(success: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+open fun [setSuccess](set-success.md)(success: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html))

@@ -1,13 +1,20 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [tiltAngle](./tilt-angle.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[tiltAngle](tilt-angle.md)
 
 # tiltAngle
 
-`@JvmOverloads fun tiltAngle(degrees: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, speed: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)` = 1f): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+
+@[JvmOverloads](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html)
+
+fun [tiltAngle](tilt-angle.md)(degrees: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), speed: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 1.0f)
 
 To tilt temi's head to a specific angle.
 
-### Parameters
+## Parameters
 
-`degrees` - the degree which you want the robot to tilt to, between 55 and -25
+androidJvm
 
-`speed` - Coefficient of maximum speed, between 0 to 1
+| | |
+|---|---|
+| degrees | the degree which you want the robot to tilt to, between 55 and -25 |
+| speed | Coefficient of maximum speed, between 0 to 1 |

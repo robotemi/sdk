@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.exception](../index.md) / [OnSdkExceptionListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.exception](../index.md)/[OnSdkExceptionListener](index.md)
 
 # OnSdkExceptionListener
 
-`interface OnSdkExceptionListener`
+[androidJvm]\
+interface [OnSdkExceptionListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onSdkError](on-sdk-error.md) | `abstract fun onSdkError(sdkException: `[`SdkException`](../-sdk-exception/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onSdkError](on-sdk-error.md) | [androidJvm]<br>abstract fun [onSdkError](on-sdk-error.md)(sdkException: [SdkException](../-sdk-exception/index.md)) |

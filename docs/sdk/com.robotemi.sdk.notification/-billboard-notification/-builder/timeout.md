@@ -1,15 +1,20 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [BillboardNotification](../index.md) / [Builder](index.md) / [timeout](./timeout.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[BillboardNotification](../index.md)/[Builder](index.md)/[timeout](timeout.md)
 
 # timeout
 
-`open fun timeout(timeout: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`BillboardNotification.Builder`](index.md)`!`
+[androidJvm]\
+open fun [timeout](timeout.md)(timeout: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [BillboardNotification.Builder](index.md)
 
 Set timeout in seconds to billboard for auto dismiss
 
-### Parameters
+#### Return
 
-`timeout` - [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html): 0 for disabled
+Builder
 
-**Return**
-[BillboardNotification.Builder](index.md)!: Builder
+## Parameters
 
+androidJvm
+
+| | |
+|---|---|
+| timeout | 0 for disabled |

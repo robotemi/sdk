@@ -1,25 +1,31 @@
-[sdk](../../index.md) / [com.robotemi.sdk.notification](../index.md) / [BillboardNotification](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.notification](../index.md)/[BillboardNotification](index.md)
 
 # BillboardNotification
 
-`open class BillboardNotification : `[`Notification`](../-notification/index.md)
+[androidJvm]\
+open class [BillboardNotification](index.md) : [Notification](../-notification/index.md)
 
-### Types
-
-| Name | Summary |
-|---|---|
-| [Builder](-builder/index.md) | `open class Builder` |
-
-### Functions
+## Types
 
 | Name | Summary |
 |---|---|
-| [getBitmap](get-bitmap.md) | `open fun getBitmap(): `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`?` |
-| [getIconResource](get-icon-resource.md) | `open fun getIconResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getNotificationId](get-notification-id.md) | `open fun getNotificationId(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getSubtitle](get-subtitle.md) | `open fun getSubtitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getSubtitleResource](get-subtitle-resource.md) | `open fun getSubtitleResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getTimeout](get-timeout.md) | `open fun getTimeout(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getTitle](get-title.md) | `open fun getTitle(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getTitleResource](get-title-resource.md) | `open fun getTitleResource(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [getType](get-type.md) | `open fun getType(): `[`Notification.Type`](../-notification/-type/index.md)`!` |
+| [Builder](-builder/index.md) | [androidJvm]<br>open class [Builder](-builder/index.md) |
+
+## Functions
+
+| Name | Summary |
+|---|---|
+| [getBitmap](get-bitmap.md) | [androidJvm]<br>@Nullable<br>open fun [getBitmap](get-bitmap.md)(): Bitmap |
+| [getIconResource](get-icon-resource.md) | [androidJvm]<br>open fun [getIconResource](get-icon-resource.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [getType](get-type.md) | [androidJvm]<br>open fun [getType](get-type.md)(): [Notification.Type](../-notification/-type/index.md) |
+
+## Properties
+
+| Name | Summary |
+|---|---|
+| [notificationId](notification-id.md) | [androidJvm]<br>open val [notificationId](notification-id.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [subtitle](subtitle.md) | [androidJvm]<br>open val [subtitle](subtitle.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [subtitleResource](subtitle-resource.md) | [androidJvm]<br>@StringRes<br>open val [subtitleResource](subtitle-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [timeout](timeout.md) | [androidJvm]<br>open val [timeout](timeout.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [title](title.md) | [androidJvm]<br>open val [title](title.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [titleResource](title-resource.md) | [androidJvm]<br>@StringRes<br>open val [titleResource](title-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |

@@ -1,23 +1,18 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.activitystream](../../index.md) / [ActivityStreamObject](../index.md) / [Builder](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.activitystream](../../index.md)/[ActivityStreamObject](../index.md)/[Builder](index.md)
 
 # Builder
 
-`open class Builder`
+[androidJvm]\
+open class [Builder](index.md)
 
-### Constructors
-
-| Name | Summary |
-|---|---|
-| [&lt;init&gt;](-init-.md) | `Builder()` |
-
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [activityType](activity-type.md) | `open fun activityType(activityType: `[`ActivityStreamObject.ActivityType`](../-activity-type/index.md)`): `[`ActivityStreamObject.Builder`](./index.md)`!` |
-| [addItem](add-item.md) | `open fun addItem(item: `[`ActivityStreamListItem`](../../-activity-stream-list-item/index.md)`): `[`ActivityStreamObject.Builder`](./index.md)`!` |
-| [build](build.md) | `open fun build(): `[`ActivityStreamObject`](../index.md)`!` |
-| [media](media.md) | `open fun media(mediaObject: `[`MediaObject`](../../../com.robotemi.sdk/-media-object/index.md)`): `[`ActivityStreamObject.Builder`](./index.md)`!` |
-| [message](message.md) | `open fun message(message: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`ActivityStreamObject.Builder`](./index.md)`!` |
-| [source](source.md) | `open fun source(sourceObject: `[`SourceObject`](../../../com.robotemi.sdk/-source-object/index.md)`): `[`ActivityStreamObject.Builder`](./index.md)`!` |
-| [title](title.md) | `open fun title(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`ActivityStreamObject.Builder`](./index.md)`!` |
+| [activityType](activity-type.md) | [androidJvm]<br>open fun [activityType](activity-type.md)(@NonNullactivityType: [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)): [ActivityStreamObject.Builder](index.md) |
+| [addItem](add-item.md) | [androidJvm]<br>open fun [addItem](add-item.md)(@NonNullitem: [ActivityStreamListItem](../../-activity-stream-list-item/index.md)): [ActivityStreamObject.Builder](index.md) |
+| [build](build.md) | [androidJvm]<br>open fun [build](build.md)(): [ActivityStreamObject](../index.md) |
+| [media](media.md) | [androidJvm]<br>open fun [media](media.md)(@NonNullmediaObject: [MediaObject](../../../com.robotemi.sdk/-media-object/index.md)): [ActivityStreamObject.Builder](index.md) |
+| [message](message.md) | [androidJvm]<br>open fun [message](message.md)(@NonNullmessage: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [ActivityStreamObject.Builder](index.md) |
+| [source](source.md) | [androidJvm]<br>open fun [source](source.md)(@NonNullsourceObject: [SourceObject](../../../com.robotemi.sdk/-source-object/index.md)): [ActivityStreamObject.Builder](index.md) |
+| [title](title.md) | [androidJvm]<br>open fun [title](title.md)(@NonNulltitle: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [ActivityStreamObject.Builder](index.md) |

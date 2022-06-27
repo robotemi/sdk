@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.model](../../index.md) / [MemberStatusModel](../index.md) / [Status](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.model](../../index.md)/[MemberStatusModel](../index.md)/[Status](index.md)
 
 # Status
 
-`annotation class Status`
+[androidJvm]\
+annotation class [Status](index.md)
 
-### Constructors
+## Constructors
 
-| Name | Summary |
+| | |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `Status()` |
+| [Status](-status.md) | [androidJvm]<br>fun [Status](-status.md)() |

@@ -1524,7 +1524,7 @@ class Robot private constructor(private val context: Context) {
     /**
      * Request the robot to provide current battery status.
      *
-     * @return The battery data the robot.
+     * @return The battery data of the robot.
      */
     @get:CheckResult
     val batteryData: BatteryData?

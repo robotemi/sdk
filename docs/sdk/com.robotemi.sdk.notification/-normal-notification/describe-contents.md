@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.notification](../index.md) / [NormalNotification](index.md) / [describeContents](./describe-contents.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.notification](../index.md)/[NormalNotification](index.md)/[describeContents](describe-contents.md)
 
 # describeContents
 
-`open fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+[androidJvm]\
+open fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
