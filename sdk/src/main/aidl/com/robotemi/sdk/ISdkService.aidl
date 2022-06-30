@@ -18,6 +18,7 @@ import com.robotemi.sdk.map.MapDataModel;
 import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.map.MapModel;
 import com.robotemi.sdk.map.Floor;
+import com.robotemi.sdk.voice.model.TtsVoice;
 
 interface ISdkService {
 
@@ -328,4 +329,8 @@ interface ISdkService {
     void loadFloor(in String packageName, int floorId, in Position position);
 
     String loadMapToCache(in String packageName, in String mapId);
+
+    boolean setTtsVoice(in String packageName, in TtsVoice ttsVoice);
+
+    TtsVoice getTtsVoice();
 }

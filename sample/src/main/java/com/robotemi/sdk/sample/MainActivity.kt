@@ -59,6 +59,7 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
@@ -349,6 +350,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetCurrentFloor.setOnClickListener {
             getCurrentFloor()
         }
+        btnGetTts.setOnClickListener { getTts() }
+        btnSetTts.setOnClickListener { setTts() }
     }
 
     private fun getCurrentFloor() {
@@ -1769,6 +1772,15 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             e.printStackTrace()
             printLog(e.message ?: "")
         }
+    }
+
+    private fun getTts() {
+        printLog("Get TTS Voice result ${robot.getTtsVoice()}")
+    }
+
+    private fun setTts() {
+        val result = robot.setTtsVoice(TtsVoice(gender = Gender.MALE, speed = 0.5f, pitch = -2))
+        printLog("Set TTS Voice result $result")
     }
 
     override fun onMovementStatusChanged(type: String, status: String) {

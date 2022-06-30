@@ -581,6 +581,16 @@
                 android:id="@+id/btnGetAllContacts"
                 style="@style/ButtonCommon"
                 android:text="Get All Contacts" />
+
+            <Button
+                    android:id="@+id/btnGetTts"
+                    style="@style/ButtonCommon"
+                    android:text="Get TTS Voice" />
+
+            <Button
+                    android:id="@+id/btnSetTts"
+                    style="@style/ButtonCommon"
+                    android:text="Set TTS Voice to Slow Male Voice" />
         </LinearLayout>
     </ScrollView>
 

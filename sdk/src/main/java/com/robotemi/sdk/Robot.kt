@@ -55,6 +55,7 @@ import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.FileNotFoundException
@@ -892,6 +893,54 @@ class Robot private constructor(private val context: Context) {
             sdkService?.startDefaultNlu(applicationInfo.packageName, text)
         } catch (e: RemoteException) {
             Log.e(TAG, "startDefaultNlu() error")
+        }
+    }
+
+    /**
+     * Get TTS voice, speed, and pitch.
+     */
+    @Nullable
+    fun getTtsVoice(): TtsVoice? {
+        return try {
+            sdkService?.ttsVoice
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getTtsVoice() error")
+            null
+        }
+    }
+    private val speedRange: FloatArray = FloatArray(16) { index ->
+        (index + 5) / 10f
+    }
+
+    private val pitchRange: IntArray = IntArray(21) { index ->
+        index - 10
+    }
+
+    /**
+     * Set TTS voice, speed, and pitch.
+     * @return true if set is successful
+     */
+    fun setTtsVoice(ttsVoice: TtsVoice): Boolean {
+        with(ttsVoice) {
+            if (gender != Gender.FEMALE && gender != Gender.MALE) {
+                Log.e(TAG, "Gender $gender is invalid")
+                return false
+            }
+            if (speedRange.any { it == speed }.not()) {
+                Log.e(TAG, "Speed $speed is invalid, range is ${speedRange.toList()}")
+                return false
+            }
+            if (pitch !in pitchRange) {
+                Log.e(TAG, "Pitch $pitch is invalid, range is ${pitchRange.toList()}")
+                return false
+            }
+        }
+
+        return try {
+            sdkService?.setTtsVoice(applicationInfo.packageName, ttsVoice) ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setTtsVoice() error")
+            false
         }
     }
 
@@ -2331,10 +2380,12 @@ class Robot private constructor(private val context: Context) {
     /*                 Media                 */
     /*****************************************/
 
+    @Deprecated("No longer supported")
     fun setMediaButtonListener(mediaButtonListener: MediaButtonListener) {
         this.mediaButtonListener = mediaButtonListener
     }
 
+    @Deprecated("No longer supported")
     fun removeMediaButtonListener() {
         mediaButtonListener = null
     }
@@ -2869,6 +2920,7 @@ class Robot private constructor(private val context: Context) {
         fun onPublish(message: ActivityStreamPublishMessage)
     }
 
+    @Deprecated("No longer supported by temi launcher")
     interface MediaButtonListener {
 
         fun onPlayButtonClicked(play: Boolean)
