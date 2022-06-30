@@ -1475,8 +1475,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         for (contactModel in contactModelList) {
             if (contactModel.userId.isBlank()) {
                 printLog("onFaceRecognized: Unknown face")
-            } else {
+            } else if (!contactModel.visitor){
                 printLog("onFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+            } else {
+                Log.d("SAMPLE_DEBUG", "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
             }
         }
     }
@@ -1499,8 +1502,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         for (contactModel in contactModelList) {
             if (contactModel.userId.isBlank()) {
                 printLog("onContinuousFaceRecognized: Unknown face")
-            } else {
+            } else if (!contactModel.visitor){
                 printLog("onContinuousFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+            } else {
+                Log.d("SAMPLE_DEBUG", "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                printLog("onContinuousFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
             }
         }
     }
