@@ -1,6 +1,7 @@
 package com.robotemi.sdk.sample
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
@@ -150,9 +151,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         registerBroadcast()
         val greetModeState = intent.extras?.getInt(SdkConstants.INTENT_ACTION_GREET_MODE_STATE)
         if (greetModeState != null) {
-            printLog("greetModeState: $greetModeState")
-        } else {
-            printLog("greetModeState: null")
+            tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(greetModeState)}"
         }
     }
 
@@ -1010,11 +1009,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onConstraintBeWithStatusChanged(isConstraint: Boolean) {
-        printLog("onConstraintBeWith", "status = $isConstraint")
+        printLog("onConstraintBeWith", "ConstraintBeWith = $isConstraint")
     }
 
     override fun onDetectionStateChanged(state: Int) {
-        printLog("onDetectionStateChanged: state = $state")
+        tvDetectionState.text = "Detect State -> ${OnDetectionStateChangedListener.DetectionStatus.fromValue(state)}"
     }
 
     /**
@@ -1351,16 +1350,17 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onDistanceToLocationChanged(distances: Map<String, Float>) {
+        var text = "Distance:\n"
         for (location in distances.keys) {
-            printLog(
-                "onDistanceToLocation",
-                "location:" + location + ", distance:" + distances[location]
-            )
+            text +=
+                " -> $location :: ${distances[location]}\n"
         }
+        tvDistance.text = text
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCurrentPositionChanged(position: Position) {
-        printLog("onCurrentPosition", position.toString())
+        tvPosition.text = "Position -> {${position.x}, ${position.y}, ${position.yaw}}, tilt: ${position.tiltAngle}"
     }
 
     override fun onSequencePlayStatusChanged(status: Int) {
@@ -1391,7 +1391,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onDetectionDataChanged(detectionData: DetectionData) {
-        printLog("onDetectionDataChanged", detectionData.toString())
+        tvDetection.text = if (detectionData.isDetected) {
+            "Detect -> angle ${detectionData.angle}, dist ${detectionData.distance}"
+        } else {
+            "No detection"
+        }
     }
 
     override fun onUserInteraction(isInteracting: Boolean) {
@@ -1460,7 +1464,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     override fun onFaceRecognized(contactModelList: List<ContactModel>) {
         if (contactModelList.isEmpty()) {
             printLog("onFaceRecognized: User left")
-            imageViewFace.visibility = View.GONE
+            imageViewFace.visibility = View.INVISIBLE
             return
         }
 
@@ -1485,9 +1489,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onContinuousFaceRecognized(contactModelList: List<ContactModel>) {
+        var text = ""
         if (contactModelList.isEmpty()) {
-            printLog("onContinuousFaceRecognized: User left")
-            imageViewFace.visibility = View.GONE
+            text = "onContinuousFaceRecognized: User left"
+            imageViewFace.visibility = View.INVISIBLE
+            tvContinuousFace.text = text
             return
         }
 
@@ -1499,22 +1505,26 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             imageViewFace.visibility = View.VISIBLE
         }
 
+        text = "onContinuousFaceRecognized:\n"
+        val blinker = listOf("\\", "|", "/", "-").random()
         for (contactModel in contactModelList) {
             if (contactModel.userId.isBlank()) {
-                printLog("onContinuousFaceRecognized: Unknown face")
+                text += "$blinker Unknown face\n"
             } else if (!contactModel.visitor){
-                printLog("onContinuousFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+                text +="$blinker ${contactModel.firstName} ${contactModel.lastName}\n"
             } else {
                 Log.d("SAMPLE_DEBUG", "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
-                printLog("onContinuousFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
+                text += "$blinker  VISITOR ${contactModel.userId} ${contactModel.similarity}\n"
             }
         }
+
+        tvContinuousFace.text = text
     }
 
     private fun showFaceRecognitionImage(mediaKey: String) {
         if (mediaKey.isEmpty()) {
             imageViewFace.setImageResource(R.drawable.app_icon)
-            imageViewFace.visibility = View.GONE
+            imageViewFace.visibility = View.INVISIBLE
             return
         }
         executorService.execute {
@@ -1548,6 +1558,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private fun clearLog() {
         tvLog.text = ""
+        tvContinuousFace.text = ""
+        imageViewFace.visibility = View.GONE
     }
 
     private fun startNlu() {
@@ -1981,7 +1993,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onGreetModeStateChanged(state: Int) {
-        printLog("onGreetModeStateChanged: $state")
+        tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(state)}"
     }
 
     override fun onLoadFloorStatusChanged(status: Int) {

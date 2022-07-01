@@ -35,6 +35,10 @@ data class ContactModel @JvmOverloads constructor(
         writeString(description)
     }
 
+    override fun toString(): String {
+        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId)"
+    }
+
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<ContactModel> = object : Parcelable.Creator<ContactModel> {
