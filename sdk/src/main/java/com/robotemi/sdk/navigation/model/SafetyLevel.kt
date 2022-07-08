@@ -15,6 +15,7 @@ enum class SafetyLevel(val value: String) {
             return when (value) {
                 MEDIUM.value -> MEDIUM
                 HIGH.value -> HIGH
+                "low" -> MEDIUM // Compatibility for sprint 126 changes.
                 else -> DEFAULT
             }
         }

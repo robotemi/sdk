@@ -1223,6 +1223,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return
         }
+        printLog("Current go to speed ${robot.goToSpeed}")
         val speedLevels: MutableList<String> = ArrayList()
         speedLevels.add(SpeedLevel.HIGH.value)
         speedLevels.add(SpeedLevel.MEDIUM.value)
@@ -1245,6 +1246,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return
         }
+        printLog("Current navigation safety ${robot.navigationSafety}")
         val safetyLevel: MutableList<String> = ArrayList()
         safetyLevel.add(SafetyLevel.HIGH.value)
         safetyLevel.add(SafetyLevel.MEDIUM.value)
