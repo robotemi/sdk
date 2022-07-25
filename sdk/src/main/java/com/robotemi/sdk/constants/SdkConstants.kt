@@ -1,13 +1,11 @@
 package com.robotemi.sdk.constants
 
-import android.os.Parcelable
 import com.robotemi.sdk.constants.SdkConstants.PAGE_ALL_APPS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_CONTACTS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_HOME
 import com.robotemi.sdk.constants.SdkConstants.PAGE_LOCATIONS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_MAP_EDITOR
 import com.robotemi.sdk.constants.SdkConstants.PAGE_SETTINGS
-import kotlinx.android.parcel.Parcelize
 
 object SdkConstants {
     // metadata key

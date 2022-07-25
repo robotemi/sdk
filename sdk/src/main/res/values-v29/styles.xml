@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="SkillTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+</resources>

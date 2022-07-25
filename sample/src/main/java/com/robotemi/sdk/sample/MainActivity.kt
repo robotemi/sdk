@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -314,7 +315,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnLoadMap.setOnClickListener { loadMap() }
         btnLoadMapToCache.setOnClickListener { loadMapToCache() }
         btnLoadMapOffline.setOnClickListener { loadMap(false, null, true) }
-        btnLoadMapWithoutUI.setOnClickListener { loadMap(false, null, false, true) }
+        btnLoadMapWithoutUI.setOnClickListener { loadMap(false, null, offline = false, withoutUI = true) }
         btnLock.setOnClickListener { lock() }
         btnUnlock.setOnClickListener { unlock() }
         btnMuteAlexa.setOnClickListener { muteAlexa() }
@@ -380,7 +381,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 printLog("Loading floor: " + targetFloor.name)
                 val elevator = targetFloor.locations.find { it.name == "elevator" }
                 if (elevator == null) {
-                    printLog("No location $elevator exists")
+                    printLog("No location elevator exists")
                     return@OnItemClickListener
                 }
                 robot.loadFloor(targetFloor.id, Position(elevator.x, elevator.y, elevator.yaw))
@@ -701,7 +702,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      */
     private fun saveLocation() {
         val location =
-            etSaveLocation.text.toString().toLowerCase(Locale.getDefault()).trim { it <= ' ' }
+            etSaveLocation.text.toString().lowercase().trim { it <= ' ' }
         val result = robot.saveLocation(location)
         if (result) {
             robot.speak(create("I've successfully saved the $location location.", true))
@@ -716,11 +717,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      */
     private fun goTo() {
         for (location in robot.locations) {
-            if (location == etGoTo.text.toString().toLowerCase(Locale.getDefault())
+            if (location == etGoTo.text.toString().lowercase()
                     .trim { it <= ' ' }
             ) {
                 robot.goTo(
-                    etGoTo.text.toString().toLowerCase(Locale.getDefault()).trim { it <= ' ' },
+                    etGoTo.text.toString().lowercase().trim { it <= ' ' },
                     backwards = false,
                     noBypass = false,
                     speedLevel = SpeedLevel.HIGH
@@ -1054,11 +1055,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 robot.speak(create("Okay, please enjoy.", false))
                 playMovie()
             }
-            asrResult.toLowerCase(Locale.getDefault()).contains("follow me") -> {
+            asrResult.lowercase().contains("follow me") -> {
                 robot.finishConversation()
                 robot.beWithMe()
             }
-            asrResult.toLowerCase(Locale.getDefault()).contains("go to home base") -> {
+            asrResult.lowercase().contains("go to home base") -> {
                 robot.finishConversation()
                 robot.goTo("home base")
             }
@@ -1572,8 +1573,12 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private fun getAllContacts() {
         val allContacts = robot.allContact
+        val recentCalls = robot.recentCalls
         for (userInfo in allContacts) {
             printLog("UserInfo: $userInfo")
+        }
+        for (recentCall in recentCalls) {
+            printLog("RecentCall: $recentCall")
         }
     }
 
@@ -1992,6 +1997,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         })
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onGreetModeStateChanged(state: Int) {
         tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(state)}"
     }

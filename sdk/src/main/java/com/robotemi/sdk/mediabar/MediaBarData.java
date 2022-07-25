@@ -27,7 +27,7 @@ public class MediaBarData implements Parcelable {
     @StringRes
     private final int subtitleResource;
 
-    @StringRes
+    @DrawableRes
     private final int iconResource;
 
     private final Type type;

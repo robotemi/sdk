@@ -20,7 +20,7 @@ data class TtsVoice(
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
-        Gender.valueOf(source.readString()),
+        Gender.valueOf(source.readString() ?: ""),
         source.readFloat(),
         source.readInt()
     )

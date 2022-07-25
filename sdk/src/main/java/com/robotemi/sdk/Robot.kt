@@ -7,7 +7,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
@@ -63,6 +62,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.concurrent.thread
 
 @SuppressWarnings("unused")
 class Robot private constructor(private val context: Context) {
@@ -340,6 +340,7 @@ class Robot private constructor(private val context: Context) {
 
         override fun onDistanceToLocationChanged(distances: MutableMap<Any?, Any?>): Boolean {
             if (onDistanceToLocationChangedListeners.isEmpty()) return false
+            @Suppress("UNCHECKED_CAST")
             val distancesMap: Map<String, Float> = distances as Map<String, Float>
             uiHandler.post {
                 for (listener in onDistanceToLocationChangedListeners) {
@@ -1996,6 +1997,7 @@ class Robot private constructor(private val context: Context) {
     @CheckResult
     fun getSupportedLatinKeyboards(): Map<String, Boolean> {
         return try {
+            @Suppress("UNCHECKED_CAST")
             sdkService?.supportedLatinKeyboards as Map<String, Boolean>
         } catch (e: RemoteException) {
             Log.e(TAG, "getSupportedLatinKeyboards() error")
@@ -2365,7 +2367,7 @@ class Robot private constructor(private val context: Context) {
     @Throws(RemoteException::class)
     fun shareActivityObject(activityStreamObject: ActivityStreamObject) {
         sdkService?.let {
-            AsyncTask.execute {
+            thread {
                 ActivityStreamUtils.handleActivityStreamObject(activityStreamObject)
                 try {
                     it.shareActivityStreamObject(activityStreamObject)
@@ -2635,9 +2637,9 @@ class Robot private constructor(private val context: Context) {
             if (cursor == null || !cursor.moveToFirst()) {
                 return mapDataModel
             }
-            val mapId = cursor.getString(cursor.getColumnIndex(MAP_ID))
-            val mapInfoJson = cursor.getString(cursor.getColumnIndex(MAP_INFO))
-            val mapElementsJson = cursor.getString(cursor.getColumnIndex(MAP_ELEMENTS))
+            val mapId = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ID))
+            val mapInfoJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_INFO))
+            val mapElementsJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ELEMENTS))
             val mapInfo = gson.fromJson(mapInfoJson, MapInfo::class.java)
             val mapElements = gson.fromJson<List<Layer>>(
                 mapElementsJson,
@@ -2844,7 +2846,7 @@ class Robot private constructor(private val context: Context) {
         try {
             return context.contentResolver.openInputStream(Uri.parse(uriStr))
         } catch (e: FileNotFoundException) {
-            Log.e(TAG, e.message)
+            Log.e(TAG, e.message ?: "")
             sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))
         } catch (e: IllegalStateException) {
             Log.e(TAG, "getInputStreamByMediaKey error.\n ${e.message}")

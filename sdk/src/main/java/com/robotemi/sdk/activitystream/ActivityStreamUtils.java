@@ -101,6 +101,7 @@ public final class ActivityStreamUtils {
                 FILENAME_PREFIX + UUID.randomUUID() + "." + extension);
     }
 
+    @SuppressWarnings("IOStreamConstructor")
     @WorkerThread
     private static void copyFile(@NonNull final File srcFile, @NonNull final File dstFile)
             throws IOException {
