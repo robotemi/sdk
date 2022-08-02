@@ -1990,6 +1990,60 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Get StandBy status
+     *
+     * @return true if under standBy status,
+     *         false if not under standBy status,
+     *         null if the check is failed.
+     */
+    fun isStandByOn(): Boolean? {
+        return sdkService?.isStandByOn
+    }
+
+    /**
+     * Start StandBy
+     *
+     * Require [Permission.SETTINGS] Permission
+     *
+     * @return request result
+     * <ul>
+     *   <li> -1 for failed to request, maybe robot is not ready
+     *   <li> 0 for standBy is already started
+     *   <li> 1 for standBy was already running
+     *   <li> 2 for standby if disabled in settings
+     *   <li> 3 for robot is busy, e.g. OTA, Greet Mode
+     *   <li> 403 for SETTINGS permission required
+     *   <li> 429 for too many requests, should be longer than 5 seconds between 2 calls
+     * </ul>
+     */
+    fun startStandBy(): Int {
+        return sdkService?.startStandBy(applicationInfo.packageName) ?: -1
+    }
+
+    /**
+     * Stop StandBy with optional password
+     *
+     * Require [Permission.SETTINGS] Permission
+     *
+     * @param password default as empty
+     *                 when temi requires password to unlock, this method only works when here a valid password is passed.
+     *
+     * @return request result
+     * <ul>
+     *   <li> -1 for failed to request, maybe robot is not ready
+     *   <li> 0 for standBy is stopped
+     *   <li> 1 for standBy was not running
+     *   <li> 2 for password required
+     *   <li> 3 for wrong password
+     *   <li> 403 for SETTINGS permission required
+     *   <li> 429 for too many requests, should be longer than 5 seconds between 2 calls
+     * </ul>
+     */
+    fun stopStandBy(password: String = ""): Int {
+        return sdkService?.stopStandBy(applicationInfo.packageName, password) ?: -1
+    }
+
+    /**
      * Get the supported latin keyboards
      *
      * @return

@@ -91,6 +91,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private var tts: TextToSpeech? = null
 
+    private var debugReceiver: TemiBroadcastReceiver? = null
+
     /**
      * adb shell am broadcast -a com.robotemi.sdk.action.sequence --es control "pause|play|step_forward|step_backward"
      */
@@ -154,6 +156,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (greetModeState != null) {
             tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(greetModeState)}"
         }
+        debugReceiver = TemiBroadcastReceiver()
+        registerReceiver(debugReceiver, IntentFilter(TemiBroadcastReceiver.ACTION_DEBUG));
     }
 
     /**
@@ -252,6 +256,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             robot.setTtsService(null)
         }
         unregisterBroadcast()
+        if (debugReceiver != null) {
+            unregisterReceiver(debugReceiver)
+        }
         super.onDestroy()
     }
 

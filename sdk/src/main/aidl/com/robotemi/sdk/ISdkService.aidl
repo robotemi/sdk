@@ -333,4 +333,10 @@ interface ISdkService {
     boolean setTtsVoice(in String packageName, in TtsVoice ttsVoice);
 
     TtsVoice getTtsVoice();
+
+    boolean isStandByOn();
+
+    int startStandBy(in String packageName);
+
+    int stopStandBy(in String packageName, in String password);
 }
