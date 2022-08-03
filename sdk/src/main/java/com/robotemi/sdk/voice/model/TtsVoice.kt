@@ -7,9 +7,9 @@ import androidx.annotation.IntRange
 import com.robotemi.sdk.constants.Gender
 
 /**
- * gender, only female and male can be used as parameter
- * speed 0.5 - 2.0   stepping by 0.1, default 1.0
- * pitch -10 - 10    stepping by 1, default 0
+ * @param gender only female and male can be used as parameter
+ * @param speed 0.5 - 2.0   stepping by 0.1, default 1.0
+ * @param pitch -10 - 10    stepping by 1, default 0
  */
 data class TtsVoice(
     var gender: Gender = Gender.FEMALE,
@@ -19,7 +19,7 @@ data class TtsVoice(
     var pitch: Int = 0
 ) : Parcelable {
 
-    constructor(source: Parcel) : this(
+    private constructor(source: Parcel) : this(
         Gender.valueOf(source.readString() ?: ""),
         source.readFloat(),
         source.readInt()
@@ -33,7 +33,7 @@ data class TtsVoice(
         writeInt(pitch)
     }
 
-    companion object {
+    internal companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<TtsVoice> = object : Parcelable.Creator<TtsVoice> {
             override fun createFromParcel(source: Parcel): TtsVoice = TtsVoice(source)

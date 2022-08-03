@@ -5,6 +5,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import java.util.*
 
+/**
+ * @param id will remain the same when you create a TtsRequest and when you received it from [onTtsStatusChanged] callback
+ */
 data class TtsRequest(
     val id: UUID = UUID.randomUUID(),
     val speech: String,
@@ -16,7 +19,10 @@ data class TtsRequest(
     val showAnimationOnly: Boolean = false
 ) : Parcelable {
 
-    constructor(source: Parcel) : this(
+    /**
+     * Use [TtsRequest.create] to create TtsRequest
+     */
+    private constructor(source: Parcel) : this(
         id = source.readSerializable() as UUID,
         speech = source.readString()!!,
         packageName = source.readString()!!,
@@ -97,7 +103,7 @@ data class TtsRequest(
 
     companion object {
         @JvmField
-        val CREATOR: Parcelable.Creator<TtsRequest> = object : Parcelable.Creator<TtsRequest> {
+        internal val CREATOR: Parcelable.Creator<TtsRequest> = object : Parcelable.Creator<TtsRequest> {
             override fun createFromParcel(source: Parcel): TtsRequest {
                 return TtsRequest(source)
             }
@@ -107,6 +113,17 @@ data class TtsRequest(
             }
         }
 
+        /**
+         * This is the constructor method of TtsRequest
+         *
+         * @param speech The text to be spoken
+         * @param isShowOnConversationLayer true if you want to it with temi conversation view, default as true
+         * @param language specify a language to speak, default as [Language.SYSTEM] which will follow system language.
+         * @param showAnimationOnly true if you want to show a face animation while the speech is ongoing.
+         *                          This only works if there is an assigned interaction animation in temi Settings,
+         *                          otherwise it will just display the text on screen without a face animation.
+         *                          Set this as true will override `isShowOnConversationLayer` if that value is set to false.
+         */
         @JvmOverloads
         @JvmStatic
         fun create(
