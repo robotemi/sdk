@@ -36,13 +36,30 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 Log.d("TemiBroadcastReceiver", "stopStandBy, $result")
             }
             ACTION_TTS -> {
-                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.tts" --es random "ts"
-                val random = intent.getStringExtra("random") ?: ""
-                if (random == "ts") {
-                    Robot.getInstance().speak(TtsRequest.create("Hello ${System.currentTimeMillis()}"))
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.tts" --ez random true --es language "EN_US" --ez cache true --es text "hello"
+                val random = intent.getBooleanExtra("random", false)
+                val cache = intent.getBooleanExtra("cache", false)
+                val text = intent.getStringExtra("text") ?: ""
+                val locale = intent.getStringExtra("language") ?: "SYSTEM"
+                val tts = if (random) {
+                    if (text.isNotBlank()) {
+                        text + System.currentTimeMillis()
+                    } else {
+                        "adb shell am broadcast -a temi.debug.sdk --es action \"temi.debug.tts\" --ez random true --es language \"us\" --ez cache true --es text \"hello\" " + System.currentTimeMillis()
+                    }
                 } else {
-                    Robot.getInstance().speak(TtsRequest.create("Hello"))
+                    text.ifBlank {
+                        "adb shell am broadcast -a temi.debug.sdk --es action \"temi.debug.tts\" --ez random true --es language \"us\" --ez cache true --es text \"hello\""
+                    }
                 }
+                val language =
+                    try {
+                        TtsRequest.Language.valueOf(locale)
+                    } catch (e: Exception) {
+                        TtsRequest.Language.SYSTEM
+                    }
+
+                Robot.getInstance().speak(TtsRequest.create(tts, cached = cache, language = language))
             }
         }
     }
