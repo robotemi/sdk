@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [SourceObject](index.md) / [create](./create.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[SourceObject](index.md)/[create](create.md)
 
 # create
 
-`open static fun create(name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!, iconUri: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`SourceObject`](index.md)`!`
+[androidJvm]\
+open fun [create](create.md)(name: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html), iconUri: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [SourceObject](index.md)

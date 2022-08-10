@@ -1,28 +1,31 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [NlpResult](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[NlpResult](index.md)
 
 # NlpResult
 
-`class NlpResult : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)
+[androidJvm]\
+class [NlpResult](index.md) : Parcelable
 
-### Constructors
+## Constructors
+
+| | |
+|---|---|
+| [NlpResult](-nlp-result.md) | [androidJvm]<br>open fun [NlpResult](-nlp-result.md)() |
+
+## Functions
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `NlpResult(in: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`!)`<br>`NlpResult()` |
+| [describeContents](describe-contents.md) | [androidJvm]<br>open fun [describeContents](describe-contents.md)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [toString](to-string.md) | [androidJvm]<br>@NonNull<br>open fun [toString](to-string.md)(): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [writeToParcel](write-to-parcel.md) | [androidJvm]<br>open fun [writeToParcel](write-to-parcel.md)(dest: Parcel, flags: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [action](action.md) | `var action: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [CREATOR](-c-r-e-a-t-o-r.md) | `static val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`NlpResult`](./index.md)`!>!` |
-| [params](params.md) | `var params: `[`MutableMap`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!, `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!>!` |
-| [resolvedQuery](resolved-query.md) | `var resolvedQuery: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-
-### Functions
+## Properties
 
 | Name | Summary |
 |---|---|
-| [describeContents](describe-contents.md) | `fun describeContents(): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [toString](to-string.md) | `fun toString(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [writeToParcel](write-to-parcel.md) | `fun writeToParcel(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`!, flags: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [action](action.md) | [androidJvm]<br>open var [action](action.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411) | [androidJvm]<br>val [CONTENTS_FILE_DESCRIPTOR](../../com.robotemi.sdk.telepresence/-call-state/index.md#-255210448%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [CREATOR](-c-r-e-a-t-o-r.md) | [androidJvm]<br>val [CREATOR](-c-r-e-a-t-o-r.md): Parcelable.Creator&lt;[NlpResult](index.md)&gt; |
+| [params](params.md) | [androidJvm]<br>open var [params](params.md): [Map](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html)&lt;[String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html), [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)&gt; |
+| [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411) | [androidJvm]<br>val [PARCELABLE_WRITE_RETURN_VALUE](../../com.robotemi.sdk.telepresence/-call-state/index.md#-865205281%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [resolvedQuery](resolved-query.md) | [androidJvm]<br>open var [resolvedQuery](resolved-query.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |

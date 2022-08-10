@@ -1,5 +1,6 @@
-[sdk](../../../index.md) / [com.robotemi.sdk](../../index.md) / [UserInfo](../index.md) / [CREATOR](index.md) / [newArray](./new-array.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk](../../index.md)/[UserInfo](../index.md)/[CREATOR](index.md)/[newArray](new-array.md)
 
 # newArray
 
-`fun newArray(size: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Array`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)`<`[`UserInfo`](../index.md)`?>`
+[androidJvm]\
+open override fun [newArray](new-array.md)(size: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)&lt;[UserInfo](../index.md)?&gt;

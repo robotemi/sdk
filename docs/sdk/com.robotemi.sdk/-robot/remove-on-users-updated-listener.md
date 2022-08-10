@@ -1,11 +1,19 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [removeOnUsersUpdatedListener](./remove-on-users-updated-listener.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[removeOnUsersUpdatedListener](remove-on-users-updated-listener.md)
 
 # removeOnUsersUpdatedListener
 
-`@UiThread fun removeOnUsersUpdatedListener(listener: `[`OnUsersUpdatedListener`](../../com.robotemi.sdk.listeners/-on-users-updated-listener/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+
+@UiThread
+
+fun [removeOnUsersUpdatedListener](remove-on-users-updated-listener.md)(listener: [OnUsersUpdatedListener](../../com.robotemi.sdk.listeners/-on-users-updated-listener/index.md))
 
 Stop listening for user information updates.
 
-### Parameters
+## Parameters
 
-`listener` - The listener you added before.
+androidJvm
+
+| | |
+|---|---|
+| listener | The listener you added before. |

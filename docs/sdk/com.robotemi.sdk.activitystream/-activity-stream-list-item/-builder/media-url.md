@@ -1,5 +1,6 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.activitystream](../../index.md) / [ActivityStreamListItem](../index.md) / [Builder](index.md) / [mediaUrl](./media-url.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.activitystream](../../index.md)/[ActivityStreamListItem](../index.md)/[Builder](index.md)/[mediaUrl](media-url.md)
 
 # mediaUrl
 
-`open fun mediaUrl(@NonNull mediaUrl: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`ActivityStreamListItem.Builder`](index.md)`!`
+[androidJvm]\
+open fun [mediaUrl](media-url.md)(@NonNullmediaUrl: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [ActivityStreamListItem.Builder](index.md)

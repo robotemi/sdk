@@ -1,25 +1,19 @@
-[sdk](../../index.md) / [com.robotemi.sdk.map](../index.md) / [OnLoadFloorStatusChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.map](../index.md)/[OnLoadFloorStatusChangedListener](index.md)
 
 # OnLoadFloorStatusChangedListener
 
-`interface OnLoadFloorStatusChangedListener`
+[androidJvm]\
+interface [OnLoadFloorStatusChangedListener](index.md)
 
-### Annotations
-
-| Name | Summary |
-|---|---|
-| [Status](-status/index.md) | `annotation class Status` |
-
-### Functions
+## Types
 
 | Name | Summary |
 |---|---|
-| [onLoadFloorStatusChanged](on-load-floor-status-changed.md) | `abstract fun onLoadFloorStatusChanged(status: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
+| [Status](-status/index.md) | [androidJvm]<br>annotation class [Status](-status/index.md) |
 
-### Companion Object Properties
+## Functions
 
 | Name | Summary |
 |---|---|
-| [COMPLETE](-c-o-m-p-l-e-t-e.md) | `const val COMPLETE: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [ERROR](-e-r-r-o-r.md) | `const val ERROR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [START](-s-t-a-r-t.md) | `const val START: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [onLoadFloorStatusChanged](on-load-floor-status-changed.md) | [androidJvm]<br>abstract fun [onLoadFloorStatusChanged](on-load-floor-status-changed.md)(status: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |

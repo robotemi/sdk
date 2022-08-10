@@ -1,14 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'kotlin-parcelize'
+apply plugin: "com.vanniktech.maven.publish"
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 30
 
     defaultConfig {
-        minSdkVersion 22
+        minSdkVersion 23
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
         versionCode 1
@@ -16,39 +15,22 @@ android {
         buildConfigField 'String', 'SDK_SERVICE_CLASS_NAME', '\"com.roboteam.teamy.sdk.SdkService\"'
     }
     buildTypes {
-        debug {
-            debuggable true
-            minifyEnabled true
-            shrinkResources false
-            useProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
         release {
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources false
-            useProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
+}
 
-    androidExtensions {
-        experimental = true
-    }
-
-    dokka {
-        outputFormat = 'gfm'
-        outputDirectory = "../docs"
-    }
-
-    lintOptions {
-        abortOnError false
+signing {
+    setRequired {
+        // signing is only required if the artifacts are to be published
+        gradle.taskGraph.allTasks.any { (it == PublishToMavenRepository) }
     }
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    api 'com.google.code.gson:gson:2.8.6'
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api 'com.google.code.gson:gson:2.9.0'
 }
-
-apply from: rootProject.file('gradle/mvn-push.gradle')

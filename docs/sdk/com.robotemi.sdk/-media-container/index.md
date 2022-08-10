@@ -1,21 +1,22 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [MediaContainer](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[MediaContainer](index.md)
 
 # MediaContainer
 
-`interface MediaContainer`
+[androidJvm]\
+interface [MediaContainer](index.md)
 
-### Functions
-
-| Name | Summary |
-|---|---|
-| [getLocalPath](get-local-path.md) | `abstract fun getLocalPath(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getMediaUri](get-media-uri.md) | `abstract fun getMediaUri(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [getMimeType](get-mime-type.md) | `abstract fun getMimeType(): `[`MediaObject.MimeType`](../-media-object/-mime-type/index.md)`!` |
-| [setMediaUri](set-media-uri.md) | `abstract fun setMediaUri(uri: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-
-### Inheritors
+## Functions
 
 | Name | Summary |
 |---|---|
-| [ActivityStreamListItem](../../com.robotemi.sdk.activitystream/-activity-stream-list-item/index.md) | `open class ActivityStreamListItem : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)`, `[`MediaContainer`](./index.md) |
-| [MediaObject](../-media-object/index.md) | `open class MediaObject : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html)`, `[`MediaContainer`](./index.md) |
+| [getLocalPath](get-local-path.md) | [androidJvm]<br>abstract fun [getLocalPath](get-local-path.md)(): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [getMediaUri](get-media-uri.md) | [androidJvm]<br>abstract fun [getMediaUri](get-media-uri.md)(): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [getMimeType](get-mime-type.md) | [androidJvm]<br>abstract fun [getMimeType](get-mime-type.md)(): [MediaObject.MimeType](../-media-object/-mime-type/index.md) |
+| [setMediaUri](set-media-uri.md) | [androidJvm]<br>abstract fun [setMediaUri](set-media-uri.md)(uri: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)) |
+
+## Inheritors
+
+| Name |
+|---|
+| [ActivityStreamListItem](../../com.robotemi.sdk.activitystream/-activity-stream-list-item/index.md) |
+| [MediaObject](../-media-object/index.md) |

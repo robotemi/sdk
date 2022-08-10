@@ -29,7 +29,7 @@ public final class NlpResult implements Parcelable {
 
     public Map<String, String> params;
 
-    protected NlpResult(Parcel in) {
+    private NlpResult(Parcel in) {
         action = in.readString();
         resolvedQuery = in.readString();
         params = (Map) in.readValue(HashMap.class.getClassLoader());

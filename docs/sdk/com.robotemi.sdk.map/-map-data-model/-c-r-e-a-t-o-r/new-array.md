@@ -1,5 +1,6 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.map](../../index.md) / [MapDataModel](../index.md) / [CREATOR](index.md) / [newArray](./new-array.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.map](../../index.md)/[MapDataModel](../index.md)/[CREATOR](index.md)/[newArray](new-array.md)
 
 # newArray
 
-`fun newArray(size: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Array`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)`<`[`MapDataModel`](../index.md)`?>`
+[androidJvm]\
+open override fun [newArray](new-array.md)(size: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)&lt;[MapDataModel](../index.md)?&gt;

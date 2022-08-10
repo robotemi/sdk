@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.listeners](../index.md) / [OnTtsVisualizerFftDataChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.listeners](../index.md)/[OnTtsVisualizerFftDataChangedListener](index.md)
 
 # OnTtsVisualizerFftDataChangedListener
 
-`interface OnTtsVisualizerFftDataChangedListener`
+[androidJvm]\
+interface [OnTtsVisualizerFftDataChangedListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onTtsVisualizerFftDataChanged](on-tts-visualizer-fft-data-changed.md) | `abstract fun onTtsVisualizerFftDataChanged(fft: `[`ByteArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onTtsVisualizerFftDataChanged](on-tts-visualizer-fft-data-changed.md) | [androidJvm]<br>abstract fun [onTtsVisualizerFftDataChanged](on-tts-visualizer-fft-data-changed.md)(fft: [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html)) |

@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.permission](../../index.md) / [Permission](../index.md) / [PermissionResult](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.permission](../../index.md)/[Permission](../index.md)/[PermissionResult](index.md)
 
 # PermissionResult
 
-`annotation class PermissionResult`
+[androidJvm]\
+annotation class [PermissionResult](index.md)
 
-### Constructors
+## Constructors
 
-| Name | Summary |
+| | |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `PermissionResult()` |
+| [PermissionResult](-permission-result.md) | [androidJvm]<br>fun [PermissionResult](-permission-result.md)() |

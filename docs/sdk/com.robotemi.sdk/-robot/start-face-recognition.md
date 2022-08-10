@@ -1,8 +1,8 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [startFaceRecognition](./start-face-recognition.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[startFaceRecognition](start-face-recognition.md)
 
 # startFaceRecognition
 
-`fun startFaceRecognition(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+fun [startFaceRecognition](start-face-recognition.md)()
 
 Start face recognition.
-

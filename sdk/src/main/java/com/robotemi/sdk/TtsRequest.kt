@@ -5,6 +5,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import java.util.*
 
+/**
+ * @param id will remain the same when you create a TtsRequest and when you received it from [onTtsStatusChanged] callback
+ */
 data class TtsRequest(
     val id: UUID = UUID.randomUUID(),
     val speech: String,
@@ -13,10 +16,14 @@ data class TtsRequest(
     val drawableBitmap: Bitmap? = null,
     val isShowOnConversationLayer: Boolean,
     val language: Int = 0,
-    val showAnimationOnly: Boolean = false
+    val showAnimationOnly: Boolean = false,
+    val cached: Boolean = false
 ) : Parcelable {
 
-    constructor(source: Parcel) : this(
+    /**
+     * Use [TtsRequest.create] to create TtsRequest
+     */
+    private constructor(source: Parcel) : this(
         id = source.readSerializable() as UUID,
         speech = source.readString()!!,
         packageName = source.readString()!!,
@@ -24,7 +31,8 @@ data class TtsRequest(
         drawableBitmap = source.readParcelable(Bitmap::class.java.classLoader),
         isShowOnConversationLayer = source.readByte().toInt() != 0,
         language = source.readInt(),
-        showAnimationOnly = source.readByte().toInt() != 0
+        showAnimationOnly = source.readByte().toInt() != 0,
+        cached = source.readByte().toInt() != 0,
     )
 
     override fun equals(other: Any?): Boolean {
@@ -51,6 +59,7 @@ data class TtsRequest(
         dest.writeByte(if (isShowOnConversationLayer) 1.toByte() else 0.toByte())
         dest.writeInt(language)
         dest.writeByte(if (showAnimationOnly) 1.toByte() else 0.toByte())
+        dest.writeByte(if (cached) 1.toByte() else 0.toByte())
     }
 
     enum class Status {
@@ -97,7 +106,7 @@ data class TtsRequest(
 
     companion object {
         @JvmField
-        val CREATOR: Parcelable.Creator<TtsRequest> = object : Parcelable.Creator<TtsRequest> {
+        internal val CREATOR: Parcelable.Creator<TtsRequest> = object : Parcelable.Creator<TtsRequest> {
             override fun createFromParcel(source: Parcel): TtsRequest {
                 return TtsRequest(source)
             }
@@ -107,19 +116,35 @@ data class TtsRequest(
             }
         }
 
+        /**
+         * This is the constructor method of TtsRequest
+         *
+         * @param speech The text to be spoken
+         * @param isShowOnConversationLayer true if you want to it with temi conversation view, default as true
+         * @param language specify a language to speak, default as [Language.SYSTEM] which will follow system language.
+         * @param showAnimationOnly true if you want to show a face animation while the speech is ongoing.
+         *                          This only works if there is an assigned interaction animation in temi Settings,
+         *                          otherwise it will just display the text on screen without a face animation.
+         *                          Set this as true will override `isShowOnConversationLayer` if that value is set to false.
+         * @param cached true if you want to have this tts cached. Default as false.
+         *               If there is cache, it will be spoken offline.
+         *               This is useful for TTS from some sentences you have in the strings.xml.
+         */
         @JvmOverloads
         @JvmStatic
         fun create(
             speech: String,
             isShowOnConversationLayer: Boolean = true,
             language: Language = Language.SYSTEM,
-            showAnimationOnly: Boolean = false
+            showAnimationOnly: Boolean = false,
+            cached: Boolean = false
         ): TtsRequest {
             return TtsRequest(
                 speech = speech,
                 isShowOnConversationLayer = isShowOnConversationLayer,
                 language = language.value,
-                showAnimationOnly = showAnimationOnly
+                showAnimationOnly = showAnimationOnly,
+                cached = cached
             )
         }
     }

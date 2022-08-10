@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.listeners](../index.md) / [OnRobotLiftedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.listeners](../index.md)/[OnRobotLiftedListener](index.md)
 
 # OnRobotLiftedListener
 
-`interface OnRobotLiftedListener`
+[androidJvm]\
+interface [OnRobotLiftedListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onRobotLifted](on-robot-lifted.md) | `abstract fun onRobotLifted(isLifted: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`, reason: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onRobotLifted](on-robot-lifted.md) | [androidJvm]<br>abstract fun [onRobotLifted](on-robot-lifted.md)(isLifted: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html), reason: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)) |

@@ -1,8 +1,9 @@
-[sdk](../../index.md) / [com.robotemi.sdk.notification](../index.md) / [BillboardNotification](index.md) / [getBitmap](./get-bitmap.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.notification](../index.md)/[BillboardNotification](index.md)/[getBitmap](get-bitmap.md)
 
 # getBitmap
 
-`@Nullable open fun getBitmap(): `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`?`
+[androidJvm]\
 
-Overrides [Notification.getBitmap](../-notification/get-bitmap.md)
+@Nullable
 
+open fun [getBitmap](get-bitmap.md)(): Bitmap

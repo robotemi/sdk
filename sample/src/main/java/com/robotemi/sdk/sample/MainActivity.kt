@@ -1,6 +1,7 @@
 package com.robotemi.sdk.sample
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
@@ -59,6 +60,7 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
@@ -88,6 +90,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private val executorService = Executors.newSingleThreadExecutor()
 
     private var tts: TextToSpeech? = null
+
+    private var debugReceiver: TemiBroadcastReceiver? = null
 
     /**
      * adb shell am broadcast -a com.robotemi.sdk.action.sequence --es control "pause|play|step_forward|step_backward"
@@ -120,6 +124,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -149,10 +154,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         registerBroadcast()
         val greetModeState = intent.extras?.getInt(SdkConstants.INTENT_ACTION_GREET_MODE_STATE)
         if (greetModeState != null) {
-            printLog("greetModeState: $greetModeState")
-        } else {
-            printLog("greetModeState: null")
+            tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(greetModeState)}"
         }
+        debugReceiver = TemiBroadcastReceiver()
+        registerReceiver(debugReceiver, IntentFilter(TemiBroadcastReceiver.ACTION_DEBUG));
     }
 
     /**
@@ -251,6 +256,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             robot.setTtsService(null)
         }
         unregisterBroadcast()
+        if (debugReceiver != null) {
+            unregisterReceiver(debugReceiver)
+        }
         super.onDestroy()
     }
 
@@ -312,6 +320,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnRepose.setOnClickListener { repose() }
         btnGetMapList.setOnClickListener { getMapListBtn() }
         btnLoadMap.setOnClickListener { loadMap() }
+        btnLoadMapToCache.setOnClickListener { loadMapToCache() }
+        btnLoadMapOffline.setOnClickListener { loadMap(false, null, true) }
+        btnLoadMapWithoutUI.setOnClickListener { loadMap(false, null, offline = false, withoutUI = true) }
         btnLock.setOnClickListener { lock() }
         btnUnlock.setOnClickListener { unlock() }
         btnMuteAlexa.setOnClickListener { muteAlexa() }
@@ -346,6 +357,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetCurrentFloor.setOnClickListener {
             getCurrentFloor()
         }
+        btnGetTts.setOnClickListener { getTts() }
+        btnSetTts.setOnClickListener { setTts() }
     }
 
     private fun getCurrentFloor() {
@@ -375,7 +388,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 printLog("Loading floor: " + targetFloor.name)
                 val elevator = targetFloor.locations.find { it.name == "elevator" }
                 if (elevator == null) {
-                    printLog("No location $elevator exists")
+                    printLog("No location elevator exists")
                     return@OnItemClickListener
                 }
                 robot.loadFloor(targetFloor.id, Position(elevator.x, elevator.y, elevator.yaw))
@@ -696,7 +709,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      */
     private fun saveLocation() {
         val location =
-            etSaveLocation.text.toString().toLowerCase(Locale.getDefault()).trim { it <= ' ' }
+            etSaveLocation.text.toString().lowercase().trim { it <= ' ' }
         val result = robot.saveLocation(location)
         if (result) {
             robot.speak(create("I've successfully saved the $location location.", true))
@@ -711,11 +724,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      */
     private fun goTo() {
         for (location in robot.locations) {
-            if (location == etGoTo.text.toString().toLowerCase(Locale.getDefault())
+            if (location == etGoTo.text.toString().lowercase()
                     .trim { it <= ' ' }
             ) {
                 robot.goTo(
-                    etGoTo.text.toString().toLowerCase(Locale.getDefault()).trim { it <= ' ' },
+                    etGoTo.text.toString().lowercase().trim { it <= ' ' },
                     backwards = false,
                     noBypass = false,
                     speedLevel = SpeedLevel.HIGH
@@ -1004,11 +1017,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onConstraintBeWithStatusChanged(isConstraint: Boolean) {
-        printLog("onConstraintBeWith", "status = $isConstraint")
+        printLog("onConstraintBeWith", "ConstraintBeWith = $isConstraint")
     }
 
     override fun onDetectionStateChanged(state: Int) {
-        printLog("onDetectionStateChanged: state = $state")
+        tvDetectionState.text = "Detect State -> ${OnDetectionStateChangedListener.DetectionStatus.fromValue(state)}"
     }
 
     /**
@@ -1049,11 +1062,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 robot.speak(create("Okay, please enjoy.", false))
                 playMovie()
             }
-            asrResult.toLowerCase(Locale.getDefault()).contains("follow me") -> {
+            asrResult.lowercase().contains("follow me") -> {
                 robot.finishConversation()
                 robot.beWithMe()
             }
-            asrResult.toLowerCase(Locale.getDefault()).contains("go to home base") -> {
+            asrResult.lowercase().contains("go to home base") -> {
                 robot.finishConversation()
                 robot.goTo("home base")
             }
@@ -1345,16 +1358,17 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onDistanceToLocationChanged(distances: Map<String, Float>) {
+        var text = "Distance:\n"
         for (location in distances.keys) {
-            printLog(
-                "onDistanceToLocation",
-                "location:" + location + ", distance:" + distances[location]
-            )
+            text +=
+                " -> $location :: ${distances[location]}\n"
         }
+        tvDistance.text = text
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCurrentPositionChanged(position: Position) {
-        printLog("onCurrentPosition", position.toString())
+        tvPosition.text = "Position -> {${position.x}, ${position.y}, ${position.yaw}}, tilt: ${position.tiltAngle}"
     }
 
     override fun onSequencePlayStatusChanged(status: Int) {
@@ -1385,7 +1399,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onDetectionDataChanged(detectionData: DetectionData) {
-        printLog("onDetectionDataChanged", detectionData.toString())
+        tvDetection.text = if (detectionData.isDetected) {
+            "Detect -> angle ${detectionData.angle}, dist ${detectionData.distance}"
+        } else {
+            "No detection"
+        }
     }
 
     override fun onUserInteraction(isInteracting: Boolean) {
@@ -1454,7 +1472,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     override fun onFaceRecognized(contactModelList: List<ContactModel>) {
         if (contactModelList.isEmpty()) {
             printLog("onFaceRecognized: User left")
-            imageViewFace.visibility = View.GONE
+            imageViewFace.visibility = View.INVISIBLE
             return
         }
 
@@ -1469,16 +1487,21 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         for (contactModel in contactModelList) {
             if (contactModel.userId.isBlank()) {
                 printLog("onFaceRecognized: Unknown face")
-            } else {
+            } else if (!contactModel.visitor){
                 printLog("onFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+            } else {
+                Log.d("SAMPLE_DEBUG", "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
             }
         }
     }
 
     override fun onContinuousFaceRecognized(contactModelList: List<ContactModel>) {
+        var text = ""
         if (contactModelList.isEmpty()) {
-            printLog("onContinuousFaceRecognized: User left")
-            imageViewFace.visibility = View.GONE
+            text = "onContinuousFaceRecognized: User left"
+            imageViewFace.visibility = View.INVISIBLE
+            tvContinuousFace.text = text
             return
         }
 
@@ -1490,19 +1513,26 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             imageViewFace.visibility = View.VISIBLE
         }
 
+        text = "onContinuousFaceRecognized:\n"
+        val blinker = listOf("\\", "|", "/", "-").random()
         for (contactModel in contactModelList) {
             if (contactModel.userId.isBlank()) {
-                printLog("onContinuousFaceRecognized: Unknown face")
+                text += "$blinker Unknown face\n"
+            } else if (!contactModel.visitor){
+                text +="$blinker ${contactModel.firstName} ${contactModel.lastName}\n"
             } else {
-                printLog("onContinuousFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+                Log.d("SAMPLE_DEBUG", "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                text += "$blinker  VISITOR ${contactModel.userId} ${contactModel.similarity}\n"
             }
         }
+
+        tvContinuousFace.text = text
     }
 
     private fun showFaceRecognitionImage(mediaKey: String) {
         if (mediaKey.isEmpty()) {
             imageViewFace.setImageResource(R.drawable.app_icon)
-            imageViewFace.visibility = View.GONE
+            imageViewFace.visibility = View.INVISIBLE
             return
         }
         executorService.execute {
@@ -1536,6 +1566,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private fun clearLog() {
         tvLog.text = ""
+        tvContinuousFace.text = ""
+        imageViewFace.visibility = View.GONE
     }
 
     private fun startNlu() {
@@ -1548,8 +1580,12 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private fun getAllContacts() {
         val allContacts = robot.allContact
+        val recentCalls = robot.recentCalls
         for (userInfo in allContacts) {
             printLog("UserInfo: $userInfo")
+        }
+        for (recentCall in recentCalls) {
+            printLog("RecentCall: $recentCall")
         }
     }
 
@@ -1627,8 +1663,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog("repose status: $status, description: $description")
     }
 
-    override fun onLoadMapStatusChanged(status: Int) {
-        printLog("load map status: $status")
+    override fun onLoadMapStatusChanged(status: Int, requestId: String) {
+        printLog("load map status: $status, requestId: $requestId")
     }
 
     private var mapList: List<MapModel> = ArrayList()
@@ -1639,7 +1675,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         mapList = robot.getMapList()
     }
 
-    private fun loadMap(reposeRequired: Boolean, position: Position?) {
+    private fun loadMap(reposeRequired: Boolean, position: Position?, offline: Boolean = false, withoutUI: Boolean = false) {
         if (mapList.isEmpty()) {
             getMapList()
         }
@@ -1656,13 +1692,35 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         builder.setAdapter(mapListAdapter, null)
         val dialog = builder.create()
         dialog.listView.onItemClickListener =
-            OnItemClickListener { _: AdapterView<*>?, _: View?, pos: Int, _: Long ->
-                printLog("Loading map: " + mapList[pos])
-                if (position == null) {
-                    robot.loadMap(mapList[pos].id, reposeRequired)
-                } else {
-                    robot.loadMap(mapList[pos].id, reposeRequired, position)
-                }
+            OnItemClickListener { _, _, pos: Int, _ ->
+                val requestId =
+                    robot.loadMap(mapList[pos].id, reposeRequired, position, offline = offline, withoutUI = withoutUI)
+                printLog("Loading map: ${mapList[pos]}, request id $requestId, reposeRequired $reposeRequired, position $position, offline $offline, withoutUI $withoutUI")
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private fun loadMapToCache() {
+        if (mapList.isEmpty()) {
+            getMapList()
+        }
+        if (robot.checkSelfPermission(Permission.MAP) != Permission.GRANTED) {
+            return
+        }
+        val mapListString: MutableList<String> = ArrayList()
+        for (i in mapList.indices) {
+            mapListString.add(mapList[i].name)
+        }
+        val mapListAdapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, mapListString)
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Click item to load specific map")
+        builder.setAdapter(mapListAdapter, null)
+        val dialog = builder.create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _, _, pos: Int, _ ->
+                val requestId = robot.loadMapToCache(mapList[pos].id)
+                printLog("Loading map to cache: " + mapList[pos] + " request id " + requestId)
                 dialog.dismiss()
             }
         dialog.show()
@@ -1744,6 +1802,15 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             e.printStackTrace()
             printLog(e.message ?: "")
         }
+    }
+
+    private fun getTts() {
+        printLog("Get TTS Voice result ${robot.getTtsVoice()}")
+    }
+
+    private fun setTts() {
+        val result = robot.setTtsVoice(TtsVoice(gender = Gender.MALE, speed = 0.5f, pitch = -2))
+        printLog("Set TTS Voice result $result")
     }
 
     override fun onMovementStatusChanged(type: String, status: String) {
@@ -1937,8 +2004,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         })
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onGreetModeStateChanged(state: Int) {
-        printLog("onGreetModeStateChanged: $state")
+        tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(state)}"
     }
 
     override fun onLoadFloorStatusChanged(status: Int) {

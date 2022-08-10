@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.listeners](../../index.md) / [OnGreetModeStateChangedListener](../index.md) / [State](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.listeners](../../index.md)/[OnGreetModeStateChangedListener](../index.md)/[State](index.md)
 
 # State
 
-`annotation class State`
+[androidJvm]\
+annotation class [State](index.md)
 
-### Constructors
+## Constructors
 
-| Name | Summary |
+| | |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `State()` |
+| [State](-state.md) | [androidJvm]<br>fun [State](-state.md)() |

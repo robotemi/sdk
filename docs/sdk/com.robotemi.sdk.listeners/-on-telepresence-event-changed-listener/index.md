@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.listeners](../index.md) / [OnTelepresenceEventChangedListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.listeners](../index.md)/[OnTelepresenceEventChangedListener](index.md)
 
 # OnTelepresenceEventChangedListener
 
-`interface OnTelepresenceEventChangedListener`
+[androidJvm]\
+interface [OnTelepresenceEventChangedListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onTelepresenceEventChanged](on-telepresence-event-changed.md) | `abstract fun onTelepresenceEventChanged(callEventModel: `[`CallEventModel`](../../com.robotemi.sdk.model/-call-event-model/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>Available event: |
+| [onTelepresenceEventChanged](on-telepresence-event-changed.md) | [androidJvm]<br>abstract fun [onTelepresenceEventChanged](on-telepresence-event-changed.md)(callEventModel: [CallEventModel](../../com.robotemi.sdk.model/-call-event-model/index.md))<br>Available event: |

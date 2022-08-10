@@ -61,7 +61,7 @@ internal fun SequenceModel.compatible(): SequenceModel {
         ""
     }
     val tagList = try {
-        val jsonArray = json.getJSONArray(SequenceModel.JSON_KEY_TAGS)
+        val jsonArray = json.optJSONArray(SequenceModel.JSON_KEY_TAGS)
         if (jsonArray == null) {
             emptyList<String>()
         } else {

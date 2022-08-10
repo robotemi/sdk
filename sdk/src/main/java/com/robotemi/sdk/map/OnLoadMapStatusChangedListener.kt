@@ -4,7 +4,7 @@ import androidx.annotation.IntDef
 
 interface OnLoadMapStatusChangedListener {
 
-    fun onLoadMapStatusChanged(@Status status: Int)
+    fun onLoadMapStatusChanged(@Status status: Int, requestId: String)
 
     @IntDef(
         START,

@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.activitystream](../index.md) / [ActivityStreamListItem](index.md) / [builder](./builder.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.activitystream](../index.md)/[ActivityStreamListItem](index.md)/[builder](builder.md)
 
 # builder
 
-`open static fun builder(): `[`ActivityStreamListItem.Builder`](-builder/index.md)`!`
+[androidJvm]\
+open fun [builder](builder.md)(): [ActivityStreamListItem.Builder](-builder/index.md)

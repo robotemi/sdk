@@ -1,11 +1,16 @@
-[sdk](../../index.md) / [com.robotemi.sdk](../index.md) / [Robot](index.md) / [startPage](./start-page.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk](../index.md)/[Robot](index.md)/[startPage](start-page.md)
 
 # startPage
 
-`fun startPage(page: `[`Page`](../../com.robotemi.sdk.constants/-page/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+fun [startPage](start-page.md)(page: [Page](../../com.robotemi.sdk.constants/-page/index.md))
 
 Start Launcher's internal page.
 
-### Parameters
+## Parameters
 
-`page` - Target page.
+androidJvm
+
+| | |
+|---|---|
+| page | Target page. |

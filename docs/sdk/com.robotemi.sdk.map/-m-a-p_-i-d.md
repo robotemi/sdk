@@ -1,5 +1,6 @@
-[sdk](../index.md) / [com.robotemi.sdk.map](index.md) / [MAP_ID](./-m-a-p_-i-d.md)
+//[sdk](../../index.md)/[com.robotemi.sdk.map](index.md)/[MAP_ID](-m-a-p_-i-d.md)
 
 # MAP_ID
 
-`const val MAP_ID: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+[androidJvm]\
+const val [MAP_ID](-m-a-p_-i-d.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)

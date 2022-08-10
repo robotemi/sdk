@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk](../../index.md) / [Robot](../index.md) / [NlpListener](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk](../../index.md)/[Robot](../index.md)/[NlpListener](index.md)
 
 # NlpListener
 
-`interface NlpListener`
+[androidJvm]\
+interface [NlpListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onNlpCompleted](on-nlp-completed.md) | `abstract fun onNlpCompleted(nlpResult: `[`NlpResult`](../../-nlp-result/index.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onNlpCompleted](on-nlp-completed.md) | [androidJvm]<br>abstract fun [onNlpCompleted](on-nlp-completed.md)(nlpResult: [NlpResult](../../-nlp-result/index.md)) |

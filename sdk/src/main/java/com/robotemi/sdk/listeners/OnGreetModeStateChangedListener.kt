@@ -7,7 +7,23 @@ interface OnGreetModeStateChangedListener {
     fun onGreetModeStateChanged(@State state: Int)
 
     @IntDef(HOLD, ERROR, PREPARING, SEARCHING, GREETING, INTERACTION, POST_INTERACTION)
-    annotation class State
+    annotation class State {
+        companion object {
+
+            fun fromValue(@State state: Int): String {
+                return when (state) {
+                    HOLD -> "Hold"
+                    ERROR -> "Error"
+                    SEARCHING -> "Searching"
+                    PREPARING -> "Preparing"
+                    GREETING -> "Greeting"
+                    INTERACTION -> "Interaction"
+                    POST_INTERACTION -> "PostInteraction"
+                    else -> ""
+                }
+            }
+        }
+    }
 
     companion object {
         const val HOLD = 0

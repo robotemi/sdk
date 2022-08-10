@@ -1,8 +1,8 @@
-[sdk](../../index.md) / [com.robotemi.sdk.mediabar](../index.md) / [MediaBarController](index.md) / [pauseMediaBar](./pause-media-bar.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.mediabar](../index.md)/[MediaBarController](index.md)/[pauseMediaBar](pause-media-bar.md)
 
 # pauseMediaBar
 
-`abstract fun pauseMediaBar(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+abstract fun [pauseMediaBar](pause-media-bar.md)()
 
 pauses the media
-

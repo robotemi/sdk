@@ -16,8 +16,19 @@ interface OnDetectionStateChangedListener {
     fun onDetectionStateChanged(@DetectionStatus state: Int)
 
     @IntDef(IDLE, LOST, DETECTED)
-    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
-    annotation class DetectionStatus
+    @Retention(AnnotationRetention.SOURCE)
+    annotation class DetectionStatus {
+        companion object {
+            fun fromValue(@DetectionStatus state: Int): String {
+                return when (state) {
+                    IDLE -> "Idle"
+                    LOST -> "Lost"
+                    DETECTED -> "Detected"
+                    else -> ""
+                }
+            }
+        }
+    }
     companion object {
 
         const val IDLE = 0

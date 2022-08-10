@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.map](../index.md) / [Floor](index.md) / [id](./id.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.map](../index.md)/[Floor](index.md)/[id](id.md)
 
 # id
 
-`val id: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+[androidJvm]\
+val [id](id.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)

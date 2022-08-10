@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.model](../../index.md) / [CallEventModel](../index.md) / [CallType](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.model](../../index.md)/[CallEventModel](../index.md)/[CallType](index.md)
 
 # CallType
 
-`annotation class CallType`
+[androidJvm]\
+annotation class [CallType](index.md)
 
-### Constructors
+## Constructors
 
-| Name | Summary |
+| | |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `CallType()` |
+| [CallType](-call-type.md) | [androidJvm]<br>fun [CallType](-call-type.md)() |

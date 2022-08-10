@@ -7,10 +7,13 @@
     android:background="@color/colorBlack"
     android:orientation="horizontal"
     android:paddingTop="70dp"
-    tools:context=".MainActivity">
+    tools:ignore="HardcodedText"
+    tools:context=".MainActivity"
+    android:weightSum="4">
 
     <ScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -93,6 +96,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center_horizontal"
                 android:hint="@string/enter_speech"
+                android:inputType="text"
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
 
@@ -116,6 +120,7 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:hint="x"
+                    android:inputType="number"
                     android:textColor="@color/colorWhite"
                     android:textColorHint="@color/colorGrey" />
 
@@ -126,6 +131,7 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:hint="y"
+                    android:inputType="number"
                     android:textColor="@color/colorWhite"
                     android:textColorHint="@color/colorGrey" />
 
@@ -136,6 +142,7 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:hint="yaw"
+                    android:inputType="number"
                     android:textColor="@color/colorWhite"
                     android:textColorHint="@color/colorGrey" />
             </LinearLayout>
@@ -144,11 +151,62 @@
                 android:id="@+id/btnGoToPosition"
                 style="@style/ButtonCommon"
                 android:text="Go To Position" />
+
+            <TextView
+                    android:id="@+id/tvDetectionState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginStart="10dp"
+                    android:textSize="16sp"
+                    android:lines="1"
+                    tools:text="DetectionState" />
+
+            <TextView
+                    android:id="@+id/tvDetection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginStart="10dp"
+                    android:textSize="16sp"
+                    android:lines="1"
+                    tools:text="DetectionView" />
+
+            <TextView
+                    android:id="@+id/tvGreetMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginStart="10dp"
+                    android:textSize="16sp"
+                    android:lines="1"
+                    tools:text="GreetModeView" />
+
+            <TextView
+                    android:id="@+id/tvPosition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginStart="10dp"
+                    android:textSize="16sp"
+                    android:lines="1"
+                    tools:text="PositionView" />
+
+            <TextView
+                    android:id="@+id/tvDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    android:layout_marginStart="10dp"
+                    android:textSize="16sp"
+                    tools:text="DistanceView" />
+
         </LinearLayout>
     </ScrollView>
 
     <ScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -320,6 +378,21 @@
                 android:id="@+id/btnLoadMap"
                 style="@style/ButtonCommon"
                 android:text="Load Map" />
+
+            <Button
+                android:id="@+id/btnLoadMapToCache"
+                style="@style/ButtonCommon"
+                android:text="Load Map To Cache" />
+
+            <Button
+                android:id="@+id/btnLoadMapOffline"
+                style="@style/ButtonCommon"
+                android:text="Load Map Offline" />
+
+            <Button
+                android:id="@+id/btnLoadMapWithoutUI"
+                style="@style/ButtonCommon"
+                android:text="Load Map Without UI" />
 
             <Button
                 android:id="@+id/btnGetMapList"
@@ -566,28 +639,50 @@
                 android:id="@+id/btnGetAllContacts"
                 style="@style/ButtonCommon"
                 android:text="Get All Contacts" />
+
+            <Button
+                    android:id="@+id/btnGetTts"
+                    style="@style/ButtonCommon"
+                    android:text="Get TTS Voice" />
+
+            <Button
+                    android:id="@+id/btnSetTts"
+                    style="@style/ButtonCommon"
+                    android:text="Set TTS Voice to Slow Male Voice" />
         </LinearLayout>
     </ScrollView>
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="2"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageViewFace"
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="150dp"
             android:adjustViewBounds="true"
             android:visibility="gone"
+            tools:visibility="visible"
             tools:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tvContinuousFace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:textSize="30sp"
+            tools:text="ContinuousFace"
+            android:layout_marginStart="30dp"
+            android:layout_toEndOf="@id/imageViewFace"/>
 
         <com.robotemi.sdk.sample.TtsVisualizerView
             android:id="@+id/visualizerView"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:layout_below="@id/imageViewFace"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:layout_below="@id/imageViewFace" />
 
         <TextView
             android:id="@+id/tvLog"
@@ -610,5 +705,6 @@
             android:layout_marginBottom="0dp"
             android:text="Clear"
             android:textSize="18sp" />
+
     </RelativeLayout>
 </LinearLayout>

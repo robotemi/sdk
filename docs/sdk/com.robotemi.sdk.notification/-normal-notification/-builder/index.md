@@ -1,48 +1,49 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [NormalNotification](../index.md) / [Builder](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[NormalNotification](../index.md)/[Builder](index.md)
 
 # Builder
 
-`open class Builder`
+[androidJvm]\
+open class [Builder](index.md)
 
-### Constructors
+## Constructors
+
+| | |
+|---|---|
+| [Builder](-builder.md) | [androidJvm]<br>open fun [Builder](-builder.md)(title: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)) |
+
+## Functions
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `Builder(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!)` |
+| [backgroundColor](background-color.md) | [androidJvm]<br>open fun [backgroundColor](background-color.md)(backgroundColor: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [NormalNotification.Builder](index.md) |
+| [bitmap](bitmap.md) | [androidJvm]<br>open fun [bitmap](bitmap.md)(bitmap: Bitmap): [NormalNotification.Builder](index.md) |
+| [build](build.md) | [androidJvm]<br>open fun [build](build.md)(): [NormalNotification](../index.md) |
+| [iconResource](icon-resource.md) | [androidJvm]<br>open fun [iconResource](icon-resource.md)(@DrawableResiconResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [NormalNotification.Builder](index.md) |
+| [primaryButton](primary-button.md) | [androidJvm]<br>open fun [primaryButton](primary-button.md)(primaryButton: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [NormalNotification.Builder](index.md) |
+| [primaryPendingIntent](primary-pending-intent.md) | [androidJvm]<br>open fun [primaryPendingIntent](primary-pending-intent.md)(primaryPendingIntent: PendingIntent): [NormalNotification.Builder](index.md) |
+| [secondaryButton](secondary-button.md) | [androidJvm]<br>open fun [secondaryButton](secondary-button.md)(secondaryButton: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [NormalNotification.Builder](index.md) |
+| [secondaryPendingIntent](secondary-pending-intent.md) | [androidJvm]<br>open fun [secondaryPendingIntent](secondary-pending-intent.md)(secondaryPendingIntent: PendingIntent): [NormalNotification.Builder](index.md) |
+| [subtitle](subtitle.md) | [androidJvm]<br>open fun [subtitle](subtitle.md)(subtitle: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [NormalNotification.Builder](index.md) |
+| [subtitleResource](subtitle-resource.md) | [androidJvm]<br>open fun [subtitleResource](subtitle-resource.md)(@StringRessubtitleResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [NormalNotification.Builder](index.md) |
+| [textColor](text-color.md) | [androidJvm]<br>open fun [textColor](text-color.md)(textColor: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [NormalNotification.Builder](index.md) |
+| [timeout](timeout.md) | [androidJvm]<br>open fun [timeout](timeout.md)(timeout: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [NormalNotification.Builder](index.md) |
+| [title](title.md) | [androidJvm]<br>open fun [title](title.md)(title: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [NormalNotification.Builder](index.md) |
+| [titleResource](title-resource.md) | [androidJvm]<br>open fun [titleResource](title-resource.md)(@StringRestitleResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [NormalNotification.Builder](index.md) |
+| [type](type.md) | [androidJvm]<br>open fun [type](type.md)(type: [Notification.Type](../../-notification/-type/index.md)): [NormalNotification.Builder](index.md) |
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [bitmap](bitmap.md) | `var bitmap: `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`!` |
-| [iconResource](icon-resource.md) | `var iconResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [primaryButton](primary-button.md) | `var primaryButton: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [primaryPendingIntent](primary-pending-intent.md) | `var primaryPendingIntent: `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!` |
-| [secondaryButton](secondary-button.md) | `var secondaryButton: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [secondaryPendingIntent](secondary-pending-intent.md) | `var secondaryPendingIntent: `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!` |
-| [subtitle](subtitle.md) | `var subtitle: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [subtitleResource](subtitle-resource.md) | `var subtitleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [timeout](timeout.md) | `var timeout: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [title](title.md) | `var title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!` |
-| [titleResource](title-resource.md) | `var titleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-| [type](type.md) | `var type: `[`Notification.Type`](../../-notification/-type/index.md)`!` |
-
-### Functions
+## Properties
 
 | Name | Summary |
 |---|---|
-| [backgroundColor](background-color.md) | `open fun backgroundColor(backgroundColor: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
-| [bitmap](bitmap.md) | `open fun bitmap(bitmap: `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
-| [build](build.md) | `open fun build(): `[`NormalNotification`](../index.md)`!` |
-| [iconResource](icon-resource.md) | `open fun iconResource(iconResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
-| [primaryButton](primary-button.md) | `open fun primaryButton(primaryButton: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
-| [primaryPendingIntent](primary-pending-intent.md) | `open fun primaryPendingIntent(primaryPendingIntent: `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
-| [secondaryButton](secondary-button.md) | `open fun secondaryButton(secondaryButton: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
-| [secondaryPendingIntent](secondary-pending-intent.md) | `open fun secondaryPendingIntent(secondaryPendingIntent: `[`PendingIntent`](https://developer.android.com/reference/android/app/PendingIntent.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
-| [subtitle](subtitle.md) | `open fun subtitle(subtitle: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
-| [subtitleResource](subtitle-resource.md) | `open fun subtitleResource(subtitleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
-| [textColor](text-color.md) | `open fun textColor(textColor: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
-| [timeout](timeout.md) | `open fun timeout(timeout: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
-| [title](title.md) | `open fun title(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`NormalNotification.Builder`](./index.md)`!` |
-| [titleResource](title-resource.md) | `open fun titleResource(titleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`NormalNotification.Builder`](./index.md)`!` |
-| [type](type.md) | `open fun type(type: `[`Notification.Type`](../../-notification/-type/index.md)`!): `[`NormalNotification.Builder`](./index.md)`!` |
+| [bitmap](bitmap.md) | [androidJvm]<br>open var [bitmap](bitmap.md): Bitmap |
+| [iconResource](icon-resource.md) | [androidJvm]<br>@DrawableRes<br>open var [iconResource](icon-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [primaryButton](primary-button.md) | [androidJvm]<br>open var [primaryButton](primary-button.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [primaryPendingIntent](primary-pending-intent.md) | [androidJvm]<br>open var [primaryPendingIntent](primary-pending-intent.md): PendingIntent |
+| [secondaryButton](secondary-button.md) | [androidJvm]<br>open var [secondaryButton](secondary-button.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [secondaryPendingIntent](secondary-pending-intent.md) | [androidJvm]<br>open var [secondaryPendingIntent](secondary-pending-intent.md): PendingIntent |
+| [subtitle](subtitle.md) | [androidJvm]<br>open var [subtitle](subtitle.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [subtitleResource](subtitle-resource.md) | [androidJvm]<br>@StringRes<br>open var [subtitleResource](subtitle-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [timeout](timeout.md) | [androidJvm]<br>open var [timeout](timeout.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [title](title.md) | [androidJvm]<br>open var [title](title.md): [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html) |
+| [titleResource](title-resource.md) | [androidJvm]<br>@StringRes<br>open var [titleResource](title-resource.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [type](type.md) | [androidJvm]<br>open var [type](type.md): [Notification.Type](../../-notification/-type/index.md) |

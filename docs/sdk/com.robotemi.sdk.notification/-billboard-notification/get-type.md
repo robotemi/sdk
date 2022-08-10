@@ -1,8 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.notification](../index.md) / [BillboardNotification](index.md) / [getType](./get-type.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.notification](../index.md)/[BillboardNotification](index.md)/[getType](get-type.md)
 
 # getType
 
-`open fun getType(): `[`Notification.Type`](../-notification/-type/index.md)`!`
-
-Overrides [Notification.getType](../-notification/get-type.md)
-
+[androidJvm]\
+open fun [getType](get-type.md)(): [Notification.Type](../-notification/-type/index.md)

@@ -207,3 +207,9 @@ enum class SensitivityLevel {
     HIGH,
     LOW
 }
+
+enum class Gender {
+    FEMALE,
+    MALE,
+    UNKNOWN
+}

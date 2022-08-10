@@ -1,8 +1,8 @@
-[sdk](../../index.md) / [com.robotemi.sdk.mediabar](../index.md) / [AidlMediaBarController](index.md) / [setMediaPlaying](./set-media-playing.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.mediabar](../index.md)/[AidlMediaBarController](index.md)/[setMediaPlaying](set-media-playing.md)
 
 # setMediaPlaying
 
-`open fun setMediaPlaying(isPlaying: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`, packageName: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+[androidJvm]\
+open fun [setMediaPlaying](set-media-playing.md)(isPlaying: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html), packageName: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html))
 
-Overrides [MediaBarController.setMediaPlaying](../-media-bar-controller/set-media-playing.md)
-
+Indicate that media is being played

@@ -1,5 +1,6 @@
-[sdk](../../index.md) / [com.robotemi.sdk.model](../index.md) / [MemberStatusModel](index.md) / [centerStatus](./center-status.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.model](../index.md)/[MemberStatusModel](index.md)/[centerStatus](center-status.md)
 
 # centerStatus
 
-`val centerStatus: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+[androidJvm]\
+val [centerStatus](center-status.md): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)

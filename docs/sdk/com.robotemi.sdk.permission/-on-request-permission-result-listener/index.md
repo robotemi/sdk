@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.permission](../index.md) / [OnRequestPermissionResultListener](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.permission](../index.md)/[OnRequestPermissionResultListener](index.md)
 
 # OnRequestPermissionResultListener
 
-`interface OnRequestPermissionResultListener`
+[androidJvm]\
+interface [OnRequestPermissionResultListener](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [onRequestPermissionResult](on-request-permission-result.md) | `abstract fun onRequestPermissionResult(permission: `[`Permission`](../-permission/index.md)`, grantResult: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`, requestCode: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [onRequestPermissionResult](on-request-permission-result.md) | [androidJvm]<br>abstract fun [onRequestPermissionResult](on-request-permission-result.md)(permission: [Permission](../-permission/index.md), grantResult: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html), requestCode: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)) |

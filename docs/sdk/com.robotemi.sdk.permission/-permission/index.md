@@ -1,45 +1,34 @@
-[sdk](../../index.md) / [com.robotemi.sdk.permission](../index.md) / [Permission](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.permission](../index.md)/[Permission](index.md)
 
 # Permission
 
-`enum class Permission`
+[androidJvm]\
+enum [Permission](index.md) : [Enum](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html)&lt;[Permission](index.md)&gt; 
 
 All permissions can be requested for now.
 
-### Annotations
+## Entries
+
+| | |
+|---|---|
+| [FACE_RECOGNITION](-f-a-c-e_-r-e-c-o-g-n-i-t-i-o-n/index.md) | [androidJvm]<br>[FACE_RECOGNITION](-f-a-c-e_-r-e-c-o-g-n-i-t-i-o-n/index.md) |
+| [MAP](-m-a-p/index.md) | [androidJvm]<br>[MAP](-m-a-p/index.md) |
+| [SETTINGS](-s-e-t-t-i-n-g-s/index.md) | [androidJvm]<br>[SETTINGS](-s-e-t-t-i-n-g-s/index.md) |
+| [SEQUENCE](-s-e-q-u-e-n-c-e/index.md) | [androidJvm]<br>[SEQUENCE](-s-e-q-u-e-n-c-e/index.md) |
+| [UNKNOWN](-u-n-k-n-o-w-n/index.md) | [androidJvm]<br>[UNKNOWN](-u-n-k-n-o-w-n/index.md) |
+
+## Types
 
 | Name | Summary |
 |---|---|
-| [PermissionResult](-permission-result/index.md) | `annotation class PermissionResult` |
+| [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
+| [PermissionResult](-permission-result/index.md) | [androidJvm]<br>annotation class [PermissionResult](-permission-result/index.md) |
 
-### Enum Values
-
-| Name | Summary |
-|---|---|
-| [FACE_RECOGNITION](-f-a-c-e_-r-e-c-o-g-n-i-t-i-o-n.md) |  |
-| [MAP](-m-a-p.md) |  |
-| [SETTINGS](-s-e-t-t-i-n-g-s.md) |  |
-| [SEQUENCE](-s-e-q-u-e-n-c-e.md) |  |
-| [UNKNOWN](-u-n-k-n-o-w-n.md) |  |
-
-### Properties
+## Properties
 
 | Name | Summary |
 |---|---|
-| [isKioskPermission](is-kiosk-permission.md) | `val isKioskPermission: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)<br>Deprecated. |
-| [value](value.md) | `val value: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)<br>The String type value of the Permission. |
-
-### Companion Object Properties
-
-| Name | Summary |
-|---|---|
-| [DENIED](-d-e-n-i-e-d.md) | `const val DENIED: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)<br>Permission check result: this is returned by [com.robotemi.sdk.Robot.checkSelfPermission](../../com.robotemi.sdk/-robot/check-self-permission.md) if the permission has not been granted to the given package. |
-| [GRANTED](-g-r-a-n-t-e-d.md) | `const val GRANTED: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)<br>Permission check result: this is returned by [com.robotemi.sdk.Robot.checkSelfPermission](../../com.robotemi.sdk/-robot/check-self-permission.md) if the permission has been granted to the given package. |
-
-### Companion Object Functions
-
-| Name | Summary |
-|---|---|
-| [isKioskPermission](is-kiosk-permission.md) | `fun isKioskPermission(permission: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [isValidPermission](is-valid-permission.md) | `fun isValidPermission(permission: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [valueToEnum](value-to-enum.md) | `fun valueToEnum(value: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`Permission`](./index.md) |
+| [isKioskPermission](is-kiosk-permission.md) | [androidJvm]<br>val [isKioskPermission](is-kiosk-permission.md): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)<br>Deprecated. |
+| [name](-u-n-k-n-o-w-n/index.md#-372974862%2FProperties%2F462465411) | [androidJvm]<br>val [name](-u-n-k-n-o-w-n/index.md#-372974862%2FProperties%2F462465411): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [ordinal](-u-n-k-n-o-w-n/index.md#-739389684%2FProperties%2F462465411) | [androidJvm]<br>val [ordinal](-u-n-k-n-o-w-n/index.md#-739389684%2FProperties%2F462465411): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [value](value.md) | [androidJvm]<br>val [value](value.md): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)<br>The String type value of the Permission. |

@@ -1,5 +1,6 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.mediabar](../../index.md) / [MediaBarData](../index.md) / [Builder](index.md) / [imageUrl](./image-url.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.mediabar](../../index.md)/[MediaBarData](../index.md)/[Builder](index.md)/[imageUrl](image-url.md)
 
 # imageUrl
 
-`open fun imageUrl(imageUrl: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`MediaBarData.Builder`](index.md)`!`
+[androidJvm]\
+open fun [imageUrl](image-url.md)(imageUrl: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [MediaBarData.Builder](index.md)

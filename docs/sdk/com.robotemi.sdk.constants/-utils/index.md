@@ -1,11 +1,12 @@
-[sdk](../../index.md) / [com.robotemi.sdk.constants](../index.md) / [Utils](./index.md)
+//[sdk](../../../index.md)/[com.robotemi.sdk.constants](../index.md)/[Utils](index.md)
 
 # Utils
 
-`object Utils`
+[androidJvm]\
+object [Utils](index.md)
 
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [convertBitmapToByteArray](convert-bitmap-to-byte-array.md) | `fun convertBitmapToByteArray(bitmap: `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`): `[`ByteArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html) |
+| [convertBitmapToByteArray](convert-bitmap-to-byte-array.md) | [androidJvm]<br>@[JvmStatic](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-static/index.html)<br>fun [convertBitmapToByteArray](convert-bitmap-to-byte-array.md)(bitmap: Bitmap): [ByteArray](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html) |

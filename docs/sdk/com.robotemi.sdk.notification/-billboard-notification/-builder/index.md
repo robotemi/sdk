@@ -1,22 +1,17 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [BillboardNotification](../index.md) / [Builder](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[BillboardNotification](../index.md)/[Builder](index.md)
 
 # Builder
 
-`open class Builder`
+[androidJvm]\
+open class [Builder](index.md)
 
-### Constructors
-
-| Name | Summary |
-|---|---|
-| [&lt;init&gt;](-init-.md) | `Builder()` |
-
-### Functions
+## Functions
 
 | Name | Summary |
 |---|---|
-| [build](build.md) | `open fun build(): `[`BillboardNotification`](../index.md)`!` |
-| [subtitle](subtitle.md) | `open fun subtitle(subtitle: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`BillboardNotification.Builder`](./index.md)`!` |
-| [subtitleResource](subtitle-resource.md) | `open fun subtitleResource(subtitleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`BillboardNotification.Builder`](./index.md)`!` |
-| [timeout](timeout.md) | `open fun timeout(timeout: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`BillboardNotification.Builder`](./index.md)`!`<br>Set timeout in seconds to billboard for auto dismiss |
-| [title](title.md) | `open fun title(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`BillboardNotification.Builder`](./index.md)`!` |
-| [titleResource](title-resource.md) | `open fun titleResource(titleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`BillboardNotification.Builder`](./index.md)`!` |
+| [build](build.md) | [androidJvm]<br>open fun [build](build.md)(): [BillboardNotification](../index.md) |
+| [subtitle](subtitle.md) | [androidJvm]<br>open fun [subtitle](subtitle.md)(subtitle: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [BillboardNotification.Builder](index.md) |
+| [subtitleResource](subtitle-resource.md) | [androidJvm]<br>open fun [subtitleResource](subtitle-resource.md)(@StringRessubtitleResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [BillboardNotification.Builder](index.md) |
+| [timeout](timeout.md) | [androidJvm]<br>open fun [timeout](timeout.md)(timeout: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [BillboardNotification.Builder](index.md)<br>Set timeout in seconds to billboard for auto dismiss |
+| [title](title.md) | [androidJvm]<br>open fun [title](title.md)(title: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [BillboardNotification.Builder](index.md) |
+| [titleResource](title-resource.md) | [androidJvm]<br>open fun [titleResource](title-resource.md)(@StringRestitleResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [BillboardNotification.Builder](index.md) |

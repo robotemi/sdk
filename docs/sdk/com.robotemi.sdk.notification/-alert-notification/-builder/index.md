@@ -1,33 +1,34 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [AlertNotification](../index.md) / [Builder](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[AlertNotification](../index.md)/[Builder](index.md)
 
 # Builder
 
-`open class Builder`
+[androidJvm]\
+open class [Builder](index.md)
 
-### Constructors
+## Constructors
+
+| | |
+|---|---|
+| [Builder](-builder.md) | [androidJvm]<br>open fun [Builder](-builder.md)(title: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)) |
+
+## Functions
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `Builder(title: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!)` |
-
-### Functions
-
-| Name | Summary |
-|---|---|
-| [altTextResource](alt-text-resource.md) | `open fun altTextResource(altTextRes: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [autoTimeout](auto-timeout.md) | `open fun autoTimeout(autoTimeout: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [bitmap](bitmap.md) | `open fun bitmap(bitmap: `[`Bitmap`](https://developer.android.com/reference/android/graphics/Bitmap.html)`!): `[`AlertNotification.Builder`](./index.md)`!` |
-| [build](build.md) | `open fun build(): `[`AlertNotification`](../index.md)`!` |
-| [checkBoxText](check-box-text.md) | `open fun checkBoxText(checkBoxText: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`AlertNotification.Builder`](./index.md)`!` |
-| [dismissible](dismissible.md) | `open fun dismissible(isDismissible: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [iconResource](icon-resource.md) | `open fun iconResource(iconResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [primaryBtnText](primary-btn-text.md) | `open fun primaryBtnText(primaryBtnText: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`AlertNotification.Builder`](./index.md)`!` |
-| [primaryBtnTextResource](primary-btn-text-resource.md) | `open fun primaryBtnTextResource(primaryBtnTextResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [quite](quite.md) | `open fun quite(quite: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [secondaryBtnText](secondary-btn-text.md) | `open fun secondaryBtnText(secondaryBtnText: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`AlertNotification.Builder`](./index.md)`!` |
-| [secondaryBtnTextResource](secondary-btn-text-resource.md) | `open fun secondaryBtnTextResource(secondaryBtnTextResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [subtitle](subtitle.md) | `open fun subtitle(subtitle: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`!): `[`AlertNotification.Builder`](./index.md)`!` |
-| [subtitleResource](subtitle-resource.md) | `open fun subtitleResource(subtitleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [timeout](timeout.md) | `open fun timeout(timeout: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [titleResource](title-resource.md) | `open fun titleResource(titleResource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`AlertNotification.Builder`](./index.md)`!` |
-| [type](type.md) | `open fun type(type: `[`Notification.Type`](../../-notification/-type/index.md)`!): `[`AlertNotification.Builder`](./index.md)`!` |
+| [altTextResource](alt-text-resource.md) | [androidJvm]<br>open fun [altTextResource](alt-text-resource.md)(@StringResaltTextRes: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [AlertNotification.Builder](index.md) |
+| [autoTimeout](auto-timeout.md) | [androidJvm]<br>open fun [autoTimeout](auto-timeout.md)(autoTimeout: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)): [AlertNotification.Builder](index.md) |
+| [bitmap](bitmap.md) | [androidJvm]<br>open fun [bitmap](bitmap.md)(bitmap: Bitmap): [AlertNotification.Builder](index.md) |
+| [build](build.md) | [androidJvm]<br>open fun [build](build.md)(): [AlertNotification](../index.md) |
+| [checkBoxText](check-box-text.md) | [androidJvm]<br>open fun [checkBoxText](check-box-text.md)(checkBoxText: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [AlertNotification.Builder](index.md) |
+| [dismissible](dismissible.md) | [androidJvm]<br>open fun [dismissible](dismissible.md)(isDismissible: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)): [AlertNotification.Builder](index.md) |
+| [iconResource](icon-resource.md) | [androidJvm]<br>open fun [iconResource](icon-resource.md)(@DrawableResiconResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [AlertNotification.Builder](index.md) |
+| [primaryBtnText](primary-btn-text.md) | [androidJvm]<br>open fun [primaryBtnText](primary-btn-text.md)(primaryBtnText: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [AlertNotification.Builder](index.md) |
+| [primaryBtnTextResource](primary-btn-text-resource.md) | [androidJvm]<br>open fun [primaryBtnTextResource](primary-btn-text-resource.md)(@StringResprimaryBtnTextResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [AlertNotification.Builder](index.md) |
+| [quite](quite.md) | [androidJvm]<br>open fun [quite](quite.md)(quite: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)): [AlertNotification.Builder](index.md) |
+| [secondaryBtnText](secondary-btn-text.md) | [androidJvm]<br>open fun [secondaryBtnText](secondary-btn-text.md)(secondaryBtnText: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [AlertNotification.Builder](index.md) |
+| [secondaryBtnTextResource](secondary-btn-text-resource.md) | [androidJvm]<br>open fun [secondaryBtnTextResource](secondary-btn-text-resource.md)(@StringRessecondaryBtnTextResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [AlertNotification.Builder](index.md) |
+| [subtitle](subtitle.md) | [androidJvm]<br>open fun [subtitle](subtitle.md)(subtitle: [String](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html)): [AlertNotification.Builder](index.md) |
+| [subtitleResource](subtitle-resource.md) | [androidJvm]<br>open fun [subtitleResource](subtitle-resource.md)(@StringRessubtitleResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [AlertNotification.Builder](index.md) |
+| [timeout](timeout.md) | [androidJvm]<br>open fun [timeout](timeout.md)(timeout: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [AlertNotification.Builder](index.md) |
+| [titleResource](title-resource.md) | [androidJvm]<br>open fun [titleResource](title-resource.md)(@StringRestitleResource: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)): [AlertNotification.Builder](index.md) |
+| [type](type.md) | [androidJvm]<br>open fun [type](type.md)(type: [Notification.Type](../../-notification/-type/index.md)): [AlertNotification.Builder](index.md) |

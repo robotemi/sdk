@@ -1,11 +1,12 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.listeners](../../index.md) / [OnMovementStatusChangedListener](../index.md) / [Type](./index.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.listeners](../../index.md)/[OnMovementStatusChangedListener](../index.md)/[Type](index.md)
 
 # Type
 
-`annotation class Type`
+[androidJvm]\
+annotation class [Type](index.md)
 
-### Constructors
+## Constructors
 
-| Name | Summary |
+| | |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `Type()` |
+| [Type](-type.md) | [androidJvm]<br>fun [Type](-type.md)() |

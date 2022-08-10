@@ -7,7 +7,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
@@ -55,6 +54,7 @@ import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.FileNotFoundException
@@ -62,6 +62,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.CopyOnWriteArraySet
+import kotlin.concurrent.thread
 
 @SuppressWarnings("unused")
 class Robot private constructor(private val context: Context) {
@@ -339,6 +340,7 @@ class Robot private constructor(private val context: Context) {
 
         override fun onDistanceToLocationChanged(distances: MutableMap<Any?, Any?>): Boolean {
             if (onDistanceToLocationChangedListeners.isEmpty()) return false
+            @Suppress("UNCHECKED_CAST")
             val distancesMap: Map<String, Float> = distances as Map<String, Float>
             uiHandler.post {
                 for (listener in onDistanceToLocationChangedListeners) {
@@ -448,6 +450,16 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        override fun onTelepresenceEventChanged(callEventModel: CallEventModel): Boolean {
+            if (onTelepresenceEventChangedListener.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onTelepresenceEventChangedListener) {
+                    listener.onTelepresenceEventChanged(callEventModel)
+                }
+            }
+            return true
+        }
+
         override fun onUserUpdated(user: UserInfo): Boolean {
             if (onUsersUpdatedListeners.isEmpty()) return false
             uiHandler.post {
@@ -458,16 +470,6 @@ class Robot private constructor(private val context: Context) {
                     if (isValidListener) {
                         listener!!.onUserUpdated(user)
                     }
-                }
-            }
-            return true
-        }
-
-        override fun onTelepresenceEventChanged(callEventModel: CallEventModel): Boolean {
-            if (onTelepresenceEventChangedListener.isEmpty()) return false
-            uiHandler.post {
-                for (listener in onTelepresenceEventChangedListener) {
-                    listener.onTelepresenceEventChanged(callEventModel)
                 }
             }
             return true
@@ -685,11 +687,11 @@ class Robot private constructor(private val context: Context) {
         /*                  Map                  */
         /*****************************************/
 
-        override fun onLoadMapStatusChanged(status: Int): Boolean {
+        override fun onLoadMapStatusChanged(status: Int, requestId: String): Boolean {
             if (onLoadMapStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onLoadMapStatusChangedListeners) {
-                    listener.onLoadMapStatusChanged(status)
+                    listener.onLoadMapStatusChanged(status, requestId)
                 }
             }
             return true
@@ -892,6 +894,54 @@ class Robot private constructor(private val context: Context) {
             sdkService?.startDefaultNlu(applicationInfo.packageName, text)
         } catch (e: RemoteException) {
             Log.e(TAG, "startDefaultNlu() error")
+        }
+    }
+
+    /**
+     * Get TTS voice, speed, and pitch.
+     */
+    @Nullable
+    fun getTtsVoice(): TtsVoice? {
+        return try {
+            sdkService?.ttsVoice
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getTtsVoice() error")
+            null
+        }
+    }
+    private val speedRange: FloatArray = FloatArray(16) { index ->
+        (index + 5) / 10f
+    }
+
+    private val pitchRange: IntArray = IntArray(21) { index ->
+        index - 10
+    }
+
+    /**
+     * Set TTS voice, speed, and pitch.
+     * @return true if set is successful
+     */
+    fun setTtsVoice(ttsVoice: TtsVoice): Boolean {
+        with(ttsVoice) {
+            if (gender != Gender.FEMALE && gender != Gender.MALE) {
+                Log.e(TAG, "Gender $gender is invalid")
+                return false
+            }
+            if (speedRange.any { it == speed }.not()) {
+                Log.e(TAG, "Speed $speed is invalid, range is ${speedRange.toList()}")
+                return false
+            }
+            if (pitch !in pitchRange) {
+                Log.e(TAG, "Pitch $pitch is invalid, range is ${pitchRange.toList()}")
+                return false
+            }
+        }
+
+        return try {
+            sdkService?.setTtsVoice(applicationInfo.packageName, ttsVoice) ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setTtsVoice() error")
+            false
         }
     }
 
@@ -1524,7 +1574,7 @@ class Robot private constructor(private val context: Context) {
     /**
      * Request the robot to provide current battery status.
      *
-     * @return The battery data the robot.
+     * @return The battery data of the robot.
      */
     @get:CheckResult
     val batteryData: BatteryData?
@@ -1940,6 +1990,60 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Get StandBy status
+     *
+     * @return true if under standBy status,
+     *         false if not under standBy status,
+     *         null if the check is failed.
+     */
+    fun isStandByOn(): Boolean? {
+        return sdkService?.isStandByOn
+    }
+
+    /**
+     * Start StandBy
+     *
+     * Require [Permission.SETTINGS] Permission
+     *
+     * @return request result
+     * <ul>
+     *   <li> -1 for failed to request, maybe robot is not ready
+     *   <li> 0 for standBy is already started
+     *   <li> 1 for standBy was already running
+     *   <li> 2 for standby if disabled in settings
+     *   <li> 3 for robot is busy, e.g. OTA, Greet Mode
+     *   <li> 403 for SETTINGS permission required
+     *   <li> 429 for too many requests, should be longer than 5 seconds between 2 calls
+     * </ul>
+     */
+    fun startStandBy(): Int {
+        return sdkService?.startStandBy(applicationInfo.packageName) ?: -1
+    }
+
+    /**
+     * Stop StandBy with optional password
+     *
+     * Require [Permission.SETTINGS] Permission
+     *
+     * @param password default as empty
+     *                 when temi requires password to unlock, this method only works when here a valid password is passed.
+     *
+     * @return request result
+     * <ul>
+     *   <li> -1 for failed to request, maybe robot is not ready
+     *   <li> 0 for standBy is stopped
+     *   <li> 1 for standBy was not running
+     *   <li> 2 for password required
+     *   <li> 3 for wrong password
+     *   <li> 403 for SETTINGS permission required
+     *   <li> 429 for too many requests, should be longer than 5 seconds between 2 calls
+     * </ul>
+     */
+    fun stopStandBy(password: String = ""): Int {
+        return sdkService?.stopStandBy(applicationInfo.packageName, password) ?: -1
+    }
+
+    /**
      * Get the supported latin keyboards
      *
      * @return
@@ -1947,6 +2051,7 @@ class Robot private constructor(private val context: Context) {
     @CheckResult
     fun getSupportedLatinKeyboards(): Map<String, Boolean> {
         return try {
+            @Suppress("UNCHECKED_CAST")
             sdkService?.supportedLatinKeyboards as Map<String, Boolean>
         } catch (e: RemoteException) {
             Log.e(TAG, "getSupportedLatinKeyboards() error")
@@ -2316,7 +2421,7 @@ class Robot private constructor(private val context: Context) {
     @Throws(RemoteException::class)
     fun shareActivityObject(activityStreamObject: ActivityStreamObject) {
         sdkService?.let {
-            AsyncTask.execute {
+            thread {
                 ActivityStreamUtils.handleActivityStreamObject(activityStreamObject)
                 try {
                     it.shareActivityStreamObject(activityStreamObject)
@@ -2331,10 +2436,12 @@ class Robot private constructor(private val context: Context) {
     /*                 Media                 */
     /*****************************************/
 
+    @Deprecated("No longer supported")
     fun setMediaButtonListener(mediaButtonListener: MediaButtonListener) {
         this.mediaButtonListener = mediaButtonListener
     }
 
+    @Deprecated("No longer supported")
     fun removeMediaButtonListener() {
         mediaButtonListener = null
     }
@@ -2584,9 +2691,9 @@ class Robot private constructor(private val context: Context) {
             if (cursor == null || !cursor.moveToFirst()) {
                 return mapDataModel
             }
-            val mapId = cursor.getString(cursor.getColumnIndex(MAP_ID))
-            val mapInfoJson = cursor.getString(cursor.getColumnIndex(MAP_INFO))
-            val mapElementsJson = cursor.getString(cursor.getColumnIndex(MAP_ELEMENTS))
+            val mapId = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ID))
+            val mapInfoJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_INFO))
+            val mapElementsJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ELEMENTS))
             val mapInfo = gson.fromJson(mapInfoJson, MapInfo::class.java)
             val mapElements = gson.fromJson<List<Layer>>(
                 mapElementsJson,
@@ -2630,26 +2737,82 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Load map by map ID.
+     * The result is broadcast from onLoadMapStatusChanged
      *
      * @param mapId The map ID of the map to be loaded
-     * @param reposeRequired If needs to repose after loading map
+     * @param reposeRequired If needs to repose after loading map, default as false
      * @param position The position for repose
+     * @param offline Skip fetching the latest map data of target mapId, default as false.
+     * @param offline Skip fetching the latest map data of target mapId, default as false.
+     * @param withoutUI Load the map in the background without showing any blocking UI, default as false.
+     * @return Request id. In the format of UUID, e.g. 538b44c9-fdcf-426a-9693-d72e9c0f9550. Used in onLoadMapStatusChanged callback.
      */
     @JvmOverloads
-    fun loadMap(mapId: String, reposeRequired: Boolean = false, position: Position? = null) {
-        try {
+    fun loadMap(mapId: String,
+                reposeRequired: Boolean = false,
+                position: Position? = null,
+                offline: Boolean = false,
+                withoutUI: Boolean = false
+    ): String {
+
+        return try {
             if (position == null) {
-                sdkService?.loadMap(applicationInfo.packageName, mapId, reposeRequired)
+                sdkService?.loadMap(applicationInfo.packageName, mapId, reposeRequired, offline, withoutUI) ?: ""
             } else {
                 sdkService?.loadMapWithPosition(
                     applicationInfo.packageName,
                     mapId,
                     reposeRequired,
-                    position
-                )
+                    position,
+                    offline,
+                    withoutUI
+                ) ?: ""
             }
         } catch (e: RemoteException) {
             Log.e(TAG, "loadMap() error")
+            ""
+        }
+    }
+
+    /**
+     * Load map to cache for offline use.
+     *
+     * @param mapId The map ID of the map to be loaded into cache
+     * @return RequestId
+     */
+    fun loadMapToCache(mapId: String): String {
+        return try {
+            sdkService?.loadMapToCache(
+                applicationInfo.packageName,
+                mapId
+            ) ?: ""
+        } catch (e: RemoteException) {
+            Log.e(TAG, "loadMap() error")
+            ""
+        }
+    }
+
+    /**
+     * Multi-floor.
+     */
+    fun isMultiFloorEnabled(): Boolean? {
+        return sdkService?.isMultiFloorEnabled()
+    }
+
+    /**
+     * Multi-floor function.
+     *
+     * Require [Permission.MAP] and [Permission.SETTINGS].
+     *
+     * @return true on success.
+     */
+    fun setMultiFloorEnabled(enabled: Boolean): Boolean {
+        return try {
+            Log.d(TAG, "package ${applicationInfo.packageName}")
+            sdkService?.setMultiFloorEnabled(applicationInfo.packageName, enabled) ?: false
+        }  catch (e: RemoteException) {
+            Log.e(TAG, "setMultiFloorEnabled() error")
+            false
         }
     }
 
@@ -2761,7 +2924,7 @@ class Robot private constructor(private val context: Context) {
         try {
             return context.contentResolver.openInputStream(Uri.parse(uriStr))
         } catch (e: FileNotFoundException) {
-            Log.e(TAG, e.message)
+            Log.e(TAG, e.message ?: "")
             sdkServiceCallback.onSdkError(SdkException.launcherError("No such file exists"))
         } catch (e: IllegalStateException) {
             Log.e(TAG, "getInputStreamByMediaKey error.\n ${e.message}")
@@ -2837,6 +3000,7 @@ class Robot private constructor(private val context: Context) {
         fun onPublish(message: ActivityStreamPublishMessage)
     }
 
+    @Deprecated("No longer supported by temi launcher")
     interface MediaButtonListener {
 
         fun onPlayButtonClicked(play: Boolean)

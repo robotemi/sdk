@@ -1,6 +1,8 @@
-[sdk](../../../index.md) / [com.robotemi.sdk.notification](../../index.md) / [NormalNotification](../index.md) / [Builder](index.md) / [type](./type.md)
+//[sdk](../../../../index.md)/[com.robotemi.sdk.notification](../../index.md)/[NormalNotification](../index.md)/[Builder](index.md)/[type](type.md)
 
 # type
 
-`open fun type(type: `[`Notification.Type`](../../-notification/-type/index.md)`!): `[`NormalNotification.Builder`](index.md)`!`
-`var type: `[`Notification.Type`](../../-notification/-type/index.md)`!`
+[androidJvm]\
+open fun [type](type.md)(type: [Notification.Type](../../-notification/-type/index.md)): [NormalNotification.Builder](index.md)
+
+open var [type](type.md): [Notification.Type](../../-notification/-type/index.md)
