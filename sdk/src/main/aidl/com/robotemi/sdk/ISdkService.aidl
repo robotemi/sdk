@@ -339,4 +339,8 @@ interface ISdkService {
     int startStandBy(in String packageName);
 
     int stopStandBy(in String packageName, in String password);
+
+    boolean isMultiFloorEnabled();
+
+    boolean setMultiFloorEnabled(in String packageName, boolean enabled);
 }

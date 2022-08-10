@@ -450,6 +450,16 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        override fun onTelepresenceEventChanged(callEventModel: CallEventModel): Boolean {
+            if (onTelepresenceEventChangedListener.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onTelepresenceEventChangedListener) {
+                    listener.onTelepresenceEventChanged(callEventModel)
+                }
+            }
+            return true
+        }
+
         override fun onUserUpdated(user: UserInfo): Boolean {
             if (onUsersUpdatedListeners.isEmpty()) return false
             uiHandler.post {
@@ -460,16 +470,6 @@ class Robot private constructor(private val context: Context) {
                     if (isValidListener) {
                         listener!!.onUserUpdated(user)
                     }
-                }
-            }
-            return true
-        }
-
-        override fun onTelepresenceEventChanged(callEventModel: CallEventModel): Boolean {
-            if (onTelepresenceEventChangedListener.isEmpty()) return false
-            uiHandler.post {
-                for (listener in onTelepresenceEventChangedListener) {
-                    listener.onTelepresenceEventChanged(callEventModel)
                 }
             }
             return true
@@ -2789,6 +2789,30 @@ class Robot private constructor(private val context: Context) {
         } catch (e: RemoteException) {
             Log.e(TAG, "loadMap() error")
             ""
+        }
+    }
+
+    /**
+     * Multi-floor.
+     */
+    fun isMultiFloorEnabled(): Boolean? {
+        return sdkService?.isMultiFloorEnabled()
+    }
+
+    /**
+     * Multi-floor function.
+     *
+     * Require [Permission.MAP] and [Permission.SETTINGS].
+     *
+     * @return true on success.
+     */
+    fun setMultiFloorEnabled(enabled: Boolean): Boolean {
+        return try {
+            Log.d(TAG, "package ${applicationInfo.packageName}")
+            sdkService?.setMultiFloorEnabled(applicationInfo.packageName, enabled) ?: false
+        }  catch (e: RemoteException) {
+            Log.e(TAG, "setMultiFloorEnabled() error")
+            false
         }
     }
 

@@ -13,6 +13,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         private const val ACTION_START_STAND_BY = "temi.debug.standby.start"
         private const val ACTION_STOP_STAND_BY = "temi.debug.standby.stop"
         private const val ACTION_TTS = "temi.debug.tts"
+        private const val ACTION_MULTI_FLOOR = "temi.debug.multi.floor"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -29,7 +30,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 Log.d("TemiBroadcastReceiver", "startStandBy, $result")
             }
             ACTION_STOP_STAND_BY -> {
-                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.standby.start" --es password "1234"
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.standby.stop" --es password "1234"
                 Log.d("TemiBroadcastReceiver", "stopStandBy, ${Robot.getInstance().isStandByOn()}")
                 val password = intent.getStringExtra("password") ?: ""
                 val result = Robot.getInstance().stopStandBy(password)
@@ -60,6 +61,14 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     }
 
                 Robot.getInstance().speak(TtsRequest.create(tts, cached = cache, language = language))
+            }
+            ACTION_MULTI_FLOOR -> {
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.multi.floor" --ez enable true
+                val enable = intent.getBooleanExtra("enable", false)
+                val isEnabled = Robot.getInstance().isMultiFloorEnabled()
+                Log.d("TemiBroadcastReceiver", "MultiFloor isEnabled $isEnabled")
+                val ret = Robot.getInstance().setMultiFloorEnabled(enable)
+                Log.d("TemiBroadcastReceiver", "MultiFloor setMultiFloorEnabled $enable, result $ret")
             }
         }
     }
