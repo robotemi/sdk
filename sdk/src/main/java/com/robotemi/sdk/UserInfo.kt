@@ -3,6 +3,13 @@ package com.robotemi.sdk
 import android.os.Parcel
 import android.os.Parcelable
 
+/**
+ * @param role 0, admin of robot.
+ *             1, collaborator of robot
+ *             2, guest of robot
+ *             3, contact of robot, is registered temi user
+ *             10, contact of robot, only for face recognition, cannot be called with [UserInfo.userId].
+ */
 data class UserInfo(
     val userId: String,
     val name: String,

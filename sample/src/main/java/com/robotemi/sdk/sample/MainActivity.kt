@@ -1485,13 +1485,17 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
 
         for (contactModel in contactModelList) {
-            if (contactModel.userId.isBlank()) {
-                printLog("onFaceRecognized: Unknown face")
-            } else if (!contactModel.visitor){
-                printLog("onFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
-            } else {
-                Log.d("SAMPLE_DEBUG", "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
-                printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
+            when (contactModel.userType) {
+                0, 1 -> {
+                    printLog("onFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
+                }
+                2 -> {
+                    Log.d("SAMPLE_DEBUG", "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                    printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
+                }
+                -1 -> {
+                    printLog("onFaceRecognized: Unknown face")
+                }
             }
         }
     }
@@ -1516,13 +1520,18 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         text = "onContinuousFaceRecognized:\n"
         val blinker = listOf("\\", "|", "/", "-").random()
         for (contactModel in contactModelList) {
-            if (contactModel.userId.isBlank()) {
-                text += "$blinker Unknown face\n"
-            } else if (!contactModel.visitor){
-                text +="$blinker ${contactModel.firstName} ${contactModel.lastName}\n"
-            } else {
-                Log.d("SAMPLE_DEBUG", "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
-                text += "$blinker  VISITOR ${contactModel.userId} ${contactModel.similarity}\n"
+            Log.d("SAMPLE_DEBUG", "Contact $contactModel")
+            text += when (contactModel.userType) {
+                0, 1 -> {
+                    "$blinker ${contactModel.firstName} ${contactModel.lastName}\n"
+                }
+                2 -> {
+                    Log.d("SAMPLE_DEBUG", "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                    "$blinker  VISITOR ${contactModel.userId} ${contactModel.similarity}\n"
+                }
+                else -> {
+                    "$blinker Unknown face\n"
+                }
             }
         }
 

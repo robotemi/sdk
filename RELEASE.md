@@ -1,5 +1,5 @@
 - Release local artifact
 
 ```
-./gradlew clean publishToMavenLocal
+./gradlew clean sdk:publishToMavenLocal
 ```
