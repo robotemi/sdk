@@ -59,9 +59,15 @@ import com.robotemi.sdk.permission.OnRequestPermissionResultListener
 import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
+import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.group_map_and_movement.*
+import kotlinx.android.synthetic.main.group_app_and_permission.*
+import kotlinx.android.synthetic.main.group_buttons.*
+import kotlinx.android.synthetic.main.group_settings_and_status.*
+import kotlinx.android.synthetic.main.group_resources.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -93,35 +99,12 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private var debugReceiver: TemiBroadcastReceiver? = null
 
-    /**
-     * adb shell am broadcast -a com.robotemi.sdk.action.sequence --es control "pause|play|step_forward|step_backward"
-     */
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            printLog("Received broadcast, $intent", false)
-            if (intent == null) {
-                return
-            }
-            val command = intent.getStringExtra("control")
-            when {
-                SequenceCommand.STOP.name.equals(command, true) -> {
-                    robot.controlSequence(SequenceCommand.STOP)
-                }
-                SequenceCommand.PAUSE.name.equals(command, true) -> {
-                    robot.controlSequence(SequenceCommand.PAUSE)
-                }
-                SequenceCommand.PLAY.name.equals(command, true) -> {
-                    robot.controlSequence(SequenceCommand.PLAY)
-                }
-                SequenceCommand.STEP_BACKWARD.name.equals(command, true) -> {
-                    robot.controlSequence(SequenceCommand.STEP_BACKWARD)
-                }
-                SequenceCommand.STEP_FORWARD.name.equals(command, true) -> {
-                    robot.controlSequence(SequenceCommand.STEP_FORWARD)
-                }
+    private val telepresenceStatusChangedListener: OnTelepresenceStatusChangedListener by lazy {
+        object : OnTelepresenceStatusChangedListener("") {
+            override fun onTelepresenceStatusChanged(callState: CallState) {
+                printLog("CallState $callState")
             }
         }
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -143,6 +126,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.addOnMovementStatusChangedListener(this)
         robot.addOnGreetModeStateChangedListener(this)
         robot.addOnLoadFloorStatusChangedListener(this)
+        robot.addOnTelepresenceStatusChangedListener(telepresenceStatusChangedListener)
         val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
         if (appInfo.metaData != null
             && appInfo.metaData.getBoolean(SdkConstants.METADATA_OVERRIDE_TTS, false)
@@ -151,7 +135,6 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             tts = TextToSpeech(this, this)
             robot.setTtsService(this)
         }
-        registerBroadcast()
         val greetModeState = intent.extras?.getInt(SdkConstants.INTENT_ACTION_GREET_MODE_STATE)
         if (greetModeState != null) {
             tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(greetModeState)}"
@@ -243,6 +226,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.removeOnMovementStatusChangedListener(this)
         robot.removeOnGreetModeStateChangedListener(this)
         robot.removeOnLoadFloorStatusChangedListener(this)
+        robot.removeOnTelepresenceStatusChangedListener(telepresenceStatusChangedListener)
         if (!executorService.isShutdown) {
             executorService.shutdownNow()
         }
@@ -255,7 +239,6 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             tts = null
             robot.setTtsService(null)
         }
-        unregisterBroadcast()
         if (debugReceiver != null) {
             unregisterReceiver(debugReceiver)
         }
@@ -263,9 +246,61 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     private fun initOnClickListener() {
+        btnGroupSystem.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                group_settings_and_status.visibility = View.VISIBLE
+                btnGroupSystem.isEnabled = false
+                btnGroupNavigation.isChecked = false
+                btnGroupPermission.isChecked = false
+                btnGroupResources.isChecked = false
+            } else {
+                group_settings_and_status.visibility = View.GONE
+                btnGroupSystem.isEnabled = true
+            }
+        }
+        btnGroupNavigation.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                group_map_and_movement.visibility = View.VISIBLE
+                btnGroupSystem.isChecked = false
+                btnGroupNavigation.isEnabled = false
+                btnGroupPermission.isChecked = false
+                btnGroupResources.isChecked = false
+            } else {
+                group_map_and_movement.visibility = View.GONE
+                btnGroupNavigation.isEnabled = true
+            }
+        }
+        btnGroupPermission.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                group_app_and_permission.visibility = View.VISIBLE
+                btnGroupSystem.isChecked = false
+                btnGroupNavigation.isChecked = false
+                btnGroupPermission.isEnabled = false
+                btnGroupResources.isChecked = false
+            } else {
+                group_app_and_permission.visibility = View.GONE
+                btnGroupPermission.isEnabled = true
+            }
+        }
+        btnGroupResources.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                group_resources.visibility = View.VISIBLE
+                btnGroupSystem.isChecked = false
+                btnGroupNavigation.isChecked = false
+                btnGroupPermission.isChecked = false
+                btnGroupResources.isEnabled = false
+            } else {
+                group_resources.visibility = View.GONE
+                btnGroupResources.isEnabled = true
+            }
+        }
+
+        btnGroupSystem.isChecked = true
+
         btnSpeak.setOnClickListener { speak() }
         btnSaveLocation.setOnClickListener { saveLocation() }
         btnGoTo.setOnClickListener { goTo() }
+
         btnStopMovement.setOnClickListener { stopMovement() }
         btnFollow.setOnClickListener { followMe() }
         btnskidJoy.setOnClickListener { skidJoy() }
@@ -408,17 +443,6 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         floorList.forEach {
             printLog(it.toString())
         }
-    }
-
-    private fun registerBroadcast() {
-        val intentFilter = IntentFilter().apply {
-            addAction("com.robotemi.sdk.action.sequence")
-        }
-        registerReceiver(receiver, intentFilter)
-    }
-
-    private fun unregisterBroadcast() {
-        unregisterReceiver(receiver)
     }
 
     private fun isBackTOFEnabled() {

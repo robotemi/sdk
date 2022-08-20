@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnIsBackTOFEnabled"
+        style="@style/ButtonCommon"
+        android:text="Is Back TOF Enabled" />
+
+    <Button
+        android:id="@+id/btnToggleBackTOF"
+        style="@style/ButtonCommon"
+        android:text="Toggle Back TOF" />
+
+    <Button
+        android:id="@+id/btnIsFrontTOFEnabled"
+        style="@style/ButtonCommon"
+        android:text="Is Front TOF Enabled" />
+
+    <Button
+        android:id="@+id/btnToggleFrontTOF"
+        style="@style/ButtonCommon"
+        android:text="Toggle Front TOF" />
+
+    <Button
+        android:id="@+id/btnGetHeadDepthSensitivity"
+        style="@style/ButtonCommon"
+        android:text="Get Head Depth Sensitivity" />
+
+    <Button
+        android:id="@+id/btnSetHeadDepthSensitivity"
+        style="@style/ButtonCommon"
+        android:text="Set Head Depth Sensitivity" />
+
+    <Button
+        android:id="@+id/btnGetCliffSensorMode"
+        style="@style/ButtonCommon"
+        android:text="Get Cliff Sensor Mode" />
+
+    <Button
+        android:id="@+id/btnSetCliffSensorMode"
+        style="@style/ButtonCommon"
+        android:text="Set Cliff Sensor Mode" />
+
+    <Button
+        android:id="@+id/btnHasCliffSensor"
+        style="@style/ButtonCommon"
+        android:text="Has Cliff Sensor" />
+
+    <Button
+        android:id="@+id/btnIsGroundDepthCliff"
+        style="@style/ButtonCommon"
+        android:text="Is Ground Depth Cliff Detection Enabled" />
+
+    <Button
+        android:id="@+id/btnToggleGroundDepthCliff"
+        style="@style/ButtonCommon"
+        android:text="Toggle Ground Depth Cliff Detection" />
+
+    <Button
+        android:id="@+id/btnGetSupportedKeyboard"
+        style="@style/ButtonCommon"
+        android:text="Get Supported Latin Keyboards" />
+
+    <Button
+        android:id="@+id/btnEnabledLatinKeyboards"
+        style="@style/ButtonCommon"
+        android:text="Enabled Latin Keyboards" />
+
+    <Button
+        android:id="@+id/btnGetMode"
+        style="@style/ButtonCommon"
+        android:text="Get Mode" />
+
+    <Button
+        android:id="@+id/btnSetMode"
+        style="@style/ButtonCommon"
+        android:text="Set Mode" />
+
+    <Button
+        android:id="@+id/btnGetNickName"
+        style="@style/ButtonCommon"
+        android:text="Get temi's nick name" />
+
+    <Button
+        android:id="@+id/btnToggleHardBtnVolume"
+        style="@style/ButtonCommon"
+        android:text="Toggle Hard Button Volume" />
+
+    <Button
+        android:id="@+id/btnToggleHardBtnPower"
+        style="@style/ButtonCommon"
+        android:text="Toggle Hard Button Power" />
+
+    <Button
+        android:id="@+id/btnSetHardBtnMainMode"
+        style="@style/ButtonCommon"
+        android:text="Set Hard Button Main Mode" />
+
+    <Button
+        android:id="@+id/btnGetVolume"
+        style="@style/ButtonCommon"
+        android:text="Get Volume" />
+
+    <Button
+        android:id="@+id/btnSetVolume"
+        style="@style/ButtonCommon"
+        android:text="Set Volume" />
+
+    <Button
+        android:id="@+id/btnDisableWakeup"
+        style="@style/ButtonCommon"
+        android:text="Disable Wakeup" />
+
+    <Button
+        android:id="@+id/btnEnableWakeup"
+        style="@style/ButtonCommon"
+        android:text="Enable Wakeup" />
+
+    <Button
+        android:id="@+id/btnToggleNavBillboard"
+        style="@style/ButtonCommon"
+        android:text="Toggle navigation billboard" />
+
+    <Button
+        android:id="@+id/btnBatteryInfo"
+        style="@style/ButtonCommon"
+        android:text="@string/battery_info" />
+
+    <Button
+        android:id="@+id/btnDisableHardButtons"
+        style="@style/ButtonCommon"
+        android:text="Disable Hard Buttons" />
+
+    <Button
+        android:id="@+id/btnIsHardButtonsDisabled"
+        style="@style/ButtonCommon"
+        android:text="Is Hard Buttons Disabled"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/btnSetSoundMode"
+        style="@style/ButtonCommon"
+        android:text="Set Sound Mode" />
+
+    <Button
+        android:id="@+id/btnTogglePrivacyModeOn"
+        style="@style/ButtonCommon"
+        android:text="Turn on Privacy Mode" />
+
+    <Button
+        android:id="@+id/btnTogglePrivacyModeOff"
+        style="@style/ButtonCommon"
+        android:text="Turn off Privacy Mode" />
+
+    <Button
+        android:id="@+id/btnGetPrivacyMode"
+        style="@style/ButtonCommon"
+        android:text="Get Privacy Mode" />
+
+    <Button
+        android:id="@+id/btnEnableHardButtons"
+        style="@style/ButtonCommon"
+        android:text="Enable Hard Buttons" />
+
+    <Button
+        android:id="@+id/btnSetGoToSpeed"
+        style="@style/ButtonCommon"
+        android:text="Set Go To Speed" />
+
+    <Button
+        android:id="@+id/btnSetGoToSafety"
+        style="@style/ButtonCommon"
+        android:text="Set Go To Safety" />
+
+    <Button
+        android:id="@+id/btnToggleTopBadge"
+        style="@style/ButtonCommon"
+        android:text="Toggle Top Badge" />
+
+    <Button
+        android:id="@+id/btnToggleDetectionMode"
+        style="@style/ButtonCommon"
+        android:text="Toggle Detection Mode" />
+
+    <Button
+        android:id="@+id/btnToggleAutoReturn"
+        style="@style/ButtonCommon"
+        android:text="Toggle Auto Return" />
+
+
+    <Button
+        android:id="@+id/btnHideTopBar"
+        style="@style/ButtonCommon"
+        android:text="Hide Top Bar" />
+
+    <Button
+        android:id="@+id/btnShowTopBar"
+        style="@style/ButtonCommon"
+        android:text="Show Top Bar" />
+
+    <Button
+        android:id="@+id/btnGetTts"
+        style="@style/ButtonCommon"
+        android:text="Get TTS Voice" />
+
+    <Button
+        android:id="@+id/btnSetTts"
+        style="@style/ButtonCommon"
+        android:text="Set TTS Voice to Slow Male Voice" />
+
+    <Button
+        android:id="@+id/btnMuteAlexa"
+        style="@style/ButtonCommon"
+        android:text="Mute Alexa" />
+
+    <Button
+        android:id="@+id/btnShutdown"
+        style="@style/ButtonCommon"
+        android:text="Shutdown" />
+
+    <Button
+        android:id="@+id/btnRestart"
+        style="@style/ButtonCommon"
+        android:text="Restart temi" />
+
+    <Button
+        android:id="@+id/btnLock"
+        style="@style/ButtonCommon"
+        android:text="Lock" />
+
+    <Button
+        android:id="@+id/btnUnlock"
+        style="@style/ButtonCommon"
+        android:text="Unlock" />
+
+</LinearLayout>

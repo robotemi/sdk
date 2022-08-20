@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText">
+
+    <Button
+        android:id="@+id/btnGetMembersStatus"
+        style="@style/ButtonCommon"
+        android:text="Get Members' status" />
+
+    <Button
+        android:id="@+id/btnStartPage"
+        style="@style/ButtonCommon"
+        android:text="Start Page" />
+
+    <Button
+        android:id="@+id/btnStartTelepresenceToCenter"
+        style="@style/ButtonCommon"
+        android:text="Start Telepresence to temi Center" />
+
+    <Button
+        android:id="@+id/btnFetchMap"
+        style="@style/ButtonCommon"
+        android:text="Get Map Data" />
+
+    <Button
+        android:id="@+id/btnFetchSequence"
+        style="@style/ButtonCommon"
+        android:text="Get All Sequences" />
+
+    <Button
+        android:id="@+id/btnPlayFirstSequenceWithoutPlayer"
+        style="@style/ButtonCommon"
+        android:text="Play First Sequence without Player" />
+
+    <Button
+        android:id="@+id/btnPlayFirstSequence"
+        style="@style/ButtonCommon"
+        android:text="Play First Sequence" />
+
+    <Button
+        android:id="@+id/btnGetOSVersion"
+        style="@style/ButtonCommon"
+        android:text="Get OS Version" />
+
+
+    <Button
+        android:id="@+id/btnStartFaceRecognition"
+        style="@style/ButtonCommon"
+        android:text="Start Face Recognition" />
+
+    <Button
+        android:id="@+id/btnStopFaceRecognition"
+        style="@style/ButtonCommon"
+        android:text="Stop Face Recognition" />
+
+    <Button
+        android:id="@+id/btnTrackUser"
+        style="@style/ButtonCommon"
+        android:text="Toggle Track User" />
+
+    <Button
+        android:id="@+id/btnCallOwner"
+        style="@style/ButtonCommon"
+        android:text="@string/call_owner" />
+
+    <Button
+        android:id="@+id/btnPublish"
+        style="@style/ButtonCommon"
+        android:text="@string/publish_to_activities" />
+
+    <Button
+        android:id="@+id/btnGetAllContacts"
+        style="@style/ButtonCommon"
+        android:text="Get All Contacts" />
+
+
+</LinearLayout>

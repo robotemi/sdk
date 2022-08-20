@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/btnCheckFace"
+        style="@style/ButtonCommon"
+        android:text="Request Permission: Face Recognition" />
+
+    <Button
+        android:id="@+id/btnCheckMap"
+        style="@style/ButtonCommon"
+        android:text="Request Permission: Map" />
+
+    <Button
+        android:id="@+id/btnCheckSettings"
+        style="@style/ButtonCommon"
+        android:text="Request Permission: Settings" />
+
+    <Button
+        android:id="@+id/btnCheckSequence"
+        style="@style/ButtonCommon"
+        android:text="Request Permission: Sequence" />
+
+    <Button
+        android:id="@+id/btnCheckAllPermission"
+        style="@style/ButtonCommon"
+        android:text="Request All Permissions" />
+
+    <Button
+        android:id="@+id/btnRequestToBeKioskApp"
+        style="@style/ButtonCommon"
+        android:text="Request To Be Kiosk App" />
+
+    <Button
+        android:id="@+id/btnToggleKioskMode"
+        style="@style/ButtonCommon"
+        android:text="Toggle Kiosk Mode" />
+
+    <Button
+        android:id="@+id/btnIsKioskModeOn"
+        style="@style/ButtonCommon"
+        android:text="Is Kiosk Mode On" />
+
+</LinearLayout>

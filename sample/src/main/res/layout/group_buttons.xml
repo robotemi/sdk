@@ -1,0 +1,54 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:columnCount="4"
+    android:rowCount="1"
+    tools:background="@color/colorBlack"
+    tools:ignore="HardcodedText">
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/btnGroupSystem"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_columnWeight="1"
+        android:background="@color/group_button_bg"
+        android:drawableTop="@drawable/ic_settings"
+        android:textOn="System"
+        android:textOff="System"
+        android:textColor="@color/colorWhite" />
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/btnGroupNavigation"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_columnWeight="1"
+        android:background="@color/group_button_bg"
+        android:drawableTop="@drawable/ic_navi"
+        android:textOn="Navigation"
+        android:textOff="Navigation"
+        android:textColor="@color/colorWhite" />
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/btnGroupPermission"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_columnWeight="1"
+        android:background="@color/group_button_bg"
+        android:drawableTop="@drawable/ic_permissions"
+        android:textOn="Permission"
+        android:textOff="Permission"
+        android:textColor="@color/colorWhite" />
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/btnGroupResources"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_columnWeight="1"
+        android:background="@color/group_button_bg"
+        android:drawableTop="@drawable/ic_resource"
+        android:textOn="Resources"
+        android:textOff="Resources"
+        android:textColor="@color/colorWhite" />
+
+</GridLayout>

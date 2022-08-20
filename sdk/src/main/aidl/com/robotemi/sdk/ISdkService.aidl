@@ -343,4 +343,6 @@ interface ISdkService {
     boolean isMultiFloorEnabled();
 
     boolean setMultiFloorEnabled(in String packageName, boolean enabled);
+
+    int patrol(in List<String> locations, boolean nonstop, int times, int waiting);
 }

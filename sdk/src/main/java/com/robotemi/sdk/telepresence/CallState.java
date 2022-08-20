@@ -27,7 +27,29 @@ public class CallState implements Parcelable {
     }
 
     public enum State {
-        ENDED, DECLINED, STARTED
+
+        // Call is ended
+        ENDED,
+
+        // Call is declined
+        DECLINED,
+
+        // Call is established
+        STARTED,
+
+        // Call is made but not answered yet.
+        INITIALIZED,
+
+        NOT_ANSWERED,
+
+        // The other side is busy
+        BUSY,
+
+        // Cannot establish the call due to connection issue.
+        POOR_CONNECTION,
+
+        // Cannot join the call.
+        CANT_JOIN,
     }
 
     protected CallState(Parcel in) {

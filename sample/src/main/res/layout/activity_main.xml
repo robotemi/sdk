@@ -5,16 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBlack"
+    android:baselineAligned="false"
     android:orientation="horizontal"
     android:paddingTop="70dp"
-    tools:ignore="HardcodedText"
+    android:weightSum="4"
     tools:context=".MainActivity"
-    android:weightSum="4">
+    tools:ignore="HardcodedText">
 
     <ScrollView
         android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -153,509 +154,108 @@
                 android:text="Go To Position" />
 
             <TextView
-                    android:id="@+id/tvDetectionState"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:layout_marginStart="10dp"
-                    android:textSize="16sp"
-                    android:lines="1"
-                    tools:text="DetectionState" />
+                android:id="@+id/tvDetectionState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:lines="1"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                tools:text="DetectionState" />
 
             <TextView
-                    android:id="@+id/tvDetection"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:layout_marginStart="10dp"
-                    android:textSize="16sp"
-                    android:lines="1"
-                    tools:text="DetectionView" />
+                android:id="@+id/tvDetection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:lines="1"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                tools:text="DetectionView" />
 
             <TextView
-                    android:id="@+id/tvGreetMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:layout_marginStart="10dp"
-                    android:textSize="16sp"
-                    android:lines="1"
-                    tools:text="GreetModeView" />
+                android:id="@+id/tvGreetMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:lines="1"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                tools:text="GreetModeView" />
 
             <TextView
-                    android:id="@+id/tvPosition"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:layout_marginStart="10dp"
-                    android:textSize="16sp"
-                    android:lines="1"
-                    tools:text="PositionView" />
+                android:id="@+id/tvPosition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:lines="1"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                tools:text="PositionView" />
 
             <TextView
-                    android:id="@+id/tvDistance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
-                    android:layout_marginStart="10dp"
-                    android:textSize="16sp"
-                    tools:text="DistanceView" />
+                android:id="@+id/tvDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/colorWhite"
+                android:textSize="16sp"
+                tools:text="DistanceView" />
 
         </LinearLayout>
     </ScrollView>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_height="match_parent">
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/group_buttons"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingHorizontal="10dp"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/group_settings_and_status"
+                    layout="@layout/group_settings_and_status"
+                    tools:visibility="visible"
+                    android:visibility="gone"/>
+
+                <include
+                    android:id="@+id/group_map_and_movement"
+                    layout="@layout/group_map_and_movement"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/group_app_and_permission"
+                    layout="@layout/group_app_and_permission"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/group_resources"
+                    layout="@layout/group_resources"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/btnGetCurrentFloor"
-                style="@style/ButtonCommon"
-                android:text="Current Floor" />
-
-            <Button
-                android:id="@+id/btnLoadFloorAtElevator"
-                style="@style/ButtonCommon"
-                android:text="Load Floor At Elevator" />
-
-            <Button
-                android:id="@+id/btnGetAllFloors"
-                style="@style/ButtonCommon"
-                android:text="Get All Floors" />
-
-            <Button
-                android:id="@+id/btnIsBackTOFEnabled"
-                style="@style/ButtonCommon"
-                android:text="Is Back TOF Enabled" />
-
-            <Button
-                android:id="@+id/btnToggleBackTOF"
-                style="@style/ButtonCommon"
-                android:text="Toggle Back TOF" />
-
-            <Button
-                android:id="@+id/btnIsFrontTOFEnabled"
-                style="@style/ButtonCommon"
-                android:text="Is Front TOF Enabled" />
-
-            <Button
-                android:id="@+id/btnToggleFrontTOF"
-                style="@style/ButtonCommon"
-                android:text="Toggle Front TOF" />
-
-            <Button
-                android:id="@+id/btnGetHeadDepthSensitivity"
-                style="@style/ButtonCommon"
-                android:text="Get Head Depth Sensitivity" />
-
-            <Button
-                android:id="@+id/btnSetHeadDepthSensitivity"
-                style="@style/ButtonCommon"
-                android:text="Set Head Depth Sensitivity" />
-
-            <Button
-                android:id="@+id/btnGetCliffSensorMode"
-                style="@style/ButtonCommon"
-                android:text="Get Cliff Sensor Mode" />
-
-            <Button
-                android:id="@+id/btnSetCliffSensorMode"
-                style="@style/ButtonCommon"
-                android:text="Set Cliff Sensor Mode" />
-
-            <Button
-                android:id="@+id/btnHasCliffSensor"
-                style="@style/ButtonCommon"
-                android:text="Has Cliff Sensor" />
-
-            <Button
-                android:id="@+id/btnIsGroundDepthCliff"
-                style="@style/ButtonCommon"
-                android:text="Is Ground Depth Cliff Detection Enabled" />
-
-            <Button
-                android:id="@+id/btnToggleGroundDepthCliff"
-                style="@style/ButtonCommon"
-                android:text="Toggle Ground Depth Cliff Detection" />
-
-            <Button
-                android:id="@+id/btnGetSupportedKeyboard"
-                style="@style/ButtonCommon"
-                android:text="Get Supported Latin Keyboards" />
-
-            <Button
-                android:id="@+id/btnEnabledLatinKeyboards"
-                style="@style/ButtonCommon"
-                android:text="Enabled Latin Keyboards" />
-
-            <Button
-                android:id="@+id/btnToggleKioskMode"
-                style="@style/ButtonCommon"
-                android:text="Toggle Kiosk Mode" />
-
-            <Button
-                android:id="@+id/btnIsKioskModeOn"
-                style="@style/ButtonCommon"
-                android:text="Is Kiosk Mode On" />
-
-            <Button
-                android:id="@+id/btnGetMode"
-                style="@style/ButtonCommon"
-                android:text="Get Mode" />
-
-            <Button
-                android:id="@+id/btnSetMode"
-                style="@style/ButtonCommon"
-                android:text="Set Mode" />
-
-            <Button
-                android:id="@+id/btnGetNickName"
-                style="@style/ButtonCommon"
-                android:text="Get temi's nick name" />
-
-            <Button
-                android:id="@+id/btnToggleHardBtnVolume"
-                style="@style/ButtonCommon"
-                android:text="Toggle Hard Button Volume" />
-
-            <Button
-                android:id="@+id/btnToggleHardBtnPower"
-                style="@style/ButtonCommon"
-                android:text="Toggle Hard Button Power" />
-
-            <Button
-                android:id="@+id/btnSetHardBtnMainMode"
-                style="@style/ButtonCommon"
-                android:text="Set Hard Button Main Mode" />
-
-            <Button
-                android:id="@+id/btnSetSoundMode"
-                style="@style/ButtonCommon"
-                android:text="Set Sound Mode" />
-
-            <Button
-                android:id="@+id/btnMuteAlexa"
-                style="@style/ButtonCommon"
-                android:text="Mute Alexa" />
-
-            <Button
-                android:id="@+id/btnShutdown"
-                style="@style/ButtonCommon"
-                android:text="Shutdown" />
-
-            <Button
-                android:id="@+id/btnLock"
-                style="@style/ButtonCommon"
-                android:text="Lock" />
-
-            <Button
-                android:id="@+id/btnUnlock"
-                style="@style/ButtonCommon"
-                android:text="Unlock" />
-
-            <Button
-                android:id="@+id/btnLoadMapWithPosition"
-                style="@style/ButtonCommon"
-                android:text="Load Map with Position" />
-
-            <Button
-                android:id="@+id/btnLoadMapWithReposePosition"
-                style="@style/ButtonCommon"
-                android:text="Load Map with Repose Position" />
-
-            <Button
-                android:id="@+id/btnLoadMapWithRepose"
-                style="@style/ButtonCommon"
-                android:text="Load Map with Repose" />
-
-            <Button
-                android:id="@+id/btnLoadMap"
-                style="@style/ButtonCommon"
-                android:text="Load Map" />
-
-            <Button
-                android:id="@+id/btnLoadMapToCache"
-                style="@style/ButtonCommon"
-                android:text="Load Map To Cache" />
-
-            <Button
-                android:id="@+id/btnLoadMapOffline"
-                style="@style/ButtonCommon"
-                android:text="Load Map Offline" />
-
-            <Button
-                android:id="@+id/btnLoadMapWithoutUI"
-                style="@style/ButtonCommon"
-                android:text="Load Map Without UI" />
-
-            <Button
-                android:id="@+id/btnGetMapList"
-                style="@style/ButtonCommon"
-                android:text="Get Map List" />
-
-            <Button
-                android:id="@+id/btnRepose"
-                style="@style/ButtonCommon"
-                android:text="Repose" />
-
-            <Button
-                android:id="@+id/btnGetMembersStatus"
-                style="@style/ButtonCommon"
-                android:text="Get Members' status" />
-
-            <Button
-                android:id="@+id/btnRestart"
-                style="@style/ButtonCommon"
-                android:text="Restart temi" />
-
-            <Button
-                android:id="@+id/btnStartPage"
-                style="@style/ButtonCommon"
-                android:text="Start Page" />
-
-            <Button
-                android:id="@+id/btnStartTelepresenceToCenter"
-                style="@style/ButtonCommon"
-                android:text="Start Telepresence to temi Center" />
-
-            <Button
-                android:id="@+id/btnFetchMap"
-                style="@style/ButtonCommon"
-                android:text="Get Map Data" />
-
-            <Button
-                android:id="@+id/btnFetchSequence"
-                style="@style/ButtonCommon"
-                android:text="Get All Sequences" />
-
-            <Button
-                android:id="@+id/btnPlayFirstSequenceWithoutPlayer"
-                style="@style/ButtonCommon"
-                android:text="Play First Sequence without Player" />
-
-            <Button
-                android:id="@+id/btnPlayFirstSequence"
-                style="@style/ButtonCommon"
-                android:text="Play First Sequence" />
-
-            <Button
-                android:id="@+id/btnGetOSVersion"
-                style="@style/ButtonCommon"
-                android:text="Get OS Version" />
-
-            <Button
-                android:id="@+id/btnCheckFace"
-                style="@style/ButtonCommon"
-                android:text="Request Permission: Face Recognition" />
-
-            <Button
-                android:id="@+id/btnCheckMap"
-                style="@style/ButtonCommon"
-                android:text="Request Permission: Map" />
-
-            <Button
-                android:id="@+id/btnCheckSettings"
-                style="@style/ButtonCommon"
-                android:text="Request Permission: Settings" />
-
-            <Button
-                android:id="@+id/btnCheckSequence"
-                style="@style/ButtonCommon"
-                android:text="Request Permission: Sequence" />
-
-            <Button
-                android:id="@+id/btnCheckAllPermission"
-                style="@style/ButtonCommon"
-                android:text="Request All Permissions" />
-
-            <Button
-                android:id="@+id/btnStartFaceRecognition"
-                style="@style/ButtonCommon"
-                android:text="Start Face Recognition" />
-
-            <Button
-                android:id="@+id/btnStopFaceRecognition"
-                style="@style/ButtonCommon"
-                android:text="Stop Face Recognition" />
-
-            <Button
-                android:id="@+id/btnSetGoToSpeed"
-                style="@style/ButtonCommon"
-                android:text="Set Go To Speed" />
-
-            <Button
-                android:id="@+id/btnSetGoToSafety"
-                style="@style/ButtonCommon"
-                android:text="Set Go To Safety" />
-
-            <Button
-                android:id="@+id/btnToggleTopBadge"
-                style="@style/ButtonCommon"
-                android:text="Toggle Top Badge" />
-
-            <Button
-                android:id="@+id/btnToggleDetectionMode"
-                style="@style/ButtonCommon"
-                android:text="Toggle Detection Mode" />
-
-            <Button
-                android:id="@+id/btnToggleAutoReturn"
-                style="@style/ButtonCommon"
-                android:text="Toggle Auto Return" />
-
-            <Button
-                android:id="@+id/btnTrackUser"
-                style="@style/ButtonCommon"
-                android:text="Toggle Track User" />
-
-            <Button
-                android:id="@+id/btnGetVolume"
-                style="@style/ButtonCommon"
-                android:text="Get Volume" />
-
-            <Button
-                android:id="@+id/btnSetVolume"
-                style="@style/ButtonCommon"
-                android:text="Set Volume" />
-
-            <Button
-                android:id="@+id/btnRequestToBeKioskApp"
-                style="@style/ButtonCommon"
-                android:text="Request To Be Kiosk App" />
-
-            <Button
-                android:id="@+id/btnSavedLocations"
-                style="@style/ButtonCommon"
-                android:text="@string/saved_locations" />
-
-            <Button
-                android:id="@+id/btnFollow"
-                style="@style/ButtonCommon"
-                android:text="@string/follow_me" />
-
-            <Button
-                android:id="@+id/btnskidJoy"
-                style="@style/ButtonCommon"
-                android:text="@string/skidjoy" />
-
-            <Button
-                android:id="@+id/btnTiltAngle"
-                style="@style/ButtonCommon"
-                android:text="@string/tiltangle" />
-
-            <Button
-                android:id="@+id/btnTurnBy"
-                style="@style/ButtonCommon"
-                android:text="@string/turnby" />
-
-            <Button
-                android:id="@+id/btnTiltBy"
-                style="@style/ButtonCommon"
-                android:text="tiltBy" />
-
-            <Button
-                android:id="@+id/btnDisableWakeup"
-                style="@style/ButtonCommon"
-                android:text="Disable Wakeup" />
-
-            <Button
-                android:id="@+id/btnEnableWakeup"
-                style="@style/ButtonCommon"
-                android:text="Enable Wakeup" />
-
-            <Button
-                android:id="@+id/btnToggleNavBillboard"
-                style="@style/ButtonCommon"
-                android:text="Toggle navigation billboard" />
-
-            <Button
-                android:id="@+id/btnBatteryInfo"
-                style="@style/ButtonCommon"
-                android:text="@string/battery_info" />
-
-            <Button
-                android:id="@+id/btnStopMovement"
-                style="@style/ButtonCommon"
-                android:text="@string/stop_movement" />
-
-            <Button
-                android:id="@+id/btnCallOwner"
-                style="@style/ButtonCommon"
-                android:text="@string/call_owner" />
-
-            <Button
-                android:id="@+id/btnPublish"
-                style="@style/ButtonCommon"
-                android:text="@string/publish_to_activities" />
-
-            <Button
-                android:id="@+id/btnHideTopBar"
-                style="@style/ButtonCommon"
-                android:text="Hide Top Bar" />
-
-            <Button
-                android:id="@+id/btnShowTopBar"
-                style="@style/ButtonCommon"
-                android:text="Show Top Bar" />
-
-            <Button
-                android:id="@+id/btnTogglePrivacyModeOn"
-                style="@style/ButtonCommon"
-                android:text="Turn on Privacy Mode" />
-
-            <Button
-                android:id="@+id/btnTogglePrivacyModeOff"
-                style="@style/ButtonCommon"
-                android:text="Turn off Privacy Mode" />
-
-            <Button
-                android:id="@+id/btnGetPrivacyMode"
-                style="@style/ButtonCommon"
-                android:text="Get Privacy Mode" />
-
-            <Button
-                android:id="@+id/btnEnableHardButtons"
-                style="@style/ButtonCommon"
-                android:text="Enable Hard Buttons" />
-
-            <Button
-                android:id="@+id/btnDisableHardButtons"
-                style="@style/ButtonCommon"
-                android:text="Disable Hard Buttons" />
-
-            <Button
-                android:id="@+id/btnIsHardButtonsDisabled"
-                style="@style/ButtonCommon"
-                android:text="Is Hard Buttons Disabled"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/btnGetAllContacts"
-                style="@style/ButtonCommon"
-                android:text="Get All Contacts" />
-
-            <Button
-                    android:id="@+id/btnGetTts"
-                    style="@style/ButtonCommon"
-                    android:text="Get TTS Voice" />
-
-            <Button
-                    android:id="@+id/btnSetTts"
-                    style="@style/ButtonCommon"
-                    android:text="Set TTS Voice to Slow Male Voice" />
-        </LinearLayout>
-    </ScrollView>
 
     <RelativeLayout
         android:layout_width="0dp"
-        android:layout_weight="2"
         android:layout_height="match_parent"
+        android:layout_weight="2"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -664,25 +264,25 @@
             android:layout_height="150dp"
             android:adjustViewBounds="true"
             android:visibility="gone"
-            tools:visibility="visible"
-            tools:src="@mipmap/ic_launcher" />
+            tools:src="@mipmap/ic_launcher"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tvContinuousFace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_toEndOf="@id/imageViewFace"
             android:textColor="@color/colorWhite"
             android:textSize="30sp"
-            tools:text="ContinuousFace"
-            android:layout_marginStart="30dp"
-            android:layout_toEndOf="@id/imageViewFace"/>
+            tools:text="ContinuousFace" />
 
         <com.robotemi.sdk.sample.TtsVisualizerView
             android:id="@+id/visualizerView"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:visibility="gone"
-            android:layout_below="@id/imageViewFace" />
+            android:layout_below="@id/imageViewFace"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvLog"
