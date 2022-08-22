@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/movementAndMapGroup"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnGetCurrentFloor"
+        style="@style/ButtonCommon"
+        android:text="Current Floor" />
+
+    <Button
+        android:id="@+id/btnLoadFloorAtElevator"
+        style="@style/ButtonCommon"
+        android:text="Load Floor At Elevator" />
+
+    <Button
+        android:id="@+id/btnGetAllFloors"
+        style="@style/ButtonCommon"
+        android:text="Get All Floors" />
+
+    <Button
+        android:id="@+id/btnLoadMapWithPosition"
+        style="@style/ButtonCommon"
+        android:text="Load Map with Position" />
+
+    <Button
+        android:id="@+id/btnLoadMapWithReposePosition"
+        style="@style/ButtonCommon"
+        android:text="Load Map with Repose Position" />
+
+    <Button
+        android:id="@+id/btnLoadMapWithRepose"
+        style="@style/ButtonCommon"
+        android:text="Load Map with Repose" />
+
+    <Button
+        android:id="@+id/btnLoadMap"
+        style="@style/ButtonCommon"
+        android:text="Load Map" />
+
+    <Button
+        android:id="@+id/btnLoadMapToCache"
+        style="@style/ButtonCommon"
+        android:text="Load Map To Cache" />
+
+    <Button
+        android:id="@+id/btnLoadMapOffline"
+        style="@style/ButtonCommon"
+        android:text="Load Map Offline" />
+
+    <Button
+        android:id="@+id/btnLoadMapWithoutUI"
+        style="@style/ButtonCommon"
+        android:text="Load Map Without UI" />
+
+    <Button
+        android:id="@+id/btnGetMapList"
+        style="@style/ButtonCommon"
+        android:text="Get Map List" />
+
+    <Button
+        android:id="@+id/btnSavedLocations"
+        style="@style/ButtonCommon"
+        android:text="@string/saved_locations" />
+
+    <Button
+        android:id="@+id/btnRepose"
+        style="@style/ButtonCommon"
+        android:text="Repose" />
+
+
+    <Button
+        android:id="@+id/btnFollow"
+        style="@style/ButtonCommon"
+        android:text="@string/follow_me" />
+
+    <Button
+        android:id="@+id/btnskidJoy"
+        style="@style/ButtonCommon"
+        android:text="@string/skidjoy" />
+
+    <Button
+        android:id="@+id/btnTiltAngle"
+        style="@style/ButtonCommon"
+        android:text="@string/tiltangle" />
+
+    <Button
+        android:id="@+id/btnTurnBy"
+        style="@style/ButtonCommon"
+        android:text="@string/turnby" />
+
+    <Button
+        android:id="@+id/btnTiltBy"
+        style="@style/ButtonCommon"
+        android:text="tiltBy" />
+
+
+    <Button
+        android:id="@+id/btnStopMovement"
+        style="@style/ButtonCommon"
+        android:text="@string/stop_movement" />
+
+</LinearLayout>

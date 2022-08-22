@@ -12,6 +12,7 @@ import android.os.Looper
 import android.os.RemoteException
 import android.util.Log
 import androidx.annotation.*
+import androidx.annotation.IntRange
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
@@ -442,9 +443,7 @@ class Robot private constructor(private val context: Context) {
             if (onTelepresenceStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onTelepresenceStatusChangedListeners) {
-                    if (listener != null && callState.sessionId == listener.sessionId) {
-                        listener.onTelepresenceStatusChanged(callState)
-                    }
+                    listener?.onTelepresenceStatusChanged(callState)
                 }
             }
             return true
@@ -918,7 +917,7 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Set TTS voice, speed, and pitch.
+     * Set TTS voice, speed, and pitch. Require [Permission.SETTINGS]
      * @return true if set is successful
      */
     fun setTtsVoice(ttsVoice: TtsVoice): Boolean {
@@ -1150,6 +1149,32 @@ class Robot private constructor(private val context: Context) {
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "goToPosition() error")
+        }
+    }
+
+    /**
+     * @param locations, at least 3 valid locations, can be duplicated.
+     *                   Home base will be ignored and should not be included.
+     * @param nonstop, if set as true, it will just arrive at the position of location, without tilt and turn, and then immediately head to next location.
+     * @param times, how many times should it go on the route,
+     *               0, infinite,
+     *               1, once
+     *               and so on.
+     * @param waiting, If [nonstop] is false, the time in seconds it should wait on each location. Range from 3 - 60, default is 3
+     *
+     * @return true if patrol is executed.
+     */
+    fun patrol(
+        locations: List<String>,
+        nonstop: Boolean = false,
+        @IntRange(from = 0) times: Int,
+        @IntRange(from = 3, to = 60) waiting: Int = 3
+    ): Boolean {
+        return try {
+            sdkService?.patrol(locations, nonstop, times, waiting) == 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "patrol() error")
+            false
         }
     }
 
@@ -2008,7 +2033,7 @@ class Robot private constructor(private val context: Context) {
      * @return request result
      * <ul>
      *   <li> -1 for failed to request, maybe robot is not ready
-     *   <li> 0 for standBy is already started
+     *   <li> 0 for standBy is started
      *   <li> 1 for standBy was already running
      *   <li> 2 for standby if disabled in settings
      *   <li> 3 for robot is busy, e.g. OTA, Greet Mode
@@ -2742,7 +2767,6 @@ class Robot private constructor(private val context: Context) {
      * @param mapId The map ID of the map to be loaded
      * @param reposeRequired If needs to repose after loading map, default as false
      * @param position The position for repose
-     * @param offline Skip fetching the latest map data of target mapId, default as false.
      * @param offline Skip fetching the latest map data of target mapId, default as false.
      * @param withoutUI Load the map in the background without showing any blocking UI, default as false.
      * @return Request id. In the format of UUID, e.g. 538b44c9-fdcf-426a-9693-d72e9c0f9550. Used in onLoadMapStatusChanged callback.

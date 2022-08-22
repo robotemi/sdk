@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import org.json.JSONObject
 
+
 data class Floor(
     val id: Int = -1,
     val name: String = "",
@@ -15,6 +16,7 @@ data class Floor(
     private val data: String = ""
 ) : Parcelable {
 
+    @Suppress("MemberVisibilityCanBePrivate")
     val locations: List<Location>
         get() {
             val locations = JSONObject(data).getString("locations")

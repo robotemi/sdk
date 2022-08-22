@@ -5,6 +5,12 @@ import android.os.Parcelable
 import org.json.JSONException
 import org.json.JSONObject
 
+/**
+ * @param userType 0: registered temi user,
+ *                 1: unregistered temi user, but is added as contact with face recognition pictures to the robot.
+ *                 2: unregistered temi user, which is a visitor in face detection.
+ *                 -1: Detected but not recognized.
+ */
 data class ContactModel @JvmOverloads constructor(
     val firstName: String = "",
     val lastName: String = "",
@@ -13,7 +19,7 @@ data class ContactModel @JvmOverloads constructor(
     val description: String = "",
     val userId: String = "",
     val age: Int = 0,
-    val visitor: Boolean = false,
+    val userType: Int = 0,
     val similarity: Double = 0.0
 ) : Parcelable {
 
@@ -36,7 +42,7 @@ data class ContactModel @JvmOverloads constructor(
     }
 
     override fun toString(): String {
-        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId)"
+        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId, userType=$userType)"
     }
 
     companion object {
@@ -49,8 +55,8 @@ data class ContactModel @JvmOverloads constructor(
         const val JSON_KEY_DESCRIPTION = "description"
         const val JSON_KEY_USER_ID = "userId"
         const val JSON_KEY_AGE = "age"
-        const val JSON_KEY_VISITOR = "visitor"
         const val JSON_KEY_SIMILARITY = "similarity"
+        const val JSON_KEY_USER_TYPE = "userType"
     }
 }
 
@@ -80,15 +86,15 @@ internal fun ContactModel.compatible(): ContactModel {
     } catch (e: JSONException) {
         0
     }
-    val visitor: Boolean = try {
-        json.optBoolean(ContactModel.JSON_KEY_VISITOR, false)
+    val userType: Int = try {
+        json.optInt(ContactModel.JSON_KEY_USER_TYPE, 0)
     } catch (e: JSONException) {
-        false
+        0
     }
     val similarity: Double = try {
         json.optDouble(ContactModel.JSON_KEY_SIMILARITY, 0.0)
     } catch (e: JSONException) {
         0.0
     }
-    return this.copy(description = desc, userId = userId, age = age, visitor = visitor, similarity = similarity)
+    return this.copy(description = desc, userId = userId, age = age, userType = userType, similarity = similarity)
 }

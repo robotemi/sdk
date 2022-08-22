@@ -2,7 +2,9 @@ package com.robotemi.sdk.listeners
 
 import com.robotemi.sdk.telepresence.CallState
 
-@Deprecated("sessionId is no longer available from startTelepresence return value")
+/**
+ * @param sessionId is no longer available from startTelepresence return value, it is not required any more.
+ */
 abstract class OnTelepresenceStatusChangedListener(var sessionId: String) {
 
     /**
