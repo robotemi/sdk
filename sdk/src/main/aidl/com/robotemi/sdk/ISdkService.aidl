@@ -345,4 +345,7 @@ interface ISdkService {
     boolean setMultiFloorEnabled(in String packageName, boolean enabled);
 
     int patrol(in List<String> locations, boolean nonstop, int times, int waiting);
+
+    // Serial
+    int sendSerialCommand(int command, in byte[] data);
 }

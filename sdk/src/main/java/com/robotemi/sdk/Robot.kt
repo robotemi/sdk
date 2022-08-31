@@ -181,6 +181,9 @@ class Robot private constructor(private val context: Context) {
     private val onDistanceToDestinationChangedListeners =
         CopyOnWriteArraySet<OnDistanceToDestinationChangedListener>()
 
+    private val onSerialRawDataListeners =
+        CopyOnWriteArraySet<OnSerialRawDataListener>()
+
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
@@ -706,6 +709,21 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        /*****************************************/
+        /*                Serial                 */
+
+        /**
+         * Receive raw serial data from hardware components on temi GO.
+         *
+         */
+        override fun onSerialRawData(data: ByteArray) {
+            if (onSerialRawDataListeners.isEmpty()) return
+            uiHandler.post {
+                onSerialRawDataListeners.forEach {
+                    it.onSerialRawData(data)
+                }
+            }
+        }
     }
 
     /*****************************************/
@@ -2930,6 +2948,34 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnContinuousFaceRecognizedListener(listener: OnContinuousFaceRecognizedListener) {
         onContinuousFaceRecognizedListeners.remove(listener)
+    }
+
+    /*****************************************/
+    /*                 Serial                */
+
+    /**
+     * Send command to control hardware components on temi GO.
+     *
+     * This is the core api, which exposed the fundamental communication protocol to hardware control board.
+     *
+     */
+    fun sendSerialCommand(command: Int, data: ByteArray): Int {
+        return try {
+            sdkService?.sendSerialCommand(command, data) ?: -1
+        } catch (e: RemoteException) {
+            Log.e(TAG, "sendSerialCommand() error")
+            -1
+        }
+    }
+
+    @UiThread
+    fun addOnSerialRawDataListener(listener: OnSerialRawDataListener) {
+        onSerialRawDataListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnSerialRawDataListener(listener: OnSerialRawDataListener) {
+        onSerialRawDataListeners.remove(listener)
     }
 
     /*****************************************/

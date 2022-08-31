@@ -78,5 +78,9 @@
         style="@style/ButtonCommon"
         android:text="Get All Contacts" />
 
+    <Button
+        android:id="@+id/btnSerial"
+        style="@style/ButtonCommon"
+        android:text="Serial" />
 
 </LinearLayout>

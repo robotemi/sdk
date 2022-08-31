@@ -394,6 +394,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
         btnGetTts.setOnClickListener { getTts() }
         btnSetTts.setOnClickListener { setTts() }
+        btnSerial.setOnClickListener { startActivity(Intent(this, SerialActivity::class.java)) }
     }
 
     private fun getCurrentFloor() {
@@ -1518,7 +1519,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
                 }
                 -1 -> {
-                    printLog("onFaceRecognized: Unknown face")
+                    printLog("onFaceRecognized: Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}")
                 }
             }
         }
@@ -1551,10 +1552,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 }
                 2 -> {
                     Log.d("SAMPLE_DEBUG", "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
-                    "$blinker  VISITOR ${contactModel.userId} ${contactModel.similarity}\n"
+                    "$blinker  VISITOR ${contactModel.userId} similarity ${contactModel.similarity}\n"
                 }
                 else -> {
-                    "$blinker Unknown face\n"
+                    "$blinker Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}\n"
                 }
             }
         }
