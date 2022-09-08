@@ -109,4 +109,6 @@ interface ISdkServiceCallback {
     boolean onLoadFloorStatusChanged(int status);
 
     boolean onDistanceToDestinationChanged(in String location, float distance);
+
+    void onSerialRawData(in byte[] data);
 }

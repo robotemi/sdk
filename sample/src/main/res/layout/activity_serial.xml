@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    android:paddingTop="30dp"
+    tools:ignore="HardcodedText">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/ibBack"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@null"
+        android:src="@drawable/ic_back"
+        android:tint="@color/colorWhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version:"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ibBack" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnTrayRGB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tray RGB"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnVersion"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnStripConstant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Strip RGB Constant"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnTrayRGB"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnStripBreathing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Strip RGB Breathing"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnStripConstant"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnStripRunning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Strip RGB Running"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnStripBreathing"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnTrayQuery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tray 1 Status"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnStripRunning"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvResp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Here it will print serial responses"
+        android:textColor="@color/colorWhite"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnVersion" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
