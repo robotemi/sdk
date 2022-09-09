@@ -57,7 +57,7 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
                     secondaryColor = byteArrayOf(0x00, 0xff.toByte(), 0x00),
                     interval = 20
                 )
-            ) // Strip always on red
+            ) // Strip breathing red
         }
         btnStripRunning.setOnClickListener {
             Robot.getInstance().sendSerialCommand(
