@@ -90,14 +90,20 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
 
     @SuppressLint("SetTextI18n")
     override fun onSerialRawData(data: ByteArray) {
+        // Command id of response
         val cmd = data.cmd
+
+        // Data frame of response
         val dataFrame = data.dataFrame
+
+        // To see the hex array of raw data
         Log.d("Serial", "cmd $cmd raw data ${data.dataHex}")
         tvResp.text = data.dataHex.toString()
         when (cmd) {
             Serial.RESP_TRAY_SENSOR -> {
-                val trayNum = data[6].toInt() + 1
-                val loaded = data[7].toInt() == 1
+                // The first place in data frame stands for tray number, starts from 0
+                val trayNum = dataFrame[0].toInt() + 1
+                val loaded = dataFrame[1].toInt() == 1
                 val speech = if (loaded) {
                     "Tray $trayNum is loaded"
                 } else {
