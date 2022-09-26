@@ -19,7 +19,7 @@ or Maven:
 <dependency>
   <groupId>com.robotemi</groupId>
   <artifactId>sdk</artifactId>
-  <version>1.129.1</version>
+  <version>1.129.2</version>
 </dependency>
 ```
 
