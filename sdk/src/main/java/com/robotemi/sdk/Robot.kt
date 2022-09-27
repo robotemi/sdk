@@ -689,11 +689,11 @@ class Robot private constructor(private val context: Context) {
         /*                  Map                  */
         /*****************************************/
 
-        override fun onLoadMapStatusChanged(status: Int, requestId: String): Boolean {
+        override fun onLoadMapStatusChanged(status: Int, requestId: String?): Boolean {
             if (onLoadMapStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onLoadMapStatusChangedListeners) {
-                    listener.onLoadMapStatusChanged(status, requestId)
+                    listener.onLoadMapStatusChanged(status, requestId ?: "")
                 }
             }
             return true
