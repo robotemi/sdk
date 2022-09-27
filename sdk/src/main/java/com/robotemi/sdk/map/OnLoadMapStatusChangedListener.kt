@@ -4,6 +4,10 @@ import androidx.annotation.IntDef
 
 interface OnLoadMapStatusChangedListener {
 
+    /**
+     * @param status, map loading status
+     * @param requestId, added in 129 version to track a map loading session. The value is first returned from [Robot.loadMap()]
+     */
     fun onLoadMapStatusChanged(@Status status: Int, requestId: String)
 
     @IntDef(

@@ -12,10 +12,11 @@
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_columnWeight="1"
-        android:background="@color/group_button_bg"
+        android:background="@drawable/group_button_bg"
         android:drawableTop="@drawable/ic_settings"
         android:textOn="System"
         android:textOff="System"
+        android:textSize="@dimen/toggleBtnTextSize"
         android:textColor="@color/colorWhite" />
 
     <androidx.appcompat.widget.AppCompatToggleButton
@@ -23,10 +24,11 @@
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_columnWeight="1"
-        android:background="@color/group_button_bg"
+        android:background="@drawable/group_button_bg"
         android:drawableTop="@drawable/ic_navi"
         android:textOn="Navigation"
         android:textOff="Navigation"
+        android:textSize="@dimen/toggleBtnTextSize"
         android:textColor="@color/colorWhite" />
 
     <androidx.appcompat.widget.AppCompatToggleButton
@@ -34,10 +36,11 @@
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_columnWeight="1"
-        android:background="@color/group_button_bg"
+        android:background="@drawable/group_button_bg"
         android:drawableTop="@drawable/ic_permissions"
         android:textOn="Permission"
         android:textOff="Permission"
+        android:textSize="@dimen/toggleBtnTextSize"
         android:textColor="@color/colorWhite" />
 
     <androidx.appcompat.widget.AppCompatToggleButton
@@ -45,10 +48,11 @@
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_columnWeight="1"
-        android:background="@color/group_button_bg"
+        android:background="@drawable/group_button_bg"
         android:drawableTop="@drawable/ic_resource"
         android:textOn="Resources"
         android:textOff="Resources"
+        android:textSize="@dimen/toggleBtnTextSize"
         android:textColor="@color/colorWhite" />
 
 </GridLayout>
