@@ -1361,7 +1361,7 @@ class Robot private constructor(private val context: Context) {
      * @param smart Moving with bypassing the obstacles
      */
     @JvmOverloads
-    fun skidJoy(x: Float, y: Float, smart: Boolean = false) {
+    fun skidJoy(@FloatRange(from = -1.0, to = 1.0) x: Float, @FloatRange(from = -1.0, to = 1.0) y: Float, smart: Boolean = false) {
         try {
             sdkService?.skidJoy(x, y, smart)
         } catch (e: RemoteException) {
@@ -1376,7 +1376,7 @@ class Robot private constructor(private val context: Context) {
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
     @JvmOverloads
-    fun turnBy(degrees: Int, speed: Float = 1f) {
+    fun turnBy(degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
         try {
             sdkService?.turnBy(degrees, speed)
         } catch (e: RemoteException) {
@@ -1391,7 +1391,7 @@ class Robot private constructor(private val context: Context) {
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
     @JvmOverloads
-    fun tiltAngle(degrees: Int, speed: Float = 1f) {
+    fun tiltAngle(degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
         try {
             sdkService?.tiltAngle(degrees, speed)
         } catch (e: RemoteException) {
@@ -1406,7 +1406,7 @@ class Robot private constructor(private val context: Context) {
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
     @JvmOverloads
-    fun tiltBy(degrees: Int, speed: Float = 1f) {
+    fun tiltBy(degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
         try {
             sdkService?.tiltBy(degrees, speed)
         } catch (e: RemoteException) {
