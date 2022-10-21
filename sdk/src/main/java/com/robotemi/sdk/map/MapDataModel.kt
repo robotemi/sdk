@@ -12,7 +12,8 @@ data class MapDataModel(
     var mapInfo: MapInfo = MapInfo(),
     var virtualWalls: MutableList<Layer> = mutableListOf(),
     var greenPaths: MutableList<Layer> = mutableListOf(),
-    var locations: MutableList<Layer> = mutableListOf()
+    var locations: MutableList<Layer> = mutableListOf(),
+    var mapName: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(MapImage::class.java.classLoader)!!,
@@ -193,6 +194,7 @@ const val STATUS_DELETE = 3
 const val MAP_ID = "map_id"
 const val MAP_INFO = "map_info"
 const val MAP_ELEMENTS = "map_elements"
+const val MAP_NAME = "map_name"
 
 
 @Keep

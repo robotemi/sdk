@@ -2714,11 +2714,13 @@ class Robot private constructor(private val context: Context) {
 
         var cursor: Cursor? = null
         try {
+            val json = gson.fromJson(
+                inputStreamReader,
+                MapDataModel::class.java
+            )
             mapDataModel = MapDataModel(
-                gson.fromJson(
-                    inputStreamReader,
-                    MapDataModel::class.java
-                ).mapImage
+                mapImage = json.mapImage,
+                mapName = json.mapName ?: ""
             )
             val uriStr = StringBuffer("content://")
                 .append(SdkConstants.PROVIDER_AUTHORITY)
@@ -2742,8 +2744,15 @@ class Robot private constructor(private val context: Context) {
                 mapElementsJson,
                 object : TypeToken<List<Layer>>() {}.type
             )
+
+            val mapName = try {
+                cursor.getString(cursor.getColumnIndexOrThrow(MAP_NAME))
+            } catch (e: IllegalArgumentException) {
+                ""
+            }
             mapDataModel.mapId = mapId
             mapDataModel.mapInfo = mapInfo
+            mapDataModel.mapName = mapName
             mapElements?.map {
                 if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
                 if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
