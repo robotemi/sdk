@@ -96,6 +96,8 @@ object SdkConstants {
     const val NOT_SET = 0
     const val TRUE = 1
     const val FALSE = -1
+
+    const val ACTION_TEMI_BOOT_COMPLETED = "com.robotemi.intent.action.BOOT_COMPLETED"
 }
 
 enum class ContentType(val path: String) {

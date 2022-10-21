@@ -80,6 +80,13 @@
 
         <activity android:name=".SerialActivity" />
 
+        <receiver android:name=".BootCompleteReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.robotemi.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
