@@ -7,8 +7,10 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.*
 import android.content.pm.PackageManager
+import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.os.RemoteException
@@ -63,11 +65,11 @@ import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.group_map_and_movement.*
 import kotlinx.android.synthetic.main.group_app_and_permission.*
 import kotlinx.android.synthetic.main.group_buttons.*
-import kotlinx.android.synthetic.main.group_settings_and_status.*
+import kotlinx.android.synthetic.main.group_map_and_movement.*
 import kotlinx.android.synthetic.main.group_resources.*
+import kotlinx.android.synthetic.main.group_settings_and_status.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -295,6 +297,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             }
         }
 
+        val mediaPlayer = MediaPlayer()
+
         btnGroupSystem.isChecked = true
 
         btnSpeak.setOnClickListener { speak() }
@@ -330,6 +334,31 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnCheckAllPermission.setOnClickListener { requestAll() }
         btnStartFaceRecognition.setOnClickListener { startFaceRecognition() }
         btnStopFaceRecognition.setOnClickListener { stopFaceRecognition() }
+        btnSetUserInteractionON.setOnClickListener {
+            val ret = robot.setInteractionState(true)
+            Log.d("MainActivity", "Set user interaction $ret")
+            mediaPlayer.setVolume(1f, 1f)
+            mediaPlayer.isLooping = false
+            mediaPlayer.setOnCompletionListener {
+                robot.setInteractionState(false)
+            }
+            if (!mediaPlayer.isPlaying) {
+                val descriptor: AssetFileDescriptor = assets.openFd("Lorem-ipsum.mp3")
+                mediaPlayer.setDataSource(
+                    descriptor.fileDescriptor,
+                    descriptor.startOffset,
+                    descriptor.length
+                )
+                descriptor.close()
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+            }
+        }
+        btnSetUserInteractionOFF.setOnClickListener {
+            robot.setInteractionState(false)
+            mediaPlayer.stop()
+            mediaPlayer.reset()
+        }
         btnSetGoToSpeed.setOnClickListener { setGoToSpeed() }
         btnSetGoToSafety.setOnClickListener { setGoToSafety() }
         btnToggleTopBadge.setOnClickListener { toggleTopBadge() }

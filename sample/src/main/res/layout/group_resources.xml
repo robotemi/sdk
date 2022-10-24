@@ -59,6 +59,16 @@
         android:text="Stop Face Recognition" />
 
     <Button
+        android:id="@+id/btnSetUserInteractionON"
+        style="@style/ButtonCommon"
+        android:text="Set User Interaction ON" />
+
+    <Button
+        android:id="@+id/btnSetUserInteractionOFF"
+        style="@style/ButtonCommon"
+        android:text="Set User Interaction OFF" />
+
+    <Button
         android:id="@+id/btnTrackUser"
         style="@style/ButtonCommon"
         android:text="Toggle Track User" />

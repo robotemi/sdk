@@ -348,4 +348,6 @@ interface ISdkService {
 
     // Serial
     int sendSerialCommand(int command, in byte[] data);
+
+    int setInteractionState(in String packageName, boolean on);
 }

@@ -2453,6 +2453,44 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Set interaction state as ON, to keep greet mode under interaction state.
+     *
+     * In greet mode, if there is active movement/conversation/detection/sequence/telepresence/touch,
+     * then greet mode will take it as user interaction and hold it in [OnGreetModeStateChangedListener.INTERACTION] state.
+     * But if the selected kiosk app wants to play a video in the interaction state of greet mode even none of above conditions is met,
+     * then this function will set the interaction flag as true, and keep it as interaction state, until the flag is cleared.
+     *
+     * This function shall be used together with [OnGreetModeStateChangedListener] to fine control greet mode state transition.
+     *
+     * The flag will be cleared when
+     * <ul>
+     *   <li> Kiosk mode is OFF.
+     *   <li> Kiosk app is changed.
+     *   <li> Greet mode is OFF.
+     *   <li> Current kiosk app set it as false
+     * </ul>
+     *
+     * Require active Kiosk app permission to use this method
+     *
+     * @param on, true to hold it as interaction state.
+     *
+     * @return request result
+     * <ul>
+     *   <li> -1 for failed to request, maybe robot is not ready
+     *   <li> 0 for request succeed
+     *   <li> 403 for current app is not selected Kiosk app
+     * </ul>
+     */
+    fun setInteractionState(on: Boolean): Int {
+        return try {
+            sdkService?.setInteractionState(applicationInfo.packageName, on) ?: -1
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setInteractionState($on) error")
+            -1
+        }
+    }
+
     /*****************************************/
     /*            Activity Stream            */
     /*****************************************/
