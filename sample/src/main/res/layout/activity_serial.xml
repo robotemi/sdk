@@ -72,6 +72,33 @@
         app:layout_constraintStart_toEndOf="@id/btnStripRunning"
         app:layout_constraintTop_toTopOf="@id/btnVersion" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnLcdTextTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lcd Show timestamp"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnTrayQuery"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnLcdTextColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lcd Text Red/Yellow"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnLcdTextTime"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnLcdBackgroundColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lcd Background Green/Cyan"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btnLcdTextColor"
+        app:layout_constraintTop_toTopOf="@id/btnVersion" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvResp"
         android:layout_width="wrap_content"

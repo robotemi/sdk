@@ -57,6 +57,16 @@ object Serial {
         return content.toByteArray(charset).plus(byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte()))
     }
 
+    fun getLcdColorBytes(textColor: ByteArray, target: String = LCD.TEXT_0_COLOR, charset: Charset = Charsets.UTF_8): ByteArray {
+        val content = "$target=${RGB565.convertRgb888To565(textColor)}"
+        return content.toByteArray(charset).plus(byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte()))
+    }
+
+    object LCD {
+        const val TEXT_0_COLOR = "t0.pco"
+        const val TEXT_0_BACKGROUND = "t0.bco"
+    }
+
     /**
      * Get Strip LED data frame
      * @param mode 1 always on;
@@ -88,5 +98,18 @@ object Serial {
             direction.toByte(),
             interval.rem(0xFF).toByte(), interval.div(0xFF).toByte(), 0x00, 0x00
         )
+    }
+}
+
+/**
+ * https://trolsoft.ru/en/articles/rgb565-color-picker
+ */
+internal object RGB565 {
+    fun convertRgb888To565(byteArray: ByteArray): Int {
+        if (byteArray.size != 3) return 0
+        val r = (byteArray[0].toUByte().toInt() and 0xf8) shl 8
+        val g = (byteArray[1].toUByte().toInt() and 0xfc) shl 3
+        val b = (byteArray[2].toUByte().toInt() and 0xf8) shr 3
+        return r or g or b
     }
 }

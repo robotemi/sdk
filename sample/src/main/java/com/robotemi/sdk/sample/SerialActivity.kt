@@ -11,6 +11,8 @@ import com.robotemi.sdk.serial.Serial
 import com.robotemi.sdk.serial.Serial.cmd
 import com.robotemi.sdk.serial.Serial.dataFrame
 import com.robotemi.sdk.serial.Serial.dataHex
+import com.robotemi.sdk.serial.Serial.getLcdBytes
+import com.robotemi.sdk.serial.Serial.getLcdColorBytes
 import kotlinx.android.synthetic.main.activity_serial.*
 
 class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
@@ -78,6 +80,41 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
             Robot.getInstance().sendSerialCommand(
                 Serial.CMD_TRAY_SENSOR,
                 byteArrayOf(0x00)
+            )
+        }
+
+        btnLcdTextTime.setOnClickListener {
+            Robot.getInstance().sendSerialCommand(
+                Serial.CMD_LCD_TEXT,
+                getLcdBytes(System.currentTimeMillis().toString().substring(5))
+            )
+        }
+
+        btnLcdTextColor.setOnClickListener {
+            val color = if (it.tag == true) {
+                it.tag = false
+                byteArrayOf(0xFF.toByte(), 0x00, 0x00)
+            } else {
+                it.tag = true
+                byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0x00)
+            }
+            Robot.getInstance().sendSerialCommand(
+                Serial.CMD_LCD_TEXT,
+                getLcdColorBytes(color, target = Serial.LCD.TEXT_0_COLOR)
+            )
+        }
+
+        btnLcdBackgroundColor.setOnClickListener {
+            val color = if (it.tag == true) {
+                it.tag = false
+                byteArrayOf(0x00, 0xFF.toByte(), 0x00)
+            } else {
+                it.tag = true
+                byteArrayOf(0x00, 0xFF.toByte(), 0xFF.toByte())
+            }
+            Robot.getInstance().sendSerialCommand(
+                Serial.CMD_LCD_TEXT,
+                getLcdColorBytes(color, target = Serial.LCD.TEXT_0_BACKGROUND)
             )
         }
         super.onResume()
