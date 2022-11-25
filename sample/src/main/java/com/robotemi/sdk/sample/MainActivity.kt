@@ -62,6 +62,7 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
+import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
@@ -75,6 +76,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
@@ -378,6 +380,25 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetAllContacts.setOnClickListener { getAllContacts() }
         btnGoToPosition.setOnClickListener { goToPosition() }
         btnStartTelepresenceToCenter.setOnClickListener { startTelepresenceToCenter() }
+        btnCreateLinkBasedMeeting.setOnClickListener {
+            val request = LinkBasedMeeting(
+                topic = "temi Demo Meeting",
+                availability = LinkBasedMeeting.Availability(
+                    start = Date(),
+                    end = Date(Date().time + 86400000),
+                    always = false,
+                ),
+                limit = LinkBasedMeeting.Limit(
+                    callDuration = LinkBasedMeeting.CallDuration.MINUTE_10,
+                    usageLimit = LinkBasedMeeting.UsageLimit.NO_LIMIT,
+                ),
+                permission = LinkBasedMeeting.Permission.DEFAULT
+            )
+            thread {
+                val (code, linkUrl) = robot.createLinkBasedMeeting(request)
+                printLog("Link create request, response code $code, link $linkUrl")
+            }
+        }
         btnStartPage.setOnClickListener { startPage() }
         btnRestart.setOnClickListener { restartTemi() }
         btnGetMembersStatus.setOnClickListener { getMembersStatus() }

@@ -23,6 +23,11 @@
         android:text="Start Telepresence to temi Center" />
 
     <Button
+        android:id="@+id/btnCreateLinkBasedMeeting"
+        style="@style/ButtonCommon"
+        android:text="Create Link Based Meeting" />
+
+    <Button
         android:id="@+id/btnFetchMap"
         style="@style/ButtonCommon"
         android:text="Get Map Data" />
