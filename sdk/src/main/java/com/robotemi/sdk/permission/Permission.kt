@@ -14,6 +14,7 @@ enum class Permission(val value: String, val isKioskPermission: Boolean) {
     MAP("com.robotemi.permission.map", false),
     SETTINGS("com.robotemi.permission.settings", false),
     SEQUENCE("com.robotemi.permission.sequence", false),
+    MEETINGS("com.robotemi.permission.meetings", false),
     UNKNOWN("unknown", false);
 
     companion object {
@@ -37,6 +38,7 @@ enum class Permission(val value: String, val isKioskPermission: Boolean) {
                 MAP.value -> MAP
                 SETTINGS.value -> SETTINGS
                 SEQUENCE.value -> SEQUENCE
+                MEETINGS.value -> MEETINGS
                 else -> UNKNOWN
             }
         }

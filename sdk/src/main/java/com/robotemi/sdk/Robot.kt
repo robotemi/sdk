@@ -982,8 +982,9 @@ class Robot private constructor(private val context: Context) {
     /**
      * Create a link based meeting.
      *
-     * @return  response code, 200 is OK.
-     *                         429
+     * @return  response code, 200: is OK.
+     *                         403: not allowed, [Permission.MEETINGS] required.
+     *                         429: request too frequently. Shall be 5 seconds interval.
      *          meeting link, like "https://center.robotemi.com/meetings/{linkId}"
      *
      */
