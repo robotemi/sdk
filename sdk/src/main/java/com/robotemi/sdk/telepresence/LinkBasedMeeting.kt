@@ -34,6 +34,9 @@ data class LinkBasedMeeting(
         CallDuration.MINUTE_20,
         CallDuration.MINUTE_40,
         CallDuration.MINUTE_60,
+        CallDuration.MINUTE_90,
+        CallDuration.MINUTE_120,
+        CallDuration.MINUTE_180,
     )
     annotation class CallDuration {
         companion object {
@@ -43,6 +46,9 @@ data class LinkBasedMeeting(
             const val MINUTE_20 = 20
             const val MINUTE_40 = 40
             const val MINUTE_60 = 60
+            const val MINUTE_90 = 90
+            const val MINUTE_120 = 120
+            const val MINUTE_180 = 180
         }
     }
 
