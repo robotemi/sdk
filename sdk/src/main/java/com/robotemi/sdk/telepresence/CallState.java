@@ -11,10 +11,18 @@ public class CallState implements Parcelable {
     private final String sessionId;
 
     private final State state;
+    private final boolean lowLightMode;
 
     public CallState(@NonNull String sessionId, State state) {
         this.sessionId = sessionId;
         this.state = state;
+        this.lowLightMode = false;
+    }
+
+    public CallState(@NonNull String sessionId, State state, boolean lowLightMode) {
+        this.sessionId = sessionId;
+        this.state = state;
+        this.lowLightMode = lowLightMode;
     }
 
     @NonNull
@@ -24,6 +32,10 @@ public class CallState implements Parcelable {
 
     public State getState() {
         return state;
+    }
+
+    public boolean getLowLightMode() {
+        return lowLightMode;
     }
 
     public enum State {
@@ -56,6 +68,7 @@ public class CallState implements Parcelable {
         sessionId = in.readString();
         final int tempState = in.readInt();
         state = tempState == -1 ? null : State.values()[tempState];
+        lowLightMode = in.readInt() == 1;
 
     }
 
@@ -63,6 +76,7 @@ public class CallState implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.sessionId);
         dest.writeInt(this.state == null ? -1 : this.state.ordinal());
+        dest.writeInt(lowLightMode ? 1 : 0);
     }
 
     @Override

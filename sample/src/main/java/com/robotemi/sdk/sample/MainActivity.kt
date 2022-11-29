@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private val telepresenceStatusChangedListener: OnTelepresenceStatusChangedListener by lazy {
         object : OnTelepresenceStatusChangedListener("") {
             override fun onTelepresenceStatusChanged(callState: CallState) {
-                printLog("CallState $callState")
+                printLog("CallState $callState, ${callState.lowLightMode}")
             }
         }
     }
