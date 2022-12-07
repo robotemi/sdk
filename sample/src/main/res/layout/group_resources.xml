@@ -98,4 +98,9 @@
         style="@style/ButtonCommon"
         android:text="Serial" />
 
+    <Button
+        android:id="@+id/btnWebpage"
+        style="@style/ButtonCommon"
+        android:text="Webpage" />
+
 </LinearLayout>

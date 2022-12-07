@@ -449,6 +449,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetTts.setOnClickListener { getTts() }
         btnSetTts.setOnClickListener { setTts() }
         btnSerial.setOnClickListener { startActivity(Intent(this, SerialActivity::class.java)) }
+        btnWebpage.setOnClickListener {
+            val intent = Intent().setClassName("com.robotemi.browser", "com.robotemi.browser.MainActivity")
+            intent.putExtra("url", "https://github.com")
+            intent.putExtra("source", "intent")
+            intent.putExtra("navBar", "SHOW")
+            intent.putExtra("reset", "OFF")
+            startActivity(intent)
+        }
     }
 
     private fun getCurrentFloor() {
