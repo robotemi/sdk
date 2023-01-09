@@ -7,7 +7,7 @@ interface OnSequencePlayStatusChangedListener {
     fun onSequencePlayStatusChanged(@Status status: Int)
 
     @IntDef(IDLE, PREPARING, PLAYING, ERROR)
-    @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.SOURCE)
     annotation class Status
 
     companion object {

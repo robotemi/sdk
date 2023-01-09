@@ -64,7 +64,8 @@
             android:value="com.robotemi.permission.face_recognition,
                            com.robotemi.permission.map,
                            com.robotemi.permission.settings,
-                           com.robotemi.permission.sequence" />
+                           com.robotemi.permission.sequence,
+                           com.robotemi.permission.meetings" />
 
         <activity
             android:name=".MainActivity"
@@ -79,6 +80,13 @@
         <activity android:name=".MapActivity" />
 
         <activity android:name=".SerialActivity" />
+
+        <receiver android:name=".BootCompleteReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.robotemi.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -15,7 +15,14 @@ import androidx.annotation.*
 import androidx.annotation.IntRange
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
@@ -54,6 +61,7 @@ import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
+import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
@@ -62,6 +70,13 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.lang.reflect.Type
+import java.text.DateFormat
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.concurrent.thread
 
@@ -187,6 +202,8 @@ class Robot private constructor(private val context: Context) {
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
+
+    private val gson: Gson = GsonBuilder().registerTypeAdapter(Date::class.java, GsonUTCDateAdapter()).create()
 
     init {
         val appContext = context.applicationContext
@@ -959,6 +976,35 @@ class Robot private constructor(private val context: Context) {
         } catch (e: RemoteException) {
             Log.e(TAG, "setTtsVoice() error")
             false
+        }
+    }
+
+    /**
+     * Create a link based meeting.
+     *
+     * @return  response code, 200: is OK.
+     *                         403: not allowed, [Permission.MEETINGS] required.
+     *                         429: request too frequently. Shall be 5 seconds interval.
+     *          meeting link, like "https://center.robotemi.com/meetings/{linkId}"
+     *
+     */
+    @WorkerThread
+    fun createLinkBasedMeeting(linkBasedMeeting: LinkBasedMeeting): Pair<Int, String> {
+        try {
+            val json = gson.toJson(linkBasedMeeting)
+            val resp: String = sdkService?.createLinkBasedMeeting(applicationInfo.packageName, json) ?: return 400 to "failed to create"
+            if (resp.startsWith("https")) {
+                return 200 to resp
+            } else {
+                val respCode = resp.toIntOrNull() ?: return 400 to "invalid response"
+                return respCode to "failed to create"
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "createLinkBasedMeeting() error")
+            return 500 to "robot not read"
+        } catch (e: IOException) {
+            Log.e(TAG, "createLinkBasedMeeting() serialization error", e)
+            return 400 to "invalid request"
         }
     }
 
@@ -2453,6 +2499,44 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Set interaction state as ON, to keep greet mode under interaction state.
+     *
+     * In greet mode, if there is active movement/conversation/detection/sequence/telepresence/touch,
+     * then greet mode will take it as user interaction and hold it in [OnGreetModeStateChangedListener.INTERACTION] state.
+     * But if the selected kiosk app wants to play a video in the interaction state of greet mode even none of above conditions is met,
+     * then this function will set the interaction flag as true, and keep it as interaction state, until the flag is cleared.
+     *
+     * This function shall be used together with [OnGreetModeStateChangedListener] to fine control greet mode state transition.
+     *
+     * The flag will be cleared when
+     * <ul>
+     *   <li> Kiosk mode is OFF.
+     *   <li> Kiosk app is changed.
+     *   <li> Greet mode is OFF.
+     *   <li> Current kiosk app set it as false
+     * </ul>
+     *
+     * Require active Kiosk app permission to use this method
+     *
+     * @param on, true to hold it as interaction state.
+     *
+     * @return request result
+     * <ul>
+     *   <li> -1 for failed to request, maybe robot is not ready
+     *   <li> 0 for request succeed
+     *   <li> 403 for current app is not selected Kiosk app
+     * </ul>
+     */
+    fun setInteractionState(on: Boolean): Int {
+        return try {
+            sdkService?.setInteractionState(applicationInfo.packageName, on) ?: -1
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setInteractionState($on) error")
+            -1
+        }
+    }
+
     /*****************************************/
     /*            Activity Stream            */
     /*****************************************/
@@ -2714,11 +2798,13 @@ class Robot private constructor(private val context: Context) {
 
         var cursor: Cursor? = null
         try {
+            val json = gson.fromJson(
+                inputStreamReader,
+                MapDataModel::class.java
+            )
             mapDataModel = MapDataModel(
-                gson.fromJson(
-                    inputStreamReader,
-                    MapDataModel::class.java
-                ).mapImage
+                mapImage = json.mapImage,
+                mapName = json.mapName ?: ""
             )
             val uriStr = StringBuffer("content://")
                 .append(SdkConstants.PROVIDER_AUTHORITY)
@@ -2742,8 +2828,15 @@ class Robot private constructor(private val context: Context) {
                 mapElementsJson,
                 object : TypeToken<List<Layer>>() {}.type
             )
+
+            val mapName = try {
+                cursor.getString(cursor.getColumnIndexOrThrow(MAP_NAME))
+            } catch (e: IllegalArgumentException) {
+                ""
+            }
             mapDataModel.mapId = mapId
             mapDataModel.mapInfo = mapInfo
+            mapDataModel.mapName = mapName
             mapElements?.map {
                 if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
                 if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
@@ -3110,6 +3203,38 @@ class Robot private constructor(private val context: Context) {
                 }
             }
             return instance!!
+        }
+    }
+
+    private class GsonUTCDateAdapter : JsonSerializer<Date>,
+        JsonDeserializer<Date> {
+        private val dateFormat: DateFormat
+
+        init {
+            dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        }
+
+        @Synchronized
+        override fun serialize(
+            date: Date,
+            type: Type,
+            jsonSerializationContext: JsonSerializationContext
+        ): JsonElement {
+            return JsonPrimitive(dateFormat.format(date))
+        }
+
+        @Synchronized
+        override fun deserialize(
+            jsonElement: JsonElement,
+            type: Type,
+            jsonDeserializationContext: JsonDeserializationContext
+        ): Date {
+            return try {
+                dateFormat.parse(jsonElement.asString)
+            } catch (e: ParseException) {
+                throw JsonParseException(e)
+            }
         }
     }
 }

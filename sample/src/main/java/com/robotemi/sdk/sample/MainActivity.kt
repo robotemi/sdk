@@ -7,8 +7,10 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.*
 import android.content.pm.PackageManager
+import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.os.RemoteException
@@ -60,19 +62,21 @@ import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
+import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.group_map_and_movement.*
 import kotlinx.android.synthetic.main.group_app_and_permission.*
 import kotlinx.android.synthetic.main.group_buttons.*
-import kotlinx.android.synthetic.main.group_settings_and_status.*
+import kotlinx.android.synthetic.main.group_map_and_movement.*
 import kotlinx.android.synthetic.main.group_resources.*
+import kotlinx.android.synthetic.main.group_settings_and_status.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
@@ -102,7 +106,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private val telepresenceStatusChangedListener: OnTelepresenceStatusChangedListener by lazy {
         object : OnTelepresenceStatusChangedListener("") {
             override fun onTelepresenceStatusChanged(callState: CallState) {
-                printLog("CallState $callState")
+                printLog("CallState $callState, ${callState.lowLightMode}")
             }
         }
     }
@@ -295,6 +299,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             }
         }
 
+        val mediaPlayer = MediaPlayer()
+
         btnGroupSystem.isChecked = true
 
         btnSpeak.setOnClickListener { speak() }
@@ -327,9 +333,35 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnCheckMap.setOnClickListener { requestMap() }
         btnCheckSettings.setOnClickListener { requestSettings() }
         btnCheckSequence.setOnClickListener { requestSequence() }
+        btnCheckMeetings.setOnClickListener { requestMeetings() }
         btnCheckAllPermission.setOnClickListener { requestAll() }
         btnStartFaceRecognition.setOnClickListener { startFaceRecognition() }
         btnStopFaceRecognition.setOnClickListener { stopFaceRecognition() }
+        btnSetUserInteractionON.setOnClickListener {
+            val ret = robot.setInteractionState(true)
+            Log.d("MainActivity", "Set user interaction $ret")
+            mediaPlayer.setVolume(1f, 1f)
+            mediaPlayer.isLooping = false
+            mediaPlayer.setOnCompletionListener {
+                robot.setInteractionState(false)
+            }
+            if (!mediaPlayer.isPlaying) {
+                val descriptor: AssetFileDescriptor = assets.openFd("Lorem-ipsum.mp3")
+                mediaPlayer.setDataSource(
+                    descriptor.fileDescriptor,
+                    descriptor.startOffset,
+                    descriptor.length
+                )
+                descriptor.close()
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+            }
+        }
+        btnSetUserInteractionOFF.setOnClickListener {
+            robot.setInteractionState(false)
+            mediaPlayer.stop()
+            mediaPlayer.reset()
+        }
         btnSetGoToSpeed.setOnClickListener { setGoToSpeed() }
         btnSetGoToSafety.setOnClickListener { setGoToSafety() }
         btnToggleTopBadge.setOnClickListener { toggleTopBadge() }
@@ -349,6 +381,33 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetAllContacts.setOnClickListener { getAllContacts() }
         btnGoToPosition.setOnClickListener { goToPosition() }
         btnStartTelepresenceToCenter.setOnClickListener { startTelepresenceToCenter() }
+        btnCreateLinkBasedMeeting.setOnClickListener {
+            if (requestPermissionIfNeeded(Permission.MEETINGS, REQUEST_CODE_NORMAL)) {
+                // Permission not granted yet.
+            } else {
+                val request = LinkBasedMeeting(
+                    topic = "temi Demo Meeting",
+                    availability = LinkBasedMeeting.Availability(
+                        start = Date(),
+                        end = Date(Date().time + 86400000),
+                        always = false,
+                    ),
+                    limit = LinkBasedMeeting.Limit(
+                        callDuration = LinkBasedMeeting.CallDuration.MINUTE_10,
+                        usageLimit = LinkBasedMeeting.UsageLimit.NO_LIMIT,
+                    ),
+                    permission = LinkBasedMeeting.Permission.DEFAULT,
+                    security = LinkBasedMeeting.Security(
+                        password = "1122334455", // Should use a 1 to 10-digits password.
+                        hasPassword = false
+                    )
+                )
+                thread {
+                    val (code, linkUrl) = robot.createLinkBasedMeeting(request)
+                    printLog("Link create request, response code $code, link $linkUrl")
+                }
+            }
+        }
         btnStartPage.setOnClickListener { startPage() }
         btnRestart.setOnClickListener { restartTemi() }
         btnGetMembersStatus.setOnClickListener { getMembersStatus() }
@@ -395,6 +454,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetTts.setOnClickListener { getTts() }
         btnSetTts.setOnClickListener { setTts() }
         btnSerial.setOnClickListener { startActivity(Intent(this, SerialActivity::class.java)) }
+        btnWebpage.setOnClickListener {
+            val intent = Intent().setClassName("com.robotemi.browser", "com.robotemi.browser.MainActivity")
+            intent.putExtra("url", "https://github.com")
+            intent.putExtra("source", "intent")
+            intent.putExtra("navBar", "SHOW")
+            intent.putExtra("reset", "OFF")
+            startActivity(intent)
+        }
     }
 
     private fun getCurrentFloor() {
@@ -1231,6 +1298,16 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
         val permissions: MutableList<Permission> = ArrayList()
         permissions.add(Permission.SEQUENCE)
+        robot.requestPermissions(permissions, REQUEST_CODE_NORMAL)
+    }
+
+    private fun requestMeetings() {
+        if (robot.checkSelfPermission(Permission.MEETINGS) == Permission.GRANTED) {
+            printLog("You already had MEETINGS permission.")
+            return
+        }
+        val permissions: MutableList<Permission> = ArrayList()
+        permissions.add(Permission.MEETINGS)
         robot.requestPermissions(permissions, REQUEST_CODE_NORMAL)
     }
 

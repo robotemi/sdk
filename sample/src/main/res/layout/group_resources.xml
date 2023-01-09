@@ -23,6 +23,11 @@
         android:text="Start Telepresence to temi Center" />
 
     <Button
+        android:id="@+id/btnCreateLinkBasedMeeting"
+        style="@style/ButtonCommon"
+        android:text="Create Link Based Meeting" />
+
+    <Button
         android:id="@+id/btnFetchMap"
         style="@style/ButtonCommon"
         android:text="Get Map Data" />
@@ -59,6 +64,16 @@
         android:text="Stop Face Recognition" />
 
     <Button
+        android:id="@+id/btnSetUserInteractionON"
+        style="@style/ButtonCommon"
+        android:text="Set User Interaction ON" />
+
+    <Button
+        android:id="@+id/btnSetUserInteractionOFF"
+        style="@style/ButtonCommon"
+        android:text="Set User Interaction OFF" />
+
+    <Button
         android:id="@+id/btnTrackUser"
         style="@style/ButtonCommon"
         android:text="Toggle Track User" />
@@ -82,5 +97,10 @@
         android:id="@+id/btnSerial"
         style="@style/ButtonCommon"
         android:text="Serial" />
+
+    <Button
+        android:id="@+id/btnWebpage"
+        style="@style/ButtonCommon"
+        android:text="Webpage" />
 
 </LinearLayout>

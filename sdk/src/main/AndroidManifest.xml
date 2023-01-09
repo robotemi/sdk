@@ -14,4 +14,9 @@
 
     </application>
 
+    <queries>
+        <package android:name="com.roboteam.teamy.usa" />
+        <package android:name="com.roboteam.teamy.china" />
+    </queries>
+
 </manifest>

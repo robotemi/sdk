@@ -11,6 +11,8 @@ import com.robotemi.sdk.serial.Serial
 import com.robotemi.sdk.serial.Serial.cmd
 import com.robotemi.sdk.serial.Serial.dataFrame
 import com.robotemi.sdk.serial.Serial.dataHex
+import com.robotemi.sdk.serial.Serial.getLcdBytes
+import com.robotemi.sdk.serial.Serial.getLcdColorBytes
 import kotlinx.android.synthetic.main.activity_serial.*
 
 class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
@@ -43,41 +45,103 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
         }
 
         btnStripConstant.setOnClickListener {
+            val color = if (it.tag == true) {
+                it.tag = false
+                byteArrayOf(0xff.toByte(), 0x00, 0x00)  // Strip always on red
+            } else {
+                it.tag = true
+                byteArrayOf(0x00, 0xff.toByte(), 0x00) // Strip always on green
+            }
             Robot.getInstance().sendSerialCommand(
                 Serial.CMD_STRIP_LIGHT,
-                Serial.getStripBytes(mode = 1, primaryColor = byteArrayOf(0xff.toByte(), 0x00, 0x00))
-            ) // Strip always on red
+                Serial.getStripBytes(mode = 1, primaryColor = color)
+            ) // Strip constant color
+        }
+
+        btnStripOFF.setOnClickListener {
+            Robot.getInstance().sendSerialCommand(
+                Serial.CMD_STRIP_LIGHT,
+                Serial.getStripBytes(mode = 1, primaryColor = byteArrayOf(0x00, 0x00, 0x00))
+            ) // Strip always on Black, meaning turn off LED strip.
         }
         btnStripBreathing.setOnClickListener {
+            val (primaryColor, secondaryColor) = if (it.tag == true) {
+                it.tag = false
+                byteArrayOf(0xff.toByte(), 0x00, 0x00) to byteArrayOf(0x00, 0xff.toByte(), 0x00)  // Strip breathing red to green
+            } else {
+                it.tag = true
+                byteArrayOf(0x00, 0x00, 0xff.toByte()) to byteArrayOf(0xff.toByte(), 0xff.toByte(), 0x00) // Strip breathing blue to yellow
+            }
             Robot.getInstance().sendSerialCommand(
                 Serial.CMD_STRIP_LIGHT,
                 Serial.getStripBytes(
                     mode = 2,
-                    primaryColor = byteArrayOf(0xff.toByte(), 0x00, 0x00),
-                    secondaryColor = byteArrayOf(0x00, 0xff.toByte(), 0x00),
+                    primaryColor = primaryColor,
+                    secondaryColor = secondaryColor,
                     interval = 20
                 )
-            ) // Strip breathing red
+            ) // Strip breathing
         }
         btnStripRunning.setOnClickListener {
+            val (primaryColor, secondaryColor) = if (it.tag == true) {
+                it.tag = false
+                byteArrayOf(0xff.toByte(), 0x00, 0x00) to byteArrayOf(0x00, 0x22, 0x22)  // Strip running red
+            } else {
+                it.tag = true
+                byteArrayOf(0x20.toByte(), 0xD2.toByte(), 0x9A.toByte()) to byteArrayOf(0x00, 0x22, 0x22) // Strip running green
+            }
             Robot.getInstance().sendSerialCommand(
                 Serial.CMD_STRIP_LIGHT,
                 // 5A 01 04 00 0C 00 03 20 D2 9A 00 00 FF 00 14 00 00 00 F3
                 Serial.getStripBytes(
                     mode = 3,
-                    primaryColor = byteArrayOf(0xff.toByte(), 0x00, 0x00),
-//                    primaryColor = byteArrayOf(0x20.toByte(), 0xD2.toByte(), 0x9A.toByte()),
-                    secondaryColor = byteArrayOf(0x00, 0x22, 0x22),
+                    primaryColor = primaryColor,
+                    secondaryColor = secondaryColor,
                     direction = 1,
                     interval = 20
                 )
-            ) // Strip running red
+            ) // Strip running
         }
 
         btnTrayQuery.setOnClickListener {
             Robot.getInstance().sendSerialCommand(
                 Serial.CMD_TRAY_SENSOR,
                 byteArrayOf(0x00)
+            )
+        }
+
+        btnLcdTextTime.setOnClickListener {
+            Robot.getInstance().sendSerialCommand(
+                Serial.CMD_LCD_TEXT,
+                getLcdBytes(System.currentTimeMillis().toString().substring(5))
+            )
+        }
+
+        btnLcdTextColor.setOnClickListener {
+            val color = if (it.tag == true) {
+                it.tag = false
+                byteArrayOf(0xFF.toByte(), 0x00, 0x00)
+            } else {
+                it.tag = true
+                byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0x00)
+            }
+            Robot.getInstance().sendSerialCommand(
+                Serial.CMD_LCD_TEXT,
+                getLcdColorBytes(color, target = Serial.LCD.TEXT_0_COLOR)
+            )
+        }
+
+        btnLcdBackgroundColor.setOnClickListener {
+            val color = if (it.tag == true) {
+                it.tag = false
+                byteArrayOf(0x00, 0xFF.toByte(), 0x00)
+            } else {
+                it.tag = true
+                byteArrayOf(0x00, 0xFF.toByte(), 0xFF.toByte())
+            }
+            Robot.getInstance().sendSerialCommand(
+                Serial.CMD_LCD_TEXT,
+                getLcdColorBytes(color, target = Serial.LCD.TEXT_0_BACKGROUND)
             )
         }
         super.onResume()
