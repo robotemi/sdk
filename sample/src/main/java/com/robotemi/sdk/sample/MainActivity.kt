@@ -333,6 +333,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnCheckMap.setOnClickListener { requestMap() }
         btnCheckSettings.setOnClickListener { requestSettings() }
         btnCheckSequence.setOnClickListener { requestSequence() }
+        btnCheckMeetings.setOnClickListener { requestMeetings() }
         btnCheckAllPermission.setOnClickListener { requestAll() }
         btnStartFaceRecognition.setOnClickListener { startFaceRecognition() }
         btnStopFaceRecognition.setOnClickListener { stopFaceRecognition() }
@@ -395,7 +396,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                         callDuration = LinkBasedMeeting.CallDuration.MINUTE_10,
                         usageLimit = LinkBasedMeeting.UsageLimit.NO_LIMIT,
                     ),
-                    permission = LinkBasedMeeting.Permission.DEFAULT
+                    permission = LinkBasedMeeting.Permission.DEFAULT,
+                    security = LinkBasedMeeting.Security(
+                        password = "1122334455", // Should use a 1 to 10-digits password.
+                        hasPassword = false
+                    )
                 )
                 thread {
                     val (code, linkUrl) = robot.createLinkBasedMeeting(request)

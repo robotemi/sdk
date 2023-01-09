@@ -25,6 +25,11 @@
         android:text="Request Permission: Sequence" />
 
     <Button
+        android:id="@+id/btnCheckMeetings"
+        style="@style/ButtonCommon"
+        android:text="Request Permission: Meetings" />
+
+    <Button
         android:id="@+id/btnCheckAllPermission"
         style="@style/ButtonCommon"
         android:text="Request All Permissions" />

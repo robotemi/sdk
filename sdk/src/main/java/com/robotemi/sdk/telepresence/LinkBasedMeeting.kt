@@ -11,6 +11,7 @@ data class LinkBasedMeeting(
     @SerializedName("availability") val availability: Availability,
     @SerializedName("limit") val limit: Limit,
     @SerializedName("permission") val permission: Permission,
+    @SerializedName("security") val security: Security,
 ) {
 
     @Keep
@@ -86,6 +87,15 @@ data class LinkBasedMeeting(
         @SerializedName("enabled") val enabled: Boolean = true,
         @SerializedName("all") val all: Boolean = true,
         @SerializedName("list") val list: List<String> = listOf()
+    )
+
+    /**
+     * @param password, digits only. can be
+     */
+    @Keep
+    data class Security(
+        @SerializedName("password") val password: String = "",
+        @SerializedName("hasPassword") val hasPassword: Boolean = false
     )
 }
 
