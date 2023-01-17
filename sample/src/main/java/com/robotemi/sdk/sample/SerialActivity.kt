@@ -1,6 +1,7 @@
 package com.robotemi.sdk.sample
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -13,9 +14,12 @@ import com.robotemi.sdk.serial.Serial.dataFrame
 import com.robotemi.sdk.serial.Serial.dataHex
 import com.robotemi.sdk.serial.Serial.getLcdBytes
 import com.robotemi.sdk.serial.Serial.getLcdColorBytes
+import com.robotemi.sdk.serial.Serial.weight
 import kotlinx.android.synthetic.main.activity_serial.*
 
 class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
+
+    private var trayStatus = hashMapOf<Int, Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +71,18 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
         btnStripBreathing.setOnClickListener {
             val (primaryColor, secondaryColor) = if (it.tag == true) {
                 it.tag = false
-                byteArrayOf(0xff.toByte(), 0x00, 0x00) to byteArrayOf(0x00, 0xff.toByte(), 0x00)  // Strip breathing red to green
+                byteArrayOf(0xff.toByte(), 0x00, 0x00) to byteArrayOf(
+                    0x00,
+                    0xff.toByte(),
+                    0x00
+                )  // Strip breathing red to green
             } else {
                 it.tag = true
-                byteArrayOf(0x00, 0x00, 0xff.toByte()) to byteArrayOf(0xff.toByte(), 0xff.toByte(), 0x00) // Strip breathing blue to yellow
+                byteArrayOf(0x00, 0x00, 0xff.toByte()) to byteArrayOf(
+                    0xff.toByte(),
+                    0xff.toByte(),
+                    0x00
+                ) // Strip breathing blue to yellow
             }
             Robot.getInstance().sendSerialCommand(
                 Serial.CMD_STRIP_LIGHT,
@@ -85,10 +97,18 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
         btnStripRunning.setOnClickListener {
             val (primaryColor, secondaryColor) = if (it.tag == true) {
                 it.tag = false
-                byteArrayOf(0xff.toByte(), 0x00, 0x00) to byteArrayOf(0x00, 0x22, 0x22)  // Strip running red
+                byteArrayOf(0xff.toByte(), 0x00, 0x00) to byteArrayOf(
+                    0x00,
+                    0x22,
+                    0x22
+                )  // Strip running red
             } else {
                 it.tag = true
-                byteArrayOf(0x20.toByte(), 0xD2.toByte(), 0x9A.toByte()) to byteArrayOf(0x00, 0x22, 0x22) // Strip running green
+                byteArrayOf(0x20.toByte(), 0xD2.toByte(), 0x9A.toByte()) to byteArrayOf(
+                    0x00,
+                    0x22,
+                    0x22
+                ) // Strip running green
             }
             Robot.getInstance().sendSerialCommand(
                 Serial.CMD_STRIP_LIGHT,
@@ -144,6 +164,7 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
                 getLcdColorBytes(color, target = Serial.LCD.TEXT_0_BACKGROUND)
             )
         }
+
         super.onResume()
     }
 
@@ -168,29 +189,35 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
                 // The first place in data frame stands for tray number, starts from 0
                 val trayNum = dataFrame[0].toInt() + 1
                 val loaded = dataFrame[1].toInt() == 1
+                displayWeight(trayNum, dataFrame.weight)
+                Log.i("weight$trayNum", dataFrame.weight.toString())
                 val speech = if (loaded) {
                     "Tray $trayNum is loaded"
                 } else {
                     "Tray $trayNum is empty"
                 }
-                Robot.getInstance().speak(
-                    TtsRequest.create(
-                        speech,
-                        isShowOnConversationLayer = false,
-                        cached = true
+                if (trayStatus[trayNum] != loaded) {
+                    Robot.getInstance().speak(
+                        TtsRequest.create(
+                            speech,
+                            isShowOnConversationLayer = false,
+                            cached = true
+                        )
                     )
-                )
-                if (loaded) {
-                    Robot.getInstance().sendSerialCommand(
-                        Serial.CMD_TRAY_LIGHT,
-                        byteArrayOf(data[6], 0xFF.toByte(), 0x00, 0x00)
-                    )
-                } else {
-                    Robot.getInstance().sendSerialCommand(
-                        Serial.CMD_TRAY_LIGHT,
-                        byteArrayOf(data[6], 0x20, 0xD1.toByte(), 0x99.toByte())
-                    )
+
+                    if (loaded) {
+                        Robot.getInstance().sendSerialCommand(
+                            Serial.CMD_TRAY_LIGHT,
+                            byteArrayOf(data[6], 0xFF.toByte(), 0x00, 0x00)
+                        )
+                    } else {
+                        Robot.getInstance().sendSerialCommand(
+                            Serial.CMD_TRAY_LIGHT,
+                            byteArrayOf(data[6], 0x20, 0xD1.toByte(), 0x99.toByte())
+                        )
+                    }
                 }
+                trayStatus[trayNum] = loaded
             }
             Serial.RESP_TRAY_BACK_BUTTON -> {
                 val event = dataFrame.firstOrNull() ?: return
@@ -214,6 +241,32 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
                 Log.d("Serial", "decode $decode")
                 btnVersion.text = "Version:${dataFrame.decodeToString()}"
             }
+        }
+    }
+
+    private fun displayWeight(trayNum: Int, weight: Int) {
+        val text = "weight$trayNum : $weight"
+        val bgColor = if (weight <= 0) {
+            Color.WHITE
+        } else {
+            Color.RED
+        }
+        val textColor = if (weight <= 0) {
+            Color.BLACK
+        } else {
+            Color.WHITE
+        }
+        val view = when (trayNum) {
+            1 -> tvWeight1
+            2 -> tvWeight2
+            else -> {
+                tvWeight3
+            }
+        }
+        view.post {
+            view.text = text
+            view.setTextColor(textColor)
+            view.setBackgroundColor(bgColor)
         }
     }
 }

@@ -11,7 +11,7 @@ Download
 
 Download the latest AAR from [Maven Central][2] or grab via Gradle:
 ```groovy
-implementation 'com.robotemi:sdk:1.130.0'
+implementation 'com.robotemi:sdk:1.130.1'
 ```
 
 or Maven:
@@ -19,7 +19,7 @@ or Maven:
 <dependency>
   <groupId>com.robotemi</groupId>
   <artifactId>sdk</artifactId>
-  <version>1.130.0</version>
+  <version>1.130.1</version>
 </dependency>
 ```
 

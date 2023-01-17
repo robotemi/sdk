@@ -94,8 +94,8 @@ data class LinkBasedMeeting(
      */
     @Keep
     data class Security(
-        @SerializedName("password") val password: String = "",
-        @SerializedName("hasPassword") val hasPassword: Boolean = false
+        @SerializedName("passcode") val password: String = "",
+        @SerializedName("enablePassword") val hasPassword: Boolean = false
     )
 }
 

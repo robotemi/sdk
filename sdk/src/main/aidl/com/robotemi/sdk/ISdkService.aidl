@@ -352,4 +352,6 @@ interface ISdkService {
     int setInteractionState(in String packageName, boolean on);
 
     String createLinkBasedMeeting(in String packageName, in String json);
+
+    int stopTelepresence(String packageName);
 }

@@ -84,6 +84,11 @@
         android:text="@string/call_owner" />
 
     <Button
+        android:id="@+id/btnStopCall"
+        style="@style/ButtonCommon"
+        android:text="@string/stop_call" />
+
+    <Button
         android:id="@+id/btnPublish"
         style="@style/ButtonCommon"
         android:text="@string/publish_to_activities" />

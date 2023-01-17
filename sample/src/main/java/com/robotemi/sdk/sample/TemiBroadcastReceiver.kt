@@ -17,6 +17,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         private const val ACTION_MULTI_FLOOR = "temi.debug.multi.floor"
         private const val ACTION_SEQUENCE = "temi.debug.sequence"
         private const val ACTION_PATROL = "temi.debug.patrol"
+        private const val ACTION_MEETING = "temi.debug.meeting"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -63,7 +64,8 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                         TtsRequest.Language.SYSTEM
                     }
 
-                Robot.getInstance().speak(TtsRequest.create(tts, cached = cache, language = language))
+                Robot.getInstance()
+                    .speak(TtsRequest.create(tts, cached = cache, language = language))
             }
             ACTION_MULTI_FLOOR -> {
                 // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.multi.floor" --ez enable true
@@ -71,7 +73,10 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 val isEnabled = Robot.getInstance().isMultiFloorEnabled()
                 Log.d("TemiBroadcastReceiver", "MultiFloor isEnabled $isEnabled")
                 val ret = Robot.getInstance().setMultiFloorEnabled(enable)
-                Log.d("TemiBroadcastReceiver", "MultiFloor setMultiFloorEnabled $enable, result $ret")
+                Log.d(
+                    "TemiBroadcastReceiver",
+                    "MultiFloor setMultiFloorEnabled $enable, result $ret"
+                )
             }
             ACTION_SEQUENCE -> {
                 // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.sequence" --es control "pause|play|step_forward|step_backward"
@@ -103,6 +108,13 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 val waiting = intent.getIntExtra("waiting", 3)
                 Robot.getInstance().patrol(locations, nonstop, times, waiting)
 
+            }
+            ACTION_MEETING -> {
+                //adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.meeting" --es control "stop"
+                val command = intent.getStringExtra("control")
+                when (command) {
+                    "stop" -> Robot.getInstance().stopTelepresence(context.packageName)
+                }
             }
         }
     }
