@@ -14,15 +14,7 @@ import android.util.Log
 import androidx.annotation.*
 import androidx.annotation.IntRange
 import androidx.annotation.RestrictTo.Scope.LIBRARY
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
+import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.robotemi.sdk.activitystream.ActivityStreamObject
 import com.robotemi.sdk.activitystream.ActivityStreamPublishMessage
@@ -74,9 +66,7 @@ import java.lang.reflect.Type
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.concurrent.thread
 
@@ -199,11 +189,15 @@ class Robot private constructor(private val context: Context) {
     private val onSerialRawDataListeners =
         CopyOnWriteArraySet<OnSerialRawDataListener>()
 
+    private val onRobotDragStateChangedListeners =
+        CopyOnWriteArraySet<OnRobotDragStateChangedListener>()
+
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
 
-    private val gson: Gson = GsonBuilder().registerTypeAdapter(Date::class.java, GsonUTCDateAdapter()).create()
+    private val gson: Gson =
+        GsonBuilder().registerTypeAdapter(Date::class.java, GsonUTCDateAdapter()).create()
 
     init {
         val appContext = context.applicationContext
@@ -741,6 +735,16 @@ class Robot private constructor(private val context: Context) {
                 }
             }
         }
+
+        override fun onDragStateChanged(isDragged: Boolean) {
+            if (onRobotDragStateChangedListeners.isEmpty()) return
+            uiHandler.post {
+                onRobotDragStateChangedListeners.forEach {
+                    it.onRobotDragStateChanged(isDragged)
+                }
+            }
+        }
+
     }
 
     /*****************************************/
@@ -943,6 +947,7 @@ class Robot private constructor(private val context: Context) {
             null
         }
     }
+
     private val speedRange: FloatArray = FloatArray(16) { index ->
         (index + 5) / 10f
     }
@@ -992,7 +997,8 @@ class Robot private constructor(private val context: Context) {
     fun createLinkBasedMeeting(linkBasedMeeting: LinkBasedMeeting): Pair<Int, String> {
         try {
             val json = gson.toJson(linkBasedMeeting)
-            val resp: String = sdkService?.createLinkBasedMeeting(applicationInfo.packageName, json) ?: return 400 to "failed to create"
+            val resp: String = sdkService?.createLinkBasedMeeting(applicationInfo.packageName, json)
+                ?: return 400 to "failed to create"
             if (resp.startsWith("https")) {
                 return 200 to resp
             } else {
@@ -1407,7 +1413,11 @@ class Robot private constructor(private val context: Context) {
      * @param smart Moving with bypassing the obstacles
      */
     @JvmOverloads
-    fun skidJoy(@FloatRange(from = -1.0, to = 1.0) x: Float, @FloatRange(from = -1.0, to = 1.0) y: Float, smart: Boolean = false) {
+    fun skidJoy(
+        @FloatRange(from = -1.0, to = 1.0) x: Float,
+        @FloatRange(from = -1.0, to = 1.0) y: Float,
+        smart: Boolean = false
+    ) {
         try {
             sdkService?.skidJoy(x, y, smart)
         } catch (e: RemoteException) {
@@ -1577,6 +1587,22 @@ class Robot private constructor(private val context: Context) {
             Log.e(TAG, "startTelepresence() error")
         }
         return ""
+    }
+
+    /**
+     * Stop the current video call
+     * Params:packageName - The package name of your app
+     * Returns:Status code,200 is ok,400 is failed to verify the app package name.
+     * 404 is currently no video call,403 is meeting permission verification failed.
+     * 500 is SDK internal error.
+     */
+    fun stopTelepresence(packageName: String): Int {
+        try {
+            return sdkService?.stopTelepresence(packageName) ?: 500
+        } catch (e: RemoteException) {
+            Log.e(TAG, "stopTelepresence() error  $e")
+        }
+        return 200
     }
 
     @get:CheckResult
@@ -2883,16 +2909,23 @@ class Robot private constructor(private val context: Context) {
      * @return Request id. In the format of UUID, e.g. 538b44c9-fdcf-426a-9693-d72e9c0f9550. Used in onLoadMapStatusChanged callback.
      */
     @JvmOverloads
-    fun loadMap(mapId: String,
-                reposeRequired: Boolean = false,
-                position: Position? = null,
-                offline: Boolean = false,
-                withoutUI: Boolean = false
+    fun loadMap(
+        mapId: String,
+        reposeRequired: Boolean = false,
+        position: Position? = null,
+        offline: Boolean = false,
+        withoutUI: Boolean = false
     ): String {
 
         return try {
             if (position == null) {
-                sdkService?.loadMap(applicationInfo.packageName, mapId, reposeRequired, offline, withoutUI) ?: ""
+                sdkService?.loadMap(
+                    applicationInfo.packageName,
+                    mapId,
+                    reposeRequired,
+                    offline,
+                    withoutUI
+                ) ?: ""
             } else {
                 sdkService?.loadMapWithPosition(
                     applicationInfo.packageName,
@@ -2945,7 +2978,7 @@ class Robot private constructor(private val context: Context) {
         return try {
             Log.d(TAG, "package ${applicationInfo.packageName}")
             sdkService?.setMultiFloorEnabled(applicationInfo.packageName, enabled) ?: false
-        }  catch (e: RemoteException) {
+        } catch (e: RemoteException) {
             Log.e(TAG, "setMultiFloorEnabled() error")
             false
         }
@@ -3069,6 +3102,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnSerialRawDataListener(listener: OnSerialRawDataListener) {
         onSerialRawDataListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnRobotDragStateChangedListener(listener: OnRobotDragStateChangedListener) {
+        onRobotDragStateChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnRobotDragStateChangedListener(listener: OnRobotDragStateChangedListener) {
+        onRobotDragStateChangedListeners.remove(listener)
     }
 
     /*****************************************/

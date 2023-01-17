@@ -111,4 +111,6 @@ interface ISdkServiceCallback {
     boolean onDistanceToDestinationChanged(in String location, float distance);
 
     void onSerialRawData(in byte[] data);
+
+    void onDragStateChanged(in boolean isDragged);
 }
