@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
     OnContinuousFaceRecognizedListener, ITtsService, OnGreetModeStateChangedListener,
     TextToSpeech.OnInitListener, OnLoadFloorStatusChangedListener,
-    OnDistanceToDestinationChangedListener, OnSdkExceptionListener,OnRobotDragStateChangedListener {
+    OnDistanceToDestinationChangedListener, OnSdkExceptionListener, OnRobotDragStateChangedListener {
 
     private lateinit var robot: Robot
 
