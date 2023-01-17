@@ -985,6 +985,29 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Set asr language
+     * @param packageName Your app package name (should be Kiosk Mode App)
+     * @param asrLanguage Languages currently supported by asr
+     * @return  response code,200: is ok
+     *                        400: failed to verify the app package name
+     *                        401: your app is not a kiosk mode app
+     *                        403: this language is not supported yet
+     *                        500: is SDK internal error
+     */
+    fun setAsrLanguage(packageName: String, asrLanguage: AsrLanguage): Int {
+        try {
+            return sdkService?.setAsrLanguage(
+                packageName,
+                asrLanguage.locale.language,
+                asrLanguage.locale.country
+            ) ?: 500
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setAsrLanguage() error")
+        }
+        return 500
+    }
+
+    /**
      * Create a link based meeting.
      *
      * @return  response code, 200: is OK.

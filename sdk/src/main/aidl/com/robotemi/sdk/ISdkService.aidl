@@ -354,4 +354,6 @@ interface ISdkService {
     String createLinkBasedMeeting(in String packageName, in String json);
 
     int stopTelepresence(String packageName);
+
+    int setAsrLanguage(String packageName,String lang,String country);
 }

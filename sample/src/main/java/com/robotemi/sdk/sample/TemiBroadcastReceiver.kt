@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.robotemi.sdk.AsrLanguage
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.constants.SequenceCommand
@@ -18,6 +19,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         private const val ACTION_SEQUENCE = "temi.debug.sequence"
         private const val ACTION_PATROL = "temi.debug.patrol"
         private const val ACTION_MEETING = "temi.debug.meeting"
+        private const val ACTION_LANGUAGE = "temi.debug.language"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -114,6 +116,17 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 val command = intent.getStringExtra("control")
                 when (command) {
                     "stop" -> Robot.getInstance().stopTelepresence(context.packageName)
+                }
+            }
+            ACTION_LANGUAGE -> {
+                //adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.language" --es country "HK" --es lang "zh"
+                val country = intent.getStringExtra("country")
+                val lang = intent.getStringExtra("lang")
+                if (country.isNullOrBlank() || lang.isNullOrBlank()) return
+                val asrLanguage = AsrLanguage.values()
+                    .find { it.locale.language == lang && it.locale.country == country }
+                if (asrLanguage != null) {
+                    Robot.getInstance().setAsrLanguage(context.packageName, asrLanguage)
                 }
             }
         }
