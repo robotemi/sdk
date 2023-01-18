@@ -775,28 +775,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private fun speak() {
         val text = etSpeak.text.toString()
         val languages = ArrayList<TtsRequest.Language>()
-        languages.add(TtsRequest.Language.SYSTEM)
-        languages.add(TtsRequest.Language.EN_US)
-        languages.add(TtsRequest.Language.ZH_CN)
-        languages.add(TtsRequest.Language.ZH_HK)
-        languages.add(TtsRequest.Language.ZH_TW)
-        languages.add(TtsRequest.Language.TH_TH)
-        languages.add(TtsRequest.Language.HE_IL)
-        languages.add(TtsRequest.Language.KO_KR)
-        languages.add(TtsRequest.Language.JA_JP)
-        languages.add(TtsRequest.Language.IN_ID)
-        languages.add(TtsRequest.Language.ID_ID)
-        languages.add(TtsRequest.Language.DE_DE)
-        languages.add(TtsRequest.Language.FR_FR)
-        languages.add(TtsRequest.Language.FR_CA)
-        languages.add(TtsRequest.Language.PT_BR)
-        languages.add(TtsRequest.Language.AR_EG)
-        languages.add(TtsRequest.Language.AR_AE)
-        languages.add(TtsRequest.Language.AR_XA)
-        languages.add(TtsRequest.Language.RU_RU)
-        languages.add(TtsRequest.Language.IT_IT)
-        languages.add(TtsRequest.Language.PL_PL)
-        languages.add(TtsRequest.Language.ES_ES)
+        TtsRequest.Language.values().forEach {
+            language ->  languages.add(language)
+        }
         val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, languages)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Select Speaking Language")
@@ -2017,6 +1998,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     private var mTtsRequest: TtsRequest? = null
+
     override fun speak(ttsRequest: TtsRequest) {
         printLog("custom tts speak --> ttsRequest=$ttsRequest")
         mTtsRequest = ttsRequest
@@ -2041,7 +2023,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             TtsRequest.Language.RU_RU -> Locale("ru", "RU")
             TtsRequest.Language.IT_IT -> Locale("it", "IT")
             TtsRequest.Language.PL_PL -> Locale("pl", "PL")
-            TtsRequest.Language.ES_ES -> Locale("ES", "ES")
+            TtsRequest.Language.ES_ES -> Locale("es", "ES")
+            TtsRequest.Language.CA_ES -> Locale("ca", "ES")
             else -> if (robot.launcherVersion.contains("china")) {
                 Locale.SIMPLIFIED_CHINESE
             } else {
