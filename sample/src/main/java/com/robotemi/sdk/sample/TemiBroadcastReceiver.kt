@@ -113,7 +113,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 //adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.meeting" --es control "stop"
                 val command = intent.getStringExtra("control")
                 when (command) {
-                    "stop" -> Robot.getInstance().stopTelepresence(context.packageName)
+                    "stop" -> Robot.getInstance().stopTelepresence()
                 }
             }
         }
