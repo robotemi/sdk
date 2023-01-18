@@ -1591,18 +1591,17 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Stop the current video call
-     * Params:packageName - The package name of your app
-     * Returns:Status code,200 is ok,400 is failed to verify the app package name.
-     * 404 is currently no video call,403 is meeting permission verification failed.
+     * @return Status code, 200 is ok, 400 is failed to verify the app package name.
+     * 404 is currently no video call, 403 is meeting permission verification failed.
      * 500 is SDK internal error.
      */
-    fun stopTelepresence(packageName: String): Int {
-        try {
-            return sdkService?.stopTelepresence(packageName) ?: 500
+    fun stopTelepresence(): Int {
+        return try {
+            sdkService?.stopTelepresence(applicationInfo.packageName) ?: 500
         } catch (e: RemoteException) {
-            Log.e(TAG, "stopTelepresence() error  $e")
+            Log.e(TAG, "stopTelepresence() error")
+            500
         }
-        return 200
     }
 
     @get:CheckResult

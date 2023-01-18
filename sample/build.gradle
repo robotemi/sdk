@@ -52,6 +52,6 @@ dependencies {
 
     // temi SDK
     implementation project(':sdk')
-//    implementation 'com.robotemi:sdk:1.130.0.3-SNAPSHOT'
+//    implementation 'com.robotemi:sdk:1.130.2'
     implementation 'com.google.code.gson:gson:2.9.0'
 }
