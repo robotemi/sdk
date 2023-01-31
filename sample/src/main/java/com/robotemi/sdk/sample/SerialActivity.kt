@@ -189,7 +189,9 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
                 // The first place in data frame stands for tray number, starts from 0
                 val trayNum = dataFrame[0].toInt() + 1
                 val loaded = dataFrame[1].toInt() == 1
-                displayWeight(trayNum, dataFrame.weight)
+                if (dataFrame.size >= 6) {
+                    displayWeight(trayNum, dataFrame.weight)
+                }
                 Log.i("weight$trayNum", dataFrame.weight.toString())
                 val speech = if (loaded) {
                     "Tray $trayNum is loaded"
