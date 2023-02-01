@@ -44,8 +44,14 @@ object Serial {
         get() = (this[3].toInt() shl 8) + this[2]
 
     val ByteArray.weight: Int
-        get() = (this[5].toInt() shl 24) or (this[4].toUByte().toInt() shl 16) or (this[3].toUByte()
-            .toInt() shl 8) or this[2].toUByte().toInt()
+        get() {
+            if (this.size <= 2) {
+                return 0
+            }
+            return (this[5].toInt() shl 24) or (this[4].toUByte()
+                .toInt() shl 16) or (this[3].toUByte()
+                .toInt() shl 8) or this[2].toUByte().toInt()
+        }
 
     val ByteArray.dataFrame: ByteArray
         get() {
