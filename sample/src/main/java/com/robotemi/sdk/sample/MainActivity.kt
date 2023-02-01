@@ -478,7 +478,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             intent.putExtra("source", "intent")
             intent.putExtra("navBar", "SHOW")
             intent.putExtra("reset", "OFF")
-            startActivity(intent)
+            try {
+                startActivity(intent)
+            } catch (e: Exception) {
+                printLog("Cannot launch browser, probably temi browser app not installed.")
+            }
         }
     }
 
@@ -2025,6 +2029,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             TtsRequest.Language.PL_PL -> Locale("pl", "PL")
             TtsRequest.Language.ES_ES -> Locale("es", "ES")
             TtsRequest.Language.CA_ES -> Locale("ca", "ES")
+            TtsRequest.Language.HI_IN -> Locale("hi", "IN")
             else -> if (robot.launcherVersion.contains("china")) {
                 Locale.SIMPLIFIED_CHINESE
             } else {
