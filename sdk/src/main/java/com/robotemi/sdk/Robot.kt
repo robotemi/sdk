@@ -2158,6 +2158,20 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Enable/Disable StandBy
+     * Require Permission.SETTINGS Permission, Require password to stop standBy if password has been set.
+     * @return -1 robot is not ready.
+     *          0 operation failed.
+     *          2 for password required
+     *          3 for wrong password
+     *          403 SETTINGS permission required
+     *          429 for too many requests, should be longer than 5 seconds between 2 calls
+     */
+    fun enableStandBy(enabled: Boolean, password: String = ""): Int {
+        return sdkService?.enableStandBy(applicationInfo.packageName, enabled, password) ?: -1
+    }
+
+    /**
      * Get the supported latin keyboards
      *
      * @return

@@ -1006,7 +1006,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * stopCall is an example of how to stop call an individual.
      */
     private fun stopCall() {
-        robot.stopTelepresence()
+        val ret = robot.stopTelepresence()
+        printLog("stopTelepresence()", "Result $ret.")
     }
 
     /**
