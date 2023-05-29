@@ -2031,6 +2031,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             TtsRequest.Language.ES_ES -> Locale("es", "ES")
             TtsRequest.Language.CA_ES -> Locale("ca", "ES")
             TtsRequest.Language.HI_IN -> Locale("hi", "IN")
+            TtsRequest.Language.ET_EE -> Locale("et", "EE")
             else -> if (robot.launcherVersion.contains("china")) {
                 Locale.SIMPLIFIED_CHINESE
             } else {
