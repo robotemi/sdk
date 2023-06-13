@@ -65,6 +65,7 @@ import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
+import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
@@ -391,6 +392,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetAllContacts.setOnClickListener { getAllContacts() }
         btnGoToPosition.setOnClickListener { goToPosition() }
         btnStartTelepresenceToCenter.setOnClickListener { startTelepresenceToCenter() }
+        btnStartMeeting.setOnClickListener { startMeeting() }
         btnCreateLinkBasedMeeting.setOnClickListener {
             if (requestPermissionIfNeeded(Permission.MEETINGS, REQUEST_CODE_NORMAL)) {
                 // Permission not granted yet.
@@ -1752,6 +1754,19 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             return
         }
         robot.startTelepresence(target.name, target.userId, Platform.TEMI_CENTER)
+    }
+
+    private fun startMeeting() {
+        val target = robot.adminInfo
+        if (target == null) {
+            printLog("target is null.")
+            return
+        }
+        val resp = robot.startMeeting(listOf(
+            Participant(target.userId, Platform.MOBILE),
+            Participant(target.userId, Platform.TEMI_CENTER),
+        ))
+        Log.d("MainActivity", "startMeeting result $resp")
     }
 
     private fun startPage() {

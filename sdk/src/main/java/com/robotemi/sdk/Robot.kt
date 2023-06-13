@@ -54,6 +54,7 @@ import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
+import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
@@ -1614,6 +1615,23 @@ class Robot private constructor(private val context: Context) {
             }
             return emptyList()
         }
+
+    /**
+     * Start a video call to the temi user.
+     *
+     * @param participants list of user names and peer ids.
+     * @return
+     */
+    fun startMeeting(
+        participants: List<Participant>
+    ): String {
+        try {
+            return sdkService?.startMeeting(applicationInfo.packageName, participants) ?: ""
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startMeeting() error")
+        }
+        return ""
+    }
 
     /**
      * Start listening for Telepresence Status changes.
