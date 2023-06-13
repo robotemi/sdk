@@ -65,6 +65,7 @@ import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
+import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
@@ -391,6 +392,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGetAllContacts.setOnClickListener { getAllContacts() }
         btnGoToPosition.setOnClickListener { goToPosition() }
         btnStartTelepresenceToCenter.setOnClickListener { startTelepresenceToCenter() }
+        btnStartMeeting.setOnClickListener { startMeeting() }
         btnCreateLinkBasedMeeting.setOnClickListener {
             if (requestPermissionIfNeeded(Permission.MEETINGS, REQUEST_CODE_NORMAL)) {
                 // Permission not granted yet.
@@ -1006,7 +1008,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * stopCall is an example of how to stop call an individual.
      */
     private fun stopCall() {
-        robot.stopTelepresence()
+        val ret = robot.stopTelepresence()
+        printLog("stopTelepresence()", "Result $ret.")
     }
 
     /**
@@ -1753,6 +1756,19 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.startTelepresence(target.name, target.userId, Platform.TEMI_CENTER)
     }
 
+    private fun startMeeting() {
+        val target = robot.adminInfo
+        if (target == null) {
+            printLog("target is null.")
+            return
+        }
+        val resp = robot.startMeeting(listOf(
+            Participant(target.userId, Platform.MOBILE),
+            Participant(target.userId, Platform.TEMI_CENTER),
+        ))
+        Log.d("MainActivity", "startMeeting result $resp")
+    }
+
     private fun startPage() {
         val systemPages: MutableList<String> = ArrayList()
         for (page in Page.values()) {
@@ -2030,6 +2046,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             TtsRequest.Language.ES_ES -> Locale("es", "ES")
             TtsRequest.Language.CA_ES -> Locale("ca", "ES")
             TtsRequest.Language.HI_IN -> Locale("hi", "IN")
+            TtsRequest.Language.ET_EE -> Locale("et", "EE")
             else -> if (robot.launcherVersion.contains("china")) {
                 Locale.SIMPLIFIED_CHINESE
             } else {

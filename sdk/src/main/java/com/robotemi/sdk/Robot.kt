@@ -54,6 +54,7 @@ import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
+import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
@@ -1616,6 +1617,23 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
+     * Start a video call to the temi user.
+     *
+     * @param participants list of user names and peer ids.
+     * @return
+     */
+    fun startMeeting(
+        participants: List<Participant>
+    ): String {
+        try {
+            return sdkService?.startMeeting(applicationInfo.packageName, participants) ?: ""
+        } catch (e: RemoteException) {
+            Log.e(TAG, "startMeeting() error")
+        }
+        return ""
+    }
+
+    /**
      * Start listening for Telepresence Status changes.
      *
      * @param listener The listener you want to add.
@@ -2155,6 +2173,20 @@ class Robot private constructor(private val context: Context) {
      */
     fun stopStandBy(password: String = ""): Int {
         return sdkService?.stopStandBy(applicationInfo.packageName, password) ?: -1
+    }
+
+    /**
+     * Enable/Disable StandBy
+     * Require Permission.SETTINGS Permission, Require password to stop standBy if password has been set.
+     * @return -1 robot is not ready.
+     *          0 operation failed.
+     *          2 for password required
+     *          3 for wrong password
+     *          403 SETTINGS permission required
+     *          429 for too many requests, should be longer than 5 seconds between 2 calls
+     */
+    fun enableStandBy(enabled: Boolean, password: String = ""): Int {
+        return sdkService?.enableStandBy(applicationInfo.packageName, enabled, password) ?: -1
     }
 
     /**

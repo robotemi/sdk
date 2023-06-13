@@ -23,6 +23,11 @@
         android:text="Start Telepresence to temi Center" />
 
     <Button
+        android:id="@+id/btnStartMeeting"
+        style="@style/ButtonCommon"
+        android:text="Start Meeting with Mobile and Center" />
+
+    <Button
         android:id="@+id/btnCreateLinkBasedMeeting"
         style="@style/ButtonCommon"
         android:text="Create Link Based Meeting" />

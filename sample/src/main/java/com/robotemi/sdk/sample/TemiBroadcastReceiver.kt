@@ -13,6 +13,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         const val ACTION_DEBUG = "temi.debug.sdk"
         private const val ACTION_START_STAND_BY = "temi.debug.standby.start"
         private const val ACTION_STOP_STAND_BY = "temi.debug.standby.stop"
+        private const val ACTION_ENABLE_STAND_BY = "temi.debug.standby.enable"
         private const val ACTION_TTS = "temi.debug.tts"
         private const val ACTION_MULTI_FLOOR = "temi.debug.multi.floor"
         private const val ACTION_SEQUENCE = "temi.debug.sequence"
@@ -39,6 +40,14 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 val password = intent.getStringExtra("password") ?: ""
                 val result = Robot.getInstance().stopStandBy(password)
                 Log.d("TemiBroadcastReceiver", "stopStandBy, $result")
+            }
+            ACTION_ENABLE_STAND_BY -> {
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.standby.enable" --ez enable true --es password "1234"
+                val enabled = intent.getBooleanExtra("enable", false)
+                val password = intent.getStringExtra("password") ?: ""
+                Log.d("TemiBroadcastReceiver", "enableStandBy, ${Robot.getInstance().isStandByOn()}, enable $enabled, password $password")
+                val result = Robot.getInstance().enableStandBy(enabled, password)
+                Log.d("TemiBroadcastReceiver", "enableStandBy, $result")
             }
             ACTION_TTS -> {
                 // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.tts" --ez random true --es language "EN_US" --ez cache true --es text "hello"

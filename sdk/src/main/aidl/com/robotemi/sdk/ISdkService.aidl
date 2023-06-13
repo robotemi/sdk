@@ -13,6 +13,7 @@ import com.robotemi.sdk.UserInfo;
 import com.robotemi.sdk.model.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.sequence.SequenceModel;
+import com.robotemi.sdk.telepresence.Participant;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.map.MapDataModel;
 import com.robotemi.sdk.model.MemberStatusModel;
@@ -354,4 +355,8 @@ interface ISdkService {
     String createLinkBasedMeeting(in String packageName, in String json);
 
     int stopTelepresence(String packageName);
+
+    int enableStandBy(in String packageName, boolean enabled, in String password);
+
+    String startMeeting(in String packageName, in List<Participant> participants);
 }
