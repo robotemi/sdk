@@ -2181,6 +2181,7 @@ class Robot private constructor(private val context: Context) {
      * Require Permission.SETTINGS Permission, Require password to stop standBy if password has been set.
      * @return -1 robot is not ready.
      *          0 operation failed.
+     *          1 operation succeed.
      *          2 for password required
      *          3 for wrong password
      *          403 SETTINGS permission required
