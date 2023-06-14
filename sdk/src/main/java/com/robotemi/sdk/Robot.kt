@@ -1617,10 +1617,11 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
-     * Start a video call to the temi user.
+     * Start a video call to the temi user. Require MEETINGS permission.
      *
      * @param participants list of user names and peer ids.
-     * @return
+     * @return 403 require MEETINGS permission
+     *         200 OK.
      */
     fun startMeeting(
         participants: List<Participant>
