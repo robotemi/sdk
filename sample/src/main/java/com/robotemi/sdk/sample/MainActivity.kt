@@ -1765,7 +1765,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         val resp = robot.startMeeting(listOf(
             Participant(target.userId, Platform.MOBILE),
             Participant(target.userId, Platform.TEMI_CENTER),
-        ))
+        ), firstParticipantJoinedAsHost = true)
         Log.d("MainActivity", "startMeeting result $resp")
     }
 

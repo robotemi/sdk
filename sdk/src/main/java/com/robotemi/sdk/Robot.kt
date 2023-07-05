@@ -1620,14 +1620,17 @@ class Robot private constructor(private val context: Context) {
      * Start a video call to the temi user. Require MEETINGS permission.
      *
      * @param participants list of user names and peer ids.
+     * @param firstParticipantJoinedAsHost, Set it as true to automatically assign first participant joined as meeting host.
+     *                          Otherwise robot will be the host.
      * @return 403 require MEETINGS permission
      *         200 OK.
      */
     fun startMeeting(
-        participants: List<Participant>
+        participants: List<Participant>,
+        firstParticipantJoinedAsHost: Boolean,
     ): String {
         try {
-            return sdkService?.startMeeting(applicationInfo.packageName, participants) ?: ""
+            return sdkService?.startMeeting(applicationInfo.packageName, participants, firstParticipantJoinedAsHost) ?: ""
         } catch (e: RemoteException) {
             Log.e(TAG, "startMeeting() error")
         }
