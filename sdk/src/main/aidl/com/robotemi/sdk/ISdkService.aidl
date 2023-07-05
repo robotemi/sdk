@@ -358,5 +358,5 @@ interface ISdkService {
 
     int enableStandBy(in String packageName, boolean enabled, in String password);
 
-    String startMeeting(in String packageName, in List<Participant> participants);
+    String startMeeting(in String packageName, in List<Participant> participants, boolean firstParticipantJoinedAsHost);
 }

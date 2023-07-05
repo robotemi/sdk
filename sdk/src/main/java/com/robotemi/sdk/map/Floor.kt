@@ -2,7 +2,6 @@ package com.robotemi.sdk.map
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
