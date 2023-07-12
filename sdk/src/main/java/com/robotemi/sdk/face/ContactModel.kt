@@ -8,7 +8,8 @@ import org.json.JSONObject
 /**
  * @param userType 0: registered temi user,
  *                 1: unregistered temi user, but is added as contact with face recognition pictures to the robot.
- *                 2: unregistered temi user, which is a visitor in greet mode face detection. User id will be
+ *                 2: unregistered temi user, which is a visitor in greet mode face detection. User id will be an UUID.
+ *                 3: sdk registered face, which is registered from SDK, only works in face recognition started from the same app.
  *                 -1: Detected but not recognized. User id will be a face id on such case.
  */
 data class ContactModel @JvmOverloads constructor(

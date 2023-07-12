@@ -69,6 +69,11 @@
         android:text="Stop Face Recognition" />
 
     <Button
+        android:id="@+id/btnTestFaceRecognition"
+        style="@style/ButtonCommon"
+        android:text="Test Face Recognition" />
+
+    <Button
         android:id="@+id/btnSetUserInteractionON"
         style="@style/ButtonCommon"
         android:text="Set User Interaction ON" />

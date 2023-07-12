@@ -237,7 +237,7 @@ interface ISdkService {
 
     String getGoToSpeed();
 
-    void startFaceRecognition(in String packageName);
+    void startFaceRecognition(in String packageName, boolean withSdkFaces);
 
     void stopFaceRecognition(in String packageName);
 

@@ -19,6 +19,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         private const val ACTION_SEQUENCE = "temi.debug.sequence"
         private const val ACTION_PATROL = "temi.debug.patrol"
         private const val ACTION_MEETING = "temi.debug.meeting"
+        private const val ACTION_FACE = "temi.debug.face"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -123,6 +124,16 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 val command = intent.getStringExtra("control")
                 when (command) {
                     "stop" -> Robot.getInstance().stopTelepresence()
+                }
+            }
+            ACTION_FACE -> {
+                //adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.face" --ez start true --ez withSdkFaces true
+                val start = intent.getBooleanExtra("start", false)
+                val withSdkFaces = intent.getBooleanExtra("withSdkFaces", false)
+                if (start) {
+                    Robot.getInstance().startFaceRecognition(withSdkFaces = withSdkFaces)
+                } else {
+                    Robot.getInstance().stopFaceRecognition()
                 }
             }
         }
