@@ -106,6 +106,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private var debugReceiver: TemiBroadcastReceiver? = null
 
+    private val assistantReceiver = AssistantChangeReceiver()
+
     private val telepresenceStatusChangedListener: OnTelepresenceStatusChangedListener by lazy {
         object : OnTelepresenceStatusChangedListener("") {
             override fun onTelepresenceStatusChanged(callState: CallState) {
@@ -148,7 +150,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(greetModeState)}"
         }
         debugReceiver = TemiBroadcastReceiver()
-        registerReceiver(debugReceiver, IntentFilter(TemiBroadcastReceiver.ACTION_DEBUG));
+        registerReceiver(debugReceiver, IntentFilter(TemiBroadcastReceiver.ACTION_DEBUG))
+
+        registerReceiver(assistantReceiver, IntentFilter(AssistantChangeReceiver.ACTION_ASSISTANT_SELECTION))
     }
 
     /**
@@ -252,6 +256,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (debugReceiver != null) {
             unregisterReceiver(debugReceiver)
         }
+
+        unregisterReceiver(assistantReceiver)
         super.onDestroy()
     }
 
