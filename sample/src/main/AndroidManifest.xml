@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!--  Use this permission on receiver to get the event when voice assistant is changed  -->
+    <uses-permission android:name="com.robotemi.permission.ASSISTANT"/>
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
@@ -79,6 +82,8 @@
 
         <activity android:name=".MapActivity" />
 
+        <activity android:name=".FaceActivity" />
+
         <activity android:name=".SerialActivity" />
 
         <receiver android:name=".BootCompleteReceiver"
@@ -88,6 +93,19 @@
             </intent-filter>
         </receiver>
 
+        <!--   This provider provides face images   -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+
+        </provider>
+        
     </application>
 
 </manifest>

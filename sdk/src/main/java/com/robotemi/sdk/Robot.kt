@@ -3072,10 +3072,14 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Start face recognition.
+     *
+     * @param withSdkFaces, Whether to include faces registered from your own app.
+     *                      Supported from 131 version. You can register faces from SDK.
+     *                      Check https://github.com/robotemi/sdk/wiki/temi-Center#face-recognition on how to do it.
      */
-    fun startFaceRecognition() {
+    fun startFaceRecognition(withSdkFaces: Boolean = false) {
         try {
-            sdkService?.startFaceRecognition(applicationInfo.packageName)
+            sdkService?.startFaceRecognition(applicationInfo.packageName, withSdkFaces)
         } catch (e: RemoteException) {
             Log.e(TAG, "startFaceRecognition() error")
         }

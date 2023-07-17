@@ -106,6 +106,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private var debugReceiver: TemiBroadcastReceiver? = null
 
+    private val assistantReceiver = AssistantChangeReceiver()
+
     private val telepresenceStatusChangedListener: OnTelepresenceStatusChangedListener by lazy {
         object : OnTelepresenceStatusChangedListener("") {
             override fun onTelepresenceStatusChanged(callState: CallState) {
@@ -148,7 +150,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(greetModeState)}"
         }
         debugReceiver = TemiBroadcastReceiver()
-        registerReceiver(debugReceiver, IntentFilter(TemiBroadcastReceiver.ACTION_DEBUG));
+        registerReceiver(debugReceiver, IntentFilter(TemiBroadcastReceiver.ACTION_DEBUG))
+
+        registerReceiver(assistantReceiver, IntentFilter(AssistantChangeReceiver.ACTION_ASSISTANT_SELECTION))
     }
 
     /**
@@ -252,6 +256,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (debugReceiver != null) {
             unregisterReceiver(debugReceiver)
         }
+
+        unregisterReceiver(assistantReceiver)
         super.onDestroy()
     }
 
@@ -348,6 +354,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnCheckAllPermission.setOnClickListener { requestAll() }
         btnStartFaceRecognition.setOnClickListener { startFaceRecognition() }
         btnStopFaceRecognition.setOnClickListener { stopFaceRecognition() }
+        btnTestFaceRecognition.setOnClickListener { testFaceRecognition() }
         btnSetUserInteractionON.setOnClickListener {
             val ret = robot.setInteractionState(true)
             Log.d("MainActivity", "Set user interaction $ret")
@@ -1348,6 +1355,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.stopFaceRecognition()
     }
 
+    private fun testFaceRecognition() {
+        startActivity(Intent(this, FaceActivity::class.java))
+    }
+
     private fun setGoToSpeed() {
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return
@@ -1613,6 +1624,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     )
                     printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
                 }
+                3 -> {
+                    Log.d(
+                        "SAMPLE_DEBUG",
+                        "SDK Face - onFaceRecognized ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                    )
+                    printLog("onFaceRecognized: SDK Face ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                }
                 -1 -> {
                     printLog("onFaceRecognized: Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}")
                 }
@@ -1651,6 +1669,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                         "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
                     )
                     "$blinker  VISITOR ${contactModel.userId} similarity ${contactModel.similarity}\n"
+                }
+                3 -> {
+                    Log.d(
+                        "SAMPLE_DEBUG",
+                        "SDK Face - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                    )
+                    "$blinker  SDK Face ${contactModel.userId} -> ${contactModel.firstName}, similarity ${contactModel.similarity}\n"
                 }
                 else -> {
                     "$blinker Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}\n"
@@ -2047,6 +2072,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             TtsRequest.Language.CA_ES -> Locale("ca", "ES")
             TtsRequest.Language.HI_IN -> Locale("hi", "IN")
             TtsRequest.Language.ET_EE -> Locale("et", "EE")
+            TtsRequest.Language.TR_TR -> Locale("tr", "TR")
             else -> if (robot.launcherVersion.contains("china")) {
                 Locale.SIMPLIFIED_CHINESE
             } else {

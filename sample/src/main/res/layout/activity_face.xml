@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    tools:context=".MapActivity"
+    tools:ignore="HardcodedText">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/ibBack"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@null"
+        android:src="@drawable/ic_back"
+        android:tint="@color/colorWhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollerview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ibBack">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnInsertFromLocalFile"
+                style="@style/ButtonCommon"
+                android:text="Add face from local file" />
+
+            <Button
+                android:id="@+id/btnInsertFromCamera"
+                style="@style/ButtonCommon"
+                android:text="Add face from camera" />
+
+            <Button
+                android:id="@+id/btnInsertFromPhotoLibrary"
+                style="@style/ButtonCommon"
+                android:text="Add face from photo library" />
+
+            <Button
+                android:id="@+id/btnInsertFromContentProvider"
+                style="@style/ButtonCommon"
+                android:text="Add face from content provider" />
+
+            <Button
+                android:id="@+id/btnInsertFromUrl"
+                style="@style/ButtonCommon"
+                android:text="Add face from url" />
+
+            <Button
+                android:id="@+id/btnGetAllFaces"
+                style="@style/ButtonCommon"
+                android:text="Query all faces registered" />
+
+            <Button
+                android:id="@+id/btnGetAllFacesOfUid"
+                style="@style/ButtonCommon"
+                android:text="Query all faces registered by uid" />
+
+            <Button
+                android:id="@+id/btnDeleteAllFaces"
+                style="@style/ButtonCommon"
+                android:text="Delete all faces" />
+
+            <Button
+                android:id="@+id/btnDeleteAllFacesByUid"
+                style="@style/ButtonCommon"
+                android:text="Delete all faces by Uid" />
+        </LinearLayout>
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tvLog"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:lineSpacingExtra="5dp"
+        android:padding="20dp"
+        android:scrollbars="vertical"
+        android:textColor="@color/colorWhite"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/scrollerview"
+        app:layout_constraintTop_toBottomOf="@id/ibBack"
+        tools:text="log pasdfasfasdfasfasdfanel" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
