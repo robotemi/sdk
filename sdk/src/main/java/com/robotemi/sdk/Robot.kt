@@ -1,7 +1,9 @@
 package com.robotemi.sdk
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -9,6 +11,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.util.Log
 import androidx.annotation.*
@@ -2919,6 +2922,13 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Get current map backup file
+     */
+    fun getCurrentMapBackupFile(withoutUI: Boolean = false): ParcelFileDescriptor? {
+        return getInputStreamPipe(ContentType.MAP_BACKUP, withoutUI)
+    }
+
+    /**
      * Get map list from server.
      *
      * @return Saved map
@@ -3176,6 +3186,66 @@ class Robot private constructor(private val context: Context) {
             Log.e(TAG, "getInputStreamByMediaKey error.\n ${e.message}")
         }
         return null
+    }
+
+    @Nullable
+    @WorkerThread
+    private fun getInputStreamPipe(contentType: ContentType, mediaKey: Boolean): ParcelFileDescriptor? {
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(contentType.path)
+            .append("?").append(SdkConstants.PROVIDER_PARAMETER_MEDIA_KEY)
+            .append("=").append(mediaKey)
+            .toString()
+
+        val descriptor = context.contentResolver.openFileDescriptor(Uri.parse(uriStr), "r") ?: return null
+
+        Log.d("Map-SDK", "Got descriptor, $descriptor")
+        return descriptor
+    }
+
+    /**
+     * Load map from a map back up file.
+     * It is like [loadMap], but this one will take the map file provided by SDK clients.
+     * Currently 2 types of scheme are supported, content:// and file://
+     * Please take a look in MapActivity of the sample app on how to pass map file to temi launcher.
+     *
+     * It is safe to delete the source map file after this method completes.
+     */
+    fun loadMapWithBackupFile(
+        uri: Uri,
+        reposeRequired: Boolean = false,
+        position: Position? = null,
+        withoutUI: Boolean = false) {
+
+        val contentValues = ContentValues()
+        contentValues.put("reposeRequired", reposeRequired)
+        contentValues.put("positionX", position?.x)
+        contentValues.put("positionY", position?.y)
+        contentValues.put("positionYaw", position?.yaw)
+        contentValues.put("withoutUI", withoutUI)
+        contentValues.put("uri", uri.toString())
+
+        if (TemiSdkContentProvider.sdkContext == null) {
+            Log.e("Robot", "loadMapWithBackupFile, context is null")
+        }
+
+        val globalVersion = instance?.launcherVersion?.contains("usa", true) == true
+
+        val packageName = if (globalVersion) {
+            "com.roboteam.teamy.usa"
+        } else {
+            "com.roboteam.teamy.china"
+        }
+
+        TemiSdkContentProvider.sdkContext?.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        try {
+            TemiSdkContentProvider.sdkContext?.contentResolver?.insert(Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/map"), contentValues)
+        } catch (e: IllegalArgumentException) {
+            Log.e("Robot", "Insert Exception when loadMapWithBackupFile", e)
+        }
+
     }
 
     @WorkerThread
