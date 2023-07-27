@@ -137,9 +137,11 @@ class MapActivity : AppCompatActivity() {
             // This code block is launching a file picker to select a public accessible backup file.
             // So if you app is loaded in the USB drive on V3 robot, this could be an easy way to load it.
 
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("application/gzip")
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
+            val mimeTypes = arrayOf("application/gzip", "application/zip")
+            intent.setType("*/*")
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
             startActivityForResult(intent, REQUEST_FILE_PICKER)
         }
 
