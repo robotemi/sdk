@@ -5,4 +5,8 @@
 
     <!--  Add face image from camera  -->
     <cache-path name="face_internal_cache" path="/"/>
+
+    <!--  Load map from content provider  -->
+    <files-path name="map_internal_file" path="maps/" />
+    <external-files-path name="map_external_file" path="maps/"/>
 </paths>

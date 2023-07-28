@@ -102,7 +102,8 @@ object SdkConstants {
 
 enum class ContentType(val path: String) {
     FACE_RECOGNITION_IMAGE("face_recognition_image"),
-    MAP_DATA_IMAGE("map_data_image")
+    MAP_DATA_IMAGE("map_data_image"),
+    MAP_BACKUP("map_backup_file"),
 }
 
 enum class Platform(val value: Int) {
