@@ -53,7 +53,9 @@ class FaceActivity : AppCompatActivity() {
 
         btnGetAllFacesOfUid.setOnClickListener {
 //            queryAllFacesRegistered("uid = ?", arrayOf("0"))
-            queryAllFacesRegistered("uid IN (?,?)", arrayOf("0", "2"))
+//            queryAllFacesRegistered("uid IN (?,?)", arrayOf("0", "2"))
+//            queryAllFacesRegistered("username = ?", arrayOf("Jane Doe"))
+            queryAllFacesRegistered("username LIKE ?", arrayOf("%Ja%")) // username contains Ja
         }
 
         btnDeleteAllFaces.setOnClickListener {
@@ -187,7 +189,7 @@ class FaceActivity : AppCompatActivity() {
             // Please add a file to this path.
             val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "sdk-sample.jpeg")
             val contentValues = ContentValues()
-            contentValues.put("uid", "0")
+            contentValues.put("uid", "1")
             contentValues.put("username", "Jane Doe")
 
             contentValues.put("uri", file.toURI().toString())
@@ -203,14 +205,23 @@ class FaceActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("NewApi")
     private fun insertFromUrl() {
         val img = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQREZ_D6BLC36i4kt8QdNVbXbmW-idmWRD5Xg"
+        val img1 = "http://192.168.1.11:8000/face1.jpg"
         val contentValues = ContentValues()
         contentValues.put("uid", "1")
-        contentValues.put("username", "John Doe")
-        contentValues.put("uri", Uri.parse(img).toString())
+        contentValues.put("username", "John Doe URL")
+
+        // To add only one image
+//        contentValues.put("uri", Uri.parse(img).toString())
+
+        // To add multiple images for one person
+        val bundle = Bundle()
+        bundle.putParcelableArrayList("uri", arrayListOf(Uri.parse(img1), Uri.parse(img)))
+
         try {
-            val retUri = contentResolver.insert(Uri.parse("content://com.robotemi.sdk.TemiSdkDocumentContentProvider/face"), contentValues)
+            val retUri = contentResolver.insert(Uri.parse("content://com.robotemi.sdk.TemiSdkDocumentContentProvider/face"), contentValues, bundle)
             Log.d("Insert", "$retUri")
             tvLog.text = "${System.currentTimeMillis()}: Image set ready"
         } catch (e: IllegalArgumentException) {

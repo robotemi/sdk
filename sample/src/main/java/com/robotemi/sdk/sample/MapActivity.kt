@@ -1,10 +1,12 @@
 package com.robotemi.sdk.sample
 
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
@@ -73,10 +75,13 @@ class MapActivity : AppCompatActivity() {
                     }
                 }
 
-                Log.d("Map-SDK", "Loading map 2")
+                if (file.length() > 0) {
+                    Log.d("Map-SDK", "Loading map 2")
 
-                launch(Dispatchers.Main) {
-                    Toast.makeText(applicationContext, "File generated", Toast.LENGTH_SHORT).show()
+                    launch(Dispatchers.Main) {
+                        Toast.makeText(applicationContext, "File generated", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
         }
@@ -143,6 +148,17 @@ class MapActivity : AppCompatActivity() {
             intent.setType("*/*")
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
             startActivityForResult(intent, REQUEST_FILE_PICKER)
+        }
+
+        buttonLoadMapFromPublicFile.setOnClickListener {
+            // This is possible but not recommended.
+            // As Android doesn't recommend to use file:// scheme to send files.
+            val file = File("/sdcard/map-1690428181150.tar.gz")
+            if (file.exists()) {
+                loadMap(Uri.fromFile(file))
+            } else {
+                Toast.makeText(this, "Please place a map file at public storage", Toast.LENGTH_SHORT).show()
+            }
         }
 
         refreshMap()

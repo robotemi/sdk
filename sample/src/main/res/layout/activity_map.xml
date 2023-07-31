@@ -78,13 +78,22 @@
         app:layout_constraintStart_toStartOf="@id/buttonBackupMap"
         app:layout_constraintTop_toBottomOf="@id/buttonLoadMapFromPrivateFile" />
 
+    <Button
+        android:id="@+id/buttonLoadMapFromPublicFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load map from public file"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="@id/buttonBackupMap"
+        app:layout_constraintTop_toBottomOf="@id/buttonLoadMapFromFileSelector" />
+
     <CheckBox
         android:id="@+id/checkBoxLoadMapWithoutUI"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Export/Load Map without UI"
         app:layout_constraintStart_toStartOf="@id/buttonLoadMapFromPrivateFile"
-        app:layout_constraintTop_toBottomOf="@id/buttonLoadMapFromFileSelector"
+        app:layout_constraintTop_toBottomOf="@id/buttonLoadMapFromPublicFile"
         android:background="@color/colorWhite"
         android:layout_marginVertical="5dp"
         android:paddingHorizontal="10dp"/>
