@@ -28,6 +28,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatActivity
@@ -472,6 +474,47 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnIsFrontTOFEnabled.setOnClickListener { isFrontTOFEnabled() }
         btnToggleBackTOF.setOnClickListener { toggleBackTOF() }
         btnIsBackTOFEnabled.setOnClickListener { isBackTOFEnabled() }
+        btnMinimumObstacleDistance.setOnClickListener {
+            if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+                return@setOnClickListener
+            }
+            if (robot.minimumObstacleDistance == -1) {
+                Toast.makeText(this, "Minimum Obstacle Distance settings is not supported on your robot.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (groupMinimumObstacleDistance.visibility == View.GONE) {
+                 groupMinimumObstacleDistance.visibility = View.VISIBLE
+            }
+            val distance = robot.minimumObstacleDistance
+            textMinimumObstacleDistance.text = "$distance"
+            seekbarMinimumObstacleDistance.progress = distance.coerceIn(0, 100)
+            seekbarMinimumObstacleDistance.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    seekBar ?: return
+                    // Round to 5x
+                    val value = seekBar.progress / 5 * 5
+                    seekBar.progress = value
+                    textMinimumObstacleDistance.text = "$value"
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    // nothing
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    seekBar ?: return
+                    // Round to 5x
+                    val value = seekBar.progress / 5 * 5
+                    robot.minimumObstacleDistance = value
+                }
+
+            })
+        }
         btnGetAllFloors.setOnClickListener { getAllFloors() }
         btnLoadFloorAtElevator.setOnClickListener { loadFloorAtElevator() }
         btnGetCurrentFloor.setOnClickListener {

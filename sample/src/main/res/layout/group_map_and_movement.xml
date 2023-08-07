@@ -97,7 +97,6 @@
         style="@style/ButtonCommon"
         android:text="tiltBy" />
 
-
     <Button
         android:id="@+id/btnStopMovement"
         style="@style/ButtonCommon"

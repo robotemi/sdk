@@ -2346,6 +2346,7 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Check or set if the back TOF is enabled.
+     * Require [Permission.SETTINGS] permission to change the value
      */
     @get:JvmName("isBackTOFEnabled")
     @get:CheckResult
@@ -2363,6 +2364,36 @@ class Robot private constructor(private val context: Context) {
                 sdkService?.setBackTOFEnabled(applicationInfo.packageName, enabled)
             } catch (e: RemoteException) {
                 Log.d(TAG, "setBackTOFEnabled() error")
+            }
+        }
+
+    /**
+     * Getter and setter of minimumObstacleDistance
+     *
+     * Range shall be 0 to 100, with step of 5.
+     *
+     *
+     * If it is not supported in your robot version yet, value will be 0.
+     *
+     * Require [Permission.SETTINGS] permission to change the value
+     */
+    @get:JvmName("minimumObstacleDistance")
+    @get:CheckResult
+    var minimumObstacleDistance: Int
+        get() {
+            return try {
+                sdkService?.configMinimumObstacleDistance(applicationInfo.packageName, -1) ?: 0
+            } catch (e: RemoteException) {
+                Log.d(TAG, "get MinimumObstacleDistance error")
+                0
+            }
+        }
+        set(value) {
+            try {
+                val ret = sdkService?.configMinimumObstacleDistance(applicationInfo.packageName, value)
+                Log.d(TAG, "set MinimumObstacleDistance ret $ret")
+            } catch (e: RemoteException) {
+                Log.d(TAG, "set MinimumObstacleDistance error")
             }
         }
 

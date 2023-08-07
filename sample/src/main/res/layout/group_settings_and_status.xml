@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
@@ -59,6 +60,37 @@
         android:id="@+id/btnToggleGroundDepthCliff"
         style="@style/ButtonCommon"
         android:text="Toggle Ground Depth Cliff Detection" />
+
+    <LinearLayout
+        android:id="@+id/groupMinimumObstacleDistance"
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/textMinimumObstacleDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/temi_primary_green"
+            android:textSize="18sp"
+            tools:text="1" />
+
+        <SeekBar
+            android:id="@+id/seekbarMinimumObstacleDistance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:layout_weight="1"
+            android:paddingVertical="20dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnMinimumObstacleDistance"
+        style="@style/ButtonCommon"
+        android:text="Minimum Obstacle Distance" />
 
     <Button
         android:id="@+id/btnGetSupportedKeyboard"
