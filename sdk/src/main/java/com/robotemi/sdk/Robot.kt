@@ -58,6 +58,8 @@ import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.telepresence.Participant
+import com.robotemi.sdk.tourguide.TourModel
+import com.robotemi.sdk.tourguide.compatible
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
@@ -2860,6 +2862,42 @@ class Robot private constructor(private val context: Context) {
             sdkService?.controlSequence(applicationInfo.packageName, sequenceCommand.ordinal)
         } catch (e: RemoteException) {
             Log.e(TAG, "controlSequence() error")
+        }
+    }
+
+    /*****************************************/
+    /*                  Tour                 */
+    /*****************************************/
+
+    /**
+     * Fetch all tours user created on the Web platform.
+     *
+     * @return List holds all tours.
+     */
+    @WorkerThread
+    @CheckResult
+    @JvmOverloads
+    fun getAllTours(): List<TourModel> {
+        return try {
+            (sdkService?.getAllTours(applicationInfo.packageName)
+                ?: emptyList<TourModel>()).map { it.compatible() }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getAllTours() error")
+            emptyList()
+        }
+    }
+
+    /**
+     * Play tour by tour ID.
+     *
+     * @param tourId Tour ID you want to play.
+     */
+    @JvmOverloads
+    fun playTour(tourId: String) {
+        try {
+            sdkService?.playTour(applicationInfo.packageName, tourId)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "playTour() error")
         }
     }
 

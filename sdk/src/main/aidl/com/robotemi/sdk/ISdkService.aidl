@@ -14,6 +14,7 @@ import com.robotemi.sdk.model.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.sequence.SequenceModel;
 import com.robotemi.sdk.telepresence.Participant;
+import com.robotemi.sdk.tourguide.TourModel;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.map.MapDataModel;
 import com.robotemi.sdk.model.MemberStatusModel;
@@ -361,4 +362,8 @@ interface ISdkService {
     String startMeeting(in String packageName, in List<Participant> participants, boolean firstParticipantJoinedAsHost);
 
     int configMinimumObstacleDistance(in String packageName, int value);
+
+    List<TourModel> getAllTours(in String packageName);
+
+    void playTour(in String packageName, in String tourId);
 }

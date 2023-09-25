@@ -43,6 +43,11 @@
         android:text="Get All Sequences" />
 
     <Button
+        android:id="@+id/btnFetchTour"
+        style="@style/ButtonCommon"
+        android:text="Get All Tours" />
+
+    <Button
         android:id="@+id/btnPlayFirstSequenceWithoutPlayer"
         style="@style/ButtonCommon"
         android:text="Play First Sequence without Player" />
@@ -51,6 +56,11 @@
         android:id="@+id/btnPlayFirstSequence"
         style="@style/ButtonCommon"
         android:text="Play First Sequence" />
+
+    <Button
+        android:id="@+id/btnPlayFirstTour"
+        style="@style/ButtonCommon"
+        android:text="Play First Tour" />
 
     <Button
         android:id="@+id/btnGetOSVersion"
