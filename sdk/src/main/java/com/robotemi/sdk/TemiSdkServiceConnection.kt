@@ -79,14 +79,15 @@ internal class TemiSdkServiceConnection {
     @SuppressLint("LongLogTag")
     private fun forceStop() {
         Log.d(TAG, "forceStop()")
-        if (isLauncherExist)
+        if (isLauncherExist) {
             Process.killProcess(Process.myPid())
+        }
     }
 
     private fun isPackageExist(context: Context, targetPackage: String): Boolean {
         val pm: PackageManager = context.packageManager
         try {
-            val info = pm.getPackageInfo(targetPackage, PackageManager.GET_META_DATA)
+            pm.getPackageInfo(targetPackage, 0)
         } catch (e: PackageManager.NameNotFoundException) {
             return false
         }
