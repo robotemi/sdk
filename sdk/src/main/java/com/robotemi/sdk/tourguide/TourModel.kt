@@ -10,7 +10,7 @@ data class TourModel @JvmOverloads constructor(
     val description: String,
     val imageKey: String = "",
     val tags: List<String> = emptyList(),
-    val extras: String = ""
+    private val extras: String = ""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,

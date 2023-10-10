@@ -365,5 +365,5 @@ interface ISdkService {
 
     List<TourModel> getAllTours(in String packageName);
 
-    void playTour(in String packageName, in String tourId);
+    int playTour(in String packageName, in String tourId);
 }

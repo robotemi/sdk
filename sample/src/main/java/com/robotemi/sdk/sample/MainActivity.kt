@@ -1599,8 +1599,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 if (imageKey.isEmpty()) continue
                 imageKeys.add(imageKey)
             }
-            val pairs = if (imageKeys.isEmpty()) emptyList()
-            else robot.getSignedUrlByMediaKey(imageKeys)
+            val pairs = if (imageKeys.isEmpty()) {
+                emptyList()
+            } else {
+                robot.getSignedUrlByMediaKey(imageKeys)
+            }
             runOnUiThread {
                 for (sequenceModel in allSequences) {
                     printLog(sequenceModel.toString())
@@ -1646,19 +1649,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         Thread {
             allTours = robot.getAllTours()
             printLog("allTours: ${allTours.size}", false)
-            val imageKeys: MutableList<String> = ArrayList()
-            for ((_, _, _, _, imageKey) in allTours) {
-                if (imageKey.isEmpty()) continue
-                imageKeys.add(imageKey)
-            }
-            val pairs = if (imageKeys.isEmpty()) emptyList()
-            else robot.getSignedUrlByMediaKey(imageKeys)
             runOnUiThread {
                 for (tourGuide in allTours) {
                     printLog(tourGuide.toString())
-                }
-                for (pair in pairs) {
-                    printLog(pair.component2(), false)
                 }
             }
         }.start()
@@ -1668,8 +1661,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY)) {
             return
         }
-        if (!allTours.isNullOrEmpty()) {
-            robot.playTour(allTours[0].id)
+        if (allTours.isNotEmpty()) {
+            val ret = robot.playTour(allTours[0].id)
+            printLog("playTour: $ret")
         }
     }
 

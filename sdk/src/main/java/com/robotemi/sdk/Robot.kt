@@ -2870,7 +2870,7 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     /**
-     * Fetch all tours user created on the Web platform.
+     * Fetch all tours user created on the Web platform. Require [Permission.SEQUENCE]
      *
      * @return List holds all tours.
      */
@@ -2888,16 +2888,16 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Play tour by tour ID.
+     * Play tour by tour ID. Require [Permission.SEQUENCE]
      *
      * @param tourId Tour ID you want to play.
      */
-    @JvmOverloads
-    fun playTour(tourId: String) {
+    fun playTour(tourId: String): Int {
         try {
-            sdkService?.playTour(applicationInfo.packageName, tourId)
+            return sdkService?.playTour(applicationInfo.packageName, tourId) ?: -1
         } catch (e: RemoteException) {
             Log.e(TAG, "playTour() error")
+            return -1
         }
     }
 
