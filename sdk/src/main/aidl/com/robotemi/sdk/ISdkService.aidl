@@ -363,7 +363,7 @@ interface ISdkService {
 
     int configMinimumObstacleDistance(in String packageName, int value);
 
-    List<TourModel> getAllTours(in String packageName);
+    List<TourModel> getAllTours(in String packageName, in List<String> tags);
 
     int playTour(in String packageName, in String tourId);
 }

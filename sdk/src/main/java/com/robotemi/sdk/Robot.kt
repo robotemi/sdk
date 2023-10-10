@@ -2877,9 +2877,9 @@ class Robot private constructor(private val context: Context) {
     @WorkerThread
     @CheckResult
     @JvmOverloads
-    fun getAllTours(): List<TourModel> {
+    fun getAllTours(tags: List<String> = emptyList()): List<TourModel> {
         return try {
-            (sdkService?.getAllTours(applicationInfo.packageName)
+            (sdkService?.getAllTours(applicationInfo.packageName, tags.filter { it != "" })
                 ?: emptyList<TourModel>()).map { it.compatible() }
         } catch (e: RemoteException) {
             Log.e(TAG, "getAllTours() error")
