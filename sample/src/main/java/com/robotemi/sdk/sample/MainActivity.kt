@@ -68,6 +68,7 @@ import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.telepresence.Participant
+import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
@@ -393,7 +394,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnRequestToBeKioskApp.setOnClickListener { requestToBeKioskApp() }
         btnStartDetectionModeWithDistance.setOnClickListener { startDetectionWithDistance() }
         btnFetchSequence.setOnClickListener { getAllSequences() }
+        btnFetchTour.setOnClickListener { getAllTours() }
         btnPlayFirstSequence.setOnClickListener { playFirstSequence() }
+        btnPlayFirstTour.setOnClickListener { playFirstTour() }
         btnPlayFirstSequenceWithoutPlayer.setOnClickListener { playFirstSequenceWithoutPlayer() }
         btnFetchMap.setOnClickListener { getMap() }
         btnClearLog.setOnClickListener { clearLog() }
@@ -1596,8 +1599,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 if (imageKey.isEmpty()) continue
                 imageKeys.add(imageKey)
             }
-            val pairs = if (imageKeys.isEmpty()) emptyList()
-            else robot.getSignedUrlByMediaKey(imageKeys)
+            val pairs = if (imageKeys.isEmpty()) {
+                emptyList()
+            } else {
+                robot.getSignedUrlByMediaKey(imageKeys)
+            }
             runOnUiThread {
                 for (sequenceModel in allSequences) {
                     printLog(sequenceModel.toString())
@@ -1630,6 +1636,34 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     private fun playFirstSequence(withPlayer: Boolean) {
         if (!allSequences.isNullOrEmpty()) {
             robot.playSequence(allSequences[0].id, withPlayer)
+        }
+    }
+
+    @Volatile
+    private var allTours: List<TourModel> = emptyList()
+
+    private fun getAllTours() {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_FETCH_ALL)) {
+            return
+        }
+        Thread {
+            allTours = robot.getAllTours()
+            printLog("allTours: ${allTours.size}", false)
+            runOnUiThread {
+                for (tourGuide in allTours) {
+                    printLog(tourGuide.toString())
+                }
+            }
+        }.start()
+    }
+
+    private fun playFirstTour() {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY)) {
+            return
+        }
+        if (allTours.isNotEmpty()) {
+            val ret = robot.playTour(allTours[0].id)
+            printLog("playTour: $ret")
         }
     }
 

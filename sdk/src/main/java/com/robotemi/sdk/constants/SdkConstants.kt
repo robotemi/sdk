@@ -6,6 +6,7 @@ import com.robotemi.sdk.constants.SdkConstants.PAGE_HOME
 import com.robotemi.sdk.constants.SdkConstants.PAGE_LOCATIONS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_MAP_EDITOR
 import com.robotemi.sdk.constants.SdkConstants.PAGE_SETTINGS
+import com.robotemi.sdk.constants.SdkConstants.PAGE_TOURS
 
 object SdkConstants {
     // metadata key
@@ -90,6 +91,7 @@ object SdkConstants {
     const val PAGE_LOCATIONS = "com.robotemi.page.locations"
     const val PAGE_ALL_APPS = "com.robotemi.page.all_apps"
     const val PAGE_HOME = "com.robotemi.page.home"
+    const val PAGE_TOURS = "com.robotemi.page.tours"
 
     const val INTENT_ACTION_GREET_MODE_STATE = "greet_mode_state"
 
@@ -117,7 +119,8 @@ enum class Page(val value: String) {
     CONTACTS(PAGE_CONTACTS),
     LOCATIONS(PAGE_LOCATIONS),
     ALL_APPS(PAGE_ALL_APPS),
-    HOME(PAGE_HOME)
+    HOME(PAGE_HOME),
+    TOURS(PAGE_TOURS)
 }
 
 enum class SoundMode(val value: Int) {
