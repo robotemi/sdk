@@ -856,12 +856,27 @@ class Robot private constructor(private val context: Context) {
     /**
      * Trigger temi's wakeup programmatically.
      */
-    fun wakeup() {
+    fun wakeup(languages: List<SttLanguage> = emptyList()) {
         try {
-            sdkService?.wakeup()
+            sdkService?.wakeup(languages.map { it.value }.toIntArray())
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
+    }
+
+    /**
+     * Require Kiosk Permission
+     */
+    fun setAsrLanguages(sttLanguages: List<SttLanguage>): Int {
+        try {
+            return sdkService?.setAsrLanguages(
+                applicationInfo.packageName,
+                sttLanguages.map { it.value }.toIntArray()
+            ) ?: -1
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setAsrLanguages() error")
+        }
+        return -1
     }
 
     /**
