@@ -148,6 +148,11 @@
         android:text="Wakeup" />
 
     <Button
+        android:id="@+id/btnWakeupCustomLanguages"
+        style="@style/ButtonCommon"
+        android:text="Wakeup with Custom Languages" />
+
+    <Button
         android:id="@+id/btnSetAsrLanguages"
         style="@style/ButtonCommon"
         android:text="Set ASR Languages" />

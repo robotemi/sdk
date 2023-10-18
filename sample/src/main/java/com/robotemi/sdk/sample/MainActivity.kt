@@ -340,6 +340,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnHideTopBar.setOnClickListener { hideTopBar() }
         btnShowTopBar.setOnClickListener { showTopBar() }
         btnWakeup.setOnClickListener { wakeup() }
+        btnWakeupCustomLanguages.setOnClickListener { wakeupCustomLanguages() }
         btnSetAsrLanguages.setOnClickListener { setAsrLanguages() }
         btnDisableWakeup.setOnClickListener { disableWakeup() }
         btnEnableWakeup.setOnClickListener { enableWakeup() }
@@ -1156,6 +1157,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     private fun wakeup() {
+        robot.wakeup()
+    }
+
+    private fun wakeupCustomLanguages() {
         robot.wakeup(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
     }
 
@@ -1163,7 +1168,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (!robot.isSelectedKioskApp()) {
             return
         }
-        robot.setAsrLanguages(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
+        val ret = robot.setAsrLanguages(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
+        printLog("setAsrLanguages: $ret")
     }
 
     private fun disableWakeup() {

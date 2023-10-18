@@ -855,6 +855,9 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Trigger temi's wakeup programmatically.
+     *
+     * @param languages - List of languages to be used for ASR. Overrides the setAsrLanguages() languages.
+     * If empty, then the system default languages will be used.
      */
     fun wakeup(languages: List<SttLanguage> = emptyList()) {
         try {
@@ -866,12 +869,15 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Require Kiosk Permission
+     *
+     * @param languages - List of languages to be used for ASR while the app is in kiosk.
+     * If empty, then the system default languages will be used.
      */
-    fun setAsrLanguages(sttLanguages: List<SttLanguage>): Int {
+    fun setAsrLanguages(languages: List<SttLanguage> = emptyList()): Int {
         try {
             return sdkService?.setAsrLanguages(
                 applicationInfo.packageName,
-                sttLanguages.map { it.value }.toIntArray()
+                languages.map { it.value }.toIntArray()
             ) ?: -1
         } catch (e: RemoteException) {
             Log.e(TAG, "setAsrLanguages() error")
