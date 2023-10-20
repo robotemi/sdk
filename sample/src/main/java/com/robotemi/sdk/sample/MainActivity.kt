@@ -339,6 +339,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnPublish.setOnClickListener { publishToActivityStream() }
         btnHideTopBar.setOnClickListener { hideTopBar() }
         btnShowTopBar.setOnClickListener { showTopBar() }
+        btnWakeup.setOnClickListener { wakeup() }
+        btnWakeupCustomLanguages.setOnClickListener { wakeupCustomLanguages() }
+        btnSetAsrLanguages.setOnClickListener { setAsrLanguages() }
         btnDisableWakeup.setOnClickListener { disableWakeup() }
         btnEnableWakeup.setOnClickListener { enableWakeup() }
         btnToggleNavBillboard.setOnClickListener { toggleNavBillboard() }
@@ -1151,6 +1154,22 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     override fun onLocationsUpdated(locations: List<String>) {
         //Saving or deleting a location will update the list.
         printLog("Locations updated :\n$locations")
+    }
+
+    private fun wakeup() {
+        robot.wakeup()
+    }
+
+    private fun wakeupCustomLanguages() {
+        robot.wakeup(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
+    }
+
+    private fun setAsrLanguages() {
+        if (!robot.isSelectedKioskApp()) {
+            return
+        }
+        val ret = robot.setAsrLanguages(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
+        printLog("setAsrLanguages: $ret")
     }
 
     private fun disableWakeup() {

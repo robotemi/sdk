@@ -173,7 +173,7 @@ interface ISdkService {
      */
     boolean deleteLocation(in String name);
 
-    void wakeup();
+    void wakeup(in int[] languages);
 
     String getWakeupWord();
 
@@ -366,4 +366,6 @@ interface ISdkService {
     List<TourModel> getAllTours(in String packageName, in List<String> tags);
 
     int playTour(in String packageName, in String tourId);
+
+    int setAsrLanguages(in String packageName, in int[] languages);
 }

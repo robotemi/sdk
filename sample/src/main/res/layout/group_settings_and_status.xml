@@ -143,6 +143,21 @@
         android:text="Set Volume" />
 
     <Button
+        android:id="@+id/btnWakeup"
+        style="@style/ButtonCommon"
+        android:text="Wakeup" />
+
+    <Button
+        android:id="@+id/btnWakeupCustomLanguages"
+        style="@style/ButtonCommon"
+        android:text="Wakeup with Custom Languages" />
+
+    <Button
+        android:id="@+id/btnSetAsrLanguages"
+        style="@style/ButtonCommon"
+        android:text="Set ASR Languages" />
+
+    <Button
         android:id="@+id/btnDisableWakeup"
         style="@style/ButtonCommon"
         android:text="Disable Wakeup" />
