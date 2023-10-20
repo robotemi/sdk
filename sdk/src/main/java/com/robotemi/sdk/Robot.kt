@@ -253,11 +253,11 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onAsrResult(asrText: String): Boolean {
+        override fun onAsrResult(asrText: String, language: Int): Boolean {
             if (asrListeners.isEmpty()) return false
             uiHandler.post {
                 for (asrListener in asrListeners) {
-                    asrListener.onAsrResult(asrText)
+                    asrListener.onAsrResult(asrText, SttLanguage.valueToEnum(language))
                 }
             }
             return true
@@ -3395,7 +3395,7 @@ class Robot private constructor(private val context: Context) {
     }
 
     interface AsrListener {
-        fun onAsrResult(asrResult: String)
+        fun onAsrResult(asrResult: String, sttLanguage: SttLanguage)
     }
 
     interface NlpListener {

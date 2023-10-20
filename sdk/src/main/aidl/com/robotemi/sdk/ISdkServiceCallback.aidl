@@ -58,7 +58,7 @@ interface ISdkServiceCallback {
 
     boolean onDetectionStateChanged(in int state);
 
-    boolean onAsrResult(in String asrText);
+    boolean onAsrResult(in String asrText, in int language);
 
     boolean onTelepresenceEventChanged(in CallEventModel callEventModel);
 

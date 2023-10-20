@@ -1213,9 +1213,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * And also need to select this App as the Kiosk Mode App in Settings > App > Kiosk.
      *
      * @param asrResult The result of the ASR after waking up temi.
+     * @param sttLanguage The detected language of the ASR result, default is SYSTEM
     </pre></pre> */
-    override fun onAsrResult(asrResult: String) {
-        printLog("onAsrResult", "asrResult = $asrResult")
+    override fun onAsrResult(asrResult: String, sttLanguage: SttLanguage) {
+        printLog("onAsrResult", "asrResult = $asrResult, sttLanguage = $sttLanguage")
         try {
             val metadata = packageManager
                 .getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
