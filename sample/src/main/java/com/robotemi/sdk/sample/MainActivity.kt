@@ -1717,19 +1717,19 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 2 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
                     printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
                 }
                 3 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "SDK Face - onFaceRecognized ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "SDK Face - onFaceRecognized ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
-                    printLog("onFaceRecognized: SDK Face ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                    printLog("onFaceRecognized: SDK Face ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}")
                 }
                 -1 -> {
-                    printLog("onFaceRecognized: Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}")
+                    printLog("onFaceRecognized: Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}")
                 }
             }
         }
@@ -1763,19 +1763,19 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 2 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
                     "$blinker  VISITOR ${contactModel.userId} similarity ${contactModel.similarity}\n"
                 }
                 3 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "SDK Face - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "SDK Face - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
                     "$blinker  SDK Face ${contactModel.userId} -> ${contactModel.firstName}, similarity ${contactModel.similarity}\n"
                 }
                 else -> {
-                    "$blinker Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}\n"
+                    "$blinker Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}\n"
                 }
             }
         }

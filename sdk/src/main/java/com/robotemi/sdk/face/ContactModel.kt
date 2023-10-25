@@ -1,5 +1,6 @@
 package com.robotemi.sdk.face
 
+import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
 import org.json.JSONException
@@ -21,7 +22,8 @@ data class ContactModel @JvmOverloads constructor(
     val userId: String = "",
     val age: Int = 0,
     val userType: Int = 0,
-    val similarity: Double = 0.0
+    val similarity: Double = 0.0,
+    val faceRect: Rect = Rect()
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -43,7 +45,7 @@ data class ContactModel @JvmOverloads constructor(
     }
 
     override fun toString(): String {
-        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId, userType=$userType)"
+        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId, userType=$userType faceRect=$faceRect)"
     }
 
     companion object {
@@ -58,6 +60,7 @@ data class ContactModel @JvmOverloads constructor(
         const val JSON_KEY_AGE = "age"
         const val JSON_KEY_SIMILARITY = "similarity"
         const val JSON_KEY_USER_TYPE = "userType"
+        const val JSON_KEY_FACE_RECT = "faceRect"
     }
 }
 
@@ -97,5 +100,15 @@ internal fun ContactModel.compatible(): ContactModel {
     } catch (e: JSONException) {
         0.0
     }
-    return this.copy(description = desc, userId = userId, age = age, userType = userType, similarity = similarity)
+    val faceRect: Rect = try {
+        val jsonFaceRect = json.optString(ContactModel.JSON_KEY_FACE_RECT, "")
+        if (jsonFaceRect.isNotEmpty()) {
+            Rect.unflattenFromString(jsonFaceRect) ?: Rect()
+        } else {
+            Rect()
+        }
+    } catch (e: JSONException) {
+        Rect()
+    }
+    return this.copy(description = desc, userId = userId, age = age, userType = userType, similarity = similarity, faceRect = faceRect)
 }
