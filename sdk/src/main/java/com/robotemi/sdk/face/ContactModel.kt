@@ -12,6 +12,9 @@ import org.json.JSONObject
  *                 2: unregistered temi user, which is a visitor in greet mode face detection. User id will be an UUID.
  *                 3: sdk registered face, which is registered from SDK, only works in face recognition started from the same app.
  *                 -1: Detected but not recognized. User id will be a face id on such case.
+ * @param faceRect The rectangle coordinate of the face in the image.
+ *                 The face rectangle coordinate can be outside of the image, which is 800x600.
+ *                 Rect(0, 0, 0, 0) means no information/ unsupported feature.
  */
 data class ContactModel @JvmOverloads constructor(
     val firstName: String = "",
@@ -45,7 +48,7 @@ data class ContactModel @JvmOverloads constructor(
     }
 
     override fun toString(): String {
-        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId, userType=$userType faceRect=$faceRect)"
+        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId, userType=$userType, faceRect=$faceRect)"
     }
 
     companion object {
