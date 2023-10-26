@@ -1,5 +1,6 @@
 package com.robotemi.sdk.face
 
+import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
 import org.json.JSONException
@@ -11,6 +12,9 @@ import org.json.JSONObject
  *                 2: unregistered temi user, which is a visitor in greet mode face detection. User id will be an UUID.
  *                 3: sdk registered face, which is registered from SDK, only works in face recognition started from the same app.
  *                 -1: Detected but not recognized. User id will be a face id on such case.
+ * @param faceRect The rectangle coordinate of the face in the image.
+ *                 The face rectangle coordinate can be outside of the image, which is 800x600.
+ *                 Rect(0, 0, 0, 0) means no information/ unsupported feature.
  */
 data class ContactModel @JvmOverloads constructor(
     val firstName: String = "",
@@ -21,7 +25,8 @@ data class ContactModel @JvmOverloads constructor(
     val userId: String = "",
     val age: Int = 0,
     val userType: Int = 0,
-    val similarity: Double = 0.0
+    val similarity: Double = 0.0,
+    val faceRect: Rect = Rect()
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -43,7 +48,7 @@ data class ContactModel @JvmOverloads constructor(
     }
 
     override fun toString(): String {
-        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId, userType=$userType)"
+        return "ContactModel(firstName=$firstName, lastName=$lastName, gender=$gender, imageKey=$imageKey, description=$description, userId=$userId, userType=$userType, faceRect=$faceRect)"
     }
 
     companion object {
@@ -58,6 +63,7 @@ data class ContactModel @JvmOverloads constructor(
         const val JSON_KEY_AGE = "age"
         const val JSON_KEY_SIMILARITY = "similarity"
         const val JSON_KEY_USER_TYPE = "userType"
+        const val JSON_KEY_FACE_RECT = "faceRect"
     }
 }
 
@@ -97,5 +103,15 @@ internal fun ContactModel.compatible(): ContactModel {
     } catch (e: JSONException) {
         0.0
     }
-    return this.copy(description = desc, userId = userId, age = age, userType = userType, similarity = similarity)
+    val faceRect: Rect = try {
+        val jsonFaceRect = json.optString(ContactModel.JSON_KEY_FACE_RECT, "")
+        if (jsonFaceRect.isNotEmpty()) {
+            Rect.unflattenFromString(jsonFaceRect) ?: Rect()
+        } else {
+            Rect()
+        }
+    } catch (e: JSONException) {
+        Rect()
+    }
+    return this.copy(description = desc, userId = userId, age = age, userType = userType, similarity = similarity, faceRect = faceRect)
 }
