@@ -359,7 +359,7 @@ interface ISdkService {
 
     int enableStandBy(in String packageName, boolean enabled, in String password);
 
-    String startMeeting(in String packageName, in List<Participant> participants, boolean firstParticipantJoinedAsHost);
+    String startMeeting(in String packageName, in List<Participant> participants, boolean firstParticipantJoinedAsHost, boolean blockRobotInteraction);
 
     int configMinimumObstacleDistance(in String packageName, int value);
 
