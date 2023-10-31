@@ -1602,6 +1602,7 @@ class Robot private constructor(private val context: Context) {
      * @param platform Platform of the target user.
      * @return
      */
+    @Deprecated("From 131 version, startMeeting() shall be used.")
     @JvmOverloads
     fun startTelepresence(
         displayName: String,
@@ -1648,15 +1649,22 @@ class Robot private constructor(private val context: Context) {
      * @param participants list of user names and peer ids.
      * @param firstParticipantJoinedAsHost, Set it as true to automatically assign first participant joined as meeting host.
      *                          Otherwise robot will be the host.
+     * @param blockRobotInteraction, supported by version 132 launcher,
+     *                       disable some launcher buttons in the call.
+     *                       Prevent user to interrupt the call.
      * @return 403 require MEETINGS permission
      *         200 OK.
      */
     fun startMeeting(
         participants: List<Participant>,
         firstParticipantJoinedAsHost: Boolean,
+        blockRobotInteraction: Boolean = false,
     ): String {
         try {
-            return sdkService?.startMeeting(applicationInfo.packageName, participants, firstParticipantJoinedAsHost) ?: ""
+            return sdkService?.startMeeting(applicationInfo.packageName,
+                participants,
+                firstParticipantJoinedAsHost,
+                blockRobotInteraction) ?: ""
         } catch (e: RemoteException) {
             Log.e(TAG, "startMeeting() error")
         }

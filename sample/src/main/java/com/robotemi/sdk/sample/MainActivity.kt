@@ -435,6 +435,34 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 }
             }
         }
+        btnCreateLinkBasedMeeting.setOnLongClickListener {
+            if (requestPermissionIfNeeded(Permission.MEETINGS, REQUEST_CODE_NORMAL)) {
+                // Permission not granted yet.
+            } else {
+                val request = LinkBasedMeeting(
+                    topic = "temi Demo Meeting",
+                    availability = LinkBasedMeeting.Availability(
+                        start = Date(),
+                        end = Date(Date().time + 86400000),
+                        always = false,
+                    ),
+                    limit = LinkBasedMeeting.Limit(
+                        callDuration = LinkBasedMeeting.CallDuration.MINUTE_10,
+                        usageLimit = LinkBasedMeeting.UsageLimit.NO_LIMIT,
+                    ),
+                    permission = LinkBasedMeeting.Permission.DISABLE_ROBOT_INTERACTION,
+                    security = LinkBasedMeeting.Security(
+                        password = "1122334455", // Should use a 1 to 10-digits password.
+                        hasPassword = false
+                    )
+                )
+                thread {
+                    val (code, linkUrl) = robot.createLinkBasedMeeting(request)
+                    printLog("Link create request, response code $code, link $linkUrl")
+                }
+            }
+            true
+        }
         btnStartPage.setOnClickListener { startPage() }
         btnRestart.setOnClickListener { restartTemi() }
         btnGetMembersStatus.setOnClickListener { getMembersStatus() }
