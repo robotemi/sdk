@@ -14,6 +14,7 @@ import com.robotemi.sdk.model.RecentCallModel;
 import com.robotemi.sdk.BatteryData;
 import com.robotemi.sdk.sequence.SequenceModel;
 import com.robotemi.sdk.telepresence.Participant;
+import com.robotemi.sdk.tourguide.TourModel;
 import com.robotemi.sdk.navigation.model.Position;
 import com.robotemi.sdk.map.MapDataModel;
 import com.robotemi.sdk.model.MemberStatusModel;
@@ -172,7 +173,7 @@ interface ISdkService {
      */
     boolean deleteLocation(in String name);
 
-    void wakeup();
+    void wakeup(in int[] languages);
 
     String getWakeupWord();
 
@@ -358,7 +359,13 @@ interface ISdkService {
 
     int enableStandBy(in String packageName, boolean enabled, in String password);
 
-    String startMeeting(in String packageName, in List<Participant> participants, boolean firstParticipantJoinedAsHost);
+    String startMeeting(in String packageName, in List<Participant> participants, boolean firstParticipantJoinedAsHost, boolean blockRobotInteraction);
 
     int configMinimumObstacleDistance(in String packageName, int value);
+
+    List<TourModel> getAllTours(in String packageName, in List<String> tags);
+
+    int playTour(in String packageName, in String tourId);
+
+    int setAsrLanguages(in String packageName, in int[] languages);
 }

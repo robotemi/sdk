@@ -68,6 +68,7 @@ import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.telepresence.Participant
+import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
@@ -338,6 +339,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnPublish.setOnClickListener { publishToActivityStream() }
         btnHideTopBar.setOnClickListener { hideTopBar() }
         btnShowTopBar.setOnClickListener { showTopBar() }
+        btnWakeup.setOnClickListener { wakeup() }
+        btnWakeupCustomLanguages.setOnClickListener { wakeupCustomLanguages() }
+        btnSetAsrLanguages.setOnClickListener { setAsrLanguages() }
         btnDisableWakeup.setOnClickListener { disableWakeup() }
         btnEnableWakeup.setOnClickListener { enableWakeup() }
         btnToggleNavBillboard.setOnClickListener { toggleNavBillboard() }
@@ -393,7 +397,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnRequestToBeKioskApp.setOnClickListener { requestToBeKioskApp() }
         btnStartDetectionModeWithDistance.setOnClickListener { startDetectionWithDistance() }
         btnFetchSequence.setOnClickListener { getAllSequences() }
+        btnFetchTour.setOnClickListener { getAllTours() }
         btnPlayFirstSequence.setOnClickListener { playFirstSequence() }
+        btnPlayFirstTour.setOnClickListener { playFirstTour() }
         btnPlayFirstSequenceWithoutPlayer.setOnClickListener { playFirstSequenceWithoutPlayer() }
         btnFetchMap.setOnClickListener { getMap() }
         btnClearLog.setOnClickListener { clearLog() }
@@ -428,6 +434,34 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     printLog("Link create request, response code $code, link $linkUrl")
                 }
             }
+        }
+        btnCreateLinkBasedMeeting.setOnLongClickListener {
+            if (requestPermissionIfNeeded(Permission.MEETINGS, REQUEST_CODE_NORMAL)) {
+                // Permission not granted yet.
+            } else {
+                val request = LinkBasedMeeting(
+                    topic = "temi Demo Meeting",
+                    availability = LinkBasedMeeting.Availability(
+                        start = Date(),
+                        end = Date(Date().time + 86400000),
+                        always = false,
+                    ),
+                    limit = LinkBasedMeeting.Limit(
+                        callDuration = LinkBasedMeeting.CallDuration.MINUTE_10,
+                        usageLimit = LinkBasedMeeting.UsageLimit.NO_LIMIT,
+                    ),
+                    permission = LinkBasedMeeting.Permission.DISABLE_ROBOT_INTERACTION,
+                    security = LinkBasedMeeting.Security(
+                        password = "1122334455", // Should use a 1 to 10-digits password.
+                        hasPassword = false
+                    )
+                )
+                thread {
+                    val (code, linkUrl) = robot.createLinkBasedMeeting(request)
+                    printLog("Link create request, response code $code, link $linkUrl")
+                }
+            }
+            true
         }
         btnStartPage.setOnClickListener { startPage() }
         btnRestart.setOnClickListener { restartTemi() }
@@ -1150,6 +1184,22 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog("Locations updated :\n$locations")
     }
 
+    private fun wakeup() {
+        robot.wakeup()
+    }
+
+    private fun wakeupCustomLanguages() {
+        robot.wakeup(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
+    }
+
+    private fun setAsrLanguages() {
+        if (!robot.isSelectedKioskApp()) {
+            return
+        }
+        val ret = robot.setAsrLanguages(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
+        printLog("setAsrLanguages: $ret")
+    }
+
     private fun disableWakeup() {
         if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
             return
@@ -1191,9 +1241,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * And also need to select this App as the Kiosk Mode App in Settings > App > Kiosk.
      *
      * @param asrResult The result of the ASR after waking up temi.
+     * @param sttLanguage The detected language of the ASR result, default is SYSTEM
     </pre></pre> */
-    override fun onAsrResult(asrResult: String) {
-        printLog("onAsrResult", "asrResult = $asrResult")
+    override fun onAsrResult(asrResult: String, sttLanguage: SttLanguage) {
+        printLog("onAsrResult", "asrResult = $asrResult, sttLanguage = $sttLanguage")
         try {
             val metadata = packageManager
                 .getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
@@ -1596,8 +1647,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 if (imageKey.isEmpty()) continue
                 imageKeys.add(imageKey)
             }
-            val pairs = if (imageKeys.isEmpty()) emptyList()
-            else robot.getSignedUrlByMediaKey(imageKeys)
+            val pairs = if (imageKeys.isEmpty()) {
+                emptyList()
+            } else {
+                robot.getSignedUrlByMediaKey(imageKeys)
+            }
             runOnUiThread {
                 for (sequenceModel in allSequences) {
                     printLog(sequenceModel.toString())
@@ -1633,6 +1687,34 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
     }
 
+    @Volatile
+    private var allTours: List<TourModel> = emptyList()
+
+    private fun getAllTours() {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_FETCH_ALL)) {
+            return
+        }
+        Thread {
+            allTours = robot.getAllTours()
+            printLog("allTours: ${allTours.size}", false)
+            runOnUiThread {
+                for (tourGuide in allTours) {
+                    printLog(tourGuide.toString())
+                }
+            }
+        }.start()
+    }
+
+    private fun playFirstTour() {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY)) {
+            return
+        }
+        if (allTours.isNotEmpty()) {
+            val ret = robot.playTour(allTours[0].id)
+            printLog("playTour: $ret")
+        }
+    }
+
     private fun getMap() {
         if (requestPermissionIfNeeded(Permission.MAP, REQUEST_CODE_MAP)) {
             return
@@ -1663,19 +1745,19 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 2 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "VISITOR - onFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
                     printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
                 }
                 3 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "SDK Face - onFaceRecognized ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "SDK Face - onFaceRecognized ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
-                    printLog("onFaceRecognized: SDK Face ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}")
+                    printLog("onFaceRecognized: SDK Face ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}")
                 }
                 -1 -> {
-                    printLog("onFaceRecognized: Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}")
+                    printLog("onFaceRecognized: Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}")
                 }
             }
         }
@@ -1709,19 +1791,19 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 2 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "VISITOR - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
                     "$blinker  VISITOR ${contactModel.userId} similarity ${contactModel.similarity}\n"
                 }
                 3 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
-                        "SDK Face - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}"
+                        "SDK Face - onContinuousFaceRecognized ${contactModel.userId}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}"
                     )
                     "$blinker  SDK Face ${contactModel.userId} -> ${contactModel.firstName}, similarity ${contactModel.similarity}\n"
                 }
                 else -> {
-                    "$blinker Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}\n"
+                    "$blinker Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}\n"
                 }
             }
         }

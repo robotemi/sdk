@@ -58,6 +58,8 @@ import com.robotemi.sdk.sequence.compatible
 import com.robotemi.sdk.telepresence.CallState
 import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.telepresence.Participant
+import com.robotemi.sdk.tourguide.TourModel
+import com.robotemi.sdk.tourguide.compatible
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
@@ -251,11 +253,11 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onAsrResult(asrText: String): Boolean {
+        override fun onAsrResult(asrText: String, language: Int): Boolean {
             if (asrListeners.isEmpty()) return false
             uiHandler.post {
                 for (asrListener in asrListeners) {
-                    asrListener.onAsrResult(asrText)
+                    asrListener.onAsrResult(asrText, SttLanguage.valueToEnum(language))
                 }
             }
             return true
@@ -853,13 +855,34 @@ class Robot private constructor(private val context: Context) {
 
     /**
      * Trigger temi's wakeup programmatically.
+     *
+     * @param languages - List of languages to be used for ASR. Overrides the setAsrLanguages() languages.
+     * If empty, then the system default languages will be used.
      */
-    fun wakeup() {
+    fun wakeup(languages: List<SttLanguage> = emptyList()) {
         try {
-            sdkService?.wakeup()
+            sdkService?.wakeup(languages.map { it.value }.toIntArray())
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
+    }
+
+    /**
+     * Require Kiosk Permission
+     *
+     * @param languages - List of languages to be used for ASR while the app is in kiosk.
+     * If empty, then the system default languages will be used.
+     */
+    fun setAsrLanguages(languages: List<SttLanguage> = emptyList()): Int {
+        try {
+            return sdkService?.setAsrLanguages(
+                applicationInfo.packageName,
+                languages.map { it.value }.toIntArray()
+            ) ?: -1
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setAsrLanguages() error")
+        }
+        return -1
     }
 
     /**
@@ -1579,6 +1602,7 @@ class Robot private constructor(private val context: Context) {
      * @param platform Platform of the target user.
      * @return
      */
+    @Deprecated("From 131 version, startMeeting() shall be used.")
     @JvmOverloads
     fun startTelepresence(
         displayName: String,
@@ -1625,15 +1649,22 @@ class Robot private constructor(private val context: Context) {
      * @param participants list of user names and peer ids.
      * @param firstParticipantJoinedAsHost, Set it as true to automatically assign first participant joined as meeting host.
      *                          Otherwise robot will be the host.
+     * @param blockRobotInteraction, supported by version 132 launcher,
+     *                       disable some launcher buttons in the call.
+     *                       Prevent user to interrupt the call.
      * @return 403 require MEETINGS permission
      *         200 OK.
      */
     fun startMeeting(
         participants: List<Participant>,
         firstParticipantJoinedAsHost: Boolean,
+        blockRobotInteraction: Boolean = false,
     ): String {
         try {
-            return sdkService?.startMeeting(applicationInfo.packageName, participants, firstParticipantJoinedAsHost) ?: ""
+            return sdkService?.startMeeting(applicationInfo.packageName,
+                participants,
+                firstParticipantJoinedAsHost,
+                blockRobotInteraction) ?: ""
         } catch (e: RemoteException) {
             Log.e(TAG, "startMeeting() error")
         }
@@ -2863,6 +2894,42 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /*****************************************/
+    /*                  Tour                 */
+    /*****************************************/
+
+    /**
+     * Fetch all tours user created on the Web platform. Require [Permission.SEQUENCE]
+     *
+     * @return List holds all tours.
+     */
+    @WorkerThread
+    @CheckResult
+    @JvmOverloads
+    fun getAllTours(tags: List<String> = emptyList()): List<TourModel> {
+        return try {
+            (sdkService?.getAllTours(applicationInfo.packageName, tags.filter { it != "" })
+                ?: emptyList<TourModel>()).map { it.compatible() }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getAllTours() error")
+            emptyList()
+        }
+    }
+
+    /**
+     * Play tour by tour ID. Require [Permission.SEQUENCE]
+     *
+     * @param tourId Tour ID you want to play.
+     */
+    fun playTour(tourId: String): Int {
+        try {
+            return sdkService?.playTour(applicationInfo.packageName, tourId) ?: -1
+        } catch (e: RemoteException) {
+            Log.e(TAG, "playTour() error")
+            return -1
+        }
+    }
+
     @UiThread
     fun addOnSequencePlayStatusChangedListener(listener: OnSequencePlayStatusChangedListener) {
         onSequencePlayStatusChangedListeners.add(listener)
@@ -3336,7 +3403,7 @@ class Robot private constructor(private val context: Context) {
     }
 
     interface AsrListener {
-        fun onAsrResult(asrResult: String)
+        fun onAsrResult(asrResult: String, sttLanguage: SttLanguage)
     }
 
     interface NlpListener {

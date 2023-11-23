@@ -72,14 +72,21 @@ data class LinkBasedMeeting(
     ) {
         companion object {
             val DEFAULT = Permission()
+            val DISABLE_ROBOT_INTERACTION = Permission(control = Control(blockRobotInteraction = true))
         }
     }
 
+    /**
+     * @param blockRobotInteraction, added in 132 version. Default as false.
+     * It will disable some robot ui in the meeting to prevent unwanted user interactions on the robot.
+     * e.g. Not allowing user to hang up from the robot.
+     */
     @Keep
     data class Control(
         @SerializedName("manualDrive") val manualDrive: Boolean = true,
         @SerializedName("screenControl") val screenControl: Boolean = true,
-        @SerializedName("locations") val locations: Locations = Locations()
+        @SerializedName("locations") val locations: Locations = Locations(),
+        @SerializedName("blockRobotInteraction") val blockRobotInteraction: Boolean = false
     )
 
     @Keep
