@@ -127,7 +127,8 @@ data class Layer(
     @SerializedName("layer_id") val layerId: String = "",
     @SerializedName("layer_thickness") val layerThickness: Float,
     @SerializedName("layer_status") val layerStatus: Int,
-    @SerializedName("layer_poses") val layerPoses: List<LayerPose>?
+    @SerializedName("layer_poses") val layerPoses: List<LayerPose>?,
+    @SerializedName("layer_direction") val layerDirection: Int = 0, // added in sprint 132 for one-way virtual wall, value can be -1, 0, 1.
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
