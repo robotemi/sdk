@@ -83,6 +83,11 @@
         android:text="@string/skidjoy" />
 
     <Button
+        android:id="@+id/btnskidJoyDialog"
+        style="@style/ButtonCommon"
+        android:text="skidjoy key" />
+
+    <Button
         android:id="@+id/btnTiltAngle"
         style="@style/ButtonCommon"
         android:text="@string/tiltangle" />

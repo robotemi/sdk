@@ -21,6 +21,7 @@ import android.speech.tts.UtteranceProgressListener
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -325,6 +326,60 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnStopMovement.setOnClickListener { stopMovement() }
         btnFollow.setOnClickListener { followMe() }
         btnskidJoy.setOnClickListener { skidJoy() }
+        btnskidJoyDialog.setOnClickListener {
+            val alert = AlertDialog.Builder(it.context)
+                .setTitle("Skid Joy control by WSAD")
+                .setMessage("Control temi with keyboard WSAD, hold ctrl to move non-smartly, Z, X, C to break")
+                .setPositiveButton("OK", null)
+                .show()
+            alert.setOnKeyListener { _, keyCode, event ->
+                var x = 0f
+                var y = 0f
+
+                if (listOf(
+                        KeyEvent.KEYCODE_S,
+                        KeyEvent.KEYCODE_W,
+                        KeyEvent.KEYCODE_A,
+                        KeyEvent.KEYCODE_D,
+                        KeyEvent.KEYCODE_X,
+                        KeyEvent.KEYCODE_Z,
+                        KeyEvent.KEYCODE_C,
+                    ).contains(keyCode)
+                ) {
+                    // Use W, A, S, D to move the robot smartly
+                    // If Ctrl is hold, then do non smart move.
+                    if (listOf(
+                            KeyEvent.KEYCODE_X,
+                            KeyEvent.KEYCODE_Z,
+                            KeyEvent.KEYCODE_C
+                        ).contains(keyCode)
+                    ) {
+                        x = 0f
+                        y = 0f
+                        robot.stopMovement()
+                        return@setOnKeyListener false
+                    }
+                    if (event.action == KeyEvent.ACTION_DOWN) {
+                        when (keyCode) {
+                            KeyEvent.KEYCODE_S -> x = if (y != 0f) -0.4f else -0.6f
+                            KeyEvent.KEYCODE_W -> x = if (y != 0f) 0.5f else 0.6f
+                            KeyEvent.KEYCODE_A -> y = if (x < 0) -1f else 1f
+                            KeyEvent.KEYCODE_D -> y = if (x < 0) 1f else -1f
+                        }
+                        robot.skidJoy(x, y, !event.isCtrlPressed)
+                    } else if (event.action == KeyEvent.ACTION_UP) {
+                        when (keyCode) {
+                            KeyEvent.KEYCODE_S -> x = 0f
+                            KeyEvent.KEYCODE_W -> x = 0f
+                            KeyEvent.KEYCODE_A -> y = 0f
+                            KeyEvent.KEYCODE_D -> y = 0f
+                        }
+                    }
+                }
+                false
+
+            }
+        }
         btnTiltAngle.setOnClickListener { tiltAngle() }
         btnTiltBy.setOnClickListener { tiltBy() }
         btnTurnBy.setOnClickListener { turnBy() }
@@ -340,6 +395,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnHideTopBar.setOnClickListener { hideTopBar() }
         btnShowTopBar.setOnClickListener { showTopBar() }
         btnWakeup.setOnClickListener { wakeup() }
+        btnWakeup.setOnLongClickListener {
+            Toast.makeText(this@MainActivity, robot.wakeupWord, Toast.LENGTH_SHORT).show()
+            true
+        }
         btnWakeupCustomLanguages.setOnClickListener { wakeupCustomLanguages() }
         btnSetAsrLanguages.setOnClickListener { setAsrLanguages() }
         btnDisableWakeup.setOnClickListener { disableWakeup() }
