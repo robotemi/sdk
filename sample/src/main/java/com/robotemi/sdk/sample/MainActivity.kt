@@ -322,6 +322,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnSpeak.setOnClickListener { speak() }
         btnSaveLocation.setOnClickListener { saveLocation() }
         btnGoTo.setOnClickListener { goTo() }
+        btnGetPosition.setOnClickListener { getPosition() }
 
         btnStopMovement.setOnClickListener { stopMovement() }
         btnFollow.setOnClickListener { followMe() }
@@ -629,6 +630,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 printLog("Cannot launch browser, probably temi browser app not installed.")
             }
         }
+    }
+
+    private fun getPosition() {
+        printLog(robot.getPosition().toString())
     }
 
     private fun getCurrentFloor() {

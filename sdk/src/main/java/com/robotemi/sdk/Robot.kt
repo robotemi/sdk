@@ -1140,6 +1140,15 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     /**
+     * Get Position.
+     *
+     * @return Result of current position or Position(0, 0, 0, 0) if failed.
+     */
+    fun getPosition(): Position {
+        return sdkService?.getPosition(applicationInfo.packageName) ?: Position(0f, 0f, 0f, 0)
+    }
+
+    /**
      * Save location.
      *
      * @param name Location name.
@@ -1366,6 +1375,7 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun addOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
         onCurrentPositionChangedListeners.add(listener)
+        listener.onCurrentPositionChanged(getPosition())
     }
 
     @UiThread
