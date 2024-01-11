@@ -2036,6 +2036,31 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
+     * Set microphone gain level to X1(default)-X4.
+     *
+     * Require [Permission.SETTINGS] permission to change the value
+     * @return  0 Operation failed.
+     *          1 Operation succeed.
+     *          403 SETTINGS permission required
+     *          429 Too many requests, should be longer than 5 seconds between 2 calls
+     */
+    fun setMicGainLevel(micGainLevel: Int): Int {
+        try {
+            val validMicGainLevel = when {
+                micGainLevel < 1 -> 1
+                micGainLevel > 4 -> 4
+                else -> micGainLevel
+            }
+            val result = sdkService?.setMicGainLevel(applicationInfo.packageName, validMicGainLevel)
+            Log.d(TAG, "setMicGainLevel() result: $result")
+            return result ?: 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setMicGainLevel() error")
+            return 0
+        }
+    }
+
+    /**
      * Restart temi.
      *
      */
