@@ -368,4 +368,8 @@ interface ISdkService {
     int playTour(in String packageName, in String tourId);
 
     int setAsrLanguages(in String packageName, in int[] languages);
+
+    Position getPosition(in String packageName);
+
+    int setMicGainLevel(in String packageName, int level);
 }

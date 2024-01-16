@@ -1140,6 +1140,15 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     /**
+     * Get Position.
+     *
+     * @return Result of current position or Position(0, 0, 0, 0) if failed.
+     */
+    fun getPosition(): Position {
+        return sdkService?.getPosition(applicationInfo.packageName) ?: Position(0f, 0f, 0f, 0)
+    }
+
+    /**
      * Save location.
      *
      * @param name Location name.
@@ -1366,6 +1375,7 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun addOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
         onCurrentPositionChangedListeners.add(listener)
+        listener.onCurrentPositionChanged(getPosition())
     }
 
     @UiThread
@@ -2024,6 +2034,31 @@ class Robot private constructor(private val context: Context) {
                 Log.e(TAG, "setVolume() error")
             }
         }
+
+    /**
+     * Set microphone gain level to X1(default)-X4.
+     *
+     * Require [Permission.SETTINGS] permission to change the value
+     * @return  0 Operation failed.
+     *          1 Operation succeed.
+     *          403 SETTINGS permission required
+     *          429 Too many requests, should be longer than 2 seconds between 2 calls
+     */
+    fun setMicGainLevel(@IntRange(from = 1, to = 4) micGainLevel: Int): Int {
+        try {
+            val validMicGainLevel = when {
+                micGainLevel < 1 -> 1
+                micGainLevel > 4 -> 4
+                else -> micGainLevel
+            }
+            val result = sdkService?.setMicGainLevel(applicationInfo.packageName, validMicGainLevel)
+            Log.d(TAG, "setMicGainLevel() result: $result")
+            return result ?: 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setMicGainLevel() error")
+            return 0
+        }
+    }
 
     /**
      * Restart temi.

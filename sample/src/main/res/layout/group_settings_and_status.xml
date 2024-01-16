@@ -143,6 +143,11 @@
         android:text="Set Volume" />
 
     <Button
+        android:id="@+id/btnSetMicGainLevel"
+        style="@style/ButtonCommon"
+        android:text="Set Microphone Gain Level" />
+
+    <Button
         android:id="@+id/btnWakeup"
         style="@style/ButtonCommon"
         android:text="Wakeup" />

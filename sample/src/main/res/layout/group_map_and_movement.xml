@@ -67,6 +67,11 @@
         android:text="@string/saved_locations" />
 
     <Button
+        android:id="@+id/btnGetPosition"
+        style="@style/ButtonCommon"
+        android:text="Get Current Position" />
+
+    <Button
         android:id="@+id/btnRepose"
         style="@style/ButtonCommon"
         android:text="Repose" />

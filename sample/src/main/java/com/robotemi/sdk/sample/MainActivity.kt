@@ -322,6 +322,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnSpeak.setOnClickListener { speak() }
         btnSaveLocation.setOnClickListener { saveLocation() }
         btnGoTo.setOnClickListener { goTo() }
+        btnGetPosition.setOnClickListener { getPosition() }
 
         btnStopMovement.setOnClickListener { stopMovement() }
         btnFollow.setOnClickListener { followMe() }
@@ -453,6 +454,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnTrackUser.setOnClickListener { toggleTrackUser() }
         btnGetVolume.setOnClickListener { getVolume() }
         btnSetVolume.setOnClickListener { setVolume() }
+        btnSetMicGainLevel.setOnClickListener { setMicGainLevel() }
         btnRequestToBeKioskApp.setOnClickListener { requestToBeKioskApp() }
         btnStartDetectionModeWithDistance.setOnClickListener { startDetectionWithDistance() }
         btnFetchSequence.setOnClickListener { getAllSequences() }
@@ -629,6 +631,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 printLog("Cannot launch browser, probably temi browser app not installed.")
             }
         }
+    }
+
+    private fun getPosition() {
+        printLog(robot.getPosition().toString())
     }
 
     private fun getCurrentFloor() {
@@ -1604,6 +1610,26 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 robot.volume = adapter.getItem(position)!!.toInt()
                 printLog("Set volume to ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private fun setMicGainLevel() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        val micGainLevelList: List<String> =
+            ArrayList(listOf("1", "2", "3", "4"))
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, micGainLevelList)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Set Microphone Gain Level to X1-X4")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                val result = robot.setMicGainLevel(adapter.getItem(position)!!.toInt())
+                printLog("Set Microphone Gain Level to X${adapter.getItem(position)!!.toInt()} with result $result")
                 dialog.dismiss()
             }
         dialog.show()
