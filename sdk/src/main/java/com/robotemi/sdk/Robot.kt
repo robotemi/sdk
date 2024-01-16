@@ -2042,9 +2042,9 @@ class Robot private constructor(private val context: Context) {
      * @return  0 Operation failed.
      *          1 Operation succeed.
      *          403 SETTINGS permission required
-     *          429 Too many requests, should be longer than 5 seconds between 2 calls
+     *          429 Too many requests, should be longer than 2 seconds between 2 calls
      */
-    fun setMicGainLevel(micGainLevel: Int): Int {
+    fun setMicGainLevel(@IntRange(from = 1, to = 4) micGainLevel: Int): Int {
         try {
             val validMicGainLevel = when {
                 micGainLevel < 1 -> 1
