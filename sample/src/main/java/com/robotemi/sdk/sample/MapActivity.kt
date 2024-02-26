@@ -193,6 +193,7 @@ class MapActivity : AppCompatActivity() {
                 textViewMapElements.append("[map_virtual_walls]: ${mapDataModel!!.virtualWalls} \n")
                 Log.i("Map-locations", mapDataModel!!.locations.toString())
                 textViewMapElements.append("[map_locations]: ${mapDataModel!!.locations} \n")
+                textViewMapElements.append("[map_eraser_data_length]: ${mapDataModel!!.mapEraser.firstOrNull()?.layerData?.length} \n")
                 textViewMapElements.append("[map_name]: ${mapDataModel!!.mapName} \n")
                 imageViewMap.setImageBitmap(bitmap)
             }
