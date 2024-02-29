@@ -3039,6 +3039,7 @@ class Robot private constructor(private val context: Context) {
                 if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
                 if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
                 if (it.layerCategory == LOCATION) mapDataModel.locations.add(it)
+                if (it.layerCategory == MAP_ERASER) mapDataModel.mapEraser.add(it)
             }
         } catch (e: JsonParseException) {
             Log.e(TAG, "getMapData() - JSON parse error: ${e.message}")

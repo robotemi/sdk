@@ -89,7 +89,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 )
             }
             ACTION_SEQUENCE -> {
-                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.sequence" --es control "pause|play|step_forward|step_backward"
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.sequence" --es control "pause|play|step_forward|step_backward" --es id "65d84649f961f542062957cb"
                 val command = intent.getStringExtra("control")
                 val robot = Robot.getInstance()
                 when {
@@ -108,6 +108,10 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     SequenceCommand.STEP_FORWARD.name.equals(command, true) -> {
                         robot.controlSequence(SequenceCommand.STEP_FORWARD)
                     }
+                }
+                val sequenceId = intent.getStringExtra("id")
+                if (sequenceId.isNullOrBlank().not()) {
+                    robot.playSequence(sequenceId!!)
                 }
             }
             ACTION_PATROL -> {
