@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.robotemi.sdk.Robot
+import com.robotemi.sdk.SttLanguage
+import com.robotemi.sdk.SttRequest
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.constants.SequenceCommand
 
@@ -20,6 +22,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         private const val ACTION_PATROL = "temi.debug.patrol"
         private const val ACTION_MEETING = "temi.debug.meeting"
         private const val ACTION_FACE = "temi.debug.face"
+        private const val ACTION_WAKE_UP = "temi.debug.wakeup"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -139,6 +142,32 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                 } else {
                     Robot.getInstance().stopFaceRecognition()
                 }
+            }
+            ACTION_WAKE_UP -> {
+                //adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.wakeup" --ei test 1
+                val test = intent.getIntExtra("test", 1)
+                when(test) {
+                    0 -> Robot.getInstance().finishConversation()
+                    1 -> Robot.getInstance().wakeup()
+                    2 -> Robot.getInstance().wakeup(listOf(SttLanguage.EN_US, SttLanguage.SYSTEM))
+                    3 -> Robot.getInstance().wakeup(listOf(SttLanguage.EN_US, SttLanguage.ZH_CN))
+                    4 -> Robot.getInstance().wakeup(SttRequest())
+                    5 -> Robot.getInstance().wakeup(SttRequest(languages = listOf(SttLanguage.EN_US, SttLanguage.SYSTEM)))
+                    6 -> Robot.getInstance().wakeup(SttRequest(languages = listOf(SttLanguage.EN_US, SttLanguage.ZH_CN)))
+                    7 -> Robot.getInstance().wakeup(SttRequest(timeout = 20))
+                    8 -> Robot.getInstance().wakeup(SttRequest(timeout = 120))
+                    9 -> Robot.getInstance().wakeup(SttRequest(timeout = 20, multipleConversation = true))
+                    10 -> Robot.getInstance().wakeup(SttRequest(languages = listOf(SttLanguage.EN_US, SttLanguage.ZH_CN), timeout = 20, multipleConversation = true))
+
+                    11 -> Robot.getInstance().askQuestion("What's your name?")
+                    12 -> Robot.getInstance().askQuestion(TtsRequest.create("What's your name?", language = TtsRequest.Language.EN_US))
+                    13 -> Robot.getInstance().askQuestion(TtsRequest.create("What's your name?", language = TtsRequest.Language.EN_US, showAnimationOnly = true))
+                    14 -> Robot.getInstance().askQuestion(
+                        TtsRequest.create("What's your name?", language = TtsRequest.Language.EN_US, showAnimationOnly = true),
+                        SttRequest(languages = listOf(SttLanguage.EN_US, SttLanguage.ZH_CN), timeout = 20, multipleConversation = true)
+                    )
+                }
+
             }
         }
     }

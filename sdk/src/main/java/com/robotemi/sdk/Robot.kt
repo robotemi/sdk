@@ -861,7 +861,26 @@ class Robot private constructor(private val context: Context) {
      */
     fun wakeup(languages: List<SttLanguage> = emptyList()) {
         try {
-            sdkService?.wakeup(languages.map { it.value }.toIntArray())
+            sdkService?.wakeup(languages.map { it.value }.toIntArray(),
+                SttRequest(
+                    languages = languages,
+                    timeout = 0,
+                    multipleConversation = false
+                ))
+        } catch (e: RemoteException) {
+            Log.e(TAG, "wakeup() error")
+        }
+    }
+
+    /**
+     * Trigger temi's wakeup programmatically.
+     *
+     * @param sttRequest - STT request, define STT languages, listening timeout, multiple conversation.
+     */
+    fun wakeup(sttRequest: SttRequest) {
+        try {
+            sdkService?.wakeup(sttRequest.languages.map { it.value }.toIntArray(),
+                sttRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -932,7 +951,20 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: String) {
         try {
-            sdkService?.askQuestion(question)
+            sdkService?.askQuestion(question, TtsRequest.create(question), null)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Ask question call failed")
+        }
+    }
+
+    /**
+     * Start a conversation.
+     *
+     * @param question - First question from robot.
+     */
+    fun askQuestion(question: TtsRequest, sttRequest: SttRequest? = null) {
+        try {
+            sdkService?.askQuestion(question.speech, question, sttRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }

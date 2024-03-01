@@ -320,6 +320,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnGroupSystem.isChecked = true
 
         btnSpeak.setOnClickListener { speak() }
+        btnSpeak.setOnLongClickListener {
+            speak(true)
+            true
+        }
         btnSaveLocation.setOnClickListener { saveLocation() }
         btnGoTo.setOnClickListener { goTo() }
         btnGetPosition.setOnClickListener { getPosition() }
@@ -927,7 +931,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     /**
      * Have the robot speak while displaying what is being said.
      */
-    private fun speak() {
+    private fun speak(askQuestion : Boolean = false) {
         val text = etSpeak.text.toString()
         val languages = ArrayList<TtsRequest.Language>()
         TtsRequest.Language.values().forEach {
@@ -942,7 +946,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 val ttsRequest =
                     create(text, language = adapter.getItem(position)!!, showAnimationOnly = true)
-                robot.speak(ttsRequest)
+                if (askQuestion) {
+                    robot.askQuestion(text)
+                } else {
+                    robot.speak(ttsRequest)
+                }
                 printLog("Speak: ${adapter.getItem(position)}")
                 dialog.dismiss()
             }
