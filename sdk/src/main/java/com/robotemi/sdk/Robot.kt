@@ -986,9 +986,9 @@ class Robot private constructor(private val context: Context) {
      *
      * @param text The text to be processed.
      */
-    fun startDefaultNlu(text: String) {
+    fun startDefaultNlu(text: String, sttLanguage: SttLanguage = SttLanguage.SYSTEM) {
         try {
-            sdkService?.startDefaultNlu(applicationInfo.packageName, text)
+            sdkService?.startDefaultNlu(applicationInfo.packageName, text, sttLanguage.value)
         } catch (e: RemoteException) {
             Log.e(TAG, "startDefaultNlu() error")
         }

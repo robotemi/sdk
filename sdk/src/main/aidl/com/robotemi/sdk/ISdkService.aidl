@@ -251,7 +251,7 @@ interface ISdkService {
 
     MapDataModel getMapData(in String packageName);
 
-    void startDefaultNlu(in String packageName, in String content);
+    void startDefaultNlu(in String packageName, in String content, int language);
 
     boolean isWakeupDisabled();
 
