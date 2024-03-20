@@ -14,7 +14,7 @@ data class MapDataModel(
     var greenPaths: MutableList<Layer> = mutableListOf(),
     var locations: MutableList<Layer> = mutableListOf(),
     var mapName: String = "",
-    var mapEraser: MutableList<Layer> = mutableListOf(),
+    var mapEraser: MutableList<Layer> = mutableListOf(), // This is added in 133 version.
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(MapImage::class.java.classLoader)!!,

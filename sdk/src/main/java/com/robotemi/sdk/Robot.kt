@@ -873,7 +873,7 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Trigger temi's wakeup programmatically.
+     * Trigger temi's wakeup programmatically. Added in 133 version, as an alternative to [wakeup(languages: List<SttLanguage>)]
      *
      * @param sttRequest - STT request, define STT languages, listening timeout, multiple conversation.
      */
@@ -958,9 +958,10 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Start a conversation.
+     * Start a conversation. Added in 133 version, as an alternative to [askQuestion(::String)]
      *
      * @param question - First question from robot.
+     * @param sttRequest, after [question] is spoken, [sttRequest] will define the following speech to text session. similar to [wakeup(::SttRequest)]
      */
     fun askQuestion(question: TtsRequest, sttRequest: SttRequest? = null) {
         try {
@@ -985,6 +986,7 @@ class Robot private constructor(private val context: Context) {
      * Trigger temi Launcher's default NLU service.
      *
      * @param text The text to be processed.
+     * @param sttLanguage，the language you want the text to be recognized. Added in 133 version.
      */
     fun startDefaultNlu(text: String, sttLanguage: SttLanguage = SttLanguage.SYSTEM) {
         try {
@@ -2068,7 +2070,7 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
-     * Set microphone gain level to X1(default)-X4.
+     * Set microphone gain level to X1(default)-X4. Added in 133 version
      *
      * Require [Permission.SETTINGS] permission to change the value
      * @return  0 Operation failed.
