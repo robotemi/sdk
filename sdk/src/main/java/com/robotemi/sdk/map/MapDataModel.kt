@@ -153,6 +153,7 @@ data class Layer(
             GREEN_PATH -> "greenPath"
             VIRTUAL_WALL -> "virtualWall"
             LOCATION -> "location"
+            MAP_ERASER -> "mapEraser"
             else -> "unknown"
         }
 
@@ -163,11 +164,17 @@ data class Layer(
             STATUS_CURRENT -> "CURRENT"
             else -> "unknown"
         }
-
-        return """
-            
-            { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": $layerPoses }
-        """.trimIndent()
+        return if (layerCategory == MAP_ERASER) {
+            """
+                
+                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, data-length: ${layerData?.length}" }
+            """.trimIndent()
+        } else {
+            """
+                
+                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": "Size : ${layerPoses?.size ?: 0}" }
+            """.trimIndent()
+        }
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
