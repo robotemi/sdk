@@ -861,7 +861,26 @@ class Robot private constructor(private val context: Context) {
      */
     fun wakeup(languages: List<SttLanguage> = emptyList()) {
         try {
-            sdkService?.wakeup(languages.map { it.value }.toIntArray())
+            sdkService?.wakeup(languages.map { it.value }.toIntArray(),
+                SttRequest(
+                    languages = languages,
+                    timeout = 0,
+                    multipleConversation = false
+                ))
+        } catch (e: RemoteException) {
+            Log.e(TAG, "wakeup() error")
+        }
+    }
+
+    /**
+     * Trigger temi's wakeup programmatically. Added in 133 version, as an alternative to [wakeup(languages: List<SttLanguage>)]
+     *
+     * @param sttRequest - STT request, define STT languages, listening timeout, multiple conversation.
+     */
+    fun wakeup(sttRequest: SttRequest) {
+        try {
+            sdkService?.wakeup(sttRequest.languages.map { it.value }.toIntArray(),
+                sttRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -932,7 +951,21 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: String) {
         try {
-            sdkService?.askQuestion(question)
+            sdkService?.askQuestion(question, TtsRequest.create(question), null)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Ask question call failed")
+        }
+    }
+
+    /**
+     * Start a conversation. Added in 133 version, as an alternative to [askQuestion(::String)]
+     *
+     * @param question - First question from robot.
+     * @param sttRequest, after [question] is spoken, [sttRequest] will define the following speech to text session. similar to [wakeup(::SttRequest)]
+     */
+    fun askQuestion(question: TtsRequest, sttRequest: SttRequest? = null) {
+        try {
+            sdkService?.askQuestion(question.speech, question, sttRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }
@@ -953,10 +986,11 @@ class Robot private constructor(private val context: Context) {
      * Trigger temi Launcher's default NLU service.
      *
      * @param text The text to be processed.
+     * @param sttLanguage，the language you want the text to be recognized. Added in 133 version.
      */
-    fun startDefaultNlu(text: String) {
+    fun startDefaultNlu(text: String, sttLanguage: SttLanguage = SttLanguage.SYSTEM) {
         try {
-            sdkService?.startDefaultNlu(applicationInfo.packageName, text)
+            sdkService?.startDefaultNlu(applicationInfo.packageName, text, sttLanguage.value)
         } catch (e: RemoteException) {
             Log.e(TAG, "startDefaultNlu() error")
         }
@@ -1138,6 +1172,15 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
     /*               Navigation              */
     /*****************************************/
+
+    /**
+     * Get Position.
+     *
+     * @return Result of current position or Position(0, 0, 0, 0) if failed.
+     */
+    fun getPosition(): Position {
+        return sdkService?.getPosition(applicationInfo.packageName) ?: Position(0f, 0f, 0f, 0)
+    }
 
     /**
      * Save location.
@@ -1366,6 +1409,7 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun addOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
         onCurrentPositionChangedListeners.add(listener)
+        listener.onCurrentPositionChanged(getPosition())
     }
 
     @UiThread
@@ -2024,6 +2068,31 @@ class Robot private constructor(private val context: Context) {
                 Log.e(TAG, "setVolume() error")
             }
         }
+
+    /**
+     * Set microphone gain level to X1(default)-X4. Added in 133 version
+     *
+     * Require [Permission.SETTINGS] permission to change the value
+     * @return  0 Operation failed.
+     *          1 Operation succeed.
+     *          403 SETTINGS permission required
+     *          429 Too many requests, should be longer than 2 seconds between 2 calls
+     */
+    fun setMicGainLevel(@IntRange(from = 1, to = 4) micGainLevel: Int): Int {
+        try {
+            val validMicGainLevel = when {
+                micGainLevel < 1 -> 1
+                micGainLevel > 4 -> 4
+                else -> micGainLevel
+            }
+            val result = sdkService?.setMicGainLevel(applicationInfo.packageName, validMicGainLevel)
+            Log.d(TAG, "setMicGainLevel() result: $result")
+            return result ?: 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setMicGainLevel() error")
+            return 0
+        }
+    }
 
     /**
      * Restart temi.
@@ -3004,6 +3073,7 @@ class Robot private constructor(private val context: Context) {
                 if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
                 if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
                 if (it.layerCategory == LOCATION) mapDataModel.locations.add(it)
+                if (it.layerCategory == MAP_ERASER) mapDataModel.mapEraser.add(it)
             }
         } catch (e: JsonParseException) {
             Log.e(TAG, "getMapData() - JSON parse error: ${e.message}")

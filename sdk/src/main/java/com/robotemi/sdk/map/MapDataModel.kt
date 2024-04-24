@@ -13,7 +13,8 @@ data class MapDataModel(
     var virtualWalls: MutableList<Layer> = mutableListOf(),
     var greenPaths: MutableList<Layer> = mutableListOf(),
     var locations: MutableList<Layer> = mutableListOf(),
-    var mapName: String = ""
+    var mapName: String = "",
+    var mapEraser: MutableList<Layer> = mutableListOf(), // This is added in 133 version.
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(MapImage::class.java.classLoader)!!,
@@ -21,7 +22,9 @@ data class MapDataModel(
         parcel.readParcelable(MapInfo::class.java.classLoader)!!,
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
-        parcel.createTypedArrayList(Layer) ?: mutableListOf()
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
+        parcel.readString() ?: "",
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -31,6 +34,8 @@ data class MapDataModel(
         parcel.writeTypedList(virtualWalls)
         parcel.writeTypedList(greenPaths)
         parcel.writeTypedList(locations)
+        parcel.writeString(mapName)
+        parcel.writeTypedList(mapEraser)
     }
 
     override fun describeContents() = 0
@@ -128,7 +133,8 @@ data class Layer(
     @SerializedName("layer_thickness") val layerThickness: Float,
     @SerializedName("layer_status") val layerStatus: Int,
     @SerializedName("layer_poses") val layerPoses: List<LayerPose>?,
-    @SerializedName("layer_direction") val layerDirection: Int = 0, // added in sprint 132 for one-way virtual wall, value can be -1, 0, 1.
+    @SerializedName("layer_direction") val layerDirection: Int = 0, // added in version 132 for one-way virtual wall, value can be -1, 0, 1.
+    @SerializedName("layer_data") val layerData: String, // added in version 133 for map eraser layer
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -137,7 +143,9 @@ data class Layer(
         parcel.readString() ?: "",
         parcel.readFloat(),
         parcel.readInt(),
-        parcel.createTypedArrayList(LayerPose)
+        parcel.createTypedArrayList(LayerPose),
+        parcel.readInt(),
+        parcel.readString() ?: ""
     )
 
     override fun toString(): String {
@@ -145,6 +153,7 @@ data class Layer(
             GREEN_PATH -> "greenPath"
             VIRTUAL_WALL -> "virtualWall"
             LOCATION -> "location"
+            MAP_ERASER -> "mapEraser"
             else -> "unknown"
         }
 
@@ -155,11 +164,17 @@ data class Layer(
             STATUS_CURRENT -> "CURRENT"
             else -> "unknown"
         }
-
-        return """
-            
-            { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": $layerPoses }
-        """.trimIndent()
+        return if (layerCategory == MAP_ERASER) {
+            """
+                
+                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, data-length: ${layerData?.length}" }
+            """.trimIndent()
+        } else {
+            """
+                
+                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": "Size : ${layerPoses?.size ?: 0}" }
+            """.trimIndent()
+        }
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -168,6 +183,9 @@ data class Layer(
         parcel.writeString(layerId)
         parcel.writeFloat(layerThickness)
         parcel.writeInt(layerStatus)
+        parcel.writeList(layerPoses)
+        parcel.writeInt(layerDirection)
+        parcel.writeString(layerData)
     }
 
     override fun describeContents() = 0
@@ -186,6 +204,7 @@ data class Layer(
 const val GREEN_PATH = 0
 const val VIRTUAL_WALL = 3
 const val LOCATION = 4
+const val MAP_ERASER = 6
 
 const val STATUS_CURRENT = 0
 const val STATUS_UPDATE = 1

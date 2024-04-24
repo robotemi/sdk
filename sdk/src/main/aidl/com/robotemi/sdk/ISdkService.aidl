@@ -3,6 +3,7 @@ package com.robotemi.sdk;
 
 import android.content.pm.ActivityInfo;
 import com.robotemi.sdk.ISdkServiceCallback;
+import com.robotemi.sdk.SttRequest;
 import com.robotemi.sdk.TtsRequest;
 import com.robotemi.sdk.DisplayListRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
@@ -173,7 +174,7 @@ interface ISdkService {
      */
     boolean deleteLocation(in String name);
 
-    void wakeup(in int[] languages);
+    void wakeup(in int[] languages, in SttRequest sttRequest);
 
     String getWakeupWord();
 
@@ -190,7 +191,7 @@ interface ISdkService {
 
     boolean isHardButtonsDisabled();
 
-    void askQuestion(in String question);
+    void askQuestion(in String question, in TtsRequest ttsRequest, in SttRequest sttRequest);
 
     void finishConversation();
 
@@ -250,7 +251,7 @@ interface ISdkService {
 
     MapDataModel getMapData(in String packageName);
 
-    void startDefaultNlu(in String packageName, in String content);
+    void startDefaultNlu(in String packageName, in String content, int language);
 
     boolean isWakeupDisabled();
 
@@ -368,4 +369,8 @@ interface ISdkService {
     int playTour(in String packageName, in String tourId);
 
     int setAsrLanguages(in String packageName, in int[] languages);
+
+    Position getPosition(in String packageName);
+
+    int setMicGainLevel(in String packageName, int level);
 }

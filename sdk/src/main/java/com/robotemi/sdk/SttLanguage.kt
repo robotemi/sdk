@@ -20,7 +20,10 @@ enum class SttLanguage(val value: Int) {
     IW_IL(16),
     IT_IT(17),
     ET_EE(18),
-    TR_TR(19);
+    TR_TR(19),
+    HI_IN(20), // Supported from 133 version
+    EN_IN(21), // Supported from 133 version
+    ;
 
     companion object {
 
@@ -47,6 +50,8 @@ enum class SttLanguage(val value: Int) {
                 17 -> IT_IT
                 18 -> ET_EE
                 19 -> TR_TR
+                20 -> HI_IN
+                21 -> EN_IN
                 else -> SYSTEM
             }
         }
