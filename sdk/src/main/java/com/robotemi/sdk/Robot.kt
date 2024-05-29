@@ -951,7 +951,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: String) {
         try {
-            sdkService?.askQuestion(question, TtsRequest.create(question), null)
+            sdkService?.askQuestion(question,
+                TtsRequest.create(question).apply { packageName = applicationInfo.packageName }, null)
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }
@@ -965,7 +966,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: TtsRequest, sttRequest: SttRequest? = null) {
         try {
-            sdkService?.askQuestion(question.speech, question, sttRequest)
+            sdkService?.askQuestion(question.speech,
+                question.apply { packageName = applicationInfo.packageName }, sttRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }
@@ -1367,10 +1369,16 @@ class Robot private constructor(private val context: Context) {
     /**
      * Start positing to locate the position of temi.
      *
+     * @param position, a suggested position to instruct the algorithm to do location position.
+     *        e.g. repose(Position(0.0, 0.0, 0.0)) will start a reposition process
+     *        with initial location from coordinate (0, 0), direction 0, and do a quick search from the give coordinate.
+     *        It is null by default, meaning only global searching will be performed.
+     *        This parameter is supported in launcher from 134 version.
      */
-    fun repose() {
+    @JvmOverloads
+    fun repose(position: Position? = null) {
         try {
-            sdkService?.repose()
+            sdkService?.repose(position)
         } catch (e: RemoteException) {
             Log.e(TAG, "repose() error")
         }
@@ -2055,6 +2063,7 @@ class Robot private constructor(private val context: Context) {
         }
         /**
          * @param volume the volume you want to set to Launcher.
+         * Require [Permission.SETTINGS] permission to set volume
          */
         set(volume) {
             try {
