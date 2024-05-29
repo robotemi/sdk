@@ -2044,6 +2044,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     private fun repose() {
+//        Repose with position
+//        robot.repose(Position(1.516081f, 3.1614602f, 3.6307523f))
+//        robot.repose(Position(0f,0f,0f))
+
+//        Repose without position
         robot.repose()
     }
 

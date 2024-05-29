@@ -255,7 +255,7 @@ interface ISdkService {
 
     boolean isWakeupDisabled();
 
-    void repose();
+    void repose(in Position position);
 
     void restart(in String packageName);
 
