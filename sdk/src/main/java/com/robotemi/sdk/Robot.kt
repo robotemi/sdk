@@ -3233,6 +3233,158 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Reset map.
+     *      Note this method can be invoked out of home base, and will build a map without home base.
+     *      This is usefully when multi-floor is enabled, it can still save home base after move temi onto home base manually.
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param allFloor, true to reset maps of all floor, false to reset current map. Used in multi-floor.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for reset map succeed
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         408 for operation timeout
+     *
+     */
+    @WorkerThread
+    fun resetMap(allFloor: Boolean): Int {
+        try {
+            val resp = sdkService?.resetMap(applicationInfo.packageName, allFloor)?.toIntOrNull() ?: 0
+            Log.d(TAG, "resetMap $allFloor, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "resetMap() error")
+        }
+        return 0
+    }
+
+    /**
+     * Finish mapping, map will no longer update after finish mapping
+     * This operation may take several seconds or even longer.
+     *
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param mapName, map name give to the map, optional.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success
+     *         304 for mapping has been already finished
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         408 for operation timeout
+     */
+    @WorkerThread
+    @JvmOverloads
+    fun finishMapping(mapName: String? = null): Int {
+        try {
+            val resp = sdkService?.finishMapping(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
+            Log.d(TAG, "finishMapping $mapName, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "finishMapping() error")
+        }
+        return 0
+    }
+
+    /**
+     * Update current map name
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param mapName, map name give to current map.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 if the map name is set.
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         429 for too many requests, wait for 2 seconds
+     */
+    fun updateMapName(mapName: String): Int {
+        try {
+            val resp = sdkService?.updateMapName(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
+            Log.d(TAG, "updateMapName $mapName, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "updateMapName() error")
+        }
+        return 0
+    }
+
+    /**
+     * Unlock the map and continue mapping.
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success.
+     *         304 for map already unlocked
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         408 for operation timeout
+     *         429 for too many requests, wait for 5 seconds
+     */
+    @WorkerThread
+    fun continueMapping(): Int {
+        try {
+            val resp = sdkService?.continueMapping(applicationInfo.packageName)?.toIntOrNull() ?: 0
+            Log.d(TAG, "continueMapping, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "continueMapping() error")
+        }
+        return 0
+    }
+
+    /**
+     * Update existing or insert new layer
+     * If layerId exists then it will update current layer.
+     * If not, then a new layer will be created based on given data.
+     *
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param layer, layer data to be updated or inserted.
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success
+     *         400 invalid parameter
+     *         403 for [Permission.MAP] permission required
+     *         413 pose out of map
+     *
+     */
+    @WorkerThread
+    fun upsertMapLayer(layer: Layer): Int {
+        try {
+            val resp = sdkService?.upsertMapLayer(
+                applicationInfo.packageName,
+                gson.toJson(layer)
+            )?.toIntOrNull() ?: 0
+            Log.d(TAG, "upsertLayer, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "upsertLayer() error")
+        }
+        return 0
+    }
+
+    /**
+     * Delete map layer, only support deleting virtual wall and path
+     *
+     * @param layerCategory, can only take [GREEN_PATH] and [VIRTUAL_WALL]
+     */
+    @WorkerThread
+    fun deleteMapLayer(layerId: String, layerCategory: Int): Int {
+        try {
+            val resp = sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory)?.toIntOrNull() ?: 0
+            Log.d(TAG, "deleteMapLayer, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "upsertLayer() error")
+        }
+        return 0
+    }
+
     @UiThread
     fun addOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
         onLoadMapStatusChangedListeners.add(listener)
