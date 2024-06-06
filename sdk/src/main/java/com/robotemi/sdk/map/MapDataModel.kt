@@ -2,6 +2,7 @@ package com.robotemi.sdk.map
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.IntRange
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
@@ -137,6 +138,9 @@ data class Layer(
     @SerializedName("layer_data") val layerData: String, // added in version 133 for map eraser layer
 ) : Parcelable {
 
+    /**
+     * FIXME: Using Parcelable to pass layerPoses is not working as expected, the data received is different from data sent.
+     */
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt(),
@@ -197,6 +201,60 @@ data class Layer(
 
         override fun newArray(size: Int): Array<Layer?> {
             return arrayOfNulls(size)
+        }
+
+        /**
+         * @param layerId, Use existing layerId to update target layer.
+         * Use null to create a new layer.
+         * For location operation, there must be a valid layerId, which will be taken as location name
+         *
+         *
+         * @param layerCategory, layer category, [GREEN_PATH], [VIRTUAL_WALL], [LOCATION]
+         * @param tiltAngle, only used when saving location.
+         */
+        fun upsertLayer(layerId: String?,
+                        layerCategory: Int,
+                        layerPoses: List<LayerPose>,
+                        @IntRange(from = -25L, to = 55L) tiltAngle: Int? = null
+        ): Layer? {
+            val sessionId = (1000..9999).random().toString()
+            var layerThickness = 1f
+            val finalLayerId = when (layerCategory) {
+                GREEN_PATH -> {
+                    if (layerPoses.size <= 1) {
+                        // path should have more than 1 pose
+                        return null
+                    }
+                    layerId ?: "path_${System.currentTimeMillis()}_$sessionId"
+                }
+                VIRTUAL_WALL -> {
+                    if (layerPoses.size <= 1) {
+                        // virtual wall should have more than 1 pose
+                        return null
+                    }
+                    layerId ?: "wall_${System.currentTimeMillis()}_$sessionId"
+                }
+                LOCATION -> {
+                    layerId ?: return null
+                    if (layerPoses.size != 1) {
+                        // location should have only 1 pose
+                        return null
+                    }
+                    layerThickness = tiltAngle?.toFloat() ?: 0f
+                    // Location shall be lower-cased
+                    layerId.lowercase()
+                }
+                else -> return null
+            }
+            return Layer(
+                layerCreationUTC = (System.currentTimeMillis() / 1000).toInt(),
+                layerCategory = layerCategory,
+                layerId = finalLayerId,
+                layerStatus = STATUS_UPDATE,
+                layerThickness = layerThickness,
+                layerPoses = layerPoses,
+                layerData = ""
+            )
         }
     }
 }

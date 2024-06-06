@@ -373,4 +373,16 @@ interface ISdkService {
     Position getPosition(in String packageName);
 
     int setMicGainLevel(in String packageName, int level);
+
+    String resetMap(in String packageName, boolean allFloor);
+
+    String finishMapping(in String packageName, in String mapName);
+
+    String updateMapName(in String packageName, in String mapName);
+
+    String continueMapping(in String packageName);
+
+    String upsertMapLayer(in String packageName, in String layer);
+
+    String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
 }

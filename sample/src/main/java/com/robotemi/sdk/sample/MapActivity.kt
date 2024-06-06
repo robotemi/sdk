@@ -1,12 +1,10 @@
 package com.robotemi.sdk.sample
 
-import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
@@ -17,11 +15,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.robotemi.sdk.Robot
+import com.robotemi.sdk.map.GREEN_PATH
+import com.robotemi.sdk.map.LOCATION
+import com.robotemi.sdk.map.Layer
+import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapDataModel
 import com.robotemi.sdk.navigation.model.Position
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
@@ -42,6 +45,9 @@ class MapActivity : AppCompatActivity() {
 
     @Volatile
     private var mapDataModel: MapDataModel? = null
+
+    private val robot: Robot
+        get() = Robot.getInstance()
 
     private val singleThreadExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
@@ -161,6 +167,131 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
+
+        btnResetMap.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val resp = robot.resetMap(false)
+                withContext(Dispatchers.Main) {
+                    printLog("Reset map result $resp")
+                    progressBar.visibility = View.GONE
+                    refreshMap()
+                }
+            }
+        }
+        btnFinishMapping.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+//                val resp = robot.finishMapping("MAP-${System.currentTimeMillis()}")
+                val resp = robot.finishMapping()
+                withContext(Dispatchers.Main) {
+                    printLog("Finish mapping result $resp")
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
+
+        btnFinishMapping.setOnLongClickListener {
+            val resp = robot.updateMapName("MAP-${System.currentTimeMillis()}")
+            printLog("Update map name result $resp")
+            refreshMap()
+            true
+        }
+
+        btnContinueMapping.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val resp = robot.continueMapping()
+                withContext(Dispatchers.Main) {
+                    printLog("Continue mapping result $resp")
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
+        var factor = 1f
+        btnCreatePath.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val layer = Layer.upsertLayer(null, GREEN_PATH, listOf(
+                    LayerPose(0.5f, 0.5f, 0f),
+                    LayerPose(0.5f, 1f * factor, 0f),
+                    LayerPose(1.5f, 1.5f * factor, 0f),
+                    LayerPose(1.5f * factor, 0.5f, 0f),
+                    LayerPose(0.5f, 0.5f, 0f)
+                ))
+                factor *= 2
+                if (layer == null) {
+                    // Invalid parameter
+                    progressBar.visibility = View.GONE
+                    return@launch
+                }
+                val resp = robot.upsertMapLayer(layer)
+                withContext(Dispatchers.Main) {
+                    printLog("Create path result $resp")
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
+
+        btnMovePath.setOnClickListener {
+            val path = mapDataModel?.greenPaths?.firstOrNull() ?: return@setOnClickListener
+            progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val layer = Layer.upsertLayer(path.layerId, GREEN_PATH, listOf(
+                    LayerPose(2.5f, 2.5f, 0f),
+                    LayerPose(2.5f, 3.5f, 0f),
+                    LayerPose(3.5f, 3.5f, 0f),
+                    LayerPose(3.5f, 2.5f, 0f),
+                    LayerPose(2.5f, 2.5f, 0f)
+                ))
+                if (layer == null) {
+                    // Invalid parameter
+                    progressBar.visibility = View.GONE
+                    return@launch
+                }
+                val resp = robot.upsertMapLayer(layer)
+                withContext(Dispatchers.Main) {
+                    printLog("Update path result $resp")
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
+
+        btnDeletePath.setOnClickListener {
+            val path = mapDataModel?.greenPaths?.firstOrNull()
+            if (path != null) {
+                progressBar.visibility = View.VISIBLE
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val resp = robot.deleteMapLayer(path.layerId, GREEN_PATH)
+                    withContext(Dispatchers.Main) {
+                        printLog("Delete path result $resp")
+                        refreshMap()
+                    }
+                }
+            }
+        }
+
+        btnUpsertLocation.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val layer = Layer.upsertLayer(
+                    "office entrance",
+                    LOCATION,
+                    listOf(LayerPose(1.5f, 1.5f, 1f)),
+                    tiltAngle = 10)
+                if (layer == null) {
+                    // Invalid parameter
+                    progressBar.visibility = View.GONE
+                    return@launch
+                }
+                val resp = robot.upsertMapLayer(layer)
+                withContext(Dispatchers.Main) {
+                    printLog("Add / Update location result $resp")
+                    progressBar.visibility = View.GONE
+                }
+            }
+        }
+
         refreshMap()
     }
 
@@ -198,6 +329,10 @@ class MapActivity : AppCompatActivity() {
                 imageViewMap.setImageBitmap(bitmap)
             }
         }
+    }
+
+    private fun printLog(log: String) {
+        textViewMapElements.append("$log \n")
     }
 
     override fun onDestroy() {

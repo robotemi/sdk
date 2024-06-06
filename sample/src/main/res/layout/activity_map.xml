@@ -46,78 +46,106 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ibBack" />
+        app:layout_constraintTop_toBottomOf="@id/ibBack"
+        tools:text="123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n" />
 
-    <Button
-        android:id="@+id/buttonBackupMap"
+    <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Export"
-        android:textAllCaps="false"
-        android:visibility="gone"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/buttonLoadMapFromPrivateFile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Load map from private file"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/buttonBackupMap"
-        app:layout_constraintTop_toBottomOf="@id/buttonBackupMap" />
+        <LinearLayout
+            android:id="@+id/layoutMapOperations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/buttonLoadMapFromFileSelector"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Load map from file selector"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/buttonBackupMap"
-        app:layout_constraintTop_toBottomOf="@id/buttonLoadMapFromPrivateFile" />
+            <Button
+                android:id="@+id/buttonBackupMap"
+                style="@style/ButtonCommon"
+                android:text="Export"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
-    <Button
-        android:id="@+id/buttonLoadMapFromPublicFile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Load map from public file"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="@id/buttonBackupMap"
-        app:layout_constraintTop_toBottomOf="@id/buttonLoadMapFromFileSelector" />
+            <Button
+                android:id="@+id/buttonLoadMapFromPrivateFile"
+                style="@style/ButtonCommon"
+                android:text="Load map from private file" />
 
-    <CheckBox
-        android:id="@+id/checkBoxLoadMapWithoutUI"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Export/Load Map without UI"
-        app:layout_constraintStart_toStartOf="@id/buttonLoadMapFromPrivateFile"
-        app:layout_constraintTop_toBottomOf="@id/buttonLoadMapFromPublicFile"
-        android:background="@color/colorWhite"
-        android:layout_marginVertical="5dp"
-        android:paddingHorizontal="10dp"/>
+            <Button
+                android:id="@+id/buttonLoadMapFromFileSelector"
+                style="@style/ButtonCommon"
+                android:text="Load map from file selector" />
 
-    <CheckBox
-        android:id="@+id/checkBoxLoadMapWithRepose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Load Map with Repose"
-        app:layout_constraintStart_toStartOf="@id/buttonLoadMapFromPrivateFile"
-        app:layout_constraintTop_toBottomOf="@id/checkBoxLoadMapWithoutUI"
-        android:background="@color/colorWhite"
-        android:layout_marginVertical="5dp"
-        android:paddingHorizontal="10dp"/>
+            <Button
+                android:id="@+id/buttonLoadMapFromPublicFile"
+                style="@style/ButtonCommon"
+                android:text="Load map from public file"/>
 
-    <CheckBox
-        android:id="@+id/checkBoxLoadMapFromPose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Load Map from Pose(x=1,y=1,yaw=1)"
-        app:layout_constraintStart_toStartOf="@id/buttonLoadMapFromPrivateFile"
-        app:layout_constraintTop_toBottomOf="@id/checkBoxLoadMapWithRepose"
-        android:background="@color/colorWhite"
-        android:layout_marginVertical="5dp"
-        android:paddingHorizontal="10dp"/>
+            <CheckBox
+                android:id="@+id/checkBoxLoadMapWithoutUI"
+                style="@style/ButtonCommon"
+                android:backgroundTint="@color/temi_primary_green"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="10dp"
+                android:text="Export/Load Map without UI" />
+
+            <CheckBox
+                android:id="@+id/checkBoxLoadMapWithRepose"
+                style="@style/ButtonCommon"
+                android:backgroundTint="@color/temi_primary_green"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="10dp"
+                android:text="Load Map with Repose" />
+
+            <CheckBox
+                android:id="@+id/checkBoxLoadMapFromPose"
+                style="@style/ButtonCommon"
+                android:backgroundTint="@color/temi_primary_green"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="10dp"
+                android:text="Load Map from Pose(x=1,y=1,yaw=1)" />
+
+            <Button
+                android:id="@+id/btnResetMap"
+                style="@style/ButtonCommon"
+                android:text="⚠️⚠️Reset Map⚠️⚠️" />
+
+            <Button
+                android:id="@+id/btnFinishMapping"
+                style="@style/ButtonCommon"
+                android:text="⚠️⚠️Finish Mapping⚠️⚠️" />
+
+            <Button
+                android:id="@+id/btnContinueMapping"
+                style="@style/ButtonCommon"
+                android:text="⚠️⚠️Continue Mapping⚠️⚠️" />
+
+            <Button
+                android:id="@+id/btnCreatePath"
+                style="@style/ButtonCommon"
+                android:text="Create Path"/>
+
+            <Button
+                android:id="@+id/btnMovePath"
+                style="@style/ButtonCommon"
+                android:text="Update Path"/>
+
+            <Button
+                android:id="@+id/btnDeletePath"
+                style="@style/ButtonCommon"
+                android:text="Delete Path"/>
+
+            <Button
+                android:id="@+id/btnUpsertLocation"
+                style="@style/ButtonCommon"
+                android:text="Add / Update Location"/>
+
+        </LinearLayout>
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
