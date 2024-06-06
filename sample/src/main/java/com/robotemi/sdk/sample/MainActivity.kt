@@ -635,6 +635,30 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 printLog("Cannot launch browser, probably temi browser app not installed.")
             }
         }
+        btnEmergencyStop.setOnClickListener {
+            val status = robot.getButtonStatus(HardButton.EMERGENCY_STOP)
+            printLog("Emergency Stop button status $status")
+        }
+        val eStopListener = object : OnButtonStatusChangedListener {
+            override fun onButtonStatusChanged(hardButton: HardButton, status: HardButton.Status) {
+                if (hardButton == HardButton.EMERGENCY_STOP) {
+                    printLog("Emergency Stop button status changed: $status")
+                }
+            }
+        }
+
+        btnEmergencyStop.setOnLongClickListener { view ->
+            if (view.tag == true) {
+                robot.removeOnButtonStatusChangedListener(eStopListener)
+                view.tag = false
+                printLog("Emergency Stop button Listener removed")
+            } else {
+                robot.addOnButtonStatusChangedListener(eStopListener)
+                view.tag = true
+                printLog("Emergency Stop button Listener added")
+            }
+            true
+        }
     }
 
     private fun getPosition() {

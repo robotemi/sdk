@@ -1,5 +1,8 @@
 package com.robotemi.sdk.constants
 
+import com.robotemi.sdk.constants.HardButton.Mode.Companion.DEFAULT
+import com.robotemi.sdk.constants.HardButton.Mode.DISABLED
+import com.robotemi.sdk.constants.HardButton.Mode.MAIN_BLOCK_FOLLOW
 import com.robotemi.sdk.constants.SdkConstants.PAGE_ALL_APPS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_CONTACTS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_HOME
@@ -140,13 +143,17 @@ enum class SoundMode(val value: Int) {
 enum class HardButton(val value: Int) {
     MAIN(1),
     POWER(2),
-    VOLUME(3);
+    VOLUME(3),
+    EMERGENCY_STOP(4),
+    ;
 
     companion object {
         @JvmStatic
         fun valueToEnum(value: Int? = 1) = when (value) {
+            1 -> MAIN
             2 -> POWER
             3 -> VOLUME
+            4 -> EMERGENCY_STOP
             else -> MAIN
         }
     }
@@ -166,6 +173,21 @@ enum class HardButton(val value: Int) {
                 1 -> DISABLED
                 2 -> MAIN_BLOCK_FOLLOW
                 else -> DEFAULT
+            }
+        }
+    }
+
+    enum class Status(val value: Int) {
+        UNKNOWN(0),
+        HOLD(1),
+        RELEASED(2),
+        ;
+        companion object {
+            fun valueToEnum(value: Int? = 0) = when (value) {
+                0 -> UNKNOWN
+                1 -> HOLD
+                2 -> RELEASED
+                else -> UNKNOWN
             }
         }
     }

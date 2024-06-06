@@ -113,4 +113,6 @@ interface ISdkServiceCallback {
     void onSerialRawData(in byte[] data);
 
     void onDragStateChanged(in boolean isDragged);
+
+    boolean onButtonStatusChanged(in int buttonType, in int buttonStatus);
 }
