@@ -385,4 +385,6 @@ interface ISdkService {
     String upsertMapLayer(in String packageName, in String layer);
 
     String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
+
+    String getHardButtonStatus(in String packageName, int type);
 }

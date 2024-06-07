@@ -198,6 +198,9 @@ class Robot private constructor(private val context: Context) {
     private val onRobotDragStateChangedListeners =
         CopyOnWriteArraySet<OnRobotDragStateChangedListener>()
 
+    private val onButtonStatusChangedListeners =
+        CopyOnWriteArraySet<OnButtonStatusChangedListener>()
+
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
@@ -543,6 +546,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 onGreetModeStateChangedListeners.forEach {
                     it.onGreetModeStateChanged(state)
+                }
+            }
+            return true
+        }
+
+        override fun onButtonStatusChanged(buttonType: Int, buttonStatus: Int): Boolean {
+            if (onButtonStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onButtonStatusChangedListeners.forEach {
+                    it.onButtonStatusChanged(HardButton.valueToEnum(buttonType), HardButton.Status.valueToEnum(buttonStatus))
                 }
             }
             return true
@@ -1893,10 +1906,38 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Get hard button status
+     * Added in 134 version.
+     * @param type, in 134 version it only supports [HardButton.EMERGENCY_STOP]
+     *
+     * @return hard button status,
+     *      [HardButton.Status.UNKNOWN] mean the version doesn't support it, or the robot doesn't have a emergency button
+     */
+    fun getButtonStatus(type: HardButton): HardButton.Status {
+        try {
+            val resp = sdkService?.getHardButtonStatus(applicationInfo.packageName, type.value)
+            return if (resp == null) {
+                // Launcher/Robox doesn't support this operation.
+                HardButton.Status.UNKNOWN
+            } else {
+                try {
+                    HardButton.Status.valueOf(resp)
+                } catch (e: Exception) {
+                    Log.e(TAG, "getButtonStatus() error, resp >$resp<")
+                    HardButton.Status.UNKNOWN
+                }
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getButtonStatus() error")
+        }
+        return HardButton.Status.UNKNOWN
+    }
+
+    /**
      * Get current mode of the specific hard button.
      *
      * @param type See [HardButton.MAIN], [HardButton.POWER], [HardButton.VOLUME]
-     * @return
+     * @return hard button mode, whether the button is disabled or not.
      */
     @CheckResult
     fun getHardButtonMode(type: HardButton): HardButton.Mode {
@@ -3619,6 +3660,14 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnSdkExceptionListener(listener: OnSdkExceptionListener) {
         onSdkExceptionListeners.remove(listener)
+    }
+
+    fun addOnButtonStatusChangedListener(listener: OnButtonStatusChangedListener) {
+        onButtonStatusChangedListeners.add(listener)
+    }
+
+    fun removeOnButtonStatusChangedListener(listener: OnButtonStatusChangedListener) {
+        onButtonStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
