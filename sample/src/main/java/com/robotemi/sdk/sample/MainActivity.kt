@@ -50,6 +50,7 @@ import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
 import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.Floor
+import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapModel
 import com.robotemi.sdk.map.OnLoadFloorStatusChangedListener
 import com.robotemi.sdk.map.OnLoadMapStatusChangedListener
@@ -388,6 +389,24 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnTiltAngle.setOnClickListener { tiltAngle() }
         btnTiltBy.setOnClickListener { tiltBy() }
         btnTurnBy.setOnClickListener { turnBy() }
+
+        val navPathListener = object : OnGoToNavPathChangedListener {
+            override fun onGoToNavPathChanged(path: List<LayerPose>) {
+                printLog("Nav Path $path")
+            }
+        }
+        btnNavPath.setOnClickListener { view ->
+            if (view.tag == true) {
+                robot.removeOnGoToNavPathChangedListener(navPathListener)
+                view.tag = false
+                printLog("Nav Path Listener removed")
+            } else {
+                robot.addOnGoToNavPathChangedListener(navPathListener)
+                view.tag = true
+                printLog("Nav Path Listener added")
+            }
+        }
+
         btnBatteryInfo.setOnClickListener { getBatteryData() }
         btnSavedLocations.setOnClickListener { savedLocationsDialog() }
         btnCallOwner.setOnClickListener { callOwner() }

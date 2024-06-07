@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
+import android.util.Base64
 import android.util.Log
 import androidx.annotation.*
 import androidx.annotation.IntRange
@@ -74,6 +75,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.zip.GZIPInputStream
 import kotlin.concurrent.thread
 
 @SuppressWarnings("unused")
@@ -200,6 +202,9 @@ class Robot private constructor(private val context: Context) {
 
     private val onButtonStatusChangedListeners =
         CopyOnWriteArraySet<OnButtonStatusChangedListener>()
+
+    private val onGoToNavPathChangedListeners =
+        CopyOnWriteArraySet<OnGoToNavPathChangedListener>()
 
     private var ttsService: ITtsService? = null
 
@@ -403,6 +408,18 @@ class Robot private constructor(private val context: Context) {
             }
             return true
         }
+
+        override fun onGoToNavPathChanged(path: String): Boolean {
+            if (onGoToNavPathChangedListeners.isEmpty()) return false
+            val pathDecoded = decodeBase64UngzipJsonArray<LayerPose>(path)
+            uiHandler.post {
+                for (listener in onGoToNavPathChangedListeners) {
+                    listener.onGoToNavPathChanged(pathDecoded)
+                }
+            }
+            return true
+        }
+
 
         /*****************************************/
         /*            Movement & Follow          */
@@ -1456,6 +1473,21 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnDistanceToDestinationChangedListener(listener: OnDistanceToDestinationChangedListener) {
         onDistanceToDestinationChangedListeners.remove(listener)
+    }
+
+    /**
+     * Show a navigation path of the robot during go to location/coordinates
+     * Added in 134 version.
+     *
+     */
+    @UiThread
+    fun addOnGoToNavPathChangedListener(listener: OnGoToNavPathChangedListener) {
+        onGoToNavPathChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnGoToNavPathChangedListener(listener: OnGoToNavPathChangedListener) {
+        onGoToNavPathChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -3766,6 +3798,27 @@ class Robot private constructor(private val context: Context) {
             } catch (e: ParseException) {
                 throw JsonParseException(e)
             }
+        }
+    }
+
+    private inline fun <reified T: Any> decodeBase64UngzipJsonArray(json: String): List<T> {
+        return try {
+            val compressedData = Base64.decode(json, Base64.NO_WRAP)
+
+            // Decompress the data with GZIP
+            val inputStream = compressedData.inputStream()
+            val gzipInputStream = GZIPInputStream(inputStream)
+            val decompressedData = gzipInputStream.readBytes()
+
+            // Convert the decompressed data to a string
+            val decompressedString = String(decompressedData)
+
+            // Convert the string to a list of Object T
+            val type = object : TypeToken<List<T>>() {}.type
+            gson.fromJson(decompressedString, type)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse json array", e)
+            listOf()
         }
     }
 }

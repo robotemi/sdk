@@ -222,7 +222,9 @@ class MapActivity : AppCompatActivity() {
                 factor *= 2
                 if (layer == null) {
                     // Invalid parameter
-                    progressBar.visibility = View.GONE
+                    withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
+                    }
                     return@launch
                 }
                 val resp = robot.upsertMapLayer(layer)
@@ -246,7 +248,9 @@ class MapActivity : AppCompatActivity() {
                 ))
                 if (layer == null) {
                     // Invalid parameter
-                    progressBar.visibility = View.GONE
+                    withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
+                    }
                     return@launch
                 }
                 val resp = robot.upsertMapLayer(layer)
@@ -281,7 +285,9 @@ class MapActivity : AppCompatActivity() {
                     tiltAngle = 10)
                 if (layer == null) {
                     // Invalid parameter
-                    progressBar.visibility = View.GONE
+                    withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
+                    }
                     return@launch
                 }
                 val resp = robot.upsertMapLayer(layer)
