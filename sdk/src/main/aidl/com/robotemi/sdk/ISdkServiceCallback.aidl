@@ -115,4 +115,6 @@ interface ISdkServiceCallback {
     void onDragStateChanged(in boolean isDragged);
 
     boolean onButtonStatusChanged(in int buttonType, in int buttonStatus);
+
+    boolean onGoToNavPathChanged(in String path);
 }
