@@ -65,6 +65,7 @@ import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -411,7 +412,7 @@ class Robot private constructor(private val context: Context) {
 
         override fun onGoToNavPathChanged(path: String): Boolean {
             if (onGoToNavPathChangedListeners.isEmpty()) return false
-            val pathDecoded = decodeBase64UngzipJsonArray<LayerPose>(path)
+            val pathDecoded = decodeBase64UngzipJson<Layer>(path)?.layerPoses ?: listOf()
             uiHandler.post {
                 for (listener in onGoToNavPathChangedListeners) {
                     listener.onGoToNavPathChanged(pathDecoded)
@@ -419,7 +420,6 @@ class Robot private constructor(private val context: Context) {
             }
             return true
         }
-
 
         /*****************************************/
         /*            Movement & Follow          */
@@ -3805,20 +3805,46 @@ class Robot private constructor(private val context: Context) {
         return try {
             val compressedData = Base64.decode(json, Base64.NO_WRAP)
 
-            // Decompress the data with GZIP
-            val inputStream = compressedData.inputStream()
-            val gzipInputStream = GZIPInputStream(inputStream)
-            val decompressedData = gzipInputStream.readBytes()
+            ByteArrayOutputStream().use { outputStream ->
+                // Decompress the data with GZIP
+                GZIPInputStream(compressedData.inputStream()).use { gzipInputStream ->
+                    gzipInputStream.copyTo(outputStream)
+                }
+                val decompressedData = outputStream.toByteArray()
 
-            // Convert the decompressed data to a string
-            val decompressedString = String(decompressedData)
+                // Convert the decompressed data to a string
+                val decompressedString = String(decompressedData)
 
-            // Convert the string to a list of Object T
-            val type = object : TypeToken<List<T>>() {}.type
-            gson.fromJson(decompressedString, type)
+                // Convert the string to a list of Object T
+                val type = object : TypeToken<List<T>>() {}.type
+                gson.fromJson(decompressedString, type)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse json array", e)
             listOf()
+        }
+    }
+
+    private inline fun <reified T: Any> decodeBase64UngzipJson(json: String): T? {
+        return try {
+            val compressedData = Base64.decode(json, Base64.NO_WRAP)
+
+            ByteArrayOutputStream().use { outputStream ->
+                // Decompress the data with GZIP
+                GZIPInputStream(compressedData.inputStream()).use { gzipInputStream ->
+                    gzipInputStream.copyTo(outputStream)
+                }
+                val decompressedData = outputStream.toByteArray()
+
+                // Convert the decompressed data to a string
+                val decompressedString = String(decompressedData)
+
+                // Convert the string to object T
+                gson.fromJson(decompressedString, T::class.java)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse json", e)
+            null
         }
     }
 }
