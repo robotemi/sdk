@@ -35,6 +35,7 @@ import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.face.compatible
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.*
+import com.robotemi.sdk.map.Layer.CREATOR.roundByCategory
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
@@ -3417,7 +3418,7 @@ class Robot private constructor(private val context: Context) {
      * Require [Permission.MAP] permission
      * Supported from 134 launcher.
      *
-     * @param layer, layer data to be updated or inserted.
+     * @param layer, layer data to be updated or inserted. Use [Layer.upsertLayer] to create the layer
      *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success
@@ -3431,7 +3432,7 @@ class Robot private constructor(private val context: Context) {
         try {
             val resp = sdkService?.upsertMapLayer(
                 applicationInfo.packageName,
-                gson.toJson(layer)
+                gson.toJson(layer.roundByCategory())
             )?.toIntOrNull() ?: 0
             Log.d(TAG, "upsertLayer, result $resp")
             return resp

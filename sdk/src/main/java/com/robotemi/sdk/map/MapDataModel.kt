@@ -5,6 +5,7 @@ import android.os.Parcelable
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
+import kotlin.math.round
 
 data class MapDataModel(
     @SerializedName("Map_Image")
@@ -127,7 +128,7 @@ data class MapInfo(
     }
 }
 
-data class Layer(
+data class Layer internal constructor(
     @SerializedName("layer_creation_universal_time") val layerCreationUTC: Int,
     @SerializedName("layer_category") val layerCategory: Int,
     @SerializedName("layer_id") val layerId: String = "",
@@ -141,7 +142,7 @@ data class Layer(
     /**
      * FIXME: Using Parcelable to pass layerPoses is not working as expected, the data received is different from data sent.
      */
-    constructor(parcel: Parcel) : this(
+    internal constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readString() ?: "",
@@ -211,6 +212,10 @@ data class Layer(
          *
          * @param layerCategory, layer category, [GREEN_PATH], [VIRTUAL_WALL], [LOCATION]
          * @param tiltAngle, only used when saving location.
+         *
+         * @param layerPoses, the x, y in the pose will be rounded to 2 digits after decimal.
+         *                  theta will be converted to 0 for [GREEN_PATH] and [VIRTUAL_WALL],
+         *                  in [LOCATION] theta will be rounded to 4 digits after decimal.
          */
         fun upsertLayer(layerId: String?,
                         layerCategory: Int,
@@ -255,6 +260,39 @@ data class Layer(
                 layerPoses = layerPoses,
                 layerData = ""
             )
+        }
+
+        internal fun Layer.roundByCategory(): Layer {
+            val layerPosesRounded = when (layerCategory) {
+                GREEN_PATH, VIRTUAL_WALL -> {
+                    layerPoses?.map {
+                        LayerPose(
+                            it.x.keep2digits(),
+                            it.y.keep2digits(),
+                            0f
+                        )
+                    }
+                }
+                LOCATION -> {
+                    layerPoses?.map {
+                        LayerPose(
+                            it.x.keep2digits(),
+                            it.y.keep2digits(),
+                            it.theta.keep4digits()
+                        )
+                    }
+                }
+                else -> layerPoses
+            }
+            return this.copy(layerPoses = layerPosesRounded)
+        }
+
+        private fun Float.keep2digits(): Float {
+            return round(this * 100) / 100
+        }
+
+        private fun Float.keep4digits(): Float {
+            return round(this * 10000) / 10000
         }
     }
 }
