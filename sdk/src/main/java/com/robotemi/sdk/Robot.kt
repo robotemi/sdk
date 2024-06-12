@@ -35,6 +35,7 @@ import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.face.compatible
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.*
+import com.robotemi.sdk.map.Layer.CREATOR.roundByCategory
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
@@ -65,6 +66,7 @@ import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -411,7 +413,7 @@ class Robot private constructor(private val context: Context) {
 
         override fun onGoToNavPathChanged(path: String): Boolean {
             if (onGoToNavPathChangedListeners.isEmpty()) return false
-            val pathDecoded = decodeBase64UngzipJsonArray<LayerPose>(path)
+            val pathDecoded = decodeBase64UngzipJson<Layer>(path)?.layerPoses ?: listOf()
             uiHandler.post {
                 for (listener in onGoToNavPathChangedListeners) {
                     listener.onGoToNavPathChanged(pathDecoded)
@@ -419,7 +421,6 @@ class Robot private constructor(private val context: Context) {
             }
             return true
         }
-
 
         /*****************************************/
         /*            Movement & Follow          */
@@ -3417,7 +3418,7 @@ class Robot private constructor(private val context: Context) {
      * Require [Permission.MAP] permission
      * Supported from 134 launcher.
      *
-     * @param layer, layer data to be updated or inserted.
+     * @param layer, layer data to be updated or inserted. Use [Layer.upsertLayer] to create the layer
      *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success
@@ -3431,7 +3432,7 @@ class Robot private constructor(private val context: Context) {
         try {
             val resp = sdkService?.upsertMapLayer(
                 applicationInfo.packageName,
-                gson.toJson(layer)
+                gson.toJson(layer.roundByCategory())
             )?.toIntOrNull() ?: 0
             Log.d(TAG, "upsertLayer, result $resp")
             return resp
@@ -3805,20 +3806,46 @@ class Robot private constructor(private val context: Context) {
         return try {
             val compressedData = Base64.decode(json, Base64.NO_WRAP)
 
-            // Decompress the data with GZIP
-            val inputStream = compressedData.inputStream()
-            val gzipInputStream = GZIPInputStream(inputStream)
-            val decompressedData = gzipInputStream.readBytes()
+            ByteArrayOutputStream().use { outputStream ->
+                // Decompress the data with GZIP
+                GZIPInputStream(compressedData.inputStream()).use { gzipInputStream ->
+                    gzipInputStream.copyTo(outputStream)
+                }
+                val decompressedData = outputStream.toByteArray()
 
-            // Convert the decompressed data to a string
-            val decompressedString = String(decompressedData)
+                // Convert the decompressed data to a string
+                val decompressedString = String(decompressedData)
 
-            // Convert the string to a list of Object T
-            val type = object : TypeToken<List<T>>() {}.type
-            gson.fromJson(decompressedString, type)
+                // Convert the string to a list of Object T
+                val type = object : TypeToken<List<T>>() {}.type
+                gson.fromJson(decompressedString, type)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse json array", e)
             listOf()
+        }
+    }
+
+    private inline fun <reified T: Any> decodeBase64UngzipJson(json: String): T? {
+        return try {
+            val compressedData = Base64.decode(json, Base64.NO_WRAP)
+
+            ByteArrayOutputStream().use { outputStream ->
+                // Decompress the data with GZIP
+                GZIPInputStream(compressedData.inputStream()).use { gzipInputStream ->
+                    gzipInputStream.copyTo(outputStream)
+                }
+                val decompressedData = outputStream.toByteArray()
+
+                // Convert the decompressed data to a string
+                val decompressedString = String(decompressedData)
+
+                // Convert the string to object T
+                gson.fromJson(decompressedString, T::class.java)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse json", e)
+            null
         }
     }
 }
