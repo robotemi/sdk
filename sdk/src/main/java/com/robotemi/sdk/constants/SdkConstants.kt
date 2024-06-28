@@ -241,3 +241,15 @@ enum class Gender {
     MALE,
     UNKNOWN
 }
+
+/**
+ * Added in 134.
+ *
+ * When turning Kiosk mode off, can assign a home screen mode to be set.
+ */
+enum class HomeScreenMode {
+    DEFAULT,
+    CLEAR,
+    CUSTOM_SCREEN,
+    URL,
+}

@@ -2756,13 +2756,19 @@ class Robot private constructor(private val context: Context) {
         return false
     }
 
-    fun setKioskModeOn(on: Boolean = true) {
+    /**
+     * @param mode, added in 134. When turning Kiosk mode off, assign a home screen mode to be set.
+     *  if target launcher doesn't support this param yet, it will set to [HomeScreenMode.DEFAULT] mode.
+     *  If set to [HomeScreenMode.URL], but no URL is set, it will fallback to [HomeScreenMode.DEFAULT] mode.
+     */
+    @JvmOverloads
+    fun setKioskModeOn(on: Boolean = true, mode: HomeScreenMode = HomeScreenMode.DEFAULT) {
         if (!isMetaDataKiosk) {
             sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
             return
         }
         try {
-            sdkService?.setKioskModeOn(applicationInfo.packageName, on)
+            sdkService?.setKioskModeOn(applicationInfo.packageName, on, mode.name)
         } catch (e: RemoteException) {
             Log.e(TAG, "setKioskModeOn() error")
         }
@@ -3446,6 +3452,13 @@ class Robot private constructor(private val context: Context) {
      * Delete map layer, only support deleting virtual wall and path
      *
      * @param layerCategory, can only take [GREEN_PATH] and [VIRTUAL_WALL]
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success
+     *         400 invalid parameter
+     *         403 for [Permission.MAP] permission required
+     *         404 target map layer doesn't exist
+     *         413 pose out of map
      */
     @WorkerThread
     fun deleteMapLayer(layerId: String, layerCategory: Int): Int {

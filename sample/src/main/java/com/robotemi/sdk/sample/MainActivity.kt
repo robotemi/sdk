@@ -578,6 +578,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnSetMode.setOnClickListener { setMode() }
         btnGetMode.setOnClickListener { getMode() }
         btnToggleKioskMode.setOnClickListener { toggleKiosk() }
+        btnToggleKioskMode.setOnLongClickListener {
+//            robot.setKioskModeOn(false, HomeScreenMode.DEFAULT)
+//            robot.setKioskModeOn(false, HomeScreenMode.CLEAR)
+            robot.setKioskModeOn(false, HomeScreenMode.CUSTOM_SCREEN)
+//            robot.setKioskModeOn(false, HomeScreenMode.URL)
+            true
+        }
         btnIsKioskModeOn.setOnClickListener { isKioskModeOn() }
         btnEnabledLatinKeyboards.setOnClickListener { enabledLatinKeyboards() }
         btnGetSupportedKeyboard.setOnClickListener { getSupportedLatinKeyboards() }
