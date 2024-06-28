@@ -291,7 +291,7 @@ interface ISdkService {
 
     int getMode();
 
-    void setKioskModeOn(in String packageName, boolean on);
+    void setKioskModeOn(in String packageName, boolean on, in String targetMode);
 
     boolean isKioskModeOn();
 
