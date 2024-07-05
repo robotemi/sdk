@@ -9,9 +9,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.File;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 
+@Keep
 public class MediaObject implements Parcelable, MediaContainer {
 
     public static final Creator<MediaObject> CREATOR = new Creator<MediaObject>() {
