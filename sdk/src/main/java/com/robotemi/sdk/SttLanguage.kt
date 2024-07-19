@@ -26,6 +26,7 @@ enum class SttLanguage(val value: Int) {
     MS_MY(22), // Supported from 134 version
     VI_VN(23), // Supported from 134 version
     RU_RU(24), // Supported from 134 version
+    EL_GR(24), // Supported from 134 version
     ;
 
     companion object {
@@ -58,6 +59,7 @@ enum class SttLanguage(val value: Int) {
                 22 -> MS_MY
                 23 -> VI_VN
                 24 -> RU_RU
+                25 -> EL_GR
                 else -> SYSTEM
             }
         }
