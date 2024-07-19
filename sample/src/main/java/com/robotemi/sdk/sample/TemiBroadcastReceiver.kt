@@ -167,6 +167,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                         SttRequest(languages = listOf(SttLanguage.EN_US, SttLanguage.ZH_CN), timeout = 20, multipleConversation = true)
                     )
                     15 -> Robot.getInstance().wakeup(listOf(SttLanguage.MS_MY, SttLanguage.RU_RU, SttLanguage.VI_VN))
+                    16 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR))
                 }
 
             }
