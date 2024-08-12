@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
+import android.util.Base64
 import android.util.Log
 import androidx.annotation.*
 import androidx.annotation.IntRange
@@ -34,6 +35,7 @@ import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.face.compatible
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.*
+import com.robotemi.sdk.map.Layer.CREATOR.roundByCategory
 import com.robotemi.sdk.mediabar.AidlMediaBarController
 import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
@@ -64,6 +66,7 @@ import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -74,6 +77,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.zip.GZIPInputStream
 import kotlin.concurrent.thread
 
 @SuppressWarnings("unused")
@@ -197,6 +201,12 @@ class Robot private constructor(private val context: Context) {
 
     private val onRobotDragStateChangedListeners =
         CopyOnWriteArraySet<OnRobotDragStateChangedListener>()
+
+    private val onButtonStatusChangedListeners =
+        CopyOnWriteArraySet<OnButtonStatusChangedListener>()
+
+    private val onGoToNavPathChangedListeners =
+        CopyOnWriteArraySet<OnGoToNavPathChangedListener>()
 
     private var ttsService: ITtsService? = null
 
@@ -401,6 +411,17 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        override fun onGoToNavPathChanged(path: String): Boolean {
+            if (onGoToNavPathChangedListeners.isEmpty()) return false
+            val pathDecoded = decodeBase64UngzipJson<Layer>(path)?.layerPoses ?: listOf()
+            uiHandler.post {
+                for (listener in onGoToNavPathChangedListeners) {
+                    listener.onGoToNavPathChanged(pathDecoded)
+                }
+            }
+            return true
+        }
+
         /*****************************************/
         /*            Movement & Follow          */
         /*****************************************/
@@ -543,6 +564,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 onGreetModeStateChangedListeners.forEach {
                     it.onGreetModeStateChanged(state)
+                }
+            }
+            return true
+        }
+
+        override fun onButtonStatusChanged(buttonType: Int, buttonStatus: Int): Boolean {
+            if (onButtonStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onButtonStatusChangedListeners.forEach {
+                    it.onButtonStatusChanged(HardButton.valueToEnum(buttonType), HardButton.Status.valueToEnum(buttonStatus))
                 }
             }
             return true
@@ -951,7 +982,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: String) {
         try {
-            sdkService?.askQuestion(question, TtsRequest.create(question), null)
+            sdkService?.askQuestion(question,
+                TtsRequest.create(question).apply { packageName = applicationInfo.packageName }, null)
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }
@@ -965,7 +997,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: TtsRequest, sttRequest: SttRequest? = null) {
         try {
-            sdkService?.askQuestion(question.speech, question, sttRequest)
+            sdkService?.askQuestion(question.speech,
+                question.apply { packageName = applicationInfo.packageName }, sttRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }
@@ -1367,10 +1400,16 @@ class Robot private constructor(private val context: Context) {
     /**
      * Start positing to locate the position of temi.
      *
+     * @param position, a suggested position to instruct the algorithm to do location position.
+     *        e.g. repose(Position(0.0, 0.0, 0.0)) will start a reposition process
+     *        with initial location from coordinate (0, 0), direction 0, and do a quick search from the give coordinate.
+     *        It is null by default, meaning only global searching will be performed.
+     *        This parameter is supported in launcher from 134 version.
      */
-    fun repose() {
+    @JvmOverloads
+    fun repose(position: Position? = null) {
         try {
-            sdkService?.repose()
+            sdkService?.repose(position)
         } catch (e: RemoteException) {
             Log.e(TAG, "repose() error")
         }
@@ -1435,6 +1474,21 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnDistanceToDestinationChangedListener(listener: OnDistanceToDestinationChangedListener) {
         onDistanceToDestinationChangedListeners.remove(listener)
+    }
+
+    /**
+     * Show a navigation path of the robot during go to location/coordinates
+     * Added in 134 version.
+     *
+     */
+    @UiThread
+    fun addOnGoToNavPathChangedListener(listener: OnGoToNavPathChangedListener) {
+        onGoToNavPathChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnGoToNavPathChangedListener(listener: OnGoToNavPathChangedListener) {
+        onGoToNavPathChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -1885,10 +1939,38 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Get hard button status
+     * Added in 134 version.
+     * @param type, in 134 version it only supports [HardButton.EMERGENCY_STOP]
+     *
+     * @return hard button status,
+     *      [HardButton.Status.UNKNOWN] mean the version doesn't support it, or the robot doesn't have a emergency button
+     */
+    fun getButtonStatus(type: HardButton): HardButton.Status {
+        try {
+            val resp = sdkService?.getHardButtonStatus(applicationInfo.packageName, type.value)
+            return if (resp == null) {
+                // Launcher/Robox doesn't support this operation.
+                HardButton.Status.UNKNOWN
+            } else {
+                try {
+                    HardButton.Status.valueOf(resp)
+                } catch (e: Exception) {
+                    Log.e(TAG, "getButtonStatus() error, resp >$resp<")
+                    HardButton.Status.UNKNOWN
+                }
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getButtonStatus() error")
+        }
+        return HardButton.Status.UNKNOWN
+    }
+
+    /**
      * Get current mode of the specific hard button.
      *
      * @param type See [HardButton.MAIN], [HardButton.POWER], [HardButton.VOLUME]
-     * @return
+     * @return hard button mode, whether the button is disabled or not.
      */
     @CheckResult
     fun getHardButtonMode(type: HardButton): HardButton.Mode {
@@ -2055,6 +2137,7 @@ class Robot private constructor(private val context: Context) {
         }
         /**
          * @param volume the volume you want to set to Launcher.
+         * Require [Permission.SETTINGS] permission to set volume
          */
         set(volume) {
             try {
@@ -2673,13 +2756,19 @@ class Robot private constructor(private val context: Context) {
         return false
     }
 
-    fun setKioskModeOn(on: Boolean = true) {
+    /**
+     * @param mode, added in 134. When turning Kiosk mode off, assign a home screen mode to be set.
+     *  if target launcher doesn't support this param yet, it will set to [HomeScreenMode.DEFAULT] mode.
+     *  If set to [HomeScreenMode.URL], but no URL is set, it will fallback to [HomeScreenMode.DEFAULT] mode.
+     */
+    @JvmOverloads
+    fun setKioskModeOn(on: Boolean = true, mode: HomeScreenMode = HomeScreenMode.DEFAULT) {
         if (!isMetaDataKiosk) {
             sdkServiceCallback.onSdkError(SdkException.permissionDenied("Kiosk Mode"))
             return
         }
         try {
-            sdkService?.setKioskModeOn(applicationInfo.packageName, on)
+            sdkService?.setKioskModeOn(applicationInfo.packageName, on, mode.name)
         } catch (e: RemoteException) {
             Log.e(TAG, "setKioskModeOn() error")
         }
@@ -3224,6 +3313,165 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Reset map.
+     *      Note this method can be invoked out of home base, and will build a map without home base.
+     *      This is usefully when multi-floor is enabled, it can still save home base after move temi onto home base manually.
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param allFloor, true to reset maps of all floor, false to reset current map. Used in multi-floor.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for reset map succeed
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         408 for operation timeout
+     *
+     */
+    @WorkerThread
+    fun resetMap(allFloor: Boolean): Int {
+        try {
+            val resp = sdkService?.resetMap(applicationInfo.packageName, allFloor)?.toIntOrNull() ?: 0
+            Log.d(TAG, "resetMap $allFloor, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "resetMap() error")
+        }
+        return 0
+    }
+
+    /**
+     * Finish mapping, map will no longer update after finish mapping
+     * This operation may take several seconds or even longer.
+     *
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param mapName, map name give to the map, optional.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success
+     *         304 for mapping has been already finished
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         408 for operation timeout
+     */
+    @WorkerThread
+    @JvmOverloads
+    fun finishMapping(mapName: String? = null): Int {
+        try {
+            val resp = sdkService?.finishMapping(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
+            Log.d(TAG, "finishMapping $mapName, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "finishMapping() error")
+        }
+        return 0
+    }
+
+    /**
+     * Update current map name
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param mapName, map name give to current map.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 if the map name is set.
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         429 for too many requests, wait for 2 seconds
+     */
+    fun updateMapName(mapName: String): Int {
+        try {
+            val resp = sdkService?.updateMapName(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
+            Log.d(TAG, "updateMapName $mapName, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "updateMapName() error")
+        }
+        return 0
+    }
+
+    /**
+     * Unlock the map and continue mapping.
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success.
+     *         304 for map already unlocked
+     *         400 for invalid action
+     *         403 for [Permission.MAP] permission required
+     *         408 for operation timeout
+     *         429 for too many requests, wait for 5 seconds
+     */
+    @WorkerThread
+    fun continueMapping(): Int {
+        try {
+            val resp = sdkService?.continueMapping(applicationInfo.packageName)?.toIntOrNull() ?: 0
+            Log.d(TAG, "continueMapping, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "continueMapping() error")
+        }
+        return 0
+    }
+
+    /**
+     * Update existing or insert new layer
+     * If layerId exists then it will update current layer.
+     * If not, then a new layer will be created based on given data.
+     *
+     * Require [Permission.MAP] permission
+     * Supported from 134 launcher.
+     *
+     * @param layer, layer data to be updated or inserted. Use [Layer.upsertLayer] to create the layer
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success
+     *         400 invalid parameter
+     *         403 for [Permission.MAP] permission required
+     *         413 pose out of map
+     *
+     */
+    @WorkerThread
+    fun upsertMapLayer(layer: Layer): Int {
+        try {
+            val resp = sdkService?.upsertMapLayer(
+                applicationInfo.packageName,
+                gson.toJson(layer.roundByCategory())
+            )?.toIntOrNull() ?: 0
+            Log.d(TAG, "upsertLayer, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "upsertLayer() error")
+        }
+        return 0
+    }
+
+    /**
+     * Delete map layer, only support deleting virtual wall and path
+     *
+     * @param layerCategory, can only take [GREEN_PATH] and [VIRTUAL_WALL]
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success
+     *         400 invalid parameter
+     *         403 for [Permission.MAP] permission required
+     *         404 target map layer doesn't exist
+     *         413 pose out of map
+     */
+    @WorkerThread
+    fun deleteMapLayer(layerId: String, layerCategory: Int): Int {
+        try {
+            val resp = sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory)?.toIntOrNull() ?: 0
+            Log.d(TAG, "deleteMapLayer, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "upsertLayer() error")
+        }
+        return 0
+    }
+
     @UiThread
     fun addOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
         onLoadMapStatusChangedListeners.add(listener)
@@ -3460,6 +3708,14 @@ class Robot private constructor(private val context: Context) {
         onSdkExceptionListeners.remove(listener)
     }
 
+    fun addOnButtonStatusChangedListener(listener: OnButtonStatusChangedListener) {
+        onButtonStatusChangedListeners.add(listener)
+    }
+
+    fun removeOnButtonStatusChangedListener(listener: OnButtonStatusChangedListener) {
+        onButtonStatusChangedListeners.remove(listener)
+    }
+
     /*****************************************/
     /*               Interface               */
     /*****************************************/
@@ -3556,6 +3812,53 @@ class Robot private constructor(private val context: Context) {
             } catch (e: ParseException) {
                 throw JsonParseException(e)
             }
+        }
+    }
+
+    private inline fun <reified T: Any> decodeBase64UngzipJsonArray(json: String): List<T> {
+        return try {
+            val compressedData = Base64.decode(json, Base64.NO_WRAP)
+
+            ByteArrayOutputStream().use { outputStream ->
+                // Decompress the data with GZIP
+                GZIPInputStream(compressedData.inputStream()).use { gzipInputStream ->
+                    gzipInputStream.copyTo(outputStream)
+                }
+                val decompressedData = outputStream.toByteArray()
+
+                // Convert the decompressed data to a string
+                val decompressedString = String(decompressedData)
+
+                // Convert the string to a list of Object T
+                val type = object : TypeToken<List<T>>() {}.type
+                gson.fromJson(decompressedString, type)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse json array", e)
+            listOf()
+        }
+    }
+
+    private inline fun <reified T: Any> decodeBase64UngzipJson(json: String): T? {
+        return try {
+            val compressedData = Base64.decode(json, Base64.NO_WRAP)
+
+            ByteArrayOutputStream().use { outputStream ->
+                // Decompress the data with GZIP
+                GZIPInputStream(compressedData.inputStream()).use { gzipInputStream ->
+                    gzipInputStream.copyTo(outputStream)
+                }
+                val decompressedData = outputStream.toByteArray()
+
+                // Convert the decompressed data to a string
+                val decompressedString = String(decompressedData)
+
+                // Convert the string to object T
+                gson.fromJson(decompressedString, T::class.java)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse json", e)
+            null
         }
     }
 }

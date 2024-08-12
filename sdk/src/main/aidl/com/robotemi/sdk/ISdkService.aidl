@@ -255,7 +255,7 @@ interface ISdkService {
 
     boolean isWakeupDisabled();
 
-    void repose();
+    void repose(in Position position);
 
     void restart(in String packageName);
 
@@ -291,7 +291,7 @@ interface ISdkService {
 
     int getMode();
 
-    void setKioskModeOn(in String packageName, boolean on);
+    void setKioskModeOn(in String packageName, boolean on, in String targetMode);
 
     boolean isKioskModeOn();
 
@@ -373,4 +373,18 @@ interface ISdkService {
     Position getPosition(in String packageName);
 
     int setMicGainLevel(in String packageName, int level);
+
+    String resetMap(in String packageName, boolean allFloor);
+
+    String finishMapping(in String packageName, in String mapName);
+
+    String updateMapName(in String packageName, in String mapName);
+
+    String continueMapping(in String packageName);
+
+    String upsertMapLayer(in String packageName, in String layer);
+
+    String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
+
+    String getHardButtonStatus(in String packageName, int type);
 }

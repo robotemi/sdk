@@ -112,4 +112,9 @@
         style="@style/ButtonCommon"
         android:text="@string/stop_movement" />
 
+    <Button
+        android:id="@+id/btnNavPath"
+        style="@style/ButtonCommon"
+        android:text="Observe Nav Path" />
+
 </LinearLayout>

@@ -50,6 +50,7 @@ import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
 import com.robotemi.sdk.face.OnFaceRecognizedListener
 import com.robotemi.sdk.listeners.*
 import com.robotemi.sdk.map.Floor
+import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapModel
 import com.robotemi.sdk.map.OnLoadFloorStatusChangedListener
 import com.robotemi.sdk.map.OnLoadMapStatusChangedListener
@@ -388,6 +389,24 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnTiltAngle.setOnClickListener { tiltAngle() }
         btnTiltBy.setOnClickListener { tiltBy() }
         btnTurnBy.setOnClickListener { turnBy() }
+
+        val navPathListener = object : OnGoToNavPathChangedListener {
+            override fun onGoToNavPathChanged(path: List<LayerPose>) {
+                printLog("Nav Path $path")
+            }
+        }
+        btnNavPath.setOnClickListener { view ->
+            if (view.tag == true) {
+                robot.removeOnGoToNavPathChangedListener(navPathListener)
+                view.tag = false
+                printLog("Nav Path Listener removed")
+            } else {
+                robot.addOnGoToNavPathChangedListener(navPathListener)
+                view.tag = true
+                printLog("Nav Path Listener added")
+            }
+        }
+
         btnBatteryInfo.setOnClickListener { getBatteryData() }
         btnSavedLocations.setOnClickListener { savedLocationsDialog() }
         btnCallOwner.setOnClickListener { callOwner() }
@@ -559,6 +578,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnSetMode.setOnClickListener { setMode() }
         btnGetMode.setOnClickListener { getMode() }
         btnToggleKioskMode.setOnClickListener { toggleKiosk() }
+        btnToggleKioskMode.setOnLongClickListener {
+//            robot.setKioskModeOn(false, HomeScreenMode.DEFAULT)
+//            robot.setKioskModeOn(false, HomeScreenMode.CLEAR)
+            robot.setKioskModeOn(false, HomeScreenMode.CUSTOM_SCREEN)
+//            robot.setKioskModeOn(false, HomeScreenMode.URL)
+            true
+        }
         btnIsKioskModeOn.setOnClickListener { isKioskModeOn() }
         btnEnabledLatinKeyboards.setOnClickListener { enabledLatinKeyboards() }
         btnGetSupportedKeyboard.setOnClickListener { getSupportedLatinKeyboards() }
@@ -634,6 +660,30 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             } catch (e: Exception) {
                 printLog("Cannot launch browser, probably temi browser app not installed.")
             }
+        }
+        btnEmergencyStop.setOnClickListener {
+            val status = robot.getButtonStatus(HardButton.EMERGENCY_STOP)
+            printLog("Emergency Stop button status $status")
+        }
+        val eStopListener = object : OnButtonStatusChangedListener {
+            override fun onButtonStatusChanged(hardButton: HardButton, status: HardButton.Status) {
+                if (hardButton == HardButton.EMERGENCY_STOP) {
+                    printLog("Emergency Stop button status changed: $status")
+                }
+            }
+        }
+
+        btnEmergencyStop.setOnLongClickListener { view ->
+            if (view.tag == true) {
+                robot.removeOnButtonStatusChangedListener(eStopListener)
+                view.tag = false
+                printLog("Emergency Stop button Listener removed")
+            } else {
+                robot.addOnButtonStatusChangedListener(eStopListener)
+                view.tag = true
+                printLog("Emergency Stop button Listener added")
+            }
+            true
         }
     }
 
@@ -2044,6 +2094,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     private fun repose() {
+//        Repose with position
+//        robot.repose(Position(1.516081f, 3.1614602f, 3.6307523f))
+//        robot.repose(Position(0f,0f,0f))
+
+//        Repose without position
         robot.repose()
     }
 
@@ -2291,6 +2346,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             TtsRequest.Language.HI_IN -> Locale("hi", "IN")
             TtsRequest.Language.ET_EE -> Locale("et", "EE")
             TtsRequest.Language.TR_TR -> Locale("tr", "TR")
+            TtsRequest.Language.EN_IN -> Locale("en", "IN")
+            TtsRequest.Language.MS_MY -> Locale("ms", "MY")
+            TtsRequest.Language.VI_VN -> Locale("vi", "VN")
+            TtsRequest.Language.EL_GR -> Locale("el", "GR")
             else -> if (robot.launcherVersion.contains("china")) {
                 Locale.SIMPLIFIED_CHINESE
             } else {
