@@ -3466,7 +3466,7 @@ class Robot private constructor(private val context: Context) {
             Log.d(TAG, "deleteMapLayer, result $resp")
             return resp
         } catch (e: RemoteException) {
-            Log.e(TAG, "upsertLayer() error")
+            Log.e(TAG, "deleteMapLayer() error")
         }
         return 0
     }
