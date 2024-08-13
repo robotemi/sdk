@@ -996,7 +996,42 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 val ttsRequest =
                     create(text, language = adapter.getItem(position)!!, showAnimationOnly = true)
-                if (askQuestion) {
+                if (text == "queue") {
+                    // A demonstration of using TTS queue
+
+                    val request = TtsRequest.create("白日依山尽\n", language = TtsRequest.Language.ZH_CN)
+                    with(TtsRequest.Language.ZH_CN) {
+                        val request1 = request.copy(speech = "黄河入海流\n")
+                        val request2 = request.copy(speech = "欲穷千里目\n")
+                        val request3 = request.copy(speech = "更上一层楼\n")
+                        robot.speak(request)
+                        robot.speak(request1)
+                        robot.speak(request2)
+                        robot.speak(request3)
+                    }
+
+                    with(TtsRequest.Language.JA_JP) {
+                        val request1 = request.copy(speech = "古池や\n", language = TtsRequest.Language.JA_JP.value)
+                        val request2 = request1.copy(speech = "蛙飛び込む\n")
+                        val request3 = request1.copy(speech = "水の音\n")
+                        robot.speak(request1)
+                        robot.speak(request2)
+                        robot.speak(request3)
+                    }
+
+                    with(TtsRequest.Language.EN_US) {
+                        val request1 = request.copy(speech = "It is just as I feared!\n", language = TtsRequest.Language.EN_US.value)
+                        val request2 = request1.copy(speech = "Two Owls and a Hen\n")
+                        val request3 = request1.copy(speech = "Four Larks and a Wren\n")
+                        val request4 = request1.copy(speech = "Have all built their nests in my beard.\n")
+                        robot.speak(request1)
+                        robot.speak(request2)
+                        robot.speak(request3)
+                        robot.speak(request4)
+                    }
+
+
+                } else if (askQuestion) {
                     robot.askQuestion(text)
                 } else {
                     robot.speak(ttsRequest)
