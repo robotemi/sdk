@@ -3458,7 +3458,6 @@ class Robot private constructor(private val context: Context) {
      *         400 invalid parameter
      *         403 for [Permission.MAP] permission required
      *         404 target map layer doesn't exist
-     *         413 pose out of map
      */
     @WorkerThread
     fun deleteMapLayer(layerId: String, layerCategory: Int): Int {
