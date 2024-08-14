@@ -236,9 +236,16 @@ enum class SensitivityLevel {
     LOW
 }
 
+/**
+ * [GIRL] and [BOY] is added in 135 Chinese version.
+ * will fallback to [FEMALE] or [MALE] if not supported by 135 launcher when setting TTS voice with them
+ * or just fail to set the voice on pre-135 launchers.
+ */
 enum class Gender {
     FEMALE,
     MALE,
+    GIRL,
+    BOY,
     UNKNOWN
 }
 

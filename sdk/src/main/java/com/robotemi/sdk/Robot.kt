@@ -1056,7 +1056,7 @@ class Robot private constructor(private val context: Context) {
      */
     fun setTtsVoice(ttsVoice: TtsVoice): Boolean {
         with(ttsVoice) {
-            if (gender != Gender.FEMALE && gender != Gender.MALE) {
+            if (gender == Gender.UNKNOWN) {
                 Log.e(TAG, "Gender $gender is invalid")
                 return false
             }
