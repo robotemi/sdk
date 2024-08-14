@@ -1072,6 +1072,9 @@ class Robot private constructor(private val context: Context) {
 
         return try {
             sdkService?.setTtsVoice(applicationInfo.packageName, ttsVoice) ?: false
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "setTtsVoice() set specific voice error")
+            false
         } catch (e: RemoteException) {
             Log.e(TAG, "setTtsVoice() error")
             false
