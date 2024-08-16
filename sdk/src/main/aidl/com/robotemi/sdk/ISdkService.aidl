@@ -122,7 +122,7 @@ interface ISdkService {
     /**
      * Request robot to follow the user.
      */
-    void beWithMe();
+    void beWithMe(in String speedLevel);
 
     void skidJoy(in float x, in float y, in boolean smart);
 
@@ -387,4 +387,8 @@ interface ISdkService {
     String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
 
     String getHardButtonStatus(in String packageName, int type);
+
+    String setFollowSpeed(in String packageName, in String speedLevel);
+
+    String getFollowSpeed();
 }
