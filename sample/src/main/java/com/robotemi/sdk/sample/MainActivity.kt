@@ -331,6 +331,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
         btnStopMovement.setOnClickListener { stopMovement() }
         btnFollow.setOnClickListener { followMe() }
+        btnFollow.setOnLongClickListener {
+            followMe(SpeedLevel.HIGH)
+            true
+        }
         btnskidJoy.setOnClickListener { skidJoy() }
         btnskidJoyDialog.setOnClickListener {
             val alert = AlertDialog.Builder(it.context)
@@ -1089,8 +1093,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     /**
      * Simple follow me example.
      */
-    private fun followMe() {
-        robot.beWithMe()
+    private fun followMe(speedLevel: SpeedLevel? = null) {
+        robot.beWithMe(speedLevel)
         hideKeyboard()
     }
 

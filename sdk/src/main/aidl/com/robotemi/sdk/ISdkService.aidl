@@ -122,7 +122,7 @@ interface ISdkService {
     /**
      * Request robot to follow the user.
      */
-    void beWithMe();
+    void beWithMe(in String speedLevel);
 
     void skidJoy(in float x, in float y, in boolean smart);
 

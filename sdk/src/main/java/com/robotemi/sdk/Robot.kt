@@ -1501,10 +1501,14 @@ class Robot private constructor(private val context: Context) {
     /**
      * Request robot to follow user around.
      * Add [OnBeWithMeStatusChangedListener] to listen for status changes.
+     *
+     * @param speedLevel, the speed of following, added in 135 version.
      */
-    fun beWithMe() {
+    fun beWithMe(
+        speedLevel: SpeedLevel? = null
+    ) {
         try {
-            sdkService?.beWithMe()
+            sdkService?.beWithMe(speedLevel?.value ?: "")
         } catch (e: RemoteException) {
             Log.e(TAG, "beWithMe() error")
         }
