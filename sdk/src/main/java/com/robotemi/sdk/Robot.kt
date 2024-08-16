@@ -1056,7 +1056,7 @@ class Robot private constructor(private val context: Context) {
      */
     fun setTtsVoice(ttsVoice: TtsVoice): Boolean {
         with(ttsVoice) {
-            if (gender != Gender.FEMALE && gender != Gender.MALE) {
+            if (gender == Gender.UNKNOWN) {
                 Log.e(TAG, "Gender $gender is invalid")
                 return false
             }
@@ -1072,6 +1072,9 @@ class Robot private constructor(private val context: Context) {
 
         return try {
             sdkService?.setTtsVoice(applicationInfo.packageName, ttsVoice) ?: false
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "setTtsVoice() set specific voice error")
+            false
         } catch (e: RemoteException) {
             Log.e(TAG, "setTtsVoice() error")
             false
