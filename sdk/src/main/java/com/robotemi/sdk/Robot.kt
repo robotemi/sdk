@@ -1420,6 +1420,8 @@ class Robot private constructor(private val context: Context) {
     /**
      * Set follow speed level
      *
+     * Added in 135 version.
+     *
      * @return 0 if the operation is not supported by current launcher
      *         200 success
      *         400 invalid parameter
