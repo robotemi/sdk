@@ -474,6 +474,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             mediaPlayer.reset()
         }
         btnSetGoToSpeed.setOnClickListener { setGoToSpeed() }
+        btnSetFollowSpeed.setOnClickListener { setFollowSpeed() }
         btnSetGoToSafety.setOnClickListener { setGoToSafety() }
         btnToggleTopBadge.setOnClickListener { toggleTopBadge() }
         btnToggleDetectionMode.setOnClickListener { toggleDetectionMode() }
@@ -1633,6 +1634,29 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 robot.goToSpeed = SpeedLevel.valueToEnum(adapter.getItem(position)!!)
                 printLog("Set go to speed to: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private fun setFollowSpeed() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        printLog("Current follow speed ${robot.getFollowSpeed()}")
+        val speedLevels: MutableList<String> = ArrayList()
+        speedLevels.add(SpeedLevel.HIGH.value)
+        speedLevels.add(SpeedLevel.MEDIUM.value)
+        speedLevels.add(SpeedLevel.SLOW.value)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, speedLevels)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Follow Speed Level")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                val resp = robot.setFollowSpeed(SpeedLevel.valueToEnum(adapter.getItem(position)!!))
+                printLog("Set follow speed to: ${adapter.getItem(position)}, response $resp")
                 dialog.dismiss()
             }
         dialog.show()

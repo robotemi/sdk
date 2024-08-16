@@ -387,4 +387,8 @@ interface ISdkService {
     String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
 
     String getHardButtonStatus(in String packageName, int type);
+
+    String setFollowSpeed(in String packageName, in String speedLevel);
+
+    String getFollowSpeed();
 }

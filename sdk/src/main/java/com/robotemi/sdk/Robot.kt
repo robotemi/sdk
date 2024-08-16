@@ -1378,7 +1378,7 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
-     * Set navigation speed level.
+     * Get / Set navigation speed level.
      */
     @get:CheckResult
     var goToSpeed: SpeedLevel
@@ -1399,6 +1399,42 @@ class Robot private constructor(private val context: Context) {
                 Log.e(TAG, "setGoToSpeed() error")
             }
         }
+
+    /**
+     * Get follow speed level.
+     *
+     * Added in 135 version.
+     *
+     */
+    fun getFollowSpeed(): SpeedLevel {
+        try {
+            return SpeedLevel.valueToEnum(
+                sdkService?.followSpeed ?: SpeedLevel.DEFAULT.value
+            )
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getFollowSpeed() error")
+        }
+        return SpeedLevel.DEFAULT
+    }
+
+    /**
+     * Set follow speed level
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 invalid parameter
+     *         403 SETTINGS permission required
+     */
+    fun setFollowSpeed(speedLevel: SpeedLevel): Int {
+        try {
+            val resp = sdkService?.setFollowSpeed(applicationInfo.packageName, speedLevel.value)?.toIntOrNull() ?: 0
+            Log.d(TAG, "setFollowSpeed() response: $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setFollowSpeed() error")
+        }
+        return 0
+    }
 
     /**
      * Start positing to locate the position of temi.
