@@ -591,6 +591,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             true
         }
         btnIsKioskModeOn.setOnClickListener { isKioskModeOn() }
+        btnCurrentHomeScreenMode.setOnClickListener { currentHomeScreenMode() }
         btnEnabledLatinKeyboards.setOnClickListener { enabledLatinKeyboards() }
         btnGetSupportedKeyboard.setOnClickListener { getSupportedLatinKeyboards() }
         btnToggleGroundDepthCliff.setOnClickListener { toggleGroundDepthCliff() }
@@ -853,6 +854,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private fun isKioskModeOn() {
         printLog("Is kiosk mode on: ${robot.isKioskModeOn()}")
+    }
+
+    private fun currentHomeScreenMode() {
+        printLog("Current home screen mode: ${robot.getHomeScreenMode()}")
     }
 
     private fun toggleKiosk() {

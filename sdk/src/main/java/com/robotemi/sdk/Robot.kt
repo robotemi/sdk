@@ -2805,6 +2805,7 @@ class Robot private constructor(private val context: Context) {
      * @param mode, added in 134. When turning Kiosk mode off, assign a home screen mode to be set.
      *  if target launcher doesn't support this param yet, it will set to [HomeScreenMode.DEFAULT] mode.
      *  If set to [HomeScreenMode.URL], but no URL is set, it will fallback to [HomeScreenMode.DEFAULT] mode.
+     *  Cannot turn off Kiosk Mode and set to [HomeScreenMode.APPLICATION] mode, will fallback to default mode
      */
     @JvmOverloads
     fun setKioskModeOn(on: Boolean = true, mode: HomeScreenMode = HomeScreenMode.DEFAULT) {
@@ -2826,6 +2827,22 @@ class Robot private constructor(private val context: Context) {
         } catch (e: RemoteException) {
             Log.e(TAG, "isKioskModeOn() error")
             false
+        }
+    }
+
+    /**
+     * Get current home screen mode
+     * @return current [HomeScreenMode]
+     *         or null if failed to get the mode
+     */
+    @CheckResult
+    fun getHomeScreenMode() : HomeScreenMode? {
+        return try {
+            val homeScreenMode = sdkService?.getHomeScreenMode(applicationInfo.packageName)
+            return HomeScreenMode.getHomeScreenMode(homeScreenMode)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getHomeScreenMode() error")
+            null
         }
     }
 
