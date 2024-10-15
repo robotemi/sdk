@@ -391,4 +391,6 @@ interface ISdkService {
     String setFollowSpeed(in String packageName, in String speedLevel);
 
     String getFollowSpeed();
+
+    String getHomeScreenMode(in String packageName);
 }

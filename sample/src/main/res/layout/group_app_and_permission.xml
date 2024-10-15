@@ -49,4 +49,9 @@
         style="@style/ButtonCommon"
         android:text="Is Kiosk Mode On" />
 
+    <Button
+        android:id="@+id/btnCurrentHomeScreenMode"
+        style="@style/ButtonCommon"
+        android:text="Current Home Screen Mode" />
+
 </LinearLayout>
