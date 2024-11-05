@@ -10,6 +10,7 @@ import com.robotemi.sdk.SttRequest
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.constants.SequenceCommand
 import com.robotemi.sdk.navigation.model.Position
+import com.robotemi.sdk.voice.WakeupRequest
 
 class TemiBroadcastReceiver : BroadcastReceiver() {
     companion object {
@@ -170,6 +171,8 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     )
                     15 -> Robot.getInstance().wakeup(listOf(SttLanguage.MS_MY, SttLanguage.RU_RU, SttLanguage.VI_VN))
                     16 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR))
+                    17 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR), WakeupRequest(wakeupResponse = false))
+                    18 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR), WakeupRequest(wakeupResponse = true))
                 }
             }
             ACTION_GOTO -> {

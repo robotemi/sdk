@@ -63,6 +63,8 @@ import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.tourguide.compatible
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.WakeupOrigin
+import com.robotemi.sdk.voice.WakeupRequest
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
 import org.json.JSONObject
@@ -243,11 +245,14 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
+        override fun onWakeupWord(wakeupWord: String, direction: Int, origin: String?): Boolean {
             if (wakeUpWordListeners.isEmpty()) return false
+
+            val wakeupOrigin = WakeupOrigin.parse(origin)
+
             uiHandler.post {
                 for (wakeupWordListener in wakeUpWordListeners) {
-                    wakeupWordListener.onWakeupWord(wakeupWord, direction)
+                    wakeupWordListener.onWakeupWord(wakeupWord, direction, wakeupOrigin)
                 }
             }
             return true
@@ -889,15 +894,17 @@ class Robot private constructor(private val context: Context) {
      *
      * @param languages - List of languages to be used for ASR. Overrides the setAsrLanguages() languages.
      * If empty, then the system default languages will be used.
+     * @param wakeupRequest - Wakeup request, control the behavior of wakeup.
      */
-    fun wakeup(languages: List<SttLanguage> = emptyList()) {
+    fun wakeup(languages: List<SttLanguage> = emptyList(), wakeupRequest: WakeupRequest? = null) {
         try {
             sdkService?.wakeup(languages.map { it.value }.toIntArray(),
                 SttRequest(
                     languages = languages,
                     timeout = 0,
                     multipleConversation = false
-                ))
+                ),
+                wakeupRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -907,11 +914,13 @@ class Robot private constructor(private val context: Context) {
      * Trigger temi's wakeup programmatically. Added in 133 version, as an alternative to [wakeup(languages: List<SttLanguage>)]
      *
      * @param sttRequest - STT request, define STT languages, listening timeout, multiple conversation.
+     * @param wakeupRequest - Wakeup request, control the behavior of wakeup.
      */
-    fun wakeup(sttRequest: SttRequest) {
+    fun wakeup(sttRequest: SttRequest, wakeupRequest: WakeupRequest? = null) {
         try {
             sdkService?.wakeup(sttRequest.languages.map { it.value }.toIntArray(),
-                sttRequest)
+                sttRequest,
+                wakeupRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -3800,7 +3809,7 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     interface WakeupWordListener {
-        fun onWakeupWord(wakeupWord: String, direction: Int)
+        fun onWakeupWord(wakeupWord: String, direction: Int, origin: WakeupOrigin = WakeupOrigin.UNKNOWN)
     }
 
     interface TtsListener {

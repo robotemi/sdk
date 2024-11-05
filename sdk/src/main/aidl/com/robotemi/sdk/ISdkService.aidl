@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import com.robotemi.sdk.ISdkServiceCallback;
 import com.robotemi.sdk.SttRequest;
 import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.voice.WakeupRequest;
 import com.robotemi.sdk.DisplayListRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.notification.AlertNotification;
@@ -174,7 +175,7 @@ interface ISdkService {
      */
     boolean deleteLocation(in String name);
 
-    void wakeup(in int[] languages, in SttRequest sttRequest);
+    void wakeup(in int[] languages, in SttRequest sttRequest, in WakeupRequest wakeupRequest);
 
     String getWakeupWord();
 
