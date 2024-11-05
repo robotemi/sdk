@@ -16,7 +16,7 @@ import com.robotemi.sdk.exception.SdkException;
 
 interface ISdkServiceCallback {
 
-    boolean onWakeupWord(in String wakeupWord, in int direction);
+    boolean onWakeupWord(in String wakeupWord, in int direction, in String origin);
 
     boolean onTtsStatusChanged(in TtsRequest ttsRequest);
 

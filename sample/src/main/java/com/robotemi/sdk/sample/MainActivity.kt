@@ -72,6 +72,7 @@ import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.WakeupOrigin
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.group_app_and_permission.*
@@ -1308,9 +1309,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.showTopBar()
     }
 
-    override fun onWakeupWord(wakeupWord: String, direction: Int) {
+    override fun onWakeupWord(wakeupWord: String, direction: Int, origin: WakeupOrigin) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
-        printLog("onWakeupWord", "$wakeupWord, $direction")
+        printLog("onWakeupWord", "$wakeupWord, $direction, $origin")
     }
 
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
