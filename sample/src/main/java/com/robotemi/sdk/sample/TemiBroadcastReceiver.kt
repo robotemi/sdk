@@ -9,6 +9,7 @@ import com.robotemi.sdk.SttLanguage
 import com.robotemi.sdk.SttRequest
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.constants.SequenceCommand
+import com.robotemi.sdk.navigation.model.Position
 
 class TemiBroadcastReceiver : BroadcastReceiver() {
     companion object {
@@ -23,6 +24,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         private const val ACTION_MEETING = "temi.debug.meeting"
         private const val ACTION_FACE = "temi.debug.face"
         private const val ACTION_WAKE_UP = "temi.debug.wakeup"
+        private const val ACTION_GOTO = "temi.debug.goto"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -169,7 +171,21 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     15 -> Robot.getInstance().wakeup(listOf(SttLanguage.MS_MY, SttLanguage.RU_RU, SttLanguage.VI_VN))
                     16 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR))
                 }
-
+            }
+            ACTION_GOTO -> {
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.goto" --ei test 1
+                val test = intent.getIntExtra("test", 1)
+                val robot = Robot.getInstance()
+                val position = robot.getPosition()
+                when (test) {
+                    1 -> robot.goToPosition(position.copy(x = position.x + 0.5f))
+                    2 -> robot.goToPosition(position.copy(x = position.x + 0.5f), highAccuracyArrival = true)
+                    3 -> robot.goToPosition(position.copy(x = position.x + 0.5f, yaw = 999f), highAccuracyArrival = true)
+                    4 -> robot.goTo("a")
+                    5 -> robot.goTo("a", highAccuracyArrival = true)
+                    6 -> robot.goTo("a", highAccuracyArrival = true,  noRotationAtEnd = true)
+                    7 -> robot.goTo("a", noRotationAtEnd = true)
+                }
             }
         }
     }

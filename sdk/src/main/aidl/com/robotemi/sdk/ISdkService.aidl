@@ -96,7 +96,7 @@ interface ISdkService {
      *
      * @param location - Saved location name.
      */
-    void goTo(in String location, int backwards, int noBypass, in String speedLevel);
+    void goTo(in String location, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival, int noRotationAtEnd);
 
     /**
      * Retrieve list of previously saved locations.
@@ -247,7 +247,7 @@ interface ISdkService {
 
     void playSequence(in String packageName, in String sequenceId, boolean withPlayer, int repeat);
 
-    void goToPosition(in Position position, int backwards, int noBypass, in String speedLevel);
+    void goToPosition(in Position position, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival);
 
     MapDataModel getMapData(in String packageName);
 

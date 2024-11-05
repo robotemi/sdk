@@ -1277,51 +1277,69 @@ class Robot private constructor(private val context: Context) {
      *   Pass `null` to follow the  *Settings -> Navigation Settings*
      * @param speedLevel the speed level of this single go to session.
      *   Pass `null` to start with the speed level in *Settings -> Navigation Settings* (see [speedLevel]).
+     * @param highAccuracyArrival if `true` will report arrival only when both location and rotation on destination are accurate.
+     *      *   Pass `null` to follow the  *Settings -> Navigation Settings*. Added in 135 version.
+     * @param noRotationAtEnd if `true` will skip rotate to destination's saved angle. Added in 135 version.
      */
     @JvmOverloads
     fun goTo(
         location: String,
         backwards: Boolean? = null,
         noBypass: Boolean? = null,
-        speedLevel: SpeedLevel? = null
+        speedLevel: SpeedLevel? = null,
+        highAccuracyArrival: Boolean? = null,
+        noRotationAtEnd: Boolean? = null,
     ) {
         require(location.isNotBlank()) { "Location can not be null or empty." }
         try {
             val allowBackwardsInt =
                 if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
             val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
-            sdkService?.goTo(location, allowBackwardsInt, noBypassInt, speedLevel?.value ?: "")
+            val highAccuracyArrivalInt = if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
+            val noRotationAtEndInt = if (noRotationAtEnd == null) NOT_SET else if (noRotationAtEnd) TRUE else FALSE
+            sdkService?.goTo(location,
+                allowBackwardsInt,
+                noBypassInt,
+                speedLevel?.value ?: "",
+                highAccuracyArrivalInt,
+                noRotationAtEndInt,
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "goTo(String) error")
         }
     }
 
     /**
-     * Go to a specific position with (x,y).
+     * Go to a specific position with (x,y,yaw).
      *
-     * @param position Position holds (x,y).
+     * @param position Position holds (x,y,yaw). Set yaw to 999 will cancel the rotataion on arrival.
      * @param backwards if `true` will walk backwards to the destination. `false` by default.
      * @param noBypass if `true` will disallow bypass the obstacles during go to.
      *   Pass `null` to follow the  *Settings -> Navigation Settings*
      * @param speedLevel the speed level of this single go to session.
      *   Pass `null` to start with the speed level in *Settings -> Navigation Settings* (see [speedLevel]).
+     * @param highAccuracyArrival if `true` will report arrival only when both location and rotation on destination are accurate.
+     *   Pass `null` to follow the  *Settings -> Navigation Settings*. Added in 135 version.
      */
     @JvmOverloads
     fun goToPosition(
         position: Position,
         backwards: Boolean? = null,
         noBypass: Boolean? = null,
-        speedLevel: SpeedLevel? = null
+        speedLevel: SpeedLevel? = null,
+        highAccuracyArrival: Boolean? = null,
     ) {
         try {
             val allowBackwardsInt =
                 if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
             val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
+            val highAccuracyArrivalInt = if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
             sdkService?.goToPosition(
                 position,
                 allowBackwardsInt,
                 noBypassInt,
-                speedLevel?.value ?: ""
+                speedLevel?.value ?: "",
+                highAccuracyArrivalInt
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "goToPosition() error")
