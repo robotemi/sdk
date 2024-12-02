@@ -72,6 +72,7 @@ import com.robotemi.sdk.telepresence.LinkBasedMeeting
 import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.WakeupOrigin
 import com.robotemi.sdk.voice.model.TtsVoice
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.group_app_and_permission.*
@@ -331,6 +332,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
         btnStopMovement.setOnClickListener { stopMovement() }
         btnFollow.setOnClickListener { followMe() }
+        btnFollow.setOnLongClickListener {
+            followMe(SpeedLevel.HIGH)
+            true
+        }
         btnskidJoy.setOnClickListener { skidJoy() }
         btnskidJoyDialog.setOnClickListener {
             val alert = AlertDialog.Builder(it.context)
@@ -470,6 +475,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             mediaPlayer.reset()
         }
         btnSetGoToSpeed.setOnClickListener { setGoToSpeed() }
+        btnSetFollowSpeed.setOnClickListener { setFollowSpeed() }
         btnSetGoToSafety.setOnClickListener { setGoToSafety() }
         btnToggleTopBadge.setOnClickListener { toggleTopBadge() }
         btnToggleDetectionMode.setOnClickListener { toggleDetectionMode() }
@@ -586,6 +592,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             true
         }
         btnIsKioskModeOn.setOnClickListener { isKioskModeOn() }
+        btnCurrentHomeScreenMode.setOnClickListener { currentHomeScreenMode() }
         btnEnabledLatinKeyboards.setOnClickListener { enabledLatinKeyboards() }
         btnGetSupportedKeyboard.setOnClickListener { getSupportedLatinKeyboards() }
         btnToggleGroundDepthCliff.setOnClickListener { toggleGroundDepthCliff() }
@@ -850,6 +857,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog("Is kiosk mode on: ${robot.isKioskModeOn()}")
     }
 
+    private fun currentHomeScreenMode() {
+        printLog("Current home screen mode: ${robot.getHomeScreenMode()}")
+    }
+
     private fun toggleKiosk() {
         robot.setKioskModeOn(!robot.isKioskModeOn())
     }
@@ -1089,8 +1100,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     /**
      * Simple follow me example.
      */
-    private fun followMe() {
-        robot.beWithMe()
+    private fun followMe(speedLevel: SpeedLevel? = null) {
+        robot.beWithMe(speedLevel)
         hideKeyboard()
     }
 
@@ -1298,9 +1309,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.showTopBar()
     }
 
-    override fun onWakeupWord(wakeupWord: String, direction: Int) {
+    override fun onWakeupWord(wakeupWord: String, direction: Int, origin: WakeupOrigin) {
         // Do anything on wakeup. Follow, go to location, or even try creating dance moves.
-        printLog("onWakeupWord", "$wakeupWord, $direction")
+        printLog("onWakeupWord", "$wakeupWord, $direction, $origin")
     }
 
     override fun onTtsStatusChanged(ttsRequest: TtsRequest) {
@@ -1629,6 +1640,29 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 robot.goToSpeed = SpeedLevel.valueToEnum(adapter.getItem(position)!!)
                 printLog("Set go to speed to: ${adapter.getItem(position)}")
+                dialog.dismiss()
+            }
+        dialog.show()
+    }
+
+    private fun setFollowSpeed() {
+        if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
+            return
+        }
+        printLog("Current follow speed ${robot.getFollowSpeed()}")
+        val speedLevels: MutableList<String> = ArrayList()
+        speedLevels.add(SpeedLevel.HIGH.value)
+        speedLevels.add(SpeedLevel.MEDIUM.value)
+        speedLevels.add(SpeedLevel.SLOW.value)
+        val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, speedLevels)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Select Follow Speed Level")
+            .setAdapter(adapter, null)
+            .create()
+        dialog.listView.onItemClickListener =
+            OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+                val resp = robot.setFollowSpeed(SpeedLevel.valueToEnum(adapter.getItem(position)!!))
+                printLog("Set follow speed to: ${adapter.getItem(position)}, response $resp")
                 dialog.dismiss()
             }
         dialog.show()

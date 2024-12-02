@@ -63,6 +63,8 @@ import com.robotemi.sdk.telepresence.Participant
 import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.tourguide.compatible
 import com.robotemi.sdk.voice.ITtsService
+import com.robotemi.sdk.voice.WakeupOrigin
+import com.robotemi.sdk.voice.WakeupRequest
 import com.robotemi.sdk.voice.model.TtsVoice
 import org.json.JSONException
 import org.json.JSONObject
@@ -243,11 +245,14 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onWakeupWord(wakeupWord: String, direction: Int): Boolean {
+        override fun onWakeupWord(wakeupWord: String, direction: Int, origin: String?): Boolean {
             if (wakeUpWordListeners.isEmpty()) return false
+
+            val wakeupOrigin = WakeupOrigin.parse(origin)
+
             uiHandler.post {
                 for (wakeupWordListener in wakeUpWordListeners) {
-                    wakeupWordListener.onWakeupWord(wakeupWord, direction)
+                    wakeupWordListener.onWakeupWord(wakeupWord, direction, wakeupOrigin)
                 }
             }
             return true
@@ -889,15 +894,17 @@ class Robot private constructor(private val context: Context) {
      *
      * @param languages - List of languages to be used for ASR. Overrides the setAsrLanguages() languages.
      * If empty, then the system default languages will be used.
+     * @param wakeupRequest - Wakeup request, control the behavior of wakeup.
      */
-    fun wakeup(languages: List<SttLanguage> = emptyList()) {
+    fun wakeup(languages: List<SttLanguage> = emptyList(), wakeupRequest: WakeupRequest? = null) {
         try {
             sdkService?.wakeup(languages.map { it.value }.toIntArray(),
                 SttRequest(
                     languages = languages,
                     timeout = 0,
                     multipleConversation = false
-                ))
+                ),
+                wakeupRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -907,11 +914,13 @@ class Robot private constructor(private val context: Context) {
      * Trigger temi's wakeup programmatically. Added in 133 version, as an alternative to [wakeup(languages: List<SttLanguage>)]
      *
      * @param sttRequest - STT request, define STT languages, listening timeout, multiple conversation.
+     * @param wakeupRequest - Wakeup request, control the behavior of wakeup.
      */
-    fun wakeup(sttRequest: SttRequest) {
+    fun wakeup(sttRequest: SttRequest, wakeupRequest: WakeupRequest? = null) {
         try {
             sdkService?.wakeup(sttRequest.languages.map { it.value }.toIntArray(),
-                sttRequest)
+                sttRequest,
+                wakeupRequest)
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -1056,7 +1065,7 @@ class Robot private constructor(private val context: Context) {
      */
     fun setTtsVoice(ttsVoice: TtsVoice): Boolean {
         with(ttsVoice) {
-            if (gender != Gender.FEMALE && gender != Gender.MALE) {
+            if (gender == Gender.UNKNOWN) {
                 Log.e(TAG, "Gender $gender is invalid")
                 return false
             }
@@ -1072,6 +1081,9 @@ class Robot private constructor(private val context: Context) {
 
         return try {
             sdkService?.setTtsVoice(applicationInfo.packageName, ttsVoice) ?: false
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "setTtsVoice() set specific voice error")
+            false
         } catch (e: RemoteException) {
             Log.e(TAG, "setTtsVoice() error")
             false
@@ -1274,51 +1286,69 @@ class Robot private constructor(private val context: Context) {
      *   Pass `null` to follow the  *Settings -> Navigation Settings*
      * @param speedLevel the speed level of this single go to session.
      *   Pass `null` to start with the speed level in *Settings -> Navigation Settings* (see [speedLevel]).
+     * @param highAccuracyArrival if `true` will report arrival only when both location and rotation on destination are accurate.
+     *      *   Pass `null` to follow the  *Settings -> Navigation Settings*. Added in 135 version.
+     * @param noRotationAtEnd if `true` will skip rotate to destination's saved angle. Added in 135 version.
      */
     @JvmOverloads
     fun goTo(
         location: String,
         backwards: Boolean? = null,
         noBypass: Boolean? = null,
-        speedLevel: SpeedLevel? = null
+        speedLevel: SpeedLevel? = null,
+        highAccuracyArrival: Boolean? = null,
+        noRotationAtEnd: Boolean? = null,
     ) {
         require(location.isNotBlank()) { "Location can not be null or empty." }
         try {
             val allowBackwardsInt =
                 if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
             val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
-            sdkService?.goTo(location, allowBackwardsInt, noBypassInt, speedLevel?.value ?: "")
+            val highAccuracyArrivalInt = if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
+            val noRotationAtEndInt = if (noRotationAtEnd == null) NOT_SET else if (noRotationAtEnd) TRUE else FALSE
+            sdkService?.goTo(location,
+                allowBackwardsInt,
+                noBypassInt,
+                speedLevel?.value ?: "",
+                highAccuracyArrivalInt,
+                noRotationAtEndInt,
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "goTo(String) error")
         }
     }
 
     /**
-     * Go to a specific position with (x,y).
+     * Go to a specific position with (x,y,yaw).
      *
-     * @param position Position holds (x,y).
+     * @param position Position holds (x,y,yaw). Set yaw to 999 will cancel the rotataion on arrival.
      * @param backwards if `true` will walk backwards to the destination. `false` by default.
      * @param noBypass if `true` will disallow bypass the obstacles during go to.
      *   Pass `null` to follow the  *Settings -> Navigation Settings*
      * @param speedLevel the speed level of this single go to session.
      *   Pass `null` to start with the speed level in *Settings -> Navigation Settings* (see [speedLevel]).
+     * @param highAccuracyArrival if `true` will report arrival only when both location and rotation on destination are accurate.
+     *   Pass `null` to follow the  *Settings -> Navigation Settings*. Added in 135 version.
      */
     @JvmOverloads
     fun goToPosition(
         position: Position,
         backwards: Boolean? = null,
         noBypass: Boolean? = null,
-        speedLevel: SpeedLevel? = null
+        speedLevel: SpeedLevel? = null,
+        highAccuracyArrival: Boolean? = null,
     ) {
         try {
             val allowBackwardsInt =
                 if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
             val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
+            val highAccuracyArrivalInt = if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
             sdkService?.goToPosition(
                 position,
                 allowBackwardsInt,
                 noBypassInt,
-                speedLevel?.value ?: ""
+                speedLevel?.value ?: "",
+                highAccuracyArrivalInt
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "goToPosition() error")
@@ -1375,7 +1405,7 @@ class Robot private constructor(private val context: Context) {
         }
 
     /**
-     * Set navigation speed level.
+     * Get / Set navigation speed level.
      */
     @get:CheckResult
     var goToSpeed: SpeedLevel
@@ -1396,6 +1426,44 @@ class Robot private constructor(private val context: Context) {
                 Log.e(TAG, "setGoToSpeed() error")
             }
         }
+
+    /**
+     * Get follow speed level.
+     *
+     * Added in 135 version.
+     *
+     */
+    fun getFollowSpeed(): SpeedLevel {
+        try {
+            return SpeedLevel.valueToEnum(
+                sdkService?.followSpeed ?: SpeedLevel.DEFAULT.value
+            )
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getFollowSpeed() error")
+        }
+        return SpeedLevel.DEFAULT
+    }
+
+    /**
+     * Set follow speed level
+     *
+     * Added in 135 version.
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 invalid parameter
+     *         403 SETTINGS permission required
+     */
+    fun setFollowSpeed(speedLevel: SpeedLevel): Int {
+        try {
+            val resp = sdkService?.setFollowSpeed(applicationInfo.packageName, speedLevel.value)?.toIntOrNull() ?: 0
+            Log.d(TAG, "setFollowSpeed() response: $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setFollowSpeed() error")
+        }
+        return 0
+    }
 
     /**
      * Start positing to locate the position of temi.
@@ -1498,10 +1566,14 @@ class Robot private constructor(private val context: Context) {
     /**
      * Request robot to follow user around.
      * Add [OnBeWithMeStatusChangedListener] to listen for status changes.
+     *
+     * @param speedLevel, the speed of following, added in 135 version.
      */
-    fun beWithMe() {
+    fun beWithMe(
+        speedLevel: SpeedLevel? = null
+    ) {
         try {
-            sdkService?.beWithMe()
+            sdkService?.beWithMe(speedLevel?.value ?: "")
         } catch (e: RemoteException) {
             Log.e(TAG, "beWithMe() error")
         }
@@ -2760,6 +2832,7 @@ class Robot private constructor(private val context: Context) {
      * @param mode, added in 134. When turning Kiosk mode off, assign a home screen mode to be set.
      *  if target launcher doesn't support this param yet, it will set to [HomeScreenMode.DEFAULT] mode.
      *  If set to [HomeScreenMode.URL], but no URL is set, it will fallback to [HomeScreenMode.DEFAULT] mode.
+     *  Cannot turn off Kiosk Mode and set to [HomeScreenMode.APPLICATION] mode, will fallback to default mode
      */
     @JvmOverloads
     fun setKioskModeOn(on: Boolean = true, mode: HomeScreenMode = HomeScreenMode.DEFAULT) {
@@ -2781,6 +2854,22 @@ class Robot private constructor(private val context: Context) {
         } catch (e: RemoteException) {
             Log.e(TAG, "isKioskModeOn() error")
             false
+        }
+    }
+
+    /**
+     * Get current home screen mode
+     * @return current [HomeScreenMode]
+     *         or null if failed to get the mode
+     */
+    @CheckResult
+    fun getHomeScreenMode() : HomeScreenMode? {
+        return try {
+            val homeScreenMode = sdkService?.getHomeScreenMode(applicationInfo.packageName)
+            return HomeScreenMode.getHomeScreenMode(homeScreenMode)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getHomeScreenMode() error")
+            null
         }
     }
 
@@ -3720,7 +3809,7 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     interface WakeupWordListener {
-        fun onWakeupWord(wakeupWord: String, direction: Int)
+        fun onWakeupWord(wakeupWord: String, direction: Int, origin: WakeupOrigin = WakeupOrigin.UNKNOWN)
     }
 
     interface TtsListener {

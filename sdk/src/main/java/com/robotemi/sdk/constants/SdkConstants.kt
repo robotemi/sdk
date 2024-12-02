@@ -1,8 +1,5 @@
 package com.robotemi.sdk.constants
 
-import com.robotemi.sdk.constants.HardButton.Mode.Companion.DEFAULT
-import com.robotemi.sdk.constants.HardButton.Mode.DISABLED
-import com.robotemi.sdk.constants.HardButton.Mode.MAIN_BLOCK_FOLLOW
 import com.robotemi.sdk.constants.SdkConstants.PAGE_ALL_APPS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_CONTACTS
 import com.robotemi.sdk.constants.SdkConstants.PAGE_HOME
@@ -236,20 +233,42 @@ enum class SensitivityLevel {
     LOW
 }
 
+/**
+ * [GIRL] and [BOY] is added in 135 Chinese version.
+ * will fallback to [FEMALE] or [MALE] if not supported by 135 launcher when setting TTS voice with them
+ * or just fail to set the voice on pre-135 launchers.
+ */
 enum class Gender {
     FEMALE,
     MALE,
+    GIRL,
+    BOY,
     UNKNOWN
 }
 
 /**
  * Added in 134.
  *
- * When turning Kiosk mode off, can assign a home screen mode to be set.
+ * When turning Kiosk mode off, can assign a home screen mode to be set. Cannot use [HomeScreenMode.APPLICATION] on such case
  */
 enum class HomeScreenMode {
     DEFAULT,
     CLEAR,
     CUSTOM_SCREEN,
     URL,
+    APPLICATION,
+
+    ;
+    companion object {
+        fun getHomeScreenMode(homeScreenMode: String?): HomeScreenMode? {
+            return when (homeScreenMode) {
+                DEFAULT.name -> DEFAULT
+                CUSTOM_SCREEN.name -> CUSTOM_SCREEN
+                APPLICATION.name -> APPLICATION
+                URL.name -> URL
+                CLEAR.name -> CLEAR
+                else -> null
+            }
+        }
+    }
 }

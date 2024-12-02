@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import com.robotemi.sdk.ISdkServiceCallback;
 import com.robotemi.sdk.SttRequest;
 import com.robotemi.sdk.TtsRequest;
+import com.robotemi.sdk.voice.WakeupRequest;
 import com.robotemi.sdk.DisplayListRequest;
 import com.robotemi.sdk.activitystream.ActivityStreamObject;
 import com.robotemi.sdk.notification.AlertNotification;
@@ -96,7 +97,7 @@ interface ISdkService {
      *
      * @param location - Saved location name.
      */
-    void goTo(in String location, int backwards, int noBypass, in String speedLevel);
+    void goTo(in String location, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival, int noRotationAtEnd);
 
     /**
      * Retrieve list of previously saved locations.
@@ -122,7 +123,7 @@ interface ISdkService {
     /**
      * Request robot to follow the user.
      */
-    void beWithMe();
+    void beWithMe(in String speedLevel);
 
     void skidJoy(in float x, in float y, in boolean smart);
 
@@ -174,7 +175,7 @@ interface ISdkService {
      */
     boolean deleteLocation(in String name);
 
-    void wakeup(in int[] languages, in SttRequest sttRequest);
+    void wakeup(in int[] languages, in SttRequest sttRequest, in WakeupRequest wakeupRequest);
 
     String getWakeupWord();
 
@@ -247,7 +248,7 @@ interface ISdkService {
 
     void playSequence(in String packageName, in String sequenceId, boolean withPlayer, int repeat);
 
-    void goToPosition(in Position position, int backwards, int noBypass, in String speedLevel);
+    void goToPosition(in Position position, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival);
 
     MapDataModel getMapData(in String packageName);
 
@@ -387,4 +388,10 @@ interface ISdkService {
     String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
 
     String getHardButtonStatus(in String packageName, int type);
+
+    String setFollowSpeed(in String packageName, in String speedLevel);
+
+    String getFollowSpeed();
+
+    String getHomeScreenMode(in String packageName);
 }

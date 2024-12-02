@@ -111,7 +111,11 @@ class MapActivity : AppCompatActivity() {
                 val internalFiles = internalMapDirectory.listFiles()?.toList() ?: listOf()
                 val externalFiles = externalMapDirectory.listFiles()?.toList() ?: listOf()
                 val files = (internalFiles + externalFiles).filter {
-                    it.isFile && it.path.endsWith("tar.gz", true)
+                    it.isFile
+                            && (it.path.endsWith("tar.gz", true)
+                            || it.path.endsWith("zip", true)
+                            || it.path.endsWith("tgz", true)
+                            || it.path.endsWith("tar", true))
                 }
 
                 val builder = AlertDialog.Builder(this@MapActivity)

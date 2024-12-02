@@ -219,6 +219,11 @@
         android:text="Enable Hard Buttons" />
 
     <Button
+        android:id="@+id/btnSetFollowSpeed"
+        style="@style/ButtonCommon"
+        android:text="Set Follow Speed" />
+
+    <Button
         android:id="@+id/btnSetGoToSpeed"
         style="@style/ButtonCommon"
         android:text="Set Go To Speed" />
