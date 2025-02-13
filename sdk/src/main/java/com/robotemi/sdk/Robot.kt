@@ -180,6 +180,9 @@ class Robot private constructor(private val context: Context) {
     private val onLoadMapStatusChangedListeners =
         CopyOnWriteArraySet<OnLoadMapStatusChangedListener>()
 
+    private val onMapStatusChangedListeners =
+        CopyOnWriteArraySet<OnMapStatusChangedListener>()
+
     private val onDisabledFeatureListUpdatedListeners =
         CopyOnWriteArraySet<OnDisabledFeatureListUpdatedListener>()
 
@@ -757,6 +760,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 onLoadFloorStatusChangedListeners.forEach {
                     it.onLoadFloorStatusChanged(status)
+                }
+            }
+            return true
+        }
+
+        override fun onMapStatusChanged(isLost: Boolean, isLocked: Boolean): Boolean {
+            if (onMapStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onMapStatusChangedListeners.forEach {
+                    it.onMapStatusChanged(isLost, isLocked)
                 }
             }
             return true
@@ -3596,6 +3609,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnLoadFloorStatusChangedListener(listener: OnLoadFloorStatusChangedListener) {
         onLoadFloorStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnMapStatusChangedListener(listener: OnMapStatusChangedListener) {
+        onMapStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMapStatusChangedListener(listener: OnMapStatusChangedListener) {
+        onMapStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/

@@ -117,4 +117,6 @@ interface ISdkServiceCallback {
     boolean onButtonStatusChanged(in int buttonType, in int buttonStatus);
 
     boolean onGoToNavPathChanged(in String path);
+
+    boolean onMapStatusChanged(in boolean isLost, in boolean isLocked);
 }
