@@ -178,12 +178,14 @@ enum class HardButton(val value: Int) {
         UNKNOWN(0),
         HOLD(1),
         RELEASED(2),
+        CLICKED(3),
         ;
         companion object {
             fun valueToEnum(value: Int? = 0) = when (value) {
                 0 -> UNKNOWN
                 1 -> HOLD
                 2 -> RELEASED
+                3 -> CLICKED
                 else -> UNKNOWN
             }
         }
