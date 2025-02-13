@@ -54,6 +54,7 @@ import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapModel
 import com.robotemi.sdk.map.OnLoadFloorStatusChangedListener
 import com.robotemi.sdk.map.OnLoadMapStatusChangedListener
+import com.robotemi.sdk.map.OnMapStatusChangedListener
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
@@ -409,6 +410,26 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 robot.addOnGoToNavPathChangedListener(navPathListener)
                 view.tag = true
                 printLog("Nav Path Listener added")
+            }
+        }
+
+        btnIsMapLost.setOnClickListener { printLog("Is Map Lost: ${robot.isMapLost()}") }
+        btnIsMapLocked.setOnClickListener { printLog("Is Map Locked: ${robot.isMapLocked()}") }
+
+        val mapStatusListener = object : OnMapStatusChangedListener {
+            override fun onMapStatusChanged(isMapLost: Boolean, isLocked: Boolean) {
+                printLog("Map Status: isMapLost $isMapLost, isLocked $isLocked")
+            }
+        }
+        btnMapStatus.setOnClickListener { view ->
+            if (view.tag == true) {
+                robot.removeOnMapStatusChangedListener(mapStatusListener)
+                view.tag = false
+                printLog("Map Status Listener removed")
+            } else {
+                robot.addOnMapStatusChangedListener(mapStatusListener)
+                view.tag = true
+                printLog("Map Status Listener added")
             }
         }
 
