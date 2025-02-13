@@ -3268,6 +3268,34 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Check if the map is lost.
+     *
+     * @return true if the map is lost, false otherwise.
+     */
+    fun isMapLost(): Boolean {
+        return try {
+            sdkService?.isMapLost ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isMapLost() error")
+            false
+        }
+    }
+
+    /**
+     * Check if the map is locked.
+     *
+     * @return true if the map is locked, false otherwise.
+     */
+    fun isMapLocked(): Boolean {
+        return try {
+            sdkService?.isMapLocked ?: false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isMapLocked() error")
+            false
+        }
+    }
+
+    /**
      * Get current map backup file
      */
     fun getCurrentMapBackupFile(withoutUI: Boolean = false): ParcelFileDescriptor? {

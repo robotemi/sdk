@@ -394,4 +394,8 @@ interface ISdkService {
     String getFollowSpeed();
 
     String getHomeScreenMode(in String packageName);
+
+    boolean isMapLost();
+
+    boolean isMapLocked();
 }
