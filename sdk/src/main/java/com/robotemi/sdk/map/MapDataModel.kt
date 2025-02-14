@@ -343,3 +343,36 @@ data class LayerPose(
         }
     }
 }
+
+data class MapElements(
+    var virtualWalls: MutableList<Layer> = mutableListOf(),
+    var greenPaths: MutableList<Layer> = mutableListOf(),
+    var locations: MutableList<Layer> = mutableListOf(),
+    var mapEraser: MutableList<Layer> = mutableListOf(),
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeTypedList(virtualWalls)
+        parcel.writeTypedList(greenPaths)
+        parcel.writeTypedList(locations)
+        parcel.writeTypedList(mapEraser)
+    }
+
+    override fun describeContents() = 0
+
+    companion object CREATOR : Parcelable.Creator<MapElements> {
+        override fun createFromParcel(parcel: Parcel): MapElements {
+            return MapElements(parcel)
+        }
+
+        override fun newArray(size: Int): Array<MapElements?> {
+            return arrayOfNulls(size)
+        }
+    }
+}

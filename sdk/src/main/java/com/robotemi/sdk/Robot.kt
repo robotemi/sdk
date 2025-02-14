@@ -3281,6 +3281,20 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Get map elements, such as locations, virtual walls, green paths, etc.
+     *
+     * @return Map elements.
+     */
+    fun getMapElements(): MapElements? {
+        return try {
+            sdkService?.getMapElements(applicationInfo.packageName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getMapElements() error")
+            null
+        }
+    }
+
+    /**
      * Check if the map is lost.
      *
      * @return true if the map is lost, false otherwise.

@@ -23,6 +23,7 @@ import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.map.MapModel;
 import com.robotemi.sdk.map.Floor;
 import com.robotemi.sdk.voice.model.TtsVoice;
+import com.robotemi.sdk.map.MapElements;
 
 interface ISdkService {
 
@@ -398,4 +399,6 @@ interface ISdkService {
     boolean isMapLost();
 
     boolean isMapLocked();
+
+    MapElements getMapElements(in String packageName);
 }
