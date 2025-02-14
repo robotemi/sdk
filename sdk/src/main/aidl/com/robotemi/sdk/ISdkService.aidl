@@ -24,7 +24,6 @@ import com.robotemi.sdk.map.MapModel;
 import com.robotemi.sdk.map.Floor;
 import com.robotemi.sdk.voice.model.TtsVoice;
 import com.robotemi.sdk.map.Layer;
-import com.robotemi.sdk.map.MapImage;
 
 interface ISdkService {
 
@@ -402,6 +401,4 @@ interface ISdkService {
     boolean isMapLocked();
 
     List<Layer> getMapElements(in String packageName);
-
-    MapImage getMapImage(in String packageName);
 }

@@ -3316,7 +3316,6 @@ class Robot private constructor(private val context: Context) {
      * @return Map image
      */
     fun getMapImage(): MapImage? {
-        if (isMapLocked() == true) return sdkService?.getMapImage(applicationInfo.packageName)
         val gson = Gson()
         val inputStream =
             getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
