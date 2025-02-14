@@ -81,6 +81,7 @@ import kotlinx.android.synthetic.main.group_buttons.*
 import kotlinx.android.synthetic.main.group_map_and_movement.*
 import kotlinx.android.synthetic.main.group_resources.*
 import kotlinx.android.synthetic.main.group_settings_and_status.*
+import kotlinx.android.synthetic.main.group_settings_and_status.view.btnBatteryInfo
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -432,6 +433,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 printLog("Map Status Listener added")
             }
         }
+
+        btnGetMapElements.setOnClickListener { printLog("map elements: ${robot.getMapElements()}") }
+        btnGetMapImage.setOnClickListener { printLog("map image: ${robot.getMapImage()}") }
 
         btnBatteryInfo.setOnClickListener { getBatteryData() }
         btnSavedLocations.setOnClickListener { savedLocationsDialog() }

@@ -3285,13 +3285,59 @@ class Robot private constructor(private val context: Context) {
      *
      * @return Map elements.
      */
-    fun getMapElements(): MapElements? {
-        return try {
-            sdkService?.getMapElements(applicationInfo.packageName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "getMapElements() error")
+    fun getMapElements(): List<Layer>? {
+        if (isMapLocked() == true) return sdkService?.getMapElements(applicationInfo.packageName)
+        var cursor: Cursor? = null
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(SdkConstants.PROVIDER_PARAMETER_MAP_DATA)
+            .toString()
+        cursor = context.contentResolver.query(
+            Uri.parse(uriStr),
+            null,
+            null,
+            null,
             null
+        )
+        if (cursor == null || !cursor.moveToFirst()) {
+            return null
         }
+        val mapElementsJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ELEMENTS))
+        cursor.close()
+        return gson.fromJson<List<Layer>>(
+            mapElementsJson,
+            object : TypeToken<List<Layer>>() {}.type
+        )
+    }
+
+    /**
+     * Get map image
+     *
+     * @return Map image
+     */
+    fun getMapImage(): MapImage? {
+        if (isMapLocked() == true) return sdkService?.getMapImage(applicationInfo.packageName)
+        val gson = Gson()
+        val inputStream =
+            getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
+        val inputStreamReader = InputStreamReader(inputStream)
+        var mapDataModel: MapDataModel? = null
+        try {
+            mapDataModel = gson.fromJson(
+                inputStreamReader,
+                MapDataModel::class.java
+            )
+        } catch (e: JsonParseException) {
+            Log.e(TAG, "getMapImage() - JSON parse error: ${e.message}")
+        } finally {
+            try {
+                inputStream.close()
+                inputStreamReader.close()
+            } catch (e: IOException) {
+                Log.e(TAG, "getMapImage() - ${e.message}")
+            }
+        }
+        return mapDataModel?.mapImage
     }
 
     /**

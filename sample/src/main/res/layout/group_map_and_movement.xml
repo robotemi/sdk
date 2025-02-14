@@ -132,4 +132,14 @@
         style="@style/ButtonCommon"
         android:text="Observe Map Status" />
 
+    <Button
+        android:id="@+id/btnGetMapElements"
+        style="@style/ButtonCommon"
+        android:text="getMapElements" />
+
+    <Button
+        android:id="@+id/btnGetMapImage"
+        style="@style/ButtonCommon"
+        android:text="getMapImage" />
+
 </LinearLayout>
