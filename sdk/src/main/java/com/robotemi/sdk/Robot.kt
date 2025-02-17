@@ -186,6 +186,9 @@ class Robot private constructor(private val context: Context) {
     private val onMapElementsChangedListeners =
         CopyOnWriteArraySet<OnMapElementsChangedListener>()
 
+    private val onMapNameChangedListeners =
+        CopyOnWriteArraySet<OnMapNameChangedListener>()
+
     private val onDisabledFeatureListUpdatedListeners =
         CopyOnWriteArraySet<OnDisabledFeatureListUpdatedListener>()
 
@@ -796,6 +799,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 onMapElementsChangedListeners.forEach {
                     it.onMapElementsChanged()
+                }
+            }
+            return true
+        }
+
+        override fun onMapNameChanged(mapName: String?): Boolean {
+            if (onMapNameChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onMapNameChangedListeners.forEach {
+                    it.onMapNameChanged(mapName ?: "")
                 }
             }
             return true
@@ -3704,6 +3717,16 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnMapStatusChangedListener(listener: OnMapStatusChangedListener) {
         onMapStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnMapNameChangedListener(listener: OnMapNameChangedListener) {
+        onMapNameChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMapNameChangedListener(listener: OnMapNameChangedListener) {
+        onMapNameChangedListeners.remove(listener)
     }
 
     /*****************************************/
