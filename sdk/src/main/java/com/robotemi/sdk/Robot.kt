@@ -210,6 +210,9 @@ class Robot private constructor(private val context: Context) {
     private val onButtonStatusChangedListeners =
         CopyOnWriteArraySet<OnButtonStatusChangedListener>()
 
+    private val onButtonConfigChangedListeners =
+        CopyOnWriteArraySet<OnButtonConfigChangedListener>()
+
     private val onGoToNavPathChangedListeners =
         CopyOnWriteArraySet<OnGoToNavPathChangedListener>()
 
@@ -582,6 +585,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 onButtonStatusChangedListeners.forEach {
                     it.onButtonStatusChanged(HardButton.valueToEnum(buttonType), HardButton.Status.valueToEnum(buttonStatus))
+                }
+            }
+            return true
+        }
+
+        override fun onButtonConfigChanged(disabled: Boolean): Boolean {
+            if (onButtonConfigChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onButtonConfigChangedListeners.forEach {
+                    it.onButtonConfigChanged(disabled)
                 }
             }
             return true
@@ -3902,6 +3915,14 @@ class Robot private constructor(private val context: Context) {
 
     fun removeOnButtonStatusChangedListener(listener: OnButtonStatusChangedListener) {
         onButtonStatusChangedListeners.remove(listener)
+    }
+
+    fun addOnButtonConfigChangedListener(listener: OnButtonConfigChangedListener) {
+        onButtonConfigChangedListeners.add(listener)
+    }
+
+    fun removeOnButtonConfigChangedListener(listener: OnButtonConfigChangedListener) {
+        onButtonConfigChangedListeners.remove(listener)
     }
 
     /*****************************************/
