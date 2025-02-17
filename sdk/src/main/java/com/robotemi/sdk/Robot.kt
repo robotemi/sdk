@@ -210,8 +210,8 @@ class Robot private constructor(private val context: Context) {
     private val onButtonStatusChangedListeners =
         CopyOnWriteArraySet<OnButtonStatusChangedListener>()
 
-    private val onButtonConfigChangedListeners =
-        CopyOnWriteArraySet<OnButtonConfigChangedListener>()
+    private val onButtonModeChangedListeners =
+        CopyOnWriteArraySet<OnButtonModeChangedListener>()
 
     private val onGoToNavPathChangedListeners =
         CopyOnWriteArraySet<OnGoToNavPathChangedListener>()
@@ -590,11 +590,11 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onButtonConfigChanged(disabled: Boolean): Boolean {
-            if (onButtonConfigChangedListeners.isEmpty()) return false
+        override fun onButtonModeChanged(buttonType: Int, buttonMode: Int): Boolean {
+            if (onButtonModeChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onButtonConfigChangedListeners.forEach {
-                    it.onButtonConfigChanged(disabled)
+                onButtonModeChangedListeners.forEach {
+                    it.onButtonModeChanged(HardButton.valueToEnum(buttonType), HardButton.Mode.valueToEnum(buttonMode))
                 }
             }
             return true
@@ -3917,12 +3917,12 @@ class Robot private constructor(private val context: Context) {
         onButtonStatusChangedListeners.remove(listener)
     }
 
-    fun addOnButtonConfigChangedListener(listener: OnButtonConfigChangedListener) {
-        onButtonConfigChangedListeners.add(listener)
+    fun addOnButtonConfigChangedListener(listener: OnButtonModeChangedListener) {
+        onButtonModeChangedListeners.add(listener)
     }
 
-    fun removeOnButtonConfigChangedListener(listener: OnButtonConfigChangedListener) {
-        onButtonConfigChangedListeners.remove(listener)
+    fun removeOnButtonConfigChangedListener(listener: OnButtonModeChangedListener) {
+        onButtonModeChangedListeners.remove(listener)
     }
 
     /*****************************************/

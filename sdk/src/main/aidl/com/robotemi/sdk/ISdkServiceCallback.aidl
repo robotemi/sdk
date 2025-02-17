@@ -120,5 +120,5 @@ interface ISdkServiceCallback {
 
     boolean onMapStatusChanged(in boolean isLost, in boolean isLocked);
 
-    boolean onButtonConfigChanged(in boolean disabled);
+    boolean onButtonModeChanged(in int buttonType, in int buttonMode);
 }
