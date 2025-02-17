@@ -791,11 +791,11 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onMapElementsChanged(mapElements: List<Layer>): Boolean {
+        override fun onMapElementsChanged(): Boolean {
             if (onMapElementsChangedListeners.isEmpty()) return false
             uiHandler.post {
                 onMapElementsChangedListeners.forEach {
-                    it.onMapElementsChanged(mapElements)
+                    it.onMapElementsChanged()
                 }
             }
             return true
@@ -3930,11 +3930,11 @@ class Robot private constructor(private val context: Context) {
         onButtonStatusChangedListeners.remove(listener)
     }
 
-    fun addOnButtonConfigChangedListener(listener: OnButtonModeChangedListener) {
+    fun addOnButtonModeChangedListener(listener: OnButtonModeChangedListener) {
         onButtonModeChangedListeners.add(listener)
     }
 
-    fun removeOnButtonConfigChangedListener(listener: OnButtonModeChangedListener) {
+    fun removeOnButtonModeChangedListener(listener: OnButtonModeChangedListener) {
         onButtonModeChangedListeners.remove(listener)
     }
 

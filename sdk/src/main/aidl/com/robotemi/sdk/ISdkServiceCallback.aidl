@@ -123,5 +123,5 @@ interface ISdkServiceCallback {
 
     boolean onButtonModeChanged(in int buttonType, in int buttonMode);
 
-    boolean onMapElementsChanged(in List<Layer> mapElements);
+    boolean onMapElementsChanged();
 }
