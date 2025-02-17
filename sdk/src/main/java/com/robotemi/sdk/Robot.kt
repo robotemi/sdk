@@ -183,6 +183,9 @@ class Robot private constructor(private val context: Context) {
     private val onMapStatusChangedListeners =
         CopyOnWriteArraySet<OnMapStatusChangedListener>()
 
+    private val onMapElementsChangedListeners =
+        CopyOnWriteArraySet<OnMapElementsChangedListener>()
+
     private val onDisabledFeatureListUpdatedListeners =
         CopyOnWriteArraySet<OnDisabledFeatureListUpdatedListener>()
 
@@ -783,6 +786,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 onMapStatusChangedListeners.forEach {
                     it.onMapStatusChanged(isLost, isLocked)
+                }
+            }
+            return true
+        }
+
+        override fun onMapElementsChanged(mapElements: List<Layer>): Boolean {
+            if (onMapElementsChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onMapElementsChangedListeners.forEach {
+                    it.onMapElementsChanged(mapElements)
                 }
             }
             return true
