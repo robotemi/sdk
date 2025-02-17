@@ -3299,7 +3299,7 @@ class Robot private constructor(private val context: Context) {
      * @return Map elements.
      */
     fun getMapElements(): List<Layer>? {
-        if (isMapLocked() == true) return sdkService?.getMapElements(applicationInfo.packageName)
+//        if (isMapLocked() == true) return sdkService?.getMapElements(applicationInfo.packageName)
         var cursor: Cursor? = null
         val uriStr = StringBuffer("content://")
             .append(SdkConstants.PROVIDER_AUTHORITY)
