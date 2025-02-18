@@ -399,4 +399,6 @@ interface ISdkService {
     int isMapLost();
 
     int isMapLocked();
+
+    int getReposeStatus();
 }

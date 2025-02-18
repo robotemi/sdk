@@ -1535,6 +1535,20 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Get the status of the repose process.
+     *
+     * @return the status of the repose process.
+     */
+    fun getReposeStatus(): ReposeStatus {
+        try {
+            return ReposeStatus.valueToEnum(sdkService?.reposeStatus ?: ReposeStatus.UNKNOWN.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getReposeStatus() error")
+        }
+        return ReposeStatus.UNKNOWN
+    }
+
     @UiThread
     fun addOnGoToLocationStatusChangedListener(listener: OnGoToLocationStatusChangedListener) {
         onGoToLocationStatusChangeListeners.add(listener)

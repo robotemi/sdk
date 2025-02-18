@@ -278,3 +278,19 @@ enum class HomeScreenMode {
         }
     }
 }
+
+enum class ReposeStatus(val value: Int) {
+    UNKNOWN(0),
+    IDLE(1),
+    REPOSING(2),
+    REPOSE_REQUIRED(3);
+
+    companion object {
+        fun valueToEnum(value: Int? = 0) = when (value) {
+            1 -> IDLE
+            2 -> REPOSING
+            3 -> REPOSE_REQUIRED
+            else -> UNKNOWN
+        }
+    }
+}
