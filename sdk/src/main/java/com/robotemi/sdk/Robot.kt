@@ -3325,6 +3325,10 @@ class Robot private constructor(private val context: Context) {
      * @return Map elements.
      */
     fun getMapElements(): List<Layer>? {
+        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
+            Log.e(TAG, "getMapElements() - Permission denied")
+            return null
+        }
 //        if (isMapLocked() == true) return sdkService?.getMapElements(applicationInfo.packageName)
         var cursor: Cursor? = null
         val uriStr = StringBuffer("content://")
@@ -3355,6 +3359,10 @@ class Robot private constructor(private val context: Context) {
      * @return Map image
      */
     fun getMapImage(): MapImage? {
+        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
+            Log.e(TAG, "getMapElements() - Permission denied")
+            return null
+        }
         val gson = Gson()
         val inputStream =
             getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
