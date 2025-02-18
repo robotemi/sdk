@@ -396,9 +396,9 @@ interface ISdkService {
 
     String getHomeScreenMode(in String packageName);
 
-    boolean isMapLost();
+    int isMapLost();
 
-    boolean isMapLocked();
+    int isMapLocked();
 
     List<Layer> getMapElements(in String packageName);
 }

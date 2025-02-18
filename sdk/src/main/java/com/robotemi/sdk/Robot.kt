@@ -3393,7 +3393,11 @@ class Robot private constructor(private val context: Context) {
      */
     fun isMapLost(): Boolean? {
         try {
-            return sdkService?.isMapLost
+            if (sdkService?.isMapLost == NOT_SET) {
+                Log.e(TAG, "this launcher version doesn't support isMapLost() yet")
+                return null
+            }
+            return sdkService?.isMapLost == TRUE
         } catch (e: RemoteException) {
             Log.e(TAG, "isMapLost() error")
             return null
@@ -3407,7 +3411,11 @@ class Robot private constructor(private val context: Context) {
      */
     fun isMapLocked(): Boolean? {
         try {
-            return sdkService?.isMapLocked
+            if (sdkService?.isMapLocked == NOT_SET) {
+                Log.e(TAG, "this launcher version doesn't support isMapLocked() yet")
+                return null
+            }
+            return sdkService?.isMapLocked == TRUE
         } catch (e: RemoteException) {
             Log.e(TAG, "isMapLocked() error")
             return null
