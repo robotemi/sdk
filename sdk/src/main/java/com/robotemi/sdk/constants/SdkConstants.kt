@@ -142,6 +142,8 @@ enum class HardButton(val value: Int) {
     POWER(2),
     VOLUME(3),
     EMERGENCY_STOP(4),
+    VOLUME_UP(5),
+    VOLUME_DOWN(6)
     ;
 
     companion object {
@@ -151,6 +153,8 @@ enum class HardButton(val value: Int) {
             2 -> POWER
             3 -> VOLUME
             4 -> EMERGENCY_STOP
+            5 -> VOLUME_UP
+            6 -> VOLUME_DOWN
             else -> MAIN
         }
     }
