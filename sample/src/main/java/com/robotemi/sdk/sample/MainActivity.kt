@@ -434,8 +434,21 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             }
         }
 
-        btnGetMapElements.setOnClickListener { printLog("map elements: ${robot.getMapElements()}") }
-        btnGetMapImage.setOnClickListener { printLog("map image: ${robot.getMapImage()}") }
+        btnGetMapElements.setOnClickListener {
+            if (robot.checkSelfPermission(Permission.MAP) == Permission.GRANTED) {
+                printLog("map elements: ${robot.getMapElements()}")
+            }   else {
+                printLog("Map permission not granted")
+            }
+        }
+        btnGetMapImage.setOnClickListener {
+            if (robot.checkSelfPermission(Permission.MAP) == Permission.GRANTED) {
+                printLog("map image: ${robot.getMapImage()}")
+            }   else {
+                printLog("Map permission not granted")
+            }
+
+        }
 
         btnBatteryInfo.setOnClickListener { getBatteryData() }
         btnSavedLocations.setOnClickListener { savedLocationsDialog() }
