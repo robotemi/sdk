@@ -3392,7 +3392,12 @@ class Robot private constructor(private val context: Context) {
      * @return true if the map is lost, false otherwise.
      */
     fun isMapLost(): Boolean? {
-        return sdkService?.isMapLost
+        try {
+            return sdkService?.isMapLost
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isMapLost() error")
+            return null
+        }
     }
 
     /**
@@ -3401,7 +3406,12 @@ class Robot private constructor(private val context: Context) {
      * @return true if the map is locked, false otherwise.
      */
     fun isMapLocked(): Boolean? {
-        return sdkService?.isMapLocked
+        try {
+            return sdkService?.isMapLocked
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isMapLocked() error")
+            return null
+        }
     }
 
     /**
