@@ -399,6 +399,4 @@ interface ISdkService {
     int isMapLost();
 
     int isMapLocked();
-
-    List<Layer> getMapElements(in String packageName);
 }
