@@ -3368,11 +3368,11 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Get map image
+     * Get map image and map info.
      *
-     * @return Map image
+     * @return Map data model with only map image and map info
      */
-    fun getMapImage(): MapImage? {
+    fun getMapImage(): MapDataModel? {
         if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
             Log.e(TAG, "getMapElements() - Permission denied")
             return null
@@ -3397,7 +3397,7 @@ class Robot private constructor(private val context: Context) {
                 Log.e(TAG, "getMapImage() - ${e.message}")
             }
         }
-        return mapDataModel?.mapImage
+        return mapDataModel
     }
 
     /**
