@@ -3760,6 +3760,16 @@ class Robot private constructor(private val context: Context) {
     }
 
     @UiThread
+    fun addOnMapElementsChangedListener(listener: OnMapElementsChangedListener) {
+        onMapElementsChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMapElementsChangedListener(listener: OnMapElementsChangedListener) {
+        onMapElementsChangedListeners.remove(listener)
+    }
+
+    @UiThread
     fun addOnMapNameChangedListener(listener: OnMapNameChangedListener) {
         onMapNameChangedListeners.add(listener)
     }
