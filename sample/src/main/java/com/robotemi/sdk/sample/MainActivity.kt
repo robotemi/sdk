@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
     OnContinuousFaceRecognizedListener, ITtsService, OnGreetModeStateChangedListener,
     TextToSpeech.OnInitListener, OnLoadFloorStatusChangedListener,
-    OnDistanceToDestinationChangedListener, OnSdkExceptionListener, OnRobotDragStateChangedListener {
+    OnDistanceToDestinationChangedListener, OnSdkExceptionListener, OnRobotDragStateChangedListener, OnMapStatusChangedListener {
 
     private lateinit var robot: Robot
 
@@ -193,6 +193,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         robot.setActivityStreamPublishListener(this)
         robot.addOnDistanceToDestinationChangedListener(this)
         robot.addOnRobotDragStateChangedListener(this)
+        robot.addOnMapStatusChangedListener(this)
         robot.showTopBar()
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -238,6 +239,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     override fun onDestroy() {
+        robot.removeOnMapStatusChangedListener(this)
         robot.removeOnRequestPermissionResultListener(this)
         robot.removeOnTelepresenceEventChangedListener(this)
         robot.removeOnFaceRecognizedListener(this)
@@ -2589,5 +2591,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onRobotDragStateChanged(isDragged: Boolean) {
         printLog("onRobotDragStateChanged $isDragged")
+    }
+
+    override fun onMapStatusChanged(isLost: Boolean, isLocked: Boolean) {
+        Log.d("onMapStatusChanged", "isLost: $isLost, isLocked: $isLocked")
     }
 }
