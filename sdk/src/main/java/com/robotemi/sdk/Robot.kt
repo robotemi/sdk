@@ -3351,7 +3351,7 @@ class Robot private constructor(private val context: Context) {
             .toString()
         cursor = context.contentResolver.query(
             Uri.parse(uriStr),
-            null,
+            arrayOf(MAP_ELEMENTS),
             null,
             null,
             null
