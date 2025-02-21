@@ -3417,6 +3417,8 @@ class Robot private constructor(private val context: Context) {
         val mapInfoJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_INFO))
         val mapDataBase64 = cursor.getString(cursor.getColumnIndexOrThrow(MAP_BASE64))
 
+        cursor.close()
+
         val mapImage = gson.fromJson(
             mapImageJson,
             MapImage::class.java
