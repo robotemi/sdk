@@ -3377,27 +3377,62 @@ class Robot private constructor(private val context: Context) {
             Log.e(TAG, "getMapElements() - Permission denied")
             return null
         }
-        val gson = Gson()
-        val inputStream =
-            getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
-        val inputStreamReader = InputStreamReader(inputStream)
-        var mapDataModel: MapDataModel? = null
-        try {
-            mapDataModel = gson.fromJson(
-                inputStreamReader,
-                MapDataModel::class.java
-            )
-        } catch (e: JsonParseException) {
-            Log.e(TAG, "getMapImage() - JSON parse error: ${e.message}")
-        } finally {
-            try {
-                inputStream.close()
-                inputStreamReader.close()
-            } catch (e: IOException) {
-                Log.e(TAG, "getMapImage() - ${e.message}")
-            }
+//        val gson = Gson()
+//        val inputStream =
+//            getInputStreamByMediaKey(ContentType.MAP_DATA_IMAGE, "") ?: return null
+//        val inputStreamReader = InputStreamReader(inputStream)
+//        var mapDataModel: MapDataModel? = null
+//        try {
+//            mapDataModel = gson.fromJson(
+//                inputStreamReader,
+//                MapDataModel::class.java
+//            )
+//        } catch (e: JsonParseException) {
+//            Log.e(TAG, "getMapImage() - JSON parse error: ${e.message}")
+//        } finally {
+//            try {
+//                inputStream.close()
+//                inputStreamReader.close()
+//            } catch (e: IOException) {
+//                Log.e(TAG, "getMapImage() - ${e.message}")
+//            }
+//        }
+//        return mapDataModel
+        var cursor: Cursor? = null
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(SdkConstants.PROVIDER_PARAMETER_MAP_DATA)
+            .toString()
+        cursor = context.contentResolver.query(
+            Uri.parse(uriStr),
+            arrayOf(MAP_IMAGE),
+            null,
+            null,
+            null
+        )
+        if (cursor == null || !cursor.moveToFirst()) {
+            return null
         }
-        return mapDataModel
+        val mapImageJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_IMAGE))
+        val mapInfoJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_INFO))
+        val mapDataBase64 = cursor.getString(cursor.getColumnIndexOrThrow(MAP_BASE64))
+
+        val mapImage = gson.fromJson(
+            mapImageJson,
+            MapImage::class.java
+        )
+        val mapInfo = gson.fromJson(mapInfoJson, MapInfo::class.java)
+
+        val decoded = Base64.decode(mapDataBase64, Base64.NO_WRAP)
+        val unzipped =
+            GZIPInputStream(decoded.inputStream()).bufferedReader(Charsets.UTF_8)
+                .use { it.readText() }
+        val realData = Base64.decode(unzipped, Base64.NO_WRAP).map { it.toInt() }
+
+        return MapDataModel(
+            mapImage = mapImage.copy(data = realData),
+            mapInfo = mapInfo,
+        )
     }
 
     /**
