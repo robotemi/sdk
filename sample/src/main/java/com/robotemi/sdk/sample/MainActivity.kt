@@ -104,7 +104,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
     OnContinuousFaceRecognizedListener, ITtsService, OnGreetModeStateChangedListener,
     TextToSpeech.OnInitListener, OnLoadFloorStatusChangedListener,
-    OnDistanceToDestinationChangedListener, OnSdkExceptionListener, OnRobotDragStateChangedListener, OnMapStatusChangedListener {
+    OnDistanceToDestinationChangedListener, OnSdkExceptionListener, OnRobotDragStateChangedListener, OnMapStatusChangedListener,
+    OnButtonStatusChangedListener {
 
     private lateinit var robot: Robot
 
@@ -168,6 +169,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      */
     override fun onStart() {
         super.onStart()
+        robot.addOnButtonStatusChangedListener(this)
         robot.addOnRobotReadyListener(this)
         robot.addNlpListener(this)
         robot.addOnBeWithMeStatusChangedListener(this)
@@ -207,6 +209,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * Removing the event listeners upon leaving the app.
      */
     override fun onStop() {
+        robot.removeOnButtonStatusChangedListener(this)
         robot.removeOnRobotReadyListener(this)
         robot.removeNlpListener(this)
         robot.removeOnBeWithMeStatusChangedListener(this)
@@ -2595,5 +2598,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onMapStatusChanged(isLost: Boolean, isLocked: Boolean) {
         Log.d("onMapStatusChanged", "isLost: $isLost, isLocked: $isLocked")
+    }
+
+    override fun onButtonStatusChanged(hardButton: HardButton, status: HardButton.Status) {
+        Log.d("onButtonStatusChanged", "hardButton: $hardButton, status: $status")
     }
 }
