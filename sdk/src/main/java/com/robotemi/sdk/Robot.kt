@@ -3394,7 +3394,7 @@ class Robot private constructor(private val context: Context) {
             .toString()
         cursor = context.contentResolver.query(
             Uri.parse(uriStr),
-            arrayOf(MAP_IMAGE),
+            arrayOf(MAP_IMAGE, MAP_INFO, MAP_BASE64),
             null,
             null,
             null
