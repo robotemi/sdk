@@ -247,7 +247,7 @@ interface ISdkService {
 
     List<SequenceModel> getAllSequences(in String packageName, in List<String> tags);
 
-    void playSequence(in String packageName, in String sequenceId, boolean withPlayer, int repeat);
+    void playSequence(in String packageName, in String sequenceId, boolean withPlayer, int repeat, int startFromStep);
 
     void goToPosition(in Position position, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival);
 

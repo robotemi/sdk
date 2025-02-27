@@ -534,6 +534,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         btnPlayFirstSequence.setOnClickListener { playFirstSequence() }
         btnPlayFirstTour.setOnClickListener { playFirstTour() }
         btnPlayFirstSequenceWithoutPlayer.setOnClickListener { playFirstSequenceWithoutPlayer() }
+        btnPlayRandomSequenceFromRandomStep.setOnClickListener { playRandomSequenceFromRandomStep() }
         btnFetchMap.setOnClickListener { getMap() }
         btnClearLog.setOnClickListener { clearLog() }
         btnNlu.setOnClickListener { startNlu() }
@@ -1923,6 +1924,20 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             return
         }
         playFirstSequence(true)
+    }
+
+    private fun playRandomSequenceFromRandomStep() {
+        if (requestPermissionIfNeeded(Permission.SEQUENCE, REQUEST_CODE_SEQUENCE_PLAY)) {
+            return
+        }
+        if (!allSequences.isNullOrEmpty()) {
+            val randomSequence = allSequences.random()
+            val randomStep = (1..randomSequence.numberOfSteps).random()
+            printLog("Play random sequence: ${randomSequence.name}, start from step: $randomStep")
+            robot.playSequence(sequenceId = randomSequence.id, startFromStep = randomStep)
+        } else {
+            printLog("No sequences found. Please click Get All Sequences button first.")
+        }
     }
 
     private fun playFirstSequenceWithoutPlayer() {

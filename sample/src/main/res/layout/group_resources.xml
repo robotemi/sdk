@@ -58,6 +58,11 @@
         android:text="Play First Sequence" />
 
     <Button
+        android:id="@+id/btnPlayRandomSequenceFromRandomStep"
+        style="@style/ButtonCommon"
+        android:text="Play Random Sequence From Random Step" />
+
+    <Button
         android:id="@+id/btnPlayFirstTour"
         style="@style/ButtonCommon"
         android:text="Play First Tour" />
