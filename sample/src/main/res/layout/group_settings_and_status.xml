@@ -255,6 +255,11 @@
         android:text="Hide Top Bar" />
 
     <Button
+        android:id="@+id/btnHideTopBarCompletely"
+        style="@style/ButtonCommon"
+        android:text="Hide Top Bar Completely" />
+
+    <Button
         android:id="@+id/btnShowTopBar"
         style="@style/ButtonCommon"
         android:text="Show Top Bar" />
