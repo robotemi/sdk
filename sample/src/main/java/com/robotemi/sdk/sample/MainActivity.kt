@@ -1931,10 +1931,15 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             return
         }
         if (!allSequences.isNullOrEmpty()) {
-            val randomSequence = allSequences.random()
-            val randomStep = (1..randomSequence.numberOfSteps).random()
-            printLog("Play random sequence: ${randomSequence.name}, start from step: $randomStep")
-            robot.playSequence(sequenceId = randomSequence.id, startFromStep = randomStep)
+            val result = runCatching {
+                val randomSequence = allSequences.random()
+                val randomStep = (1..randomSequence.numberOfSteps).random()
+                printLog("Play random sequence: ${randomSequence.name}, start from step: $randomStep")
+                robot.playSequence(sequenceId = randomSequence.id, startFromStep = randomStep)
+            }
+            result.onFailure {
+                printLog("Please update Launcher for playSequence with startFromStep feature.")
+            }
         } else {
             printLog("No sequences found. Please click Get All Sequences button first.")
         }
