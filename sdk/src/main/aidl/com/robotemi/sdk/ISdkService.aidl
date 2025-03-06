@@ -146,7 +146,7 @@ interface ISdkService {
 
     void showTopBar();
 
-    void hideTopBar();
+    void hideTopBar(in boolean completely);
 
     /*
      * Request robot to stop any current movement.
