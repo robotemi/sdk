@@ -465,6 +465,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
         btnPublish.setOnClickListener { publishToActivityStream() }
         btnHideTopBar.setOnClickListener { hideTopBar() }
+        btnHideTopBarCompletely.setOnClickListener { hideTopBar(true) }
         btnShowTopBar.setOnClickListener { showTopBar() }
         btnWakeup.setOnClickListener { wakeup() }
         btnWakeup.setOnLongClickListener {
@@ -1344,8 +1345,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
     }
 
-    private fun hideTopBar() {
-        robot.hideTopBar()
+    private fun hideTopBar(completely: Boolean = false) {
+        robot.hideTopBar(completely)
     }
 
     private fun showTopBar() {

@@ -2018,9 +2018,9 @@ class Robot private constructor(private val context: Context) {
     /**
      * Hide the top bar of Launcher.
      */
-    fun hideTopBar() {
+    fun hideTopBar(completely: Boolean = false) {
         try {
-            sdkService?.hideTopBar()
+            sdkService?.hideTopBar(completely)
         } catch (e: RemoteException) {
             Log.e(TAG, "hideTopBar() error")
         }
