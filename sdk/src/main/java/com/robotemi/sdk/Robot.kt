@@ -712,7 +712,7 @@ class Robot private constructor(private val context: Context) {
         /*                Sequence               */
         /*****************************************/
 
-        override fun onSequencePlayStatusChanged(status: Int, sequenceId: String): Boolean {
+        override fun onSequencePlayStatusChanged(status: Int, sequenceId: String?): Boolean {
             if (onSequencePlayStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onSequencePlayStatusChangedListeners) {
