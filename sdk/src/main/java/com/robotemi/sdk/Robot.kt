@@ -3186,9 +3186,9 @@ class Robot private constructor(private val context: Context) {
      * @param repeat How many times will this sequence be played after the first playing.
      */
     @JvmOverloads
-    fun playSequence(sequenceId: String, withPlayer: Boolean = false, repeat: Int = 0) {
+    fun playSequence(sequenceId: String, withPlayer: Boolean = false, repeat: Int = 0, startFromStep: Int = 1) {
         try {
-            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer, repeat)
+            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer, repeat, startFromStep)
         } catch (e: RemoteException) {
             Log.e(TAG, "playSequence() error")
         }
