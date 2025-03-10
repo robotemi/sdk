@@ -4,7 +4,7 @@ import androidx.annotation.IntDef
 
 interface OnSequencePlayStatusChangedListener {
 
-    fun onSequencePlayStatusChanged(@Status status: Int)
+    fun onSequencePlayStatusChanged(@Status status: Int, sequenceId: String?)
 
     @IntDef(IDLE, PREPARING, PLAYING, ERROR)
     @Retention(AnnotationRetention.SOURCE)

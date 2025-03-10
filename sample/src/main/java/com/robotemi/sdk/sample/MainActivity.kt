@@ -1850,8 +1850,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             "Position -> {${position.x}, ${position.y}, ${position.yaw}}, tilt: ${position.tiltAngle}"
     }
 
-    override fun onSequencePlayStatusChanged(status: Int) {
-        printLog(String.format("onSequencePlayStatus status:%d", status))
+    override fun onSequencePlayStatusChanged(status: Int, sequenceId: String?) {
+        printLog(String.format("onSequencePlayStatus status:%d, sequenceId:%s", status, sequenceId))
         if (status == OnSequencePlayStatusChangedListener.ERROR
             || status == OnSequencePlayStatusChangedListener.IDLE
         ) {
