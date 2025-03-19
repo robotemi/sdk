@@ -750,6 +750,16 @@ class Robot private constructor(private val context: Context) {
         /*                 Common                */
         /*****************************************/
 
+        override fun onRobotReady(isReady: Boolean): Boolean {
+            if (onRobotReadyListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onRobotReadyListeners) {
+                    listener.onRobotReady(isReady)
+                }
+            }
+            return true
+        }
+
         override fun onSdkError(sdkException: SdkException): Boolean {
             if (onSdkExceptionListeners.isEmpty()) return false
             uiHandler.post {
@@ -846,8 +856,15 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     @get:CheckResult
-    val isReady
-        get() = sdkService != null
+    val isReady: Boolean
+        get() {
+            try {
+                return sdkService?.isReady() ?: false
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isNavigationBillboardDisabled() error")
+            }
+            return false
+        }
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
@@ -864,7 +881,7 @@ class Robot private constructor(private val context: Context) {
         this.sdkService = sdkService
         mediaBar = AidlMediaBarController(sdkService)
         registerCallback()
-        onRobotReadyListeners.forEach { it.onRobotReady(sdkService != null) }
+        onRobotReadyListeners.forEach { it.onRobotReady(isReady) }
     }
 
     @UiThread

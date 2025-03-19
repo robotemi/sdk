@@ -401,4 +401,6 @@ interface ISdkService {
     int isMapLocked();
 
     int getReposeStatus();
+
+    boolean isReady();
 }
