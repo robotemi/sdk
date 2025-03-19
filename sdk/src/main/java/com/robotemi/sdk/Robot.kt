@@ -859,7 +859,10 @@ class Robot private constructor(private val context: Context) {
     val isReady: Boolean
         get() {
             try {
-                return sdkService?.isReady() ?: false
+                if (sdkService?.isReady() == NOT_SET) { // backward compatibility
+                    return sdkService != null
+                }
+                return sdkService?.isReady() == TRUE
             } catch (e: RemoteException) {
                 Log.e(TAG, "isNavigationBillboardDisabled() error")
             }

@@ -402,5 +402,5 @@ interface ISdkService {
 
     int getReposeStatus();
 
-    boolean isReady();
+    int isReady();
 }
