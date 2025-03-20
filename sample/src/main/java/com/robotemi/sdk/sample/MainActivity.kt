@@ -1022,6 +1022,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * Places this application in the top bar for a quick access shortcut.
      */
     override fun onRobotReady(isReady: Boolean) {
+        printLog("onRobotReady: $isReady")
         if (isReady) {
             try {
                 val activityInfo =

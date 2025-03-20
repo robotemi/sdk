@@ -126,4 +126,6 @@ interface ISdkServiceCallback {
     boolean onMapElementsChanged();
 
     boolean onMapNameChanged(in String mapName);
+
+    boolean onRobotReady(boolean isReady);
 }
