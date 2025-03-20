@@ -864,7 +864,7 @@ class Robot private constructor(private val context: Context) {
                 }
                 return sdkService?.isReady() == TRUE
             } catch (e: RemoteException) {
-                Log.e(TAG, "isNavigationBillboardDisabled() error")
+                Log.e(TAG, "isReady() error")
             }
             return false
         }
