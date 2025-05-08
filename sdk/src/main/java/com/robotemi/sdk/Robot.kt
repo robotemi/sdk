@@ -1295,6 +1295,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @return Result of current position or Position(0, 0, 0, 0) if failed.
      */
+    @WorkerThread
     fun getPosition(): Position {
         return sdkService?.getPosition(applicationInfo.packageName) ?: Position(0f, 0f, 0f, 0)
     }
@@ -3366,8 +3367,11 @@ class Robot private constructor(private val context: Context) {
     /**
      * Get map elements, such as locations, virtual walls, green paths, etc.
      *
+     * @throws IllegalArgumentException This should not happen. Just add this for future compatibility.
      * @return Map elements.
      */
+    @WorkerThread
+    @Throws(IllegalArgumentException::class)
     fun getMapElements(): List<Layer>? {
         if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
             Log.e(TAG, "getMapElements() - Permission denied")
@@ -3400,8 +3404,11 @@ class Robot private constructor(private val context: Context) {
     /**
      * Get map image and map info.
      *
+     * @throws IllegalArgumentException This should not happen. Just add this for future compatibility.
      * @return Map data model with only map image and map info
      */
+    @WorkerThread
+    @Throws(IllegalArgumentException::class)
     fun getMapImage(): MapDataModel? {
         if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
             Log.e(TAG, "getMapElements() - Permission denied")
