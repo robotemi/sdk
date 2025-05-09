@@ -4,7 +4,7 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: "com.vanniktech.maven.publish"
 
 android {
-    compileSdkVersion 34
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 23
@@ -20,6 +20,9 @@ android {
             shrinkResources false
             consumerProguardFiles 'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        buildConfig true
     }
 }
 

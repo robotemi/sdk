@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 repositories {
     mavenLocal()
@@ -10,7 +9,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.robotemi.sdk.sample"
@@ -38,6 +37,10 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+    buildFeatures {
+        buildConfig true
+        viewBinding true
     }
 }
 

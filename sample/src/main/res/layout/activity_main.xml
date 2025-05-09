@@ -212,6 +212,7 @@
         android:orientation="vertical">
 
         <include
+            android:id="@+id/group_buttons"
             layout="@layout/group_buttons"/>
 
         <ScrollView
