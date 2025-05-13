@@ -1385,6 +1385,7 @@ class Robot private constructor(private val context: Context) {
                 speedLevel?.value ?: "",
                 highAccuracyArrivalInt,
                 noRotationAtEndInt,
+                speedLevel?.floatSpeedLevel ?: 0.0f,
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "goTo(String) error")
@@ -1421,7 +1422,8 @@ class Robot private constructor(private val context: Context) {
                 allowBackwardsInt,
                 noBypassInt,
                 speedLevel?.value ?: "",
-                highAccuracyArrivalInt
+                highAccuracyArrivalInt,
+                speedLevel?.floatSpeedLevel ?: 0.0f,
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "goToPosition() error")
