@@ -16,9 +16,17 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
+import com.robotemi.sdk.Robot
+import com.robotemi.sdk.face.ContactModel
+import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
 import com.robotemi.sdk.sample.databinding.ActivityFaceBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 
@@ -38,7 +46,6 @@ class FaceActivity : AppCompatActivity() {
         binding = ActivityFaceBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.ibBack.setOnClickListener { finish() }
-
 
         binding.btnInsertFromLocalFile.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -136,6 +143,17 @@ class FaceActivity : AppCompatActivity() {
                     binding.tvLog.text = "${System.currentTimeMillis()}: Image set failed"
                 }
             }
+        }
+
+        createRepeatingTest()
+        createParallelTest()
+
+        binding.btnStartFaceRecognition.setOnClickListener { v ->
+            Robot.getInstance().startFaceRecognition(true)
+        }
+
+        binding.btnStopFaceRecognition.setOnClickListener { v ->
+            Robot.getInstance().stopFaceRecognition()
         }
     }
 
@@ -288,5 +306,113 @@ class FaceActivity : AppCompatActivity() {
         } catch (e: IllegalArgumentException) {
             Log.e("Query", "Query Exception", e)
         }
+    }
+
+    /**
+     * This is simulating use cases that apps keeps turning on and off face recognition
+     */
+    private fun createRepeatingTest() {
+        val onContinuousFaceRecognizedListener = object: OnContinuousFaceRecognizedListener {
+            var faceDetected: Int = 0
+
+            override fun onContinuousFaceRecognized(contactModelList: List<ContactModel>) {
+                faceDetected += contactModelList.size
+            }
+        }
+
+        var job: Job? = null
+
+        binding.btnPressureTest.setOnClickListener {
+            binding.tvPressureTestStatus.text = "${System.currentTimeMillis()}: Pressure test started"
+
+            var failure = 0
+
+            Robot.getInstance().addOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener)
+            lifecycleScope.launch(Dispatchers.IO) {
+                job?.cancelAndJoin()
+                job = lifecycleScope.launch(Dispatchers.IO) {
+                    for (i in 0..1000) {
+                        ensureActive()
+                        onContinuousFaceRecognizedListener.faceDetected = 0
+                        Robot.getInstance().startFaceRecognition()
+                        // Check if there are valid face detected in 5 seconds, if not record a failure.
+                        // After 5 seconds, stop face recognition.
+                        runOnUiThread {
+                            binding.tvPressureTestStatus.text = "${System.currentTimeMillis()}: Pressure test, loop $i running, total failure $failure"
+                        }
+                        ensureActive()
+                        delay(5000)
+                        Robot.getInstance().stopFaceRecognition()
+                        if (onContinuousFaceRecognizedListener.faceDetected == 0) {
+                            failure++
+                        }
+
+                        runOnUiThread {
+                            binding.tvPressureTestStatus.text = "${System.currentTimeMillis()}: Pressure test started, loop $i completed, detect faces ${onContinuousFaceRecognizedListener.faceDetected}, total failure $failure"
+                        }
+                        ensureActive()
+                        delay(5000)
+                    }
+                    Robot.getInstance().removeOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener)
+                }
+            }
+
+        }
+
+        binding.tvPressureTestStatus.text = ""
+    }
+
+    /**
+     * This abusing the face API, creating a lot of parallel tasks to open and close face recognition and camera
+     */
+    private fun createParallelTest() {
+        val onContinuousFaceRecognizedListener2 = object : OnContinuousFaceRecognizedListener {
+            var faceDetected: Int = 0
+
+            override fun onContinuousFaceRecognized(contactModelList: List<ContactModel>) {
+                faceDetected += contactModelList.size
+            }
+        }
+
+
+        binding.btnPressureTestBug.setOnClickListener {
+            binding.tvPressureTestStatusBug.text =
+                "${System.currentTimeMillis()}: Pressure (Parallel) test started"
+
+            var failure = 0
+
+            Robot.getInstance()
+                .addOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener2)
+            lifecycleScope.launch(Dispatchers.IO) {
+                for (i in 0..1000) {
+                    ensureActive()
+                    onContinuousFaceRecognizedListener2.faceDetected = 0
+                    Robot.getInstance().startFaceRecognition()
+                    // Check if there are valid face detected in 5 seconds, if not record a failure.
+                    // After 5 seconds, stop face recognition.
+                    withContext(Dispatchers.Main) {
+                        binding.tvPressureTestStatusBug.text =
+                            "${System.currentTimeMillis()}: Pressure test, loop $i running, total failure $failure"
+                    }
+                    ensureActive()
+                    delay(5000)
+                    Robot.getInstance().stopFaceRecognition()
+                    if (onContinuousFaceRecognizedListener2.faceDetected == 0) {
+                        failure++
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        binding.tvPressureTestStatusBug.text =
+                            "${System.currentTimeMillis()}: Pressure test started, loop $i completed, detect faces ${onContinuousFaceRecognizedListener2.faceDetected}, total failure $failure"
+                    }
+                    ensureActive()
+                    delay(5000)
+                }
+                Robot.getInstance()
+                    .removeOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener2)
+            }
+        }
+
+        binding.tvPressureTestStatusBug.text = ""
     }
 }
