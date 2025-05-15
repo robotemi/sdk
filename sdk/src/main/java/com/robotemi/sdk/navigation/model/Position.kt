@@ -7,14 +7,16 @@ data class Position(
     var x: Float = 0F,
     var y: Float = 0F,
     var yaw: Float = 0F,
-    var tiltAngle: Int = 0
+    var tiltAngle: Int = 0,
+    var isInMapArea: Boolean? = false,
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
         source.readFloat(),
         source.readFloat(),
         source.readFloat(),
-        source.readInt()
+        source.readInt(),
+        1 == source.readInt(),
     )
 
     override fun describeContents() = 0
@@ -24,6 +26,7 @@ data class Position(
         writeFloat(y)
         writeFloat(yaw)
         writeInt(tiltAngle)
+        writeInt(if(isInMapArea == true) 1 else 0)
     }
 
     companion object {
