@@ -197,6 +197,8 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     11 -> robot.goTo("a", speedLevel = SpeedLevel.customSpeed(1.5f), highAccuracyArrival = true)
                     12 -> robot.goToPosition(Position(1f, 2f, 3f), speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
                     13 -> robot.goToPosition(Position(1f, 2f, 3f), speedLevel = SpeedLevel.MEDIUM, highAccuracyArrival = true)
+                    14 -> robot.goTo("a", speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
+                    15 -> robot.goTo("b", speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
                 }
             }
         }
