@@ -1714,11 +1714,11 @@ class Robot private constructor(private val context: Context) {
     /**
      * To turn temi by a specific degree.
      *
-     * @param degrees the degree amount you want the robot to turn
+     * @param degrees the degree amount you want the robot to turn, the value will be constrained to -355 to 355.
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
     @JvmOverloads
-    fun turnBy(degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
+    fun turnBy(@IntRange(from = -355, to = 355) degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
         try {
             sdkService?.turnBy(degrees, speed)
         } catch (e: RemoteException) {
