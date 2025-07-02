@@ -180,6 +180,15 @@ class Robot private constructor(private val context: Context) {
     private val onLoadMapStatusChangedListeners =
         CopyOnWriteArraySet<OnLoadMapStatusChangedListener>()
 
+    private val onMapStatusChangedListeners =
+        CopyOnWriteArraySet<OnMapStatusChangedListener>()
+
+    private val onMapElementsChangedListeners =
+        CopyOnWriteArraySet<OnMapElementsChangedListener>()
+
+    private val onMapNameChangedListeners =
+        CopyOnWriteArraySet<OnMapNameChangedListener>()
+
     private val onDisabledFeatureListUpdatedListeners =
         CopyOnWriteArraySet<OnDisabledFeatureListUpdatedListener>()
 
@@ -206,6 +215,9 @@ class Robot private constructor(private val context: Context) {
 
     private val onButtonStatusChangedListeners =
         CopyOnWriteArraySet<OnButtonStatusChangedListener>()
+
+    private val onButtonModeChangedListeners =
+        CopyOnWriteArraySet<OnButtonModeChangedListener>()
 
     private val onGoToNavPathChangedListeners =
         CopyOnWriteArraySet<OnGoToNavPathChangedListener>()
@@ -584,6 +596,16 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        override fun onButtonModeChanged(buttonType: Int, buttonMode: Int): Boolean {
+            if (onButtonModeChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onButtonModeChangedListeners.forEach {
+                    it.onButtonModeChanged(HardButton.valueToEnum(buttonType), HardButton.Mode.valueToEnum(buttonMode))
+                }
+            }
+            return true
+        }
+
         /*****************************************/
         /*               Permission              */
         /*****************************************/
@@ -690,11 +712,11 @@ class Robot private constructor(private val context: Context) {
         /*                Sequence               */
         /*****************************************/
 
-        override fun onSequencePlayStatusChanged(status: Int): Boolean {
+        override fun onSequencePlayStatusChanged(status: Int, sequenceId: String?): Boolean {
             if (onSequencePlayStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onSequencePlayStatusChangedListeners) {
-                    listener.onSequencePlayStatusChanged(status)
+                    listener.onSequencePlayStatusChanged(status, sequenceId)
                 }
             }
             return true
@@ -728,6 +750,16 @@ class Robot private constructor(private val context: Context) {
         /*                 Common                */
         /*****************************************/
 
+        override fun onRobotReady(isReady: Boolean): Boolean {
+            if (onRobotReadyListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onRobotReadyListeners) {
+                    listener.onRobotReady(isReady)
+                }
+            }
+            return true
+        }
+
         override fun onSdkError(sdkException: SdkException): Boolean {
             if (onSdkExceptionListeners.isEmpty()) return false
             uiHandler.post {
@@ -757,6 +789,36 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 onLoadFloorStatusChangedListeners.forEach {
                     it.onLoadFloorStatusChanged(status)
+                }
+            }
+            return true
+        }
+
+        override fun onMapStatusChanged(isLost: Boolean, isLocked: Boolean): Boolean {
+            if (onMapStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onMapStatusChangedListeners.forEach {
+                    it.onMapStatusChanged(isLost, isLocked)
+                }
+            }
+            return true
+        }
+
+        override fun onMapElementsChanged(): Boolean {
+            if (onMapElementsChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onMapElementsChangedListeners.forEach {
+                    it.onMapElementsChanged()
+                }
+            }
+            return true
+        }
+
+        override fun onMapNameChanged(mapName: String?): Boolean {
+            if (onMapNameChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                onMapNameChangedListeners.forEach {
+                    it.onMapNameChanged(mapName ?: "")
                 }
             }
             return true
@@ -794,8 +856,18 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     @get:CheckResult
-    val isReady
-        get() = sdkService != null
+    val isReady: Boolean
+        get() {
+            try {
+                if (sdkService?.isReady() == NOT_SET) { // backward compatibility
+                    return sdkService != null
+                }
+                return sdkService?.isReady() == TRUE
+            } catch (e: RemoteException) {
+                Log.e(TAG, "isReady() error")
+            }
+            return false
+        }
 
     @UiThread
     fun onStart(activityInfo: ActivityInfo) {
@@ -812,7 +884,7 @@ class Robot private constructor(private val context: Context) {
         this.sdkService = sdkService
         mediaBar = AidlMediaBarController(sdkService)
         registerCallback()
-        onRobotReadyListeners.forEach { it.onRobotReady(sdkService != null) }
+        onRobotReadyListeners.forEach { it.onRobotReady(isReady) }
     }
 
     @UiThread
@@ -1221,10 +1293,11 @@ class Robot private constructor(private val context: Context) {
     /**
      * Get Position.
      *
-     * @return Result of current position or Position(0, 0, 0, 0) if failed.
+     * @return Result of current position or Position(0, 0, 0, 0, null) if failed.
      */
+    @WorkerThread
     fun getPosition(): Position {
-        return sdkService?.getPosition(applicationInfo.packageName) ?: Position(0f, 0f, 0f, 0)
+        return sdkService?.getPosition(applicationInfo.packageName) ?: Position(0f, 0f, 0f, 0, null)
     }
 
     /**
@@ -1312,6 +1385,7 @@ class Robot private constructor(private val context: Context) {
                 speedLevel?.value ?: "",
                 highAccuracyArrivalInt,
                 noRotationAtEndInt,
+                speedLevel?.floatSpeedLevel ?: 0.0f,
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "goTo(String) error")
@@ -1348,7 +1422,8 @@ class Robot private constructor(private val context: Context) {
                 allowBackwardsInt,
                 noBypassInt,
                 speedLevel?.value ?: "",
-                highAccuracyArrivalInt
+                highAccuracyArrivalInt,
+                speedLevel?.floatSpeedLevel ?: 0.0f,
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "goToPosition() error")
@@ -1481,6 +1556,20 @@ class Robot private constructor(private val context: Context) {
         } catch (e: RemoteException) {
             Log.e(TAG, "repose() error")
         }
+    }
+
+    /**
+     * Get the status of the repose process.
+     *
+     * @return the status of the repose process.
+     */
+    fun getReposeStatus(): ReposeStatus {
+        try {
+            return ReposeStatus.valueToEnum(sdkService?.reposeStatus ?: ReposeStatus.UNKNOWN.value)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getReposeStatus() error")
+        }
+        return ReposeStatus.UNKNOWN
     }
 
     @UiThread
@@ -1625,11 +1714,11 @@ class Robot private constructor(private val context: Context) {
     /**
      * To turn temi by a specific degree.
      *
-     * @param degrees the degree amount you want the robot to turn
+     * @param degrees the degree amount you want the robot to turn, the value will be constrained to -355 to 355.
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
     @JvmOverloads
-    fun turnBy(degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
+    fun turnBy(@IntRange(from = -355, to = 355) degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
         try {
             sdkService?.turnBy(degrees, speed)
         } catch (e: RemoteException) {
@@ -1952,9 +2041,9 @@ class Robot private constructor(private val context: Context) {
     /**
      * Hide the top bar of Launcher.
      */
-    fun hideTopBar() {
+    fun hideTopBar(completely: Boolean = false) {
         try {
-            sdkService?.hideTopBar()
+            sdkService?.hideTopBar(completely)
         } catch (e: RemoteException) {
             Log.e(TAG, "hideTopBar() error")
         }
@@ -3120,9 +3209,9 @@ class Robot private constructor(private val context: Context) {
      * @param repeat How many times will this sequence be played after the first playing.
      */
     @JvmOverloads
-    fun playSequence(sequenceId: String, withPlayer: Boolean = false, repeat: Int = 0) {
+    fun playSequence(sequenceId: String, withPlayer: Boolean = false, repeat: Int = 0, startFromStep: Int = 1) {
         try {
-            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer, repeat)
+            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer, repeat, startFromStep)
         } catch (e: RemoteException) {
             Log.e(TAG, "playSequence() error")
         }
@@ -3212,8 +3301,18 @@ class Robot private constructor(private val context: Context) {
                 inputStreamReader,
                 MapDataModel::class.java
             )
+            // Gson is not calling the constructor, so we need to manually create the MapImage object
+            // Ref: https://discuss.kotlinlang.org/t/solved-npe-when-calling-function-in-lazy-delegate-inside-my-kotlin-library-from-android-app/1498/4
+            val mapImage = MapImage(
+                typeId = json.mapImage.typeId,
+                rows = json.mapImage.rows,
+                cols = json.mapImage.cols,
+                dt = json.mapImage.dt,
+                _data = json.mapImage._data,
+            )
+
             mapDataModel = MapDataModel(
-                mapImage = json.mapImage,
+                mapImage = mapImage,
                 mapName = json.mapName ?: ""
             )
             val uriStr = StringBuffer("content://")
@@ -3265,6 +3364,125 @@ class Robot private constructor(private val context: Context) {
             }
         }
         return mapDataModel
+    }
+
+    /**
+     * Get map elements, such as locations, virtual walls, green paths, etc.
+     *
+     * @throws IllegalArgumentException This should not happen. Just add this for future compatibility.
+     * @return Map elements.
+     */
+    @WorkerThread
+    @Throws(IllegalArgumentException::class)
+    fun getMapElements(): List<Layer>? {
+        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
+            Log.e(TAG, "getMapElements() - Permission denied")
+            return null
+        }
+//        if (isMapLocked() == true) return sdkService?.getMapElements(applicationInfo.packageName)
+        var cursor: Cursor? = null
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(SdkConstants.PROVIDER_PARAMETER_MAP_DATA)
+            .toString()
+        cursor = context.contentResolver.query(
+            Uri.parse(uriStr),
+            arrayOf(MAP_ELEMENTS),
+            null,
+            null,
+            null
+        )
+        if (cursor == null || !cursor.moveToFirst()) {
+            return null
+        }
+        val mapElementsJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ELEMENTS))
+        cursor.close()
+        return gson.fromJson<List<Layer>>(
+            mapElementsJson,
+            object : TypeToken<List<Layer>>() {}.type
+        )
+    }
+
+    /**
+     * Get map image and map info.
+     *
+     * @throws IllegalArgumentException This should not happen. Just add this for future compatibility.
+     * @return Map data model with only map image and map info
+     */
+    @WorkerThread
+    @Throws(IllegalArgumentException::class)
+    fun getMapImage(): MapDataModel? {
+        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
+            Log.e(TAG, "getMapElements() - Permission denied")
+            return null
+        }
+        var cursor: Cursor? = null
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(SdkConstants.PROVIDER_PARAMETER_MAP_DATA)
+            .toString()
+        cursor = context.contentResolver.query(
+            Uri.parse(uriStr),
+            arrayOf(MAP_IMAGE, MAP_INFO, MAP_BASE64),
+            null,
+            null,
+            null
+        )
+        if (cursor == null || !cursor.moveToFirst()) {
+            return null
+        }
+        val mapImageJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_IMAGE))
+        val mapInfoJson = cursor.getString(cursor.getColumnIndexOrThrow(MAP_INFO))
+        val mapDataBase64 = cursor.getString(cursor.getColumnIndexOrThrow(MAP_BASE64))
+
+        cursor.close()
+
+        val mapImage = gson.fromJson(
+            mapImageJson,
+            MapImage::class.java
+        )
+        val mapInfo = gson.fromJson(mapInfoJson, MapInfo::class.java)
+
+        return MapDataModel(
+            mapImage = mapImage.copy(dataBase64 = mapDataBase64),
+            mapInfo = mapInfo,
+        )
+    }
+
+    /**
+     * Check if the map is lost.
+     *
+     * @return true if the map is lost, false otherwise.
+     */
+    fun isMapLost(): Boolean? {
+        try {
+            if (sdkService?.isMapLost == NOT_SET) {
+                Log.e(TAG, "this launcher version doesn't support isMapLost() yet")
+                return null
+            }
+            return sdkService?.isMapLost == TRUE
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isMapLost() error")
+            return null
+        }
+    }
+
+    /**
+     * Check if the map is locked.
+     *
+     * @return true if the map is locked, false otherwise.
+     */
+    fun isMapLocked(): Boolean? {
+        try {
+            if (sdkService?.isMapLocked == NOT_SET) {
+                Log.e(TAG, "this launcher version doesn't support isMapLocked() yet")
+                return null
+            }
+            return sdkService?.isMapLocked == TRUE
+        } catch (e: RemoteException) {
+            Log.e(TAG, "isMapLocked() error")
+            return null
+        }
     }
 
     /**
@@ -3580,6 +3798,36 @@ class Robot private constructor(private val context: Context) {
         onLoadFloorStatusChangedListeners.remove(listener)
     }
 
+    @UiThread
+    fun addOnMapStatusChangedListener(listener: OnMapStatusChangedListener) {
+        onMapStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMapStatusChangedListener(listener: OnMapStatusChangedListener) {
+        onMapStatusChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnMapElementsChangedListener(listener: OnMapElementsChangedListener) {
+        onMapElementsChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMapElementsChangedListener(listener: OnMapElementsChangedListener) {
+        onMapElementsChangedListeners.remove(listener)
+    }
+
+    @UiThread
+    fun addOnMapNameChangedListener(listener: OnMapNameChangedListener) {
+        onMapNameChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnMapNameChangedListener(listener: OnMapNameChangedListener) {
+        onMapNameChangedListeners.remove(listener)
+    }
+
     /*****************************************/
     /*            Face Recognition           */
     /*****************************************/
@@ -3802,6 +4050,14 @@ class Robot private constructor(private val context: Context) {
 
     fun removeOnButtonStatusChangedListener(listener: OnButtonStatusChangedListener) {
         onButtonStatusChangedListeners.remove(listener)
+    }
+
+    fun addOnButtonModeChangedListener(listener: OnButtonModeChangedListener) {
+        onButtonModeChangedListeners.add(listener)
+    }
+
+    fun removeOnButtonModeChangedListener(listener: OnButtonModeChangedListener) {
+        onButtonModeChangedListeners.remove(listener)
     }
 
     /*****************************************/

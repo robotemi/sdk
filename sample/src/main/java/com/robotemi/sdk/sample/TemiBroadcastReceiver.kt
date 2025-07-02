@@ -10,6 +10,7 @@ import com.robotemi.sdk.SttRequest
 import com.robotemi.sdk.TtsRequest
 import com.robotemi.sdk.constants.SequenceCommand
 import com.robotemi.sdk.navigation.model.Position
+import com.robotemi.sdk.navigation.model.SpeedLevel
 import com.robotemi.sdk.voice.WakeupRequest
 
 class TemiBroadcastReceiver : BroadcastReceiver() {
@@ -173,11 +174,13 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     16 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR))
                     17 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR), WakeupRequest(wakeupResponse = false))
                     18 -> Robot.getInstance().wakeup(listOf(SttLanguage.EL_GR), WakeupRequest(wakeupResponse = true))
+                    19 -> Robot.getInstance().wakeup(listOf(SttLanguage.AZ_AZ), WakeupRequest(wakeupResponse = true))
                 }
             }
             ACTION_GOTO -> {
-                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.goto" --ei test 1
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.goto" --ei test 1 --ef speed 0.5
                 val test = intent.getIntExtra("test", 1)
+                val speed = intent.getFloatExtra("speed", 0.0f)
                 val robot = Robot.getInstance()
                 val position = robot.getPosition()
                 when (test) {
@@ -188,6 +191,14 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     5 -> robot.goTo("a", highAccuracyArrival = true)
                     6 -> robot.goTo("a", highAccuracyArrival = true,  noRotationAtEnd = true)
                     7 -> robot.goTo("a", noRotationAtEnd = true)
+                    8 -> robot.goTo("a", speedLevel = SpeedLevel.HIGH)
+                    9 -> robot.goTo("a", speedLevel = SpeedLevel.MEDIUM)
+                    10 -> robot.goTo("a", speedLevel = SpeedLevel.SLOW, backwards = true)
+                    11 -> robot.goTo("a", speedLevel = SpeedLevel.customSpeed(1.5f), highAccuracyArrival = true)
+                    12 -> robot.goToPosition(Position(1f, 2f, 3f), speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
+                    13 -> robot.goToPosition(Position(1f, 2f, 3f), speedLevel = SpeedLevel.MEDIUM, highAccuracyArrival = true)
+                    14 -> robot.goTo("a", speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
+                    15 -> robot.goTo("b", speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
                 }
             }
         }

@@ -74,6 +74,44 @@
                 android:id="@+id/btnDeleteAllFacesByUid"
                 style="@style/ButtonCommon"
                 android:text="Delete all faces by Uid" />
+
+            <Button
+                android:id="@+id/btnStartFaceRecognition"
+                style="@style/ButtonCommon"
+                android:text="Start Face Recognition" />
+
+            <Button
+                android:id="@+id/btnStopFaceRecognition"
+                style="@style/ButtonCommon"
+                android:text="Stop Face Recognition" />
+
+            <Button
+                android:id="@+id/btnPressureTest"
+                style="@style/ButtonCommon"
+                android:text="Pressure Test" />
+
+            <TextView
+                android:id="@+id/tvPressureTestStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:padding="20dp"
+                android:textSize="16sp"
+                tools:text="hello"/>
+
+            <Button
+                android:id="@+id/btnPressureTestBug"
+                style="@style/ButtonCommon"
+                android:text="Pressure Test Parallel" />
+
+            <TextView
+                android:id="@+id/tvPressureTestStatusBug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:padding="20dp"
+                android:textSize="16sp"
+                tools:text="hello"/>
         </LinearLayout>
 
     </ScrollView>

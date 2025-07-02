@@ -23,6 +23,7 @@ import com.robotemi.sdk.model.MemberStatusModel;
 import com.robotemi.sdk.map.MapModel;
 import com.robotemi.sdk.map.Floor;
 import com.robotemi.sdk.voice.model.TtsVoice;
+import com.robotemi.sdk.map.Layer;
 
 interface ISdkService {
 
@@ -97,7 +98,7 @@ interface ISdkService {
      *
      * @param location - Saved location name.
      */
-    void goTo(in String location, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival, int noRotationAtEnd);
+    void goTo(in String location, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival, int noRotationAtEnd, in float floatSpeedLevel);
 
     /**
      * Retrieve list of previously saved locations.
@@ -145,7 +146,7 @@ interface ISdkService {
 
     void showTopBar();
 
-    void hideTopBar();
+    void hideTopBar(in boolean completely);
 
     /*
      * Request robot to stop any current movement.
@@ -246,9 +247,9 @@ interface ISdkService {
 
     List<SequenceModel> getAllSequences(in String packageName, in List<String> tags);
 
-    void playSequence(in String packageName, in String sequenceId, boolean withPlayer, int repeat);
+    void playSequence(in String packageName, in String sequenceId, boolean withPlayer, int repeat, int startFromStep);
 
-    void goToPosition(in Position position, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival);
+    void goToPosition(in Position position, int backwards, int noBypass, in String speedLevel, int highAccuracyArrival, in float floatSpeedLevel);
 
     MapDataModel getMapData(in String packageName);
 
@@ -394,4 +395,12 @@ interface ISdkService {
     String getFollowSpeed();
 
     String getHomeScreenMode(in String packageName);
+
+    int isMapLost();
+
+    int isMapLocked();
+
+    int getReposeStatus();
+
+    int isReady();
 }

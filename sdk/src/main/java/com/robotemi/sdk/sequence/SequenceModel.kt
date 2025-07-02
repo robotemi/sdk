@@ -10,7 +10,8 @@ data class SequenceModel @JvmOverloads constructor(
     val name: String,
     val description: String,
     val imageKey: String = "",
-    val tags: List<String> = emptyList()
+    val tags: List<String> = emptyList(),
+    val numberOfSteps: Int = 0
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -44,6 +45,7 @@ data class SequenceModel @JvmOverloads constructor(
         const val JSON_KEY_DESCRIPTION = "description"
         const val JSON_KEY_IMAGE_KEY = "imageKey"
         const val JSON_KEY_TAGS = "tags"
+        const val JSON_KEY_NUMBER_OF_STEPS = "numberOfSteps"
     }
 }
 
@@ -74,5 +76,10 @@ internal fun SequenceModel.compatible(): SequenceModel {
     } catch (e: JSONException) {
         emptyList<String>()
     }
-    return this.copy(description = desc, imageKey = imgKey, tags = tagList)
+    val numberOfSteps = try {
+        json.getInt(SequenceModel.JSON_KEY_NUMBER_OF_STEPS)
+    } catch (e: JSONException) {
+        0
+    }
+    return this.copy(description = desc, imageKey = imgKey, tags = tagList, numberOfSteps = numberOfSteps)
 }

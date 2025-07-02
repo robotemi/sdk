@@ -16,9 +16,17 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import kotlinx.android.synthetic.main.activity_face.*
+import com.robotemi.sdk.Robot
+import com.robotemi.sdk.face.ContactModel
+import com.robotemi.sdk.face.OnContinuousFaceRecognizedListener
+import com.robotemi.sdk.sample.databinding.ActivityFaceBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 
@@ -31,43 +39,45 @@ class FaceActivity : AppCompatActivity() {
         private const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.provider"
     }
 
+    private lateinit var binding: ActivityFaceBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_face)
-        ibBack.setOnClickListener { finish() }
+        binding = ActivityFaceBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.ibBack.setOnClickListener { finish() }
 
-
-        btnInsertFromLocalFile.setOnClickListener {
+        binding.btnInsertFromLocalFile.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 insertFromLocalFile()
             }
         }
 
-        btnInsertFromUrl.setOnClickListener {
+        binding.btnInsertFromUrl.setOnClickListener {
             insertFromUrl()
         }
 
-        btnGetAllFaces.setOnClickListener {
+        binding.btnGetAllFaces.setOnClickListener {
             queryAllFacesRegistered()
         }
 
-        btnGetAllFacesOfUid.setOnClickListener {
+        binding.btnGetAllFacesOfUid.setOnClickListener {
 //            queryAllFacesRegistered("uid = ?", arrayOf("0"))
 //            queryAllFacesRegistered("uid IN (?,?)", arrayOf("0", "2"))
 //            queryAllFacesRegistered("username = ?", arrayOf("Jane Doe"))
             queryAllFacesRegistered("username LIKE ?", arrayOf("%Ja%")) // username contains Ja
         }
 
-        btnDeleteAllFaces.setOnClickListener {
+        binding.btnDeleteAllFaces.setOnClickListener {
             deleteAll()
         }
 
-        btnDeleteAllFacesByUid.setOnClickListener {
+        binding.btnDeleteAllFacesByUid.setOnClickListener {
             deleteAllByUid("1", "2")
             deleteAllByUsername("Jane Doe")
         }
 
-        btnInsertFromCamera.setOnClickListener {
+        binding.btnInsertFromCamera.setOnClickListener {
             val photo = "photo.jpeg"
             val photoFile = File(cacheDir, photo)
             val uri = FileProvider.getUriForFile(this, AUTHORITY, photoFile)
@@ -78,13 +88,13 @@ class FaceActivity : AppCompatActivity() {
             }
         }
 
-        btnInsertFromPhotoLibrary.setOnClickListener {
+        binding.btnInsertFromPhotoLibrary.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             intent.type = "image/*"
             startActivityForResult(intent, REQUEST_IMAGE_PICKER)
         }
 
-        btnInsertFromContentProvider.setOnClickListener {
+        binding.btnInsertFromContentProvider.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 val facesDir = File(filesDir, "faces")
                 try {
@@ -127,12 +137,23 @@ class FaceActivity : AppCompatActivity() {
                         null
                     }
                     Log.d("Insert", "$retUri")
-                    tvLog.text = "${System.currentTimeMillis()}: Image set ready"
+                    binding.tvLog.text = "${System.currentTimeMillis()}: Image set ready"
                 } catch (e: IllegalArgumentException) {
                     Log.e("Insert", "Insert Exception", e)
-                    tvLog.text = "${System.currentTimeMillis()}: Image set failed"
+                    binding.tvLog.text = "${System.currentTimeMillis()}: Image set failed"
                 }
             }
+        }
+
+        createRepeatingTest()
+        createParallelTest()
+
+        binding.btnStartFaceRecognition.setOnClickListener { v ->
+            Robot.getInstance().startFaceRecognition(true)
+        }
+
+        binding.btnStopFaceRecognition.setOnClickListener { v ->
+            Robot.getInstance().stopFaceRecognition()
         }
     }
 
@@ -143,7 +164,7 @@ class FaceActivity : AppCompatActivity() {
             if (imageBitmap != null) {
                 // Thumbnail will not be null if you doesn't set takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
                 val drawable = BitmapDrawable(imageBitmap)
-                tvLog.background = drawable
+                binding.tvLog.background = drawable
             }
 
             val photo = "photo.jpeg"
@@ -159,10 +180,10 @@ class FaceActivity : AppCompatActivity() {
             contentValues.put("uri", uri.toString())
             try {
                 val retUri = contentResolver.insert(Uri.parse("content://com.robotemi.sdk.TemiSdkDocumentContentProvider/face"), contentValues)
-                tvLog.text = "${System.currentTimeMillis()}: Image set ready from camera"
+                binding.tvLog.text = "${System.currentTimeMillis()}: Image set ready from camera"
             } catch (e: IllegalArgumentException) {
                 Log.e("Insert", "Insert Exception", e)
-                tvLog.text = "${System.currentTimeMillis()}: Image set failed from camera"
+                binding.tvLog.text = "${System.currentTimeMillis()}: Image set failed from camera"
             }
         } else if (requestCode == REQUEST_IMAGE_PICKER && resultCode == Activity.RESULT_OK) {
             Log.d("Picker", "$data")
@@ -175,10 +196,10 @@ class FaceActivity : AppCompatActivity() {
             grantUriPermission("com.robotemi.face", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             try {
                 val retUri = contentResolver.insert(Uri.parse("content://com.robotemi.sdk.TemiSdkDocumentContentProvider/face"), contentValues)
-                tvLog.text = "${System.currentTimeMillis()}: Image set ready from gallery"
+                binding.tvLog.text = "${System.currentTimeMillis()}: Image set ready from gallery"
             } catch (e: IllegalArgumentException) {
                 Log.e("Insert", "Insert Exception", e)
-                tvLog.text = "${System.currentTimeMillis()}: Image set failed from gallery"
+                binding.tvLog.text = "${System.currentTimeMillis()}: Image set failed from gallery"
             }
         }
     }
@@ -197,10 +218,10 @@ class FaceActivity : AppCompatActivity() {
             try {
                 val retUri = contentResolver.insert(Uri.parse("content://com.robotemi.sdk.TemiSdkDocumentContentProvider/face"), contentValues)
                 Log.d("Insert", "$retUri")
-                tvLog.text = "${System.currentTimeMillis()}: Image set ready"
+                binding.tvLog.text = "${System.currentTimeMillis()}: Image set ready"
             } catch (e: IllegalArgumentException) {
                 Log.e("Insert", "Insert Exception", e)
-                tvLog.text = "${System.currentTimeMillis()}: Image set failed"
+                binding.tvLog.text = "${System.currentTimeMillis()}: Image set failed"
             }
         }
     }
@@ -223,10 +244,10 @@ class FaceActivity : AppCompatActivity() {
         try {
             val retUri = contentResolver.insert(Uri.parse("content://com.robotemi.sdk.TemiSdkDocumentContentProvider/face"), contentValues, bundle)
             Log.d("Insert", "$retUri")
-            tvLog.text = "${System.currentTimeMillis()}: Image set ready"
+            binding.tvLog.text = "${System.currentTimeMillis()}: Image set ready"
         } catch (e: IllegalArgumentException) {
             Log.e("Insert", "Insert Exception", e)
-            tvLog.text = "${System.currentTimeMillis()}: Image set failed"
+            binding.tvLog.text = "${System.currentTimeMillis()}: Image set failed"
         }
     }
 
@@ -278,12 +299,120 @@ class FaceActivity : AppCompatActivity() {
                     counter++
                 }
                 cursor.close()
-                tvLog.text = string
+                binding.tvLog.text = string
                 Log.d("Query", "$indexOrUserName, $colCount")
             }
 
         } catch (e: IllegalArgumentException) {
             Log.e("Query", "Query Exception", e)
         }
+    }
+
+    /**
+     * This is simulating use cases that apps keeps turning on and off face recognition
+     */
+    private fun createRepeatingTest() {
+        val onContinuousFaceRecognizedListener = object: OnContinuousFaceRecognizedListener {
+            var faceDetected: Int = 0
+
+            override fun onContinuousFaceRecognized(contactModelList: List<ContactModel>) {
+                faceDetected += contactModelList.size
+            }
+        }
+
+        var job: Job? = null
+
+        binding.btnPressureTest.setOnClickListener {
+            binding.tvPressureTestStatus.text = "${System.currentTimeMillis()}: Pressure test started"
+
+            var failure = 0
+
+            Robot.getInstance().addOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener)
+            lifecycleScope.launch(Dispatchers.IO) {
+                job?.cancelAndJoin()
+                job = lifecycleScope.launch(Dispatchers.IO) {
+                    for (i in 0..1000) {
+                        ensureActive()
+                        onContinuousFaceRecognizedListener.faceDetected = 0
+                        Robot.getInstance().startFaceRecognition()
+                        // Check if there are valid face detected in 5 seconds, if not record a failure.
+                        // After 5 seconds, stop face recognition.
+                        runOnUiThread {
+                            binding.tvPressureTestStatus.text = "${System.currentTimeMillis()}: Pressure test, loop $i running, total failure $failure"
+                        }
+                        ensureActive()
+                        delay(5000)
+                        Robot.getInstance().stopFaceRecognition()
+                        if (onContinuousFaceRecognizedListener.faceDetected == 0) {
+                            failure++
+                        }
+
+                        runOnUiThread {
+                            binding.tvPressureTestStatus.text = "${System.currentTimeMillis()}: Pressure test started, loop $i completed, detect faces ${onContinuousFaceRecognizedListener.faceDetected}, total failure $failure"
+                        }
+                        ensureActive()
+                        delay(5000)
+                    }
+                    Robot.getInstance().removeOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener)
+                }
+            }
+
+        }
+
+        binding.tvPressureTestStatus.text = ""
+    }
+
+    /**
+     * This abusing the face API, creating a lot of parallel tasks to open and close face recognition and camera
+     */
+    private fun createParallelTest() {
+        val onContinuousFaceRecognizedListener2 = object : OnContinuousFaceRecognizedListener {
+            var faceDetected: Int = 0
+
+            override fun onContinuousFaceRecognized(contactModelList: List<ContactModel>) {
+                faceDetected += contactModelList.size
+            }
+        }
+
+
+        binding.btnPressureTestBug.setOnClickListener {
+            binding.tvPressureTestStatusBug.text =
+                "${System.currentTimeMillis()}: Pressure (Parallel) test started"
+
+            var failure = 0
+
+            Robot.getInstance()
+                .addOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener2)
+            lifecycleScope.launch(Dispatchers.IO) {
+                for (i in 0..1000) {
+                    ensureActive()
+                    onContinuousFaceRecognizedListener2.faceDetected = 0
+                    Robot.getInstance().startFaceRecognition()
+                    // Check if there are valid face detected in 5 seconds, if not record a failure.
+                    // After 5 seconds, stop face recognition.
+                    withContext(Dispatchers.Main) {
+                        binding.tvPressureTestStatusBug.text =
+                            "${System.currentTimeMillis()}: Pressure test, loop $i running, total failure $failure"
+                    }
+                    ensureActive()
+                    delay(5000)
+                    Robot.getInstance().stopFaceRecognition()
+                    if (onContinuousFaceRecognizedListener2.faceDetected == 0) {
+                        failure++
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        binding.tvPressureTestStatusBug.text =
+                            "${System.currentTimeMillis()}: Pressure test started, loop $i completed, detect faces ${onContinuousFaceRecognizedListener2.faceDetected}, total failure $failure"
+                    }
+                    ensureActive()
+                    delay(5000)
+                }
+                Robot.getInstance()
+                    .removeOnContinuousFaceRecognizedListener(onContinuousFaceRecognizedListener2)
+            }
+        }
+
+        binding.tvPressureTestStatusBug.text = ""
     }
 }

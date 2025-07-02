@@ -21,7 +21,7 @@ import com.robotemi.sdk.map.Layer
 import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapDataModel
 import com.robotemi.sdk.navigation.model.Position
-import kotlinx.android.synthetic.main.activity_map.*
+import com.robotemi.sdk.sample.databinding.ActivityMapBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +40,8 @@ class MapActivity : AppCompatActivity() {
         private const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.provider"
     }
 
+    private lateinit var binding: ActivityMapBinding
+
     @Volatile
     private var bitmap: Bitmap? = null
 
@@ -53,15 +55,16 @@ class MapActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_map)
-        ibBack.setOnClickListener { finish() }
-        textViewMapElements.setOnClickListener { refreshMap() }
-        textViewMapElements.movementMethod = ScrollingMovementMethod()
+        binding = ActivityMapBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.ibBack.setOnClickListener { finish() }
+        binding.textViewMapElements.setOnClickListener { binding.refreshMap() }
+        binding.textViewMapElements.movementMethod = ScrollingMovementMethod()
 
-        buttonBackupMap.setOnClickListener {
+        binding.buttonBackupMap.setOnClickListener {
             // This code block will take current map from temi and create a backup file as ParcelFileDescriptor
             // Write the file to a desired location to finish the backup
-            val withoutUI = checkBoxLoadMapWithoutUI.isChecked
+            val withoutUI = binding.checkBoxLoadMapWithoutUI.isChecked
             val parcelFileDescriptor =
                 Robot.getInstance().getCurrentMapBackupFile(withoutUI) ?: return@setOnClickListener
             lifecycleScope.launch(Dispatchers.IO) {
@@ -92,7 +95,7 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
-        buttonLoadMapFromPrivateFile.setOnClickListener {
+        binding.buttonLoadMapFromPrivateFile.setOnClickListener {
             // This code block will load a map backup to temi.
             // The backup files are taken from either application's internal storage or external storage.
             // These files are securely store this way and transferred by content provider that only temi launcher can read.
@@ -148,7 +151,7 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
-        buttonLoadMapFromFileSelector.setOnClickListener {
+        binding.buttonLoadMapFromFileSelector.setOnClickListener {
             // This code block is launching a file picker to select a public accessible backup file.
             // So if you app is loaded in the USB drive on V3 robot, this could be an easy way to load it.
 
@@ -160,7 +163,7 @@ class MapActivity : AppCompatActivity() {
             startActivityForResult(intent, REQUEST_FILE_PICKER)
         }
 
-        buttonLoadMapFromPublicFile.setOnClickListener {
+        binding.buttonLoadMapFromPublicFile.setOnClickListener {
             // This is possible but not recommended.
             // As Android doesn't recommend to use file:// scheme to send files.
             val file = File("/sdcard/map-1690428181150.tar.gz")
@@ -172,49 +175,49 @@ class MapActivity : AppCompatActivity() {
         }
 
 
-        btnResetMap.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+        binding.btnResetMap.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val resp = robot.resetMap(false)
                 withContext(Dispatchers.Main) {
                     printLog("Reset map result $resp")
-                    progressBar.visibility = View.GONE
-                    refreshMap()
+                    binding.progressBar.visibility = View.GONE
+                    binding.refreshMap()
                 }
             }
         }
-        btnFinishMapping.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+        binding.btnFinishMapping.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
 //                val resp = robot.finishMapping("MAP-${System.currentTimeMillis()}")
                 val resp = robot.finishMapping()
                 withContext(Dispatchers.Main) {
                     printLog("Finish mapping result $resp")
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
 
-        btnFinishMapping.setOnLongClickListener {
+        binding.btnFinishMapping.setOnLongClickListener {
             val resp = robot.updateMapName("MAP-${System.currentTimeMillis()}")
             printLog("Update map name result $resp")
-            refreshMap()
+            binding.refreshMap()
             true
         }
 
-        btnContinueMapping.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+        binding.btnContinueMapping.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val resp = robot.continueMapping()
                 withContext(Dispatchers.Main) {
                     printLog("Continue mapping result $resp")
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
         var factor = 1f
-        btnCreatePath.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+        binding.btnCreatePath.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val layer = Layer.upsertLayer(null, GREEN_PATH, listOf(
                     LayerPose(0.5f, 0.5f, 0f),
@@ -227,21 +230,21 @@ class MapActivity : AppCompatActivity() {
                 if (layer == null) {
                     // Invalid parameter
                     withContext(Dispatchers.Main) {
-                        progressBar.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
                     }
                     return@launch
                 }
                 val resp = robot.upsertMapLayer(layer)
                 withContext(Dispatchers.Main) {
                     printLog("Create path result $resp")
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
 
-        btnMovePath.setOnClickListener {
+        binding.btnMovePath.setOnClickListener {
             val path = mapDataModel?.greenPaths?.firstOrNull() ?: return@setOnClickListener
-            progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val layer = Layer.upsertLayer(path.layerId, GREEN_PATH, listOf(
                     LayerPose(2.5f, 2.5f, 0f),
@@ -253,34 +256,34 @@ class MapActivity : AppCompatActivity() {
                 if (layer == null) {
                     // Invalid parameter
                     withContext(Dispatchers.Main) {
-                        progressBar.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
                     }
                     return@launch
                 }
                 val resp = robot.upsertMapLayer(layer)
                 withContext(Dispatchers.Main) {
                     printLog("Update path result $resp")
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
 
-        btnDeletePath.setOnClickListener {
+        binding.btnDeletePath.setOnClickListener {
             val path = mapDataModel?.greenPaths?.firstOrNull()
             if (path != null) {
-                progressBar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
                 lifecycleScope.launch(Dispatchers.IO) {
                     val resp = robot.deleteMapLayer(path.layerId, GREEN_PATH)
                     withContext(Dispatchers.Main) {
                         printLog("Delete path result $resp")
-                        refreshMap()
+                        binding.refreshMap()
                     }
                 }
             }
         }
 
-        btnUpsertLocation.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
+        binding.btnUpsertLocation.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 val layer = Layer.upsertLayer(
                     "office entrance",
@@ -290,22 +293,22 @@ class MapActivity : AppCompatActivity() {
                 if (layer == null) {
                     // Invalid parameter
                     withContext(Dispatchers.Main) {
-                        progressBar.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
                     }
                     return@launch
                 }
                 val resp = robot.upsertMapLayer(layer)
                 withContext(Dispatchers.Main) {
                     printLog("Add / Update location result $resp")
-                    progressBar.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
 
-        refreshMap()
+        binding.refreshMap()
     }
 
-    private fun refreshMap() {
+    private fun ActivityMapBinding.refreshMap() {
         progressBar.visibility = View.VISIBLE
         singleThreadExecutor.execute {
             mapDataModel = Robot.getInstance().getMapData() ?: return@execute
@@ -342,7 +345,7 @@ class MapActivity : AppCompatActivity() {
     }
 
     private fun printLog(log: String) {
-        textViewMapElements.append("$log \n")
+        binding.textViewMapElements.append("$log \n")
     }
 
     override fun onDestroy() {
@@ -372,9 +375,9 @@ class MapActivity : AppCompatActivity() {
      * They function the same as [Robot.loadMap]
      */
     private fun loadMap(uri: Uri) {
-        val reposeRequired = checkBoxLoadMapWithRepose.isChecked
-        val withoutUI = checkBoxLoadMapWithoutUI.isChecked
-        val position: Position? = if (checkBoxLoadMapFromPose.isChecked) {
+        val reposeRequired = binding.checkBoxLoadMapWithRepose.isChecked
+        val withoutUI = binding.checkBoxLoadMapWithoutUI.isChecked
+        val position: Position? = if (binding.checkBoxLoadMapFromPose.isChecked) {
             Position(1f, 1f, 1f)
         } else {
             null
