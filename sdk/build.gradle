@@ -1,7 +1,10 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id "com.vanniktech.maven.publish" version "0.33.0" apply true
+}
+
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
-apply plugin: "com.vanniktech.maven.publish"
 
 android {
     compileSdk 34
@@ -10,8 +13,6 @@ android {
         minSdkVersion 23
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
-        versionCode 1
-        versionName VERSION_NAME
         buildConfigField 'String', 'SDK_SERVICE_CLASS_NAME', '\"com.roboteam.teamy.sdk.SdkService\"'
     }
     buildTypes {
@@ -23,14 +24,19 @@ android {
     }
     buildFeatures {
         buildConfig true
+        aidl true
     }
-}
 
-signing {
-    setRequired {
-        // signing is only required if the artifacts are to be published
-        gradle.taskGraph.allTasks.any { (it == publishMavenPublicationToMavenCentralRepository) }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    namespace 'com.robotemi.sdk'
 }
 
 dependencies {

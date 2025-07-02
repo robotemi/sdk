@@ -35,12 +35,17 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    lintOptions {
-        abortOnError false
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
+
     buildFeatures {
         buildConfig true
         viewBinding true
+    }
+    namespace 'com.robotemi.sdk.sample'
+    lint {
+        abortOnError false
     }
 }
 

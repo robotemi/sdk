@@ -11,7 +11,7 @@ Download
 
 Download the latest AAR from [Maven Central][2] or grab via Gradle:
 ```groovy
-implementation 'com.robotemi:sdk:1.135.1'
+implementation 'com.robotemi:sdk:1.136.0'
 ```
 
 or Maven:
@@ -19,11 +19,9 @@ or Maven:
 <dependency>
   <groupId>com.robotemi</groupId>
   <artifactId>sdk</artifactId>
-  <version>1.135.1</version>
+  <version>1.136.0</version>
 </dependency>
 ```
-
-Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
 Documentation
 --------
@@ -54,4 +52,3 @@ License
 [3]: https://www.xda-developers.com/install-adb-windows-macos-linux/
 [4]: https://github.com/robotemi/sdk/wiki
 [5]: https://github.com/robotemi/sdk/wiki/Home_chn
-[snap]: https://oss.sonatype.org/content/repositories/snapshots/
