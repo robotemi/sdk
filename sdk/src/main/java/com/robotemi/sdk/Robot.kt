@@ -2922,6 +2922,8 @@ class Robot private constructor(private val context: Context) {
      *  if target launcher doesn't support this param yet, it will set to [HomeScreenMode.DEFAULT] mode.
      *  If set to [HomeScreenMode.URL], but no URL is set, it will fallback to [HomeScreenMode.DEFAULT] mode.
      *  Cannot turn off Kiosk Mode and set to [HomeScreenMode.APPLICATION] mode, will fallback to default mode
+     *
+     *  Require [Permission.SETTINGS] permission to set kiosk mode on/off.
      */
     @JvmOverloads
     fun setKioskModeOn(on: Boolean = true, mode: HomeScreenMode = HomeScreenMode.DEFAULT) {

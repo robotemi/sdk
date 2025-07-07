@@ -47,6 +47,10 @@ android {
     lint {
         abortOnError false
     }
+
+    packagingOptions {
+        pickFirst "META-INF/io.netty.versions.properties"
+    }
 }
 
 dependencies {
@@ -63,4 +67,8 @@ dependencies {
     implementation project(':sdk')
 //    implementation 'com.robotemi:sdk:1.134.1'
     implementation 'com.google.code.gson:gson:2.9.0'
+
+    implementation "com.robotemi:ros:0.0.1-SNAPSHOT"
+
+    implementation "com.jakewharton.timber:timber:5.0.1"
 }

@@ -38,6 +38,12 @@
         android:text="Get Map Data" />
 
     <Button
+        android:id="@+id/btnFetchRosMap"
+        style="@style/ButtonCommon"
+        android:text="Get ROS Map Data" />
+
+
+    <Button
         android:id="@+id/btnFetchSequence"
         style="@style/ButtonCommon"
         android:text="Get All Sequences" />

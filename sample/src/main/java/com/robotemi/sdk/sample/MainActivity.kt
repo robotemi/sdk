@@ -650,6 +650,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             btnPlayFirstSequenceWithoutPlayer.setOnClickListener { playFirstSequenceWithoutPlayer() }
             btnPlayRandomSequenceFromRandomStep.setOnClickListener { playRandomSequenceFromRandomStep() }
             btnFetchMap.setOnClickListener { getMap() }
+            btnFetchRosMap.setOnClickListener { getRosMap() }
             btnGetAllContacts.setOnClickListener { getAllContacts() }
             btnStartTelepresenceToCenter.setOnClickListener { startTelepresenceToCenter() }
             btnStartMeeting.setOnClickListener { startMeeting() }
@@ -2007,6 +2008,13 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             return
         }
         startActivity(Intent(this, MapActivity::class.java))
+    }
+
+    private fun getRosMap() {
+        if (requestPermissionIfNeeded(Permission.MAP, REQUEST_CODE_MAP)) {
+            return
+        }
+        startActivity(Intent(this, RosMapActivity::class.java))
     }
 
     override fun onFaceRecognized(contactModelList: List<ContactModel>) {
