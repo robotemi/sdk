@@ -76,10 +76,14 @@ class RosMapActivity: AppCompatActivity() {
                             when (layer.layerCategory) {
                                 GREEN_PATH,
                                 VIRTUAL_WALL -> {
+                                    val pathType = when (layer.layerCategory) {
+                                        GREEN_PATH -> PathType.GREEN_PATH
+                                        else -> PathType.VIRTUAL_WALL
+                                    }
                                     val pathData = PathData(
                                         id = layer.layerId,
                                         size = layer.layerPoses?.size ?: 0,
-                                        pathType = PathType.VIRTUAL_WALL,
+                                        pathType = pathType,
                                         poses = (layer.layerPoses ?: listOf()).map {
                                             Pose(
                                                 x = it.x,
