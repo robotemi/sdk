@@ -3207,6 +3207,7 @@ class Robot private constructor(private val context: Context) {
      * @param sequenceId Sequence ID you want to play.
      * @param withPlayer Whether to play sequence with the player panel.
      * @param repeat How many times will this sequence be played after the first playing.
+     * @param startFromStep The step number to start from, default is 1.
      */
     @JvmOverloads
     fun playSequence(sequenceId: String, withPlayer: Boolean = false, repeat: Int = 0, startFromStep: Int = 1) {
