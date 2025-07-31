@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
@@ -13,6 +15,7 @@ import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.RemoteException
@@ -67,6 +70,7 @@ import com.robotemi.sdk.navigation.model.SpeedLevel
 import com.robotemi.sdk.permission.OnRequestPermissionResultListener
 import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sample.databinding.ActivityMainBinding
+import com.robotemi.sdk.sample.databinding.GroupSettingsAndStatusBinding
 import com.robotemi.sdk.sequence.OnSequencePlayStatusChangedListener
 import com.robotemi.sdk.sequence.SequenceModel
 import com.robotemi.sdk.telepresence.CallState
@@ -76,9 +80,12 @@ import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.WakeupOrigin
 import com.robotemi.sdk.voice.model.TtsVoice
+import org.java_websocket.client.WebSocketClient
+import org.java_websocket.handshake.ServerHandshake
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.net.URI
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
@@ -604,6 +611,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 }
                 true
             }
+
+            setupRoboxOtaAndWebSocket()
+
         }
         groupResources.apply {
             btnCallOwner.setOnClickListener { callOwner() }
@@ -2635,5 +2645,133 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onButtonStatusChanged(hardButton: HardButton, status: HardButton.Status) {
         Log.d("onButtonStatusChanged", "hardButton: $hardButton, status: $status")
+    }
+
+    private var webSocketClient: WebSocketClient? = null
+
+    private fun createWebSocketClient(): WebSocketClient? {
+        if (webSocketClient != null) {
+            webSocketClient?.close()
+            webSocketClient = null
+        }
+        webSocketClient = object: WebSocketClient(URI.create("wss://127.0.0.1:4444")) {
+            override fun onOpen(handshakedata: ServerHandshake?) {
+                printLog("WebSocket connected")
+            }
+
+            override fun onMessage(message: String?) {
+                printLog("WebSocket message: $message")
+            }
+
+            override fun onClose(code: Int, reason: String?, remote: Boolean) {
+                printLog("WebSocket closed: code=$code, reason=$reason, remote=$remote")
+                webSocketClient = null
+            }
+
+            override fun onError(ex: java.lang.Exception?) {
+                printLog("WebSocket error: $ex")
+                webSocketClient = null
+            }
+        }
+        return webSocketClient
+    }
+
+    private fun GroupSettingsAndStatusBinding.setupRoboxOtaAndWebSocket() {
+
+
+        // This action is registered in the app side to receive status updates.
+        // This should be declared as intent filter action in the AndroidManifest.xml for static receiver.
+        val ACTION_STATUS = "com.robotemi.action.XIAOJIA_STATUS"
+
+        // This action is registered in temi Launcher side to receive OTA commands.
+        val ACTION_OTA = "com.robotemi.action.XIAOJIA_OTA"
+
+        // This action is registered in temi Launcher side to start/stop WebSocket.
+        val ACTION_WEBSOCKET = "com.robotemi.action.XIAOJIA_WEBSOCKET"
+
+
+
+        // dynamic receiver, can also use static receiver as shown in [OtaStaticReceiver]
+        val otaDynamicReceiver = object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context?,
+                intent: Intent?
+            ) {
+                Log.d("SdkSampleReceiver",
+                    "Dynamic Receiver received action: ${intent?.action}," +
+                            " ${intent?.getStringExtra("type")}," +
+                            " ${intent?.getStringExtra("status")}," +
+                            " ${intent?.getStringExtra("details")}")
+            }
+
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(otaDynamicReceiver,
+                IntentFilter(ACTION_STATUS),
+                Context.RECEIVER_EXPORTED
+            )
+        } else {
+            registerReceiver(otaDynamicReceiver,
+                IntentFilter(ACTION_STATUS))
+        }
+
+        btnRoboxOTAWrongPayload.setOnClickListener {
+            val intent = Intent(ACTION_OTA)
+                .putExtra("type", "START")
+                .putExtra("cmd", "{\'test\'}")
+            sendBroadcast(intent)
+            printLog("Robox OTA started")
+        }
+
+        btnRoboxOTARegular.setOnClickListener {
+
+            val intent = Intent(ACTION_OTA)
+                .putExtra("type", "START")
+                .putExtra("cmd", """
+                        {"path": "/sdcard/136_11.tar.gz", "md5": "3531278fbf6fe1f890f61eb8ae45259b", "isForce": false }
+                    """.trimIndent())
+            sendBroadcast(intent)
+            printLog("Robox OTA started")
+        }
+
+        btnRoboxOTAForce.setOnClickListener {
+
+            val intent = Intent(ACTION_OTA)
+                .putExtra("type", "START")
+                .putExtra("cmd", """
+                        {"path": "/sdcard/136_06.tar.gz", "md5": "3df3aee4f05c719d079e67ced49610f6", "isForce": true }
+                    """.trimIndent())
+            sendBroadcast(intent)
+            printLog("Robox OTA started")
+        }
+
+        btnRoboxStartWebSocket.setOnClickListener {
+            val intent = Intent(ACTION_WEBSOCKET)
+                .putExtra("type", "START")
+            sendBroadcast(intent)
+            printLog("Robox WebSocket START")
+        }
+
+        btnRoboxStopWebSocket.setOnClickListener {
+            val intent = Intent(ACTION_WEBSOCKET)
+                .putExtra("type", "STOP")
+            sendBroadcast(intent)
+            printLog("Robox WebSocket START")
+        }
+
+        btnRoboxSendMessage.setOnClickListener {
+            if (webSocketClient == null) {
+                createWebSocketClient()?.connect()
+            } else {
+                webSocketClient?.send(
+                    Gson().toJson(
+                        mapOf(
+                            "uri" to "base.info.position"
+                        )
+                    )
+                )
+            }
+        }
     }
 }

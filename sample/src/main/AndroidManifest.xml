@@ -8,6 +8,13 @@
     <!--  Use this permission on receiver to get the event when voice assistant is changed  -->
     <uses-permission android:name="com.robotemi.permission.ASSISTANT"/>
 
+
+    <!--  This permission is signature level  https://developer.android.com/develop/background-work/background-tasks/broadcasts#sending-broadcasts-permissions  -->
+    <uses-permission android:name="com.robotemi.permission.xiaojia" />
+
+    <!-- TO USE WEBSOCKET  -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
@@ -104,6 +111,14 @@
                 android:resource="@xml/provider_paths" />
 
         </provider>
+
+        <receiver android:name=".OtaStaticReceiver"
+            android:exported="true">
+            <!--      temi launcher will publish OTA/websocket status to this action   -->
+            <intent-filter>
+                <action android:name="com.robotemi.action.XIAOJIA_STATUS" />
+            </intent-filter>
+        </receiver>
         
     </application>
 

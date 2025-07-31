@@ -7,6 +7,36 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/btnRoboxOTAWrongPayload"
+        style="@style/ButtonCommon"
+        android:text="Robox OTA Wrong Payload" />
+
+    <Button
+        android:id="@+id/btnRoboxOTARegular"
+        style="@style/ButtonCommon"
+        android:text="Robox OTA Regular" />
+
+    <Button
+        android:id="@+id/btnRoboxOTAForce"
+        style="@style/ButtonCommon"
+        android:text="Robox OTA Force" />
+
+    <Button
+        android:id="@+id/btnRoboxStartWebSocket"
+        style="@style/ButtonCommon"
+        android:text="Robox Start WebSocket" />
+
+    <Button
+        android:id="@+id/btnRoboxStopWebSocket"
+        style="@style/ButtonCommon"
+        android:text="Robox Stop WebSocket" />
+
+    <Button
+        android:id="@+id/btnRoboxSendMessage"
+        style="@style/ButtonCommon"
+        android:text="Robox Send Message" />
+
+    <Button
         android:id="@+id/btnIsBackTOFEnabled"
         style="@style/ButtonCommon"
         android:text="Is Back TOF Enabled" />
