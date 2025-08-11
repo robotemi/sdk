@@ -54,6 +54,7 @@ import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapModel
 import com.robotemi.sdk.map.OnLoadFloorStatusChangedListener
 import com.robotemi.sdk.map.OnLoadMapStatusChangedListener
+import com.robotemi.sdk.map.OnLoadMapStatusChangedListener.Companion.COMPLETE
 import com.robotemi.sdk.map.OnMapStatusChangedListener
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
@@ -76,6 +77,9 @@ import com.robotemi.sdk.tourguide.TourModel
 import com.robotemi.sdk.voice.ITtsService
 import com.robotemi.sdk.voice.WakeupOrigin
 import com.robotemi.sdk.voice.model.TtsVoice
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -2250,8 +2254,16 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog("repose status: $status, description: $description")
     }
 
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+
     override fun onLoadMapStatusChanged(status: Int, requestId: String) {
         printLog("load map status: $status, requestId: $requestId")
+        if (status == COMPLETE) {
+            ioScope.launch {
+                val data = robot.getMapData()
+                printLog("Map data: ${data?.mapImage?.data?.size} bytes")
+            }
+        }
     }
 
     private var mapList: List<MapModel> = ArrayList()
