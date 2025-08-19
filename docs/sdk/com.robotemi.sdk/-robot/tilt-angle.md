@@ -14,7 +14,7 @@ To tilt temi's head to a specific angle.
 
 androidJvm
 
-| | |
-|---|---|
-| degrees | the degree which you want the robot to tilt to, between 55 and -25 |
-| speed | Coefficient of maximum speed, between 0 to 1 |
+| |                                                                    |
+|---|--------------------------------------------------------------------|
+| degrees | the degree which you want the robot to tilt to, between 55 and -30 |
+| speed | Coefficient of maximum speed, between 0 to 1                       |

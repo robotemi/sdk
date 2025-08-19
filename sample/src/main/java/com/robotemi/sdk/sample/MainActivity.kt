@@ -1190,12 +1190,17 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * to tilt to and at which speed.
      */
     private fun tiltAngle() {
+        val degree = try {
+            binding.etGoTo.text.toString().toInt()
+        } catch (e: Exception) {
+            23 // Default tilt angle
+        }
         val speed = try {
             binding.etDistance.text.toString().toFloat()
         } catch (e: Exception) {
             1f
         }
-        robot.tiltAngle(23, speed)
+        robot.tiltAngle(degree, speed)
     }
 
     /**
@@ -1203,24 +1208,34 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
      * the amount of degrees to turn by and at which speed.
      */
     private fun turnBy() {
+        val degree = try {
+            binding.etGoTo.text.toString().toInt()
+        } catch (e: Exception) {
+            23 // Default turn angle
+        }
         val speed = try {
             binding.etDistance.text.toString().toFloat()
         } catch (e: Exception) {
             1f
         }
-        robot.turnBy(90, speed)
+        robot.turnBy(degree, speed)
     }
 
     /**
      * tiltBy is used to tilt temi's head from its current position.
      */
     private fun tiltBy() {
+        val degree = try {
+            binding.etGoTo.text.toString().toInt()
+        } catch (e: Exception) {
+            23 // Default tilt angle
+        }
         val speed = try {
             binding.etDistance.text.toString().toFloat()
         } catch (e: Exception) {
             1f
         }
-        robot.tiltBy(70, speed)
+        robot.tiltBy(degree, speed)
     }
 
     /**

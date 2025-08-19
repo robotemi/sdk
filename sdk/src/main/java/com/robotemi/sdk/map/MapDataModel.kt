@@ -238,7 +238,7 @@ data class Layer internal constructor(
         fun upsertLayer(layerId: String?,
                         layerCategory: Int,
                         layerPoses: List<LayerPose>,
-                        @IntRange(from = -25L, to = 55L) tiltAngle: Int? = null
+                        @IntRange(from = -30L, to = 55L) tiltAngle: Int? = null
         ): Layer? {
             val sessionId = (1000..9999).random().toString()
             var layerThickness = 1f
