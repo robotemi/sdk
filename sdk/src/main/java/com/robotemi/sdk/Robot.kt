@@ -1729,7 +1729,7 @@ class Robot private constructor(private val context: Context) {
     /**
      * To tilt temi's head to a specific angle.
      *
-     * @param degrees the degree which you want the robot to tilt to, between 55 and -30
+     * @param degrees the degree which you want the robot to tilt to, between 50 and -30
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
     @JvmOverloads

@@ -16,5 +16,5 @@ androidJvm
 
 | |                                                                    |
 |---|--------------------------------------------------------------------|
-| degrees | the degree which you want the robot to tilt to, between 55 and -30 |
+| degrees | the degree which you want the robot to tilt to, between 50 and -30 |
 | speed | Coefficient of maximum speed, between 0 to 1                       |
