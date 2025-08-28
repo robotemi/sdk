@@ -178,7 +178,7 @@ class MapActivity : AppCompatActivity() {
         binding.btnResetMap.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
-                val resp = robot.resetMap(false)
+                val resp = robot.resetMap(false, saveHomeBaseIfCharging = true)
                 withContext(Dispatchers.Main) {
                     printLog("Reset map result $resp")
                     binding.progressBar.visibility = View.GONE
@@ -186,6 +186,7 @@ class MapActivity : AppCompatActivity() {
                 }
             }
         }
+
         binding.btnFinishMapping.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {

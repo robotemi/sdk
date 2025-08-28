@@ -3629,6 +3629,7 @@ class Robot private constructor(private val context: Context) {
      * Supported from 134 launcher.
      *
      * @param allFloor, true to reset maps of all floor, false to reset current map. Used in multi-floor.
+     * @param saveHomeBaseIfCharging, default as false. If true, when temi is on charging state, it will save home base after reset map. Added in 137 version
      * @return 0 if the operation is not supported by current launcher
      *         200 for reset map succeed
      *         400 for invalid action
@@ -3637,10 +3638,10 @@ class Robot private constructor(private val context: Context) {
      *
      */
     @WorkerThread
-    fun resetMap(allFloor: Boolean): Int {
+    fun resetMap(allFloor: Boolean, saveHomeBaseIfCharging: Boolean = false): Int {
         try {
-            val resp = sdkService?.resetMap(applicationInfo.packageName, allFloor)?.toIntOrNull() ?: 0
-            Log.d(TAG, "resetMap $allFloor, result $resp")
+            val resp = sdkService?.resetMap(applicationInfo.packageName, allFloor, saveHomeBaseIfCharging)?.toIntOrNull() ?: 0
+            Log.d(TAG, "resetMap $allFloor, saveHomeBaseIfCharging $saveHomeBaseIfCharging, result $resp")
             return resp
         } catch (e: RemoteException) {
             Log.e(TAG, "resetMap() error")
