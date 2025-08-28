@@ -117,9 +117,17 @@ class RosMapActivity: AppCompatActivity() {
                                         z = layer.layerPoses?.firstOrNull()?.theta ?: 0.0f,
 
                                     )
+                                    val displayName = if (layer.layerId == "home base") {
+//                                        "充電桩"
+//                                        "充电桩"
+                                        "ホームベース"
+                                    } else {
+                                        layer.layerId
+                                    }
                                     val locationData = LocationData(
                                         name = layer.layerId,
                                         pose = pose,
+                                        displayName = displayName,
                                     )
                                     locations.add(locationData)
                                 }
