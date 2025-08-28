@@ -376,7 +376,7 @@ interface ISdkService {
 
     int setMicGainLevel(in String packageName, int level);
 
-    String resetMap(in String packageName, boolean allFloor);
+    String resetMap(in String packageName, boolean allFloor, boolean saveHomeBaseIfCharging);
 
     String finishMapping(in String packageName, in String mapName);
 
