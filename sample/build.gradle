@@ -68,7 +68,7 @@ dependencies {
 //    implementation 'com.robotemi:sdk:1.134.1'
     implementation 'com.google.code.gson:gson:2.9.0'
 
-    implementation "com.robotemi:ros:0.0.2-SNAPSHOT"
+    implementation "com.robotemi:ros:0.0.3-SNAPSHOT"
 
     implementation "com.jakewharton.timber:timber:5.0.1"
 }

@@ -16,6 +16,9 @@ import com.robotemi.ros.setDebug
 import com.robotemi.ros.setLocationClickCallback
 import com.robotemi.ros.setPathClickCallback
 import com.robotemi.ros.setPoseClickCallback
+import com.robotemi.ros.updateGroundAndWallColor
+import com.robotemi.ros.updateMapBackgroundColor
+import com.robotemi.ros.updateMapCanvasColor
 import com.robotemi.sdk.Robot
 import com.robotemi.sdk.map.GREEN_PATH
 import com.robotemi.sdk.map.LOCATION
@@ -63,6 +66,17 @@ class RosMapActivity: AppCompatActivity() {
                     originY = map.mapInfo.originY.toDouble(),
                 )
                 binding.rosMapView.apply {
+
+//                    updateMapCanvasColor("FF384C61")
+                    updateMapCanvasColor("FF0000FF")
+
+                    updateGroundAndWallColor(
+//                        hexGround = "FFACD3F2",
+                        hexGround = "FFFF0000",
+//                        hexWall = "FF000000"
+                        hexWall = "FFFFFF00"
+                    )
+
                     renderMap(
                         grid = grid,
                         this@async
@@ -133,6 +147,9 @@ class RosMapActivity: AppCompatActivity() {
                         renderLocations(locations.asSequence())
 
                     }
+
+//                    updateMapBackgroundColor("FF384C61")
+//                    updateMapBackgroundColor("FF0000FF")
                 }
 
 
