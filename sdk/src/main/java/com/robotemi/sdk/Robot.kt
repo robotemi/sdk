@@ -579,8 +579,8 @@ class Robot private constructor(private val context: Context) {
         override fun onGreetModeStateChanged(state: Int): Boolean {
             if (onGreetModeStateChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onGreetModeStateChangedListeners.forEach {
-                    it.onGreetModeStateChanged(state)
+                for (listener in onGreetModeStateChangedListeners) {
+                    listener.onGreetModeStateChanged(state)
                 }
             }
             return true
@@ -589,8 +589,8 @@ class Robot private constructor(private val context: Context) {
         override fun onButtonStatusChanged(buttonType: Int, buttonStatus: Int): Boolean {
             if (onButtonStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onButtonStatusChangedListeners.forEach {
-                    it.onButtonStatusChanged(HardButton.valueToEnum(buttonType), HardButton.Status.valueToEnum(buttonStatus))
+                for (listener in onButtonStatusChangedListeners) {
+                    listener.onButtonStatusChanged(HardButton.valueToEnum(buttonType), HardButton.Status.valueToEnum(buttonStatus))
                 }
             }
             return true
@@ -599,8 +599,8 @@ class Robot private constructor(private val context: Context) {
         override fun onButtonModeChanged(buttonType: Int, buttonMode: Int): Boolean {
             if (onButtonModeChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onButtonModeChangedListeners.forEach {
-                    it.onButtonModeChanged(HardButton.valueToEnum(buttonType), HardButton.Mode.valueToEnum(buttonMode))
+                for (listener in onButtonModeChangedListeners) {
+                    listener.onButtonModeChanged(HardButton.valueToEnum(buttonType), HardButton.Mode.valueToEnum(buttonMode))
                 }
             }
             return true
@@ -787,8 +787,8 @@ class Robot private constructor(private val context: Context) {
         override fun onLoadFloorStatusChanged(status: Int): Boolean {
             if (onLoadFloorStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onLoadFloorStatusChangedListeners.forEach {
-                    it.onLoadFloorStatusChanged(status)
+                for (listener in onLoadFloorStatusChangedListeners) {
+                    listener.onLoadFloorStatusChanged(status)
                 }
             }
             return true
@@ -797,8 +797,8 @@ class Robot private constructor(private val context: Context) {
         override fun onMapStatusChanged(isLost: Boolean, isLocked: Boolean): Boolean {
             if (onMapStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onMapStatusChangedListeners.forEach {
-                    it.onMapStatusChanged(isLost, isLocked)
+                for (listener in onMapStatusChangedListeners) {
+                    listener.onMapStatusChanged(isLost, isLocked)
                 }
             }
             return true
@@ -807,8 +807,8 @@ class Robot private constructor(private val context: Context) {
         override fun onMapElementsChanged(): Boolean {
             if (onMapElementsChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onMapElementsChangedListeners.forEach {
-                    it.onMapElementsChanged()
+                for (listener in onMapElementsChangedListeners) {
+                    listener.onMapElementsChanged()
                 }
             }
             return true
@@ -817,8 +817,8 @@ class Robot private constructor(private val context: Context) {
         override fun onMapNameChanged(mapName: String?): Boolean {
             if (onMapNameChangedListeners.isEmpty()) return false
             uiHandler.post {
-                onMapNameChangedListeners.forEach {
-                    it.onMapNameChanged(mapName ?: "")
+                for (listener in onMapNameChangedListeners) {
+                    listener.onMapNameChanged(mapName ?: "")
                 }
             }
             return true
@@ -834,8 +834,8 @@ class Robot private constructor(private val context: Context) {
         override fun onSerialRawData(data: ByteArray) {
             if (onSerialRawDataListeners.isEmpty()) return
             uiHandler.post {
-                onSerialRawDataListeners.forEach {
-                    it.onSerialRawData(data)
+                for (listener in onSerialRawDataListeners) {
+                    listener.onSerialRawData(data)
                 }
             }
         }
@@ -843,8 +843,8 @@ class Robot private constructor(private val context: Context) {
         override fun onDragStateChanged(isDragged: Boolean) {
             if (onRobotDragStateChangedListeners.isEmpty()) return
             uiHandler.post {
-                onRobotDragStateChangedListeners.forEach {
-                    it.onRobotDragStateChanged(isDragged)
+                for (listener in onRobotDragStateChangedListeners) {
+                    listener.onRobotDragStateChanged(isDragged)
                 }
             }
         }
@@ -884,7 +884,9 @@ class Robot private constructor(private val context: Context) {
         this.sdkService = sdkService
         mediaBar = AidlMediaBarController(sdkService)
         registerCallback()
-        onRobotReadyListeners.forEach { it.onRobotReady(isReady) }
+        for (listener in onRobotReadyListeners) {
+            listener.onRobotReady(isReady)
+        }
     }
 
     @UiThread
@@ -1605,7 +1607,13 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun addOnCurrentPositionChangedListener(listener: OnCurrentPositionChangedListener) {
         onCurrentPositionChangedListeners.add(listener)
-        listener.onCurrentPositionChanged(getPosition())
+        // Call getPosition() from background thread since it's annotated with @WorkerThread
+        Thread {
+            val position = getPosition()
+            uiHandler.post {
+                listener.onCurrentPositionChanged(position)
+            }
+        }.start()
     }
 
     @UiThread
