@@ -144,6 +144,10 @@
                 style="@style/ButtonCommon"
                 android:text="Add / Update Location"/>
 
+            <Button
+                android:id="@+id/btnRenameLocation"
+                style="@style/ButtonCommon"
+                android:text="Rename Location" />
         </LinearLayout>
     </ScrollView>
 

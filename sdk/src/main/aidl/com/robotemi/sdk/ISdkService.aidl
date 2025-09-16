@@ -403,4 +403,6 @@ interface ISdkService {
     int getReposeStatus();
 
     int isReady();
+
+    String renameLocation(in String packageName, in String oldLocationName, in String newLocationName, in String layer);
 }
