@@ -3,6 +3,7 @@ package com.robotemi.sdk.map
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Base64
+import androidx.annotation.IntDef
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
@@ -236,7 +237,7 @@ data class Layer internal constructor(
          *                  in [LOCATION] theta will be rounded to 4 digits after decimal.
          */
         fun upsertLayer(layerId: String?,
-                        layerCategory: Int,
+                        @LayerCategory layerCategory: Int,
                         layerPoses: List<LayerPose>,
                         @IntRange(from = -30L, to = 50L) tiltAngle: Int? = null
         ): Layer? {
@@ -332,6 +333,9 @@ const val MAP_NAME = "map_name"
 const val MAP_IMAGE = "map_image"
 const val MAP_BASE64 = "map_base64"
 
+@Retention(AnnotationRetention.SOURCE)
+@IntDef(LOCATION, GREEN_PATH, VIRTUAL_WALL)
+annotation class LayerCategory
 
 @Keep
 data class LayerPose(

@@ -18,4 +18,5 @@
     <string name="call_owner">Call Owner</string>
     <string name="stop_call">Stop Call</string>
     <string name="publish_to_activities">Publish To Activities</string>
+    <string name="confirm">confirm</string>
 </resources>
