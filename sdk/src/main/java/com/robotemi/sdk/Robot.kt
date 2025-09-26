@@ -3780,6 +3780,38 @@ class Robot private constructor(private val context: Context) {
         return 0
     }
 
+    /**
+     * rename map location, only support rename location
+     * If you rename an existing Location, the existing Location will be overwritten.
+     * because the SDK will delete the new and old Locations and add a new location with a new name.
+     * For example, if three Locations are A, B, and C, and you change C to B, only A and B will remain.
+     *
+     * @param layer, option param, The layerCategory of the layer should be the Location type
+     *
+     * @return 0 if the operation is not supported by current launcher
+     *         200 for success
+     *         400 invalid parameter
+     *         403 for [Permission.MAP] permission required
+     *         404 target map layer doesn't exist
+     *         409 home base cannot rename And cannot rename to home base
+     */
+    @WorkerThread
+    fun renameLocation(oldLocationName: String, newLocationName: String, layer: Layer? = null): Int {
+        try {
+            val resp = sdkService?.renameLocation(
+                applicationInfo.packageName,
+                oldLocationName,
+                newLocationName,
+                gson.toJson(layer?.roundByCategory())
+            )?.toIntOrNull() ?: 0
+            Log.d(TAG, "renameLocation, result $resp")
+            return resp
+        } catch (e: RemoteException) {
+            Log.e(TAG, "renameLocation() error")
+        }
+        return 0
+    }
+
     @UiThread
     fun addOnLoadMapStatusChangedListener(listener: OnLoadMapStatusChangedListener) {
         onLoadMapStatusChangedListeners.add(listener)

@@ -15,12 +15,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.robotemi.sdk.Robot
+import com.robotemi.sdk.TtsRequest.Companion.create
 import com.robotemi.sdk.map.GREEN_PATH
 import com.robotemi.sdk.map.LOCATION
 import com.robotemi.sdk.map.Layer
 import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapDataModel
 import com.robotemi.sdk.navigation.model.Position
+import com.robotemi.sdk.permission.Permission
+import com.robotemi.sdk.sample.EditDialog.EditorActionListener
 import com.robotemi.sdk.sample.databinding.ActivityMapBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -304,6 +307,55 @@ class MapActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                 }
             }
+        }
+
+        binding.btnRenameLocation.setOnClickListener {
+            val dialog = EditDialog(
+                this,
+                robot.locations.toMutableList(),
+                object : EditorActionListener {
+                    override fun editCompleted(
+                        editDialog: EditDialog,
+                        oldLocationName: String,
+                        newLocationName: String
+                    ) {
+                        if (oldLocationName == newLocationName) return
+                        binding.progressBar.visibility = View.VISIBLE
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            val layer = Layer.upsertLayer(
+                                oldLocationName,
+                                LOCATION,
+                                listOf(LayerPose(1.5f, 1.5f, 1f)),
+                                10
+                            )
+                            if (layer == null) {
+                                // Invalid parameter
+                                withContext(Dispatchers.Main) {
+                                    binding.progressBar.visibility = View.GONE
+                                }
+                                return@launch
+                            }
+
+//                            val resp = robot.renameLocation(oldLocationName, newLocationName)
+                            val resp = robot.renameLocation(oldLocationName, newLocationName, layer)
+                            withContext(Dispatchers.Main) {
+                                binding.progressBar.visibility = View.GONE
+                                if (resp == 200) {
+                                    printLog("rename location success:${robot.getCurrentFloor()?.locations} ")
+                                } else {
+                                    robot.speak(
+                                        create(
+                                            "rename the $newLocationName location failed.",
+                                            true
+                                        )
+                                    )
+                                }
+                                editDialog.dismiss()
+                            }
+                        }
+                    }
+                })
+            dialog.show()
         }
 
         binding.refreshMap()
