@@ -1,7 +1,11 @@
 package com.robotemi.sdk.sample
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.robotemi.ros.data.GridData
@@ -48,6 +52,103 @@ class RosMapActivity: AppCompatActivity() {
         binding.ibBack.setOnClickListener {
             finish()
         }
+        binding.btnskidJoyDialog.setOnClickListener {
+            val alert = AlertDialog.Builder(it.context)
+                .setTitle("Skid Joy control by WSAD")
+                .setMessage("Control temi with keyboard WSAD, hold Ctrl to move non-smartly, Z, X, C to break")
+                .setPositiveButton("OK", null)
+                .show()
+
+            val keyStates = mutableMapOf(
+                KeyEvent.KEYCODE_W to false,
+                KeyEvent.KEYCODE_S to false,
+                KeyEvent.KEYCODE_A to false,
+                KeyEvent.KEYCODE_D to false
+            )
+            var isCtrlPressed = false
+            var isSending = false
+
+            val handler = Handler(Looper.getMainLooper())
+            val sendRunnable = object : Runnable {
+                override fun run() {
+                    val isW = keyStates[KeyEvent.KEYCODE_W] == true
+                    val isS = keyStates[KeyEvent.KEYCODE_S] == true
+                    val isA = keyStates[KeyEvent.KEYCODE_A] == true
+                    val isD = keyStates[KeyEvent.KEYCODE_D] == true
+
+                    var x = 0f
+                    var y = 0f
+
+                    when {
+                        isW && !isS -> x = 0.6f
+                        isS && !isW -> x = -0.6f
+                        else -> x = 0f
+                    }
+
+                    when {
+                        isA && !isD -> y = 1.0f
+                        isD && !isA -> y = -1.0f
+                        else -> y = 0f
+                    }
+
+                    if (x != 0f || y != 0f) {
+                        robot.skidJoy(x, y, !isCtrlPressed)
+                    } else {
+                        robot.stopMovement()
+                    }
+
+                    if (isW || isS || isA || isD) {
+                        handler.postDelayed(this, 100)
+                    } else {
+                        isSending = false
+                    }
+                }
+            }
+
+            alert.setOnKeyListener { _, keyCode, event ->
+                val isKeyDown = event.action == KeyEvent.ACTION_DOWN
+                val isKeyUp = event.action == KeyEvent.ACTION_UP
+
+                if (listOf(KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_X, KeyEvent.KEYCODE_C).contains(keyCode) && isKeyDown) {
+                    robot.stopMovement()
+                    keyStates.keys.forEach { keyStates[it] = false }
+                    handler.removeCallbacks(sendRunnable)
+                    isSending = false
+                    return@setOnKeyListener true
+                }
+
+                if (keyCode == KeyEvent.KEYCODE_CTRL_LEFT || keyCode == KeyEvent.KEYCODE_CTRL_RIGHT) {
+                    isCtrlPressed = isKeyDown
+                    return@setOnKeyListener true
+                }
+
+                val isDirectionKey = listOf(KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_D)
+                    .contains(keyCode)
+
+                if (isDirectionKey) {
+                    keyStates[keyCode] = isKeyDown
+
+                    val anyKeyPressed = keyStates.values.any { it }
+
+                    if (anyKeyPressed && !isSending) {
+                        isSending = true
+                        handler.post(sendRunnable)
+                    }
+
+                    return@setOnKeyListener true
+                }
+
+                false
+            }
+
+            alert.setOnDismissListener {
+                handler.removeCallbacks(sendRunnable)
+                robot.stopMovement()
+            }
+        }
+
+
+
         Log.d("RosMapActivity", "onCreate called, initializing map view...")
         lifecycleScope.async {
             Log.d("RosMapActivity", "Fetching map data...")
@@ -116,7 +217,7 @@ class RosMapActivity: AppCompatActivity() {
                                         y = layer.layerPoses?.firstOrNull()?.y ?: 0.0f,
                                         z = layer.layerPoses?.firstOrNull()?.theta ?: 0.0f,
 
-                                    )
+                                        )
                                     val displayName = if (layer.layerId == "home base") {
 //                                        "充電桩"
 //                                        "充电桩"
