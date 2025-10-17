@@ -81,6 +81,8 @@
 
         <activity android:name=".MapActivity" />
 
+        <activity android:name=".RosMapActivity" />
+
         <activity android:name=".FaceActivity" />
 
         <activity android:name=".SerialActivity" />
