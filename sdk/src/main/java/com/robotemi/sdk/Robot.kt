@@ -3603,6 +3603,67 @@ class Robot private constructor(private val context: Context) {
             null
         }
     }
+    /**
+        newFloor
+            400 package names are abnormal
+            Map permission in package 403 is abnormal
+            The status of Map 405 is abnormal
+            id（id!=0） Success
+            408 Failure
+     **/
+    fun newFloor(floorName: String): Int? {
+        return try {
+            sdkService?.newFloor(applicationInfo.packageName,floorName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentFloor() error")
+            null
+        }
+    }
+    /**
+        deleteFloor
+            400 package names are abnormal
+            Map permission in package 403 is abnormal
+            409 The current map cannot be deleted
+            200 Success
+            408 Failure
+     **/
+    fun deleteFloor(floorId: Int): Int? {
+        return try {
+            sdkService?.deleteFloor(applicationInfo.packageName,floorId)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentFloor() error")
+            null
+        }
+    }
+    /**
+        renameFloor
+            400 package names are abnormal
+            Map permission in package 403 is abnormal
+            200 Success
+            408 Failure
+
+     **/
+    fun renameFloor(floorId: Int,floorName: String): Int? {
+        return try {
+            sdkService?.renameFloor(applicationInfo.packageName,floorId,floorName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentFloor() error")
+            null
+        }
+    }
+    /**
+        getFloorData
+            Floor Success
+            null  Failure
+     **/
+    fun getFloorData(floorId: Int): Floor? {
+        return try {
+            sdkService?.getFloorData(applicationInfo.packageName,floorId)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentFloor() error")
+            null
+        }
+    }
 
     fun getAllFloors(): List<Floor> {
         return try {

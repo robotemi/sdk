@@ -6,6 +6,7 @@ import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+import com.robotemi.sdk.map.MapInfo
 import org.json.JSONObject
 
 
@@ -20,11 +21,32 @@ data class Floor(
     @Suppress("MemberVisibilityCanBePrivate")
     val locations: List<Location>
         get() {
-            val locations = JSONObject(data).getString("locations")
-            return Gson().fromJson<List<Location>>(
-                locations,
+            val locationsJson = JSONObject(data).getString("locations")
+            return Gson().fromJson(
+                locationsJson,
                 object : TypeToken<List<Location>>() {}.type
             )
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    val mapInfo: MapInfo?
+        get() {
+            return try {
+                val mapInfoJson = JSONObject(data).getString("mapInfo")
+                Gson().fromJson(mapInfoJson, MapInfo::class.java)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    val mapData: String?
+        get() {
+            return try {
+                JSONObject(data).getString("mapData")
+            } catch (e: Exception) {
+                null
+            }
         }
 
     constructor(parcel: Parcel) : this(
@@ -46,7 +68,7 @@ data class Floor(
     }
 
     override fun toString(): String {
-        return "Floor(id=$id, name='$name', mapId='$mapId', locations=$locations)"
+        return "Floor(id=$id, name='$name', mapId='$mapId')"
     }
 
     companion object CREATOR : Parcelable.Creator<Floor> {
