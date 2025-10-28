@@ -3722,7 +3722,7 @@ class Robot private constructor(private val context: Context) {
         return try {
             sdkService?.newFloor(applicationInfo.packageName, floorName)
         } catch (e: RemoteException) {
-            Log.e(TAG, "getCurrentFloor() error")
+            Log.e(TAG, "newFloor() error")
             null
         }
     }
@@ -3739,7 +3739,7 @@ class Robot private constructor(private val context: Context) {
         return try {
             sdkService?.deleteFloor(applicationInfo.packageName, floorId)
         } catch (e: RemoteException) {
-            Log.e(TAG, "getCurrentFloor() error")
+            Log.e(TAG, "deleteFloor() error")
             null
         }
     }
@@ -3756,7 +3756,7 @@ class Robot private constructor(private val context: Context) {
         return try {
             sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
         } catch (e: RemoteException) {
-            Log.e(TAG, "getCurrentFloor() error")
+            Log.e(TAG, "renameFloor() error")
             null
         }
     }
