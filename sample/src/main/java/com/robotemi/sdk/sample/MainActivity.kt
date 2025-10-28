@@ -811,9 +811,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog(robot.renameFloor(floorId, name)?.toString() ?: "rename floor failed")
     }
 
-    private fun getFloorData(floorId: String) {
+    private fun getFloorData(floorId: Int) {
         printLog(robot.getFloorAndMapData(floorId)?.toString() ?: "get floor data failed")
-
     }
 
     private fun loadFloorAtElevator() {
@@ -2765,9 +2764,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             "deleteFloor" -> {
                 editTextInput.hint = "Please enter a number"
             }
+
             "renameFloor" -> {
                 editTextInput.hint = "Please enter the numbers and names, and use  ,  to separate"
             }
+
             "getFloorData" -> {
                 editTextInput.hint = "Please enter a number"
             }
@@ -2792,10 +2793,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     if (parts.size < 2) {
                         return@setOnClickListener
                     }
-                    renameFloor(parts[0].toIntOrNull() ?: 0,parts[1])
+                    renameFloor(parts[0].toIntOrNull() ?: 0, parts[1])
                 }
+
                 "getFloorData" -> {
-                    getFloorData(input)
+                    getFloorData(input.toIntOrNull() ?: 0)
                 }
             }
             dialog.dismiss()
