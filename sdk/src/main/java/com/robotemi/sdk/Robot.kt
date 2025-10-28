@@ -3712,11 +3712,11 @@ class Robot private constructor(private val context: Context) {
 
     /**
     newFloor
-    400 package names are abnormal
-    Map permission in package 403 is abnormal
-    The status of Map 405 is abnormal
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -405 Cannot call this method when current floor/map is not locked.
     id（id!=0） Success
-    408 Failure
+    -408 Failure
      **/
     fun newFloor(floorName: String): Int? {
         return try {
@@ -3729,11 +3729,11 @@ class Robot private constructor(private val context: Context) {
 
     /**
     deleteFloor
-    400 package names are abnormal
-    Map permission in package 403 is abnormal
-    409 The current map cannot be deleted
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -409 The current map cannot be deleted
     200 Success
-    408 Failure
+    -408 Failure
      **/
     fun deleteFloor(floorId: Int): Int? {
         return try {
@@ -3746,17 +3746,65 @@ class Robot private constructor(private val context: Context) {
 
     /**
     renameFloor
-    400 package names are abnormal
-    Map permission in package 403 is abnormal
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
     200 Success
-    408 Failure
-
+    -408 Failure
      **/
     fun renameFloor(floorId: Int, floorName: String): Int? {
         return try {
             sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
         } catch (e: RemoteException) {
             Log.e(TAG, "renameFloor() error")
+            null
+        }
+    }
+
+    /**
+    updateLocationOnFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -409 The current floor cannot be modified
+    200 Success
+    -408 Failure
+     **/
+    fun updateLocationOnFloor(floorId: Int, oldName: String, newName: String): Int? {
+        return try {
+            sdkService?.updateLocationOnFloor(applicationInfo.packageName, floorId, oldName, newName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "updateLocationOnFloor() error")
+            null
+        }
+    }
+
+    /**
+    deleteLocationOnFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -409 The current floor cannot be modified
+    200 Success
+    -408 Failure
+     **/
+    fun deleteLocationOnFloor(floorId: Int, locationName: String): Int? {
+        return try {
+            sdkService?.deleteLocationOnFloor(applicationInfo.packageName, floorId, locationName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "deleteLocationOnFloor() error")
+            null
+        }
+    }
+    /**
+    updatePathOnFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    200 Success
+    -408 Failure
+     **/
+    fun updatePathOnFloor(editedPath: String, update: Boolean, floorId: Int): Int? {
+        return try {
+            sdkService?.updatePathOnFloor(applicationInfo.packageName, editedPath, update, floorId)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "updatePathOnFloor() error")
             null
         }
     }

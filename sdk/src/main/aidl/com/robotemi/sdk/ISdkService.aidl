@@ -406,15 +406,15 @@ interface ISdkService {
 
     String renameLocation(in String packageName, in String oldLocationName, in String newLocationName, in String layer);
 
-    int newFloor(in String packageName,String floorName);
+    int newFloor(in String packageName, String floorName);
 
-    int deleteFloor(in String packageName,int floorId);
+    int deleteFloor(in String packageName, int floorId);
 
-    int renameFloor(in String packageName,int floorId,String floorName);
+    int renameFloor(in String packageName, int floorId, String floorName);
 
-    int updateLocationOnFloor(in String packageName,int floorId,String oldName,String newName);
+    int updateLocationOnFloor(in String packageName, int floorId, String oldName, String newName);
 
-    int deleteLocationOnFloor(in String packageName,int floorId,String locationName);
+    int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
 
-    int updatePathOnFloor(in String packageName,String editedPath, boolean update,int floorId);
+    int updatePathOnFloor(in String packageName, String editedPath, boolean update, int floorId);
 }
