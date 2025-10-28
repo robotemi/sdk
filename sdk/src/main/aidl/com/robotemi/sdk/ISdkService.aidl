@@ -412,8 +412,6 @@ interface ISdkService {
 
     int renameFloor(in String packageName,int floorId,String floorName);
 
-    Floor getFloorData(in String packageName,int floorId);
-
     int updateLocationOnFloor(in String packageName,int floorId,String oldName,String newName);
 
     int deleteLocationOnFloor(in String packageName,int floorId,String locationName);

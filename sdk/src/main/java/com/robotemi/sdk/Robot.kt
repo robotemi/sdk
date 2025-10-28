@@ -3761,20 +3761,6 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    /**
-    getFloorData
-    Floor      Success
-    Floor(-1)  Failure
-     **/
-    fun getFloorData(floorId: Int): Floor? {
-        return try {
-            sdkService?.getFloorData(applicationInfo.packageName, floorId)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "getCurrentFloor() error")
-            null
-        }
-    }
-
     fun getAllFloors(): List<Floor> {
         return try {
             sdkService?.getAllFloors(applicationInfo.packageName) ?: emptyList()
