@@ -122,3 +122,5 @@ data class Location(
     }
 
 }
+const val FLOOR_ID = "floor_id"
+const val FLOOR_NAME = "floor_name"

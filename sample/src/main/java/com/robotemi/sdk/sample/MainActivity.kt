@@ -811,8 +811,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog(robot.renameFloor(floorId, name)?.toString() ?: "rename floor failed")
     }
 
-    private fun getFloorData(floorId: Int) {
-        printLog(robot.getFloorData(floorId)?.toString() ?: "get floor data failed")
+    private fun getFloorData(floorId: String) {
+        printLog(robot.getFloorAndMapData(floorId)?.toString() ?: "get floor data failed")
+
     }
 
     private fun loadFloorAtElevator() {
@@ -2794,7 +2795,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     renameFloor(parts[0].toIntOrNull() ?: 0,parts[1])
                 }
                 "getFloorData" -> {
-                    getFloorData(input.toIntOrNull() ?: 0)
+                    getFloorData(input)
                 }
             }
             dialog.dismiss()

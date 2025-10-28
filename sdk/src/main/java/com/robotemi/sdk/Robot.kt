@@ -3367,6 +3367,64 @@ class Robot private constructor(private val context: Context) {
         return mapDataModel
     }
 
+    @WorkerThread
+    @Throws(IllegalArgumentException::class)
+    fun getFloorAndMapData(floorId: String): Pair<Floor, MapDataModel>? {
+        if (floorId.isBlank()) {
+            throw IllegalArgumentException("floorId must not be blank")
+        }
+
+        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
+            Log.e(TAG, "getFloorAndMapData() - Permission denied for floorId=$floorId")
+            return null
+        }
+
+        var cursor: Cursor? = null
+        try {
+            val uriStr = StringBuffer("content://")
+                .append(SdkConstants.PROVIDER_AUTHORITY)
+                .append("/").append(SdkConstants.PROVIDER_PARAMETER_FLOOR_MAP_DATA)
+                .append("/").append(floorId)
+                .toString()
+
+            cursor = context.contentResolver.query(
+                Uri.parse(uriStr),
+                arrayOf(SdkConstants.PROVIDER_PARAMETER_FLOOR_DATA_JSON, SdkConstants.PROVIDER_PARAMETER_MAP_DATA_JSON),
+                null,
+                null,
+                null
+            )
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                Log.w(TAG, "No data found for floorId=$floorId")
+                return null
+            }
+
+            val floorJson = cursor.getString(cursor.getColumnIndexOrThrow(SdkConstants.PROVIDER_PARAMETER_FLOOR_DATA_JSON))
+            val mapDataJson = cursor.getString(cursor.getColumnIndexOrThrow(SdkConstants.PROVIDER_PARAMETER_MAP_DATA_JSON))
+
+            val floor = gson.fromJson<Floor>(floorJson, Floor::class.java)
+            val mapData = gson.fromJson<MapDataModel>(mapDataJson, MapDataModel::class.java)
+
+            Log.e(TAG, "floorJson=$floorJson\nmapDataJson=$mapDataJson")
+            if (floor == null || mapData == null) {
+                Log.e(TAG, "Failed to parse floor or mapData for floorId=$floorId")
+                return null
+            }
+
+            return Pair(floor, mapData)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error querying floor and map data for floorId=$floorId", e)
+            throw when (e) {
+                is JsonSyntaxException -> IllegalArgumentException("Invalid JSON format from provider", e)
+                else -> e
+            }
+        } finally {
+            cursor?.close()
+        }
+    }
+
     /**
      * Get map elements, such as locations, virtual walls, green paths, etc.
      *
@@ -3653,8 +3711,8 @@ class Robot private constructor(private val context: Context) {
     }
     /**
         getFloorData
-            Floor Success
-            null  Failure
+            Floor      Success
+            Floor(-1)  Failure
      **/
     fun getFloorData(floorId: Int): Floor? {
         return try {
