@@ -238,7 +238,33 @@ class MapActivity : AppCompatActivity() {
                     }
                     return@launch
                 }
-                val resp = robot.upsertMapLayer(layer)
+                val resp = robot.upsertMapLayer(layer,0)
+                withContext(Dispatchers.Main) {
+                    printLog("Create path result $resp")
+                    binding.progressBar.visibility = View.GONE
+                }
+            }
+        }
+
+        binding.btnCreatePath.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                val layer = Layer.upsertLayer(null, GREEN_PATH, listOf(
+                    LayerPose(0.5f, 0.5f, 0f),
+                    LayerPose(0.5f, 1f * factor, 0f),
+                    LayerPose(1.5f, 1.5f * factor, 0f),
+                    LayerPose(1.5f * factor, 0.5f, 0f),
+                    LayerPose(0.5f, 0.5f, 0f)
+                ))
+                factor *= 2
+                if (layer == null) {
+                    // Invalid parameter
+                    withContext(Dispatchers.Main) {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                    return@launch
+                }
+                val resp = robot.upsertMapLayer(layer,0)
                 withContext(Dispatchers.Main) {
                     printLog("Create path result $resp")
                     binding.progressBar.visibility = View.GONE
@@ -264,7 +290,7 @@ class MapActivity : AppCompatActivity() {
                     }
                     return@launch
                 }
-                val resp = robot.upsertMapLayer(layer)
+                val resp = robot.upsertMapLayer(layer,0)
                 withContext(Dispatchers.Main) {
                     printLog("Update path result $resp")
                     binding.progressBar.visibility = View.GONE
@@ -301,7 +327,7 @@ class MapActivity : AppCompatActivity() {
                     }
                     return@launch
                 }
-                val resp = robot.upsertMapLayer(layer)
+                val resp = robot.upsertMapLayer(layer,0)
                 withContext(Dispatchers.Main) {
                     printLog("Add / Update location result $resp")
                     binding.progressBar.visibility = View.GONE

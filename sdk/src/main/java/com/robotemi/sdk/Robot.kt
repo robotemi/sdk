@@ -3718,6 +3718,7 @@ class Robot private constructor(private val context: Context) {
     id（id!=0） Success
     -408 Failure
      **/
+    @WorkerThread
     fun newFloor(floorName: String): Int? {
         return try {
             sdkService?.newFloor(applicationInfo.packageName, floorName)
@@ -3735,6 +3736,7 @@ class Robot private constructor(private val context: Context) {
     200 Success
     -408 Failure
      **/
+    @WorkerThread
     fun deleteFloor(floorId: Int): Int? {
         return try {
             sdkService?.deleteFloor(applicationInfo.packageName, floorId)
@@ -3751,6 +3753,7 @@ class Robot private constructor(private val context: Context) {
     200 Success
     -408 Failure
      **/
+    @WorkerThread
     fun renameFloor(floorId: Int, floorName: String): Int? {
         return try {
             sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
@@ -3955,18 +3958,22 @@ class Robot private constructor(private val context: Context) {
      *
      */
     @WorkerThread
-    fun upsertMapLayer(layer: Layer): Int {
+    fun upsertMapLayer(layer: Layer, floorId: Int?): Int {
         try {
+            val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
+
             val resp = sdkService?.upsertMapLayer(
                 applicationInfo.packageName,
-                gson.toJson(layer.roundByCategory())
+                gson.toJson(layer.roundByCategory()),
+                targetFloorId
             )?.toIntOrNull() ?: 0
-            Log.d(TAG, "upsertLayer, result $resp")
+
+            Log.d(TAG, "upsertLayer, result $resp, floorId used: $targetFloorId")
             return resp
         } catch (e: RemoteException) {
-            Log.e(TAG, "upsertLayer() error")
+            Log.e(TAG, "upsertLayer() error", e)
+            return 0
         }
-        return 0
     }
 
     /**

@@ -384,7 +384,7 @@ interface ISdkService {
 
     String continueMapping(in String packageName);
 
-    String upsertMapLayer(in String packageName, in String layer);
+    String upsertMapLayer(in String packageName, in String layer,int floorId);
 
     String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
 
