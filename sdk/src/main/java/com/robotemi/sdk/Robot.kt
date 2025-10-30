@@ -3704,8 +3704,11 @@ class Robot private constructor(private val context: Context) {
     -405 Cannot call this method when current floor/map is not locked.
     id（id!=0） Success
     -408 Failure
+
+    There is no limit to floors with duplicate names, which depends on the application to control
      **/
     @WorkerThread
+    @IntRange(from=1)
     fun newFloor(floorName: String): Int? {
         return try {
             sdkService?.newFloor(applicationInfo.packageName, floorName)
@@ -3724,6 +3727,7 @@ class Robot private constructor(private val context: Context) {
     -408 Failure
      **/
     @WorkerThread
+    @IntRange(from=1)
     fun deleteFloor(floorId: Int): Int? {
         return try {
             sdkService?.deleteFloor(applicationInfo.packageName, floorId)
@@ -3739,8 +3743,11 @@ class Robot private constructor(private val context: Context) {
     Map permission in package -403 is abnormal
     200 Success
     -408 Failure
+
+    There is no limit to floors with duplicate names, which depends on the application to control
      **/
     @WorkerThread
+    @IntRange(from=1)
     fun renameFloor(floorId: Int, floorName: String): Int? {
         return try {
             sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
