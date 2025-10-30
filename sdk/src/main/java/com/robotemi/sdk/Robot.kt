@@ -3407,14 +3407,10 @@ class Robot private constructor(private val context: Context) {
     @WorkerThread
     @Throws(IllegalArgumentException::class)
     fun getFloorAndMapData(floorId: Int): Pair<Floor, MapDataModel>? {
-        if (floorId == 0) {
+        if (floorId <= 0) {
             throw IllegalArgumentException("floorId must not be 0")
         }
 
-        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
-            Log.e(TAG, "getFloorAndMapData() - Permission denied for floorId=$floorId")
-            return null
-        }
 
         var cursor: Cursor? = null
         try {
@@ -3449,8 +3445,6 @@ class Robot private constructor(private val context: Context) {
             val floor = gson.fromJson<Floor>(floorJson, Floor::class.java)
             val mapData = gson.fromJson<MapDataModel>(mapDataJson, MapDataModel::class.java)
 
-            Log.e(TAG, "floorJson=$floorJson\nmapDataJson=$mapDataJson")
-
             if (floor == null || mapData == null) {
                 Log.e(TAG, "Failed to parse floor or mapData for floorId=$floorId")
                 return null
@@ -3460,14 +3454,7 @@ class Robot private constructor(private val context: Context) {
 
         } catch (e: Exception) {
             Log.e(TAG, "Error querying floor and map data for floorId=$floorId", e)
-            throw when (e) {
-                is JsonSyntaxException -> IllegalArgumentException(
-                    "Invalid JSON format from provider",
-                    e
-                )
-
-                else -> e
-            }
+            return null
         } finally {
             cursor?.close()
         }
@@ -3909,21 +3896,18 @@ class Robot private constructor(private val context: Context) {
      *
      */
     @WorkerThread
-    fun upsertMapLayer(layer: Layer, floorId: Int?): Int {
+    fun upsertMapLayer(layer: Layer): Int {
         try {
-            val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
-
             val resp = sdkService?.upsertMapLayer(
                 applicationInfo.packageName,
                 gson.toJson(layer.roundByCategory())
             )?.toIntOrNull() ?: 0
-
-            Log.d(TAG, "upsertLayer, result $resp, floorId used: $targetFloorId")
+            Log.d(TAG, "upsertLayer, result $resp")
             return resp
         } catch (e: RemoteException) {
-            Log.e(TAG, "upsertLayer() error", e)
-            return 0
+            Log.e(TAG, "upsertLayer() error")
         }
+        return 0
     }
 
     /**
