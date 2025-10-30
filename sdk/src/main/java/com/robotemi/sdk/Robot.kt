@@ -3406,7 +3406,7 @@ class Robot private constructor(private val context: Context) {
 
     @WorkerThread
     @Throws(IllegalArgumentException::class)
-    fun getFloorAndMapData(floorId: Int): Pair<Floor, MapDataModel>? {
+    fun getFloorAndMapData(@IntRange(from = 1) floorId: Int): Pair<Floor, MapDataModel>? {
         if (floorId <= 0) {
             throw IllegalArgumentException("floorId must not be 0")
         }
@@ -3708,7 +3708,6 @@ class Robot private constructor(private val context: Context) {
     There is no limit to floors with duplicate names, which depends on the application to control
      **/
     @WorkerThread
-    @IntRange(from=1)
     fun newFloor(floorName: String): Int? {
         return try {
             sdkService?.newFloor(applicationInfo.packageName, floorName)
@@ -3727,8 +3726,7 @@ class Robot private constructor(private val context: Context) {
     -408 Failure
      **/
     @WorkerThread
-    @IntRange(from=1)
-    fun deleteFloor(floorId: Int): Int? {
+    fun deleteFloor(@IntRange(from = 1) floorId: Int): Int? {
         return try {
             sdkService?.deleteFloor(applicationInfo.packageName, floorId)
         } catch (e: RemoteException) {
@@ -3747,8 +3745,7 @@ class Robot private constructor(private val context: Context) {
     There is no limit to floors with duplicate names, which depends on the application to control
      **/
     @WorkerThread
-    @IntRange(from=1)
-    fun renameFloor(floorId: Int, floorName: String): Int? {
+    fun renameFloor(@IntRange(from = 1) floorId: Int, floorName: String): Int? {
         return try {
             sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
         } catch (e: RemoteException) {
