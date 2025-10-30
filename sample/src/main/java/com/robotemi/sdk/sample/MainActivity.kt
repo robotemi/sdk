@@ -499,6 +499,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             btnRenameFloor.setOnClickListener {
                 showInputDialog("renameFloor")
             }
+            btnGetFloorData.setOnClickListener {
+                showInputDialog("getFloorData")
+            }
             btnUpdateLocationOnFloor.setOnClickListener {
                 showInputDialog("updateLocationOnFloor")
             }
