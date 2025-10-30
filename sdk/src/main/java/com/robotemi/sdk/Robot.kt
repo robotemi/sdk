@@ -3763,55 +3763,6 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    /**
-    updateLocationOnFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -409 The current floor cannot be modified
-    200 Success
-    -408 Failure
-     **/
-    fun updateLocationOnFloor(floorId: Int, oldName: String, newName: String): Int? {
-        return try {
-            sdkService?.updateLocationOnFloor(applicationInfo.packageName, floorId, oldName, newName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "updateLocationOnFloor() error")
-            null
-        }
-    }
-
-    /**
-    deleteLocationOnFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -409 The current floor cannot be modified
-    200 Success
-    -408 Failure
-     **/
-    fun deleteLocationOnFloor(floorId: Int, locationName: String): Int? {
-        return try {
-            sdkService?.deleteLocationOnFloor(applicationInfo.packageName, floorId, locationName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "deleteLocationOnFloor() error")
-            null
-        }
-    }
-    /**
-    updatePathOnFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    200 Success
-    -408 Failure
-     **/
-    fun updatePathOnFloor(editedPath: String, update: Boolean, floorId: Int): Int? {
-        return try {
-            sdkService?.updatePathOnFloor(applicationInfo.packageName, editedPath, update, floorId)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "updatePathOnFloor() error")
-            null
-        }
-    }
-
     fun getAllFloors(): List<Floor> {
         return try {
             sdkService?.getAllFloors(applicationInfo.packageName) ?: emptyList()
@@ -3964,8 +3915,7 @@ class Robot private constructor(private val context: Context) {
 
             val resp = sdkService?.upsertMapLayer(
                 applicationInfo.packageName,
-                gson.toJson(layer.roundByCategory()),
-                targetFloorId
+                gson.toJson(layer.roundByCategory())
             )?.toIntOrNull() ?: 0
 
             Log.d(TAG, "upsertLayer, result $resp, floorId used: $targetFloorId")

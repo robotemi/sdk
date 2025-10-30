@@ -149,21 +149,6 @@
                 style="@style/ButtonCommon"
                 android:text="Rename Location" />
 
-            <Button
-                android:id="@+id/btnCreatePathOnFloor"
-                style="@style/ButtonCommon"
-                android:text="Create Path On Floor"/>
-
-            <Button
-                android:id="@+id/btnMovePathOnFloor"
-                style="@style/ButtonCommon"
-                android:text="Update Path On Floor"/>
-
-            <Button
-                android:id="@+id/btnUpsertLocationOnFloor"
-                style="@style/ButtonCommon"
-                android:text="Add / Update Location On Floor"/>
-
         </LinearLayout>
     </ScrollView>
 

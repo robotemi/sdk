@@ -31,15 +31,6 @@
         style="@style/ButtonCommon"
         android:text="Get Floor Data" />
 
-    <Button
-        android:id="@+id/btnUpdateLocationOnFloor"
-        style="@style/ButtonCommon"
-        android:text="Update Location On Floor" />
-
-    <Button
-        android:id="@+id/btnDeleteLocationOnFloor"
-        style="@style/ButtonCommon"
-        android:text="Delete Location On Floor" />
 
     <Button
         android:id="@+id/btnLoadFloorAtElevator"

@@ -384,7 +384,7 @@ interface ISdkService {
 
     String continueMapping(in String packageName);
 
-    String upsertMapLayer(in String packageName, in String layer,int floorId);
+    String upsertMapLayer(in String packageName, in String layer);
 
     String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
 
@@ -411,10 +411,4 @@ interface ISdkService {
     int deleteFloor(in String packageName, int floorId);
 
     int renameFloor(in String packageName, int floorId, String floorName);
-
-    int updateLocationOnFloor(in String packageName, int floorId, String oldName, String newName);
-
-    int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
-
-    int updatePathOnFloor(in String packageName, String editedPath, boolean update, int floorId);
 }
