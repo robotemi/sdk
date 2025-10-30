@@ -590,7 +590,10 @@ class Robot private constructor(private val context: Context) {
             if (onButtonStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 onButtonStatusChangedListeners.forEach {
-                    it.onButtonStatusChanged(HardButton.valueToEnum(buttonType), HardButton.Status.valueToEnum(buttonStatus))
+                    it.onButtonStatusChanged(
+                        HardButton.valueToEnum(buttonType),
+                        HardButton.Status.valueToEnum(buttonStatus)
+                    )
                 }
             }
             return true
@@ -600,7 +603,10 @@ class Robot private constructor(private val context: Context) {
             if (onButtonModeChangedListeners.isEmpty()) return false
             uiHandler.post {
                 onButtonModeChangedListeners.forEach {
-                    it.onButtonModeChanged(HardButton.valueToEnum(buttonType), HardButton.Mode.valueToEnum(buttonMode))
+                    it.onButtonModeChanged(
+                        HardButton.valueToEnum(buttonType),
+                        HardButton.Mode.valueToEnum(buttonMode)
+                    )
                 }
             }
             return true
@@ -970,13 +976,15 @@ class Robot private constructor(private val context: Context) {
      */
     fun wakeup(languages: List<SttLanguage> = emptyList(), wakeupRequest: WakeupRequest? = null) {
         try {
-            sdkService?.wakeup(languages.map { it.value }.toIntArray(),
+            sdkService?.wakeup(
+                languages.map { it.value }.toIntArray(),
                 SttRequest(
                     languages = languages,
                     timeout = 0,
                     multipleConversation = false
                 ),
-                wakeupRequest)
+                wakeupRequest
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -990,9 +998,11 @@ class Robot private constructor(private val context: Context) {
      */
     fun wakeup(sttRequest: SttRequest, wakeupRequest: WakeupRequest? = null) {
         try {
-            sdkService?.wakeup(sttRequest.languages.map { it.value }.toIntArray(),
+            sdkService?.wakeup(
+                sttRequest.languages.map { it.value }.toIntArray(),
                 sttRequest,
-                wakeupRequest)
+                wakeupRequest
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "wakeup() error")
         }
@@ -1063,8 +1073,11 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: String) {
         try {
-            sdkService?.askQuestion(question,
-                TtsRequest.create(question).apply { packageName = applicationInfo.packageName }, null)
+            sdkService?.askQuestion(
+                question,
+                TtsRequest.create(question).apply { packageName = applicationInfo.packageName },
+                null
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }
@@ -1078,8 +1091,10 @@ class Robot private constructor(private val context: Context) {
      */
     fun askQuestion(question: TtsRequest, sttRequest: SttRequest? = null) {
         try {
-            sdkService?.askQuestion(question.speech,
-                question.apply { packageName = applicationInfo.packageName }, sttRequest)
+            sdkService?.askQuestion(
+                question.speech,
+                question.apply { packageName = applicationInfo.packageName }, sttRequest
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "Ask question call failed")
         }
@@ -1377,9 +1392,12 @@ class Robot private constructor(private val context: Context) {
             val allowBackwardsInt =
                 if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
             val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
-            val highAccuracyArrivalInt = if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
-            val noRotationAtEndInt = if (noRotationAtEnd == null) NOT_SET else if (noRotationAtEnd) TRUE else FALSE
-            sdkService?.goTo(location,
+            val highAccuracyArrivalInt =
+                if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
+            val noRotationAtEndInt =
+                if (noRotationAtEnd == null) NOT_SET else if (noRotationAtEnd) TRUE else FALSE
+            sdkService?.goTo(
+                location,
                 allowBackwardsInt,
                 noBypassInt,
                 speedLevel?.value ?: "",
@@ -1416,7 +1434,8 @@ class Robot private constructor(private val context: Context) {
             val allowBackwardsInt =
                 if (backwards == null) NOT_SET else if (backwards) TRUE else FALSE
             val noBypassInt = if (noBypass == null) NOT_SET else if (noBypass) TRUE else FALSE
-            val highAccuracyArrivalInt = if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
+            val highAccuracyArrivalInt =
+                if (highAccuracyArrival == null) NOT_SET else if (highAccuracyArrival) TRUE else FALSE
             sdkService?.goToPosition(
                 position,
                 allowBackwardsInt,
@@ -1531,7 +1550,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun setFollowSpeed(speedLevel: SpeedLevel): Int {
         try {
-            val resp = sdkService?.setFollowSpeed(applicationInfo.packageName, speedLevel.value)?.toIntOrNull() ?: 0
+            val resp = sdkService?.setFollowSpeed(applicationInfo.packageName, speedLevel.value)
+                ?.toIntOrNull() ?: 0
             Log.d(TAG, "setFollowSpeed() response: $resp")
             return resp
         } catch (e: RemoteException) {
@@ -1718,7 +1738,10 @@ class Robot private constructor(private val context: Context) {
      * @param speed Coefficient of maximum speed, between 0 to 1
      */
     @JvmOverloads
-    fun turnBy(@IntRange(from = -355, to = 355) degrees: Int, @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f) {
+    fun turnBy(
+        @IntRange(from = -355, to = 355) degrees: Int,
+        @FloatRange(from = 0.0, to = 1.0) speed: Float = 1f
+    ) {
         try {
             sdkService?.turnBy(degrees, speed)
         } catch (e: RemoteException) {
@@ -1920,10 +1943,12 @@ class Robot private constructor(private val context: Context) {
         blockRobotInteraction: Boolean = false,
     ): String {
         try {
-            return sdkService?.startMeeting(applicationInfo.packageName,
+            return sdkService?.startMeeting(
+                applicationInfo.packageName,
                 participants,
                 firstParticipantJoinedAsHost,
-                blockRobotInteraction) ?: ""
+                blockRobotInteraction
+            ) ?: ""
         } catch (e: RemoteException) {
             Log.e(TAG, "startMeeting() error")
         }
@@ -2734,7 +2759,8 @@ class Robot private constructor(private val context: Context) {
         }
         set(value) {
             try {
-                val ret = sdkService?.configMinimumObstacleDistance(applicationInfo.packageName, value)
+                val ret =
+                    sdkService?.configMinimumObstacleDistance(applicationInfo.packageName, value)
                 Log.d(TAG, "set MinimumObstacleDistance ret $ret")
             } catch (e: RemoteException) {
                 Log.d(TAG, "set MinimumObstacleDistance error")
@@ -2952,7 +2978,7 @@ class Robot private constructor(private val context: Context) {
      *         or null if failed to get the mode
      */
     @CheckResult
-    fun getHomeScreenMode() : HomeScreenMode? {
+    fun getHomeScreenMode(): HomeScreenMode? {
         return try {
             val homeScreenMode = sdkService?.getHomeScreenMode(applicationInfo.packageName)
             return HomeScreenMode.getHomeScreenMode(homeScreenMode)
@@ -3210,9 +3236,20 @@ class Robot private constructor(private val context: Context) {
      * @param startFromStep The step number to start from, default is 1.
      */
     @JvmOverloads
-    fun playSequence(sequenceId: String, withPlayer: Boolean = false, repeat: Int = 0, startFromStep: Int = 1) {
+    fun playSequence(
+        sequenceId: String,
+        withPlayer: Boolean = false,
+        repeat: Int = 0,
+        startFromStep: Int = 1
+    ) {
         try {
-            sdkService?.playSequence(applicationInfo.packageName, sequenceId, withPlayer, repeat, startFromStep)
+            sdkService?.playSequence(
+                applicationInfo.packageName,
+                sequenceId,
+                withPlayer,
+                repeat,
+                startFromStep
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "playSequence() error")
         }
@@ -3365,6 +3402,62 @@ class Robot private constructor(private val context: Context) {
             }
         }
         return mapDataModel
+    }
+
+    @WorkerThread
+    @Throws(IllegalArgumentException::class)
+    fun getFloorAndMapData(@IntRange(from = 1) floorId: Int): Pair<Floor, MapDataModel>? {
+        if (floorId <= 0) {
+            throw IllegalArgumentException("floorId must not be 0")
+        }
+
+
+        var cursor: Cursor? = null
+        try {
+            val uri: Uri = Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/${SdkConstants.PROVIDER_PARAMETER_FLOOR_MAP_DATA}")
+
+            val projection = arrayOf(
+                SdkConstants.PROVIDER_PARAMETER_FLOOR_DATA_JSON,
+                SdkConstants.PROVIDER_PARAMETER_MAP_DATA_JSON
+            )
+
+            val selection = "${SdkConstants.PROVIDER_PARAMETER_FLOOR_ID} = ?"
+            val selectionArgs = arrayOf(floorId.toString())
+
+            val cursor = context.contentResolver.query(
+                uri,
+                projection,
+                selection,
+                selectionArgs,
+                null
+            )
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                Log.w(TAG, "No data found for floorId=$floorId")
+                return null
+            }
+
+            val floorJson =
+                cursor.getString(cursor.getColumnIndexOrThrow(SdkConstants.PROVIDER_PARAMETER_FLOOR_DATA_JSON))
+            val mapDataJson =
+                cursor.getString(cursor.getColumnIndexOrThrow(SdkConstants.PROVIDER_PARAMETER_MAP_DATA_JSON))
+
+            val floor = gson.fromJson<Floor>(floorJson, Floor::class.java)
+            val mapData = gson.fromJson<MapDataModel>(mapDataJson, MapDataModel::class.java)
+
+            if (floor == null || mapData == null) {
+                Log.e(TAG, "Failed to parse floor or mapData for floorId=$floorId")
+                return null
+            }
+
+            return Pair(floor, mapData)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error querying floor and map data for floorId=$floorId", e)
+            return null
+        } finally {
+            cursor?.close()
+        }
     }
 
     /**
@@ -3604,6 +3697,63 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+    newFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -405 Cannot call this method when current floor/map is not locked.
+    id（id!=0） Success
+    -408 Failure
+
+    There is no limit to floors with duplicate names, which depends on the application to control
+     **/
+    @WorkerThread
+    fun newFloor(floorName: String): Int? {
+        return try {
+            sdkService?.newFloor(applicationInfo.packageName, floorName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "newFloor() error")
+            null
+        }
+    }
+
+    /**
+    deleteFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -409 The current map cannot be deleted
+    200 Success
+    -408 Failure
+     **/
+    @WorkerThread
+    fun deleteFloor(@IntRange(from = 1) floorId: Int): Int? {
+        return try {
+            sdkService?.deleteFloor(applicationInfo.packageName, floorId)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "deleteFloor() error")
+            null
+        }
+    }
+
+    /**
+    renameFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    200 Success
+    -408 Failure
+
+    There is no limit to floors with duplicate names, which depends on the application to control
+     **/
+    @WorkerThread
+    fun renameFloor(@IntRange(from = 1) floorId: Int, floorName: String): Int? {
+        return try {
+            sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "renameFloor() error")
+            null
+        }
+    }
+
     fun getAllFloors(): List<Floor> {
         return try {
             sdkService?.getAllFloors(applicationInfo.packageName) ?: emptyList()
@@ -3640,8 +3790,13 @@ class Robot private constructor(private val context: Context) {
     @WorkerThread
     fun resetMap(allFloor: Boolean, saveHomeBaseIfCharging: Boolean = false): Int {
         try {
-            val resp = sdkService?.resetMap(applicationInfo.packageName, allFloor, saveHomeBaseIfCharging)?.toIntOrNull() ?: 0
-            Log.d(TAG, "resetMap $allFloor, saveHomeBaseIfCharging $saveHomeBaseIfCharging, result $resp")
+            val resp =
+                sdkService?.resetMap(applicationInfo.packageName, allFloor, saveHomeBaseIfCharging)
+                    ?.toIntOrNull() ?: 0
+            Log.d(
+                TAG,
+                "resetMap $allFloor, saveHomeBaseIfCharging $saveHomeBaseIfCharging, result $resp"
+            )
             return resp
         } catch (e: RemoteException) {
             Log.e(TAG, "resetMap() error")
@@ -3668,7 +3823,8 @@ class Robot private constructor(private val context: Context) {
     @JvmOverloads
     fun finishMapping(mapName: String? = null): Int {
         try {
-            val resp = sdkService?.finishMapping(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
+            val resp =
+                sdkService?.finishMapping(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
             Log.d(TAG, "finishMapping $mapName, result $resp")
             return resp
         } catch (e: RemoteException) {
@@ -3691,7 +3847,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun updateMapName(mapName: String): Int {
         try {
-            val resp = sdkService?.updateMapName(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
+            val resp =
+                sdkService?.updateMapName(applicationInfo.packageName, mapName)?.toIntOrNull() ?: 0
             Log.d(TAG, "updateMapName $mapName, result $resp")
             return resp
         } catch (e: RemoteException) {
@@ -3771,7 +3928,9 @@ class Robot private constructor(private val context: Context) {
     @WorkerThread
     fun deleteMapLayer(layerId: String, layerCategory: Int): Int {
         try {
-            val resp = sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory)?.toIntOrNull() ?: 0
+            val resp =
+                sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory)
+                    ?.toIntOrNull() ?: 0
             Log.d(TAG, "deleteMapLayer, result $resp")
             return resp
         } catch (e: RemoteException) {
@@ -3796,7 +3955,11 @@ class Robot private constructor(private val context: Context) {
      *         409 home base cannot rename And cannot rename to home base
      */
     @WorkerThread
-    fun renameLocation(oldLocationName: String, newLocationName: String, layer: Layer? = null): Int {
+    fun renameLocation(
+        oldLocationName: String,
+        newLocationName: String,
+        layer: Layer? = null
+    ): Int {
         try {
             val resp = sdkService?.renameLocation(
                 applicationInfo.packageName,
@@ -3976,7 +4139,10 @@ class Robot private constructor(private val context: Context) {
 
     @Nullable
     @WorkerThread
-    private fun getInputStreamPipe(contentType: ContentType, mediaKey: Boolean): ParcelFileDescriptor? {
+    private fun getInputStreamPipe(
+        contentType: ContentType,
+        mediaKey: Boolean
+    ): ParcelFileDescriptor? {
         val uriStr = StringBuffer("content://")
             .append(SdkConstants.PROVIDER_AUTHORITY)
             .append("/").append(contentType.path)
@@ -3984,7 +4150,8 @@ class Robot private constructor(private val context: Context) {
             .append("=").append(mediaKey)
             .toString()
 
-        val descriptor = context.contentResolver.openFileDescriptor(Uri.parse(uriStr), "r") ?: return null
+        val descriptor =
+            context.contentResolver.openFileDescriptor(Uri.parse(uriStr), "r") ?: return null
 
         Log.d("Map-SDK", "Got descriptor, $descriptor")
         return descriptor
@@ -4002,7 +4169,8 @@ class Robot private constructor(private val context: Context) {
         uri: Uri,
         reposeRequired: Boolean = false,
         position: Position? = null,
-        withoutUI: Boolean = false) {
+        withoutUI: Boolean = false
+    ) {
 
         val contentValues = ContentValues()
         contentValues.put("reposeRequired", reposeRequired)
@@ -4024,10 +4192,17 @@ class Robot private constructor(private val context: Context) {
             "com.roboteam.teamy.china"
         }
 
-        TemiSdkContentProvider.sdkContext?.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        TemiSdkContentProvider.sdkContext?.grantUriPermission(
+            packageName,
+            uri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
 
         try {
-            TemiSdkContentProvider.sdkContext?.contentResolver?.insert(Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/map"), contentValues)
+            TemiSdkContentProvider.sdkContext?.contentResolver?.insert(
+                Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/map"),
+                contentValues
+            )
         } catch (e: IllegalArgumentException) {
             Log.e("Robot", "Insert Exception when loadMapWithBackupFile", e)
         }
@@ -4099,7 +4274,11 @@ class Robot private constructor(private val context: Context) {
     /*****************************************/
 
     interface WakeupWordListener {
-        fun onWakeupWord(wakeupWord: String, direction: Int, origin: WakeupOrigin = WakeupOrigin.UNKNOWN)
+        fun onWakeupWord(
+            wakeupWord: String,
+            direction: Int,
+            origin: WakeupOrigin = WakeupOrigin.UNKNOWN
+        )
     }
 
     interface TtsListener {
@@ -4193,7 +4372,7 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    private inline fun <reified T: Any> decodeBase64UngzipJsonArray(json: String): List<T> {
+    private inline fun <reified T : Any> decodeBase64UngzipJsonArray(json: String): List<T> {
         return try {
             val compressedData = Base64.decode(json, Base64.NO_WRAP)
 
@@ -4217,7 +4396,7 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    private inline fun <reified T: Any> decodeBase64UngzipJson(json: String): T? {
+    private inline fun <reified T : Any> decodeBase64UngzipJson(json: String): T? {
         return try {
             val compressedData = Base64.decode(json, Base64.NO_WRAP)
 

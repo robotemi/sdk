@@ -246,6 +246,7 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
+
         binding.btnMovePath.setOnClickListener {
             val path = mapDataModel?.greenPaths?.firstOrNull() ?: return@setOnClickListener
             binding.progressBar.visibility = View.VISIBLE

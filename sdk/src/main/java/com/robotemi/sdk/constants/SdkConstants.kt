@@ -82,6 +82,11 @@ object SdkConstants {
     const val PROVIDER_AUTHORITY = "com.robotemi.sdk.provider"
     const val PROVIDER_PARAMETER_MEDIA_KEY = "mediaKey"
     const val PROVIDER_PARAMETER_MAP_DATA = "mapData"
+    const val PROVIDER_PARAMETER_FLOOR_MAP_DATA = "floorMapData"
+    const val PROVIDER_PARAMETER_FLOOR_DATA_JSON = "floor_data_json"
+    const val PROVIDER_PARAMETER_MAP_DATA_JSON = "map_data_json"
+    const val PROVIDER_PARAMETER_FLOOR_ID = "floor_id"
+
 
     const val LOCATION_HOME_BASE = "home base"
 
@@ -184,6 +189,7 @@ enum class HardButton(val value: Int) {
         RELEASED(2),
         CLICKED(3),
         ;
+
         companion object {
             fun valueToEnum(value: Int? = 0) = when (value) {
                 0 -> UNKNOWN
@@ -265,6 +271,7 @@ enum class HomeScreenMode {
     APPLICATION,
 
     ;
+
     companion object {
         fun getHomeScreenMode(homeScreenMode: String?): HomeScreenMode? {
             return when (homeScreenMode) {
