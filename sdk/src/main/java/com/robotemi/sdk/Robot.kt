@@ -3406,15 +3406,11 @@ class Robot private constructor(private val context: Context) {
 
     @WorkerThread
     @Throws(IllegalArgumentException::class)
-    fun getFloorAndMapData(floorId: Int): Pair<Floor, MapDataModel>? {
-        if (floorId == 0) {
+    fun getFloorAndMapData(@IntRange(from = 1) floorId: Int): Pair<Floor, MapDataModel>? {
+        if (floorId <= 0) {
             throw IllegalArgumentException("floorId must not be 0")
         }
 
-        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
-            Log.e(TAG, "getFloorAndMapData() - Permission denied for floorId=$floorId")
-            return null
-        }
 
         var cursor: Cursor? = null
         try {
@@ -3449,8 +3445,6 @@ class Robot private constructor(private val context: Context) {
             val floor = gson.fromJson<Floor>(floorJson, Floor::class.java)
             val mapData = gson.fromJson<MapDataModel>(mapDataJson, MapDataModel::class.java)
 
-            Log.e(TAG, "floorJson=$floorJson\nmapDataJson=$mapDataJson")
-
             if (floor == null || mapData == null) {
                 Log.e(TAG, "Failed to parse floor or mapData for floorId=$floorId")
                 return null
@@ -3460,14 +3454,7 @@ class Robot private constructor(private val context: Context) {
 
         } catch (e: Exception) {
             Log.e(TAG, "Error querying floor and map data for floorId=$floorId", e)
-            throw when (e) {
-                is JsonSyntaxException -> IllegalArgumentException(
-                    "Invalid JSON format from provider",
-                    e
-                )
-
-                else -> e
-            }
+            return null
         } finally {
             cursor?.close()
         }
@@ -3706,6 +3693,63 @@ class Robot private constructor(private val context: Context) {
             sdkService?.getCurrentFloor(applicationInfo.packageName)
         } catch (e: RemoteException) {
             Log.e(TAG, "getCurrentFloor() error")
+            null
+        }
+    }
+
+    /**
+    newFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -405 Cannot call this method when current floor/map is not locked.
+    id（id!=0） Success
+    -408 Failure
+
+    There is no limit to floors with duplicate names, which depends on the application to control
+     **/
+    @WorkerThread
+    fun newFloor(floorName: String): Int? {
+        return try {
+            sdkService?.newFloor(applicationInfo.packageName, floorName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "newFloor() error")
+            null
+        }
+    }
+
+    /**
+    deleteFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    -409 The current map cannot be deleted
+    200 Success
+    -408 Failure
+     **/
+    @WorkerThread
+    fun deleteFloor(@IntRange(from = 1) floorId: Int): Int? {
+        return try {
+            sdkService?.deleteFloor(applicationInfo.packageName, floorId)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "deleteFloor() error")
+            null
+        }
+    }
+
+    /**
+    renameFloor
+    -400 package names are abnormal
+    Map permission in package -403 is abnormal
+    200 Success
+    -408 Failure
+
+    There is no limit to floors with duplicate names, which depends on the application to control
+     **/
+    @WorkerThread
+    fun renameFloor(@IntRange(from = 1) floorId: Int, floorName: String): Int? {
+        return try {
+            sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "renameFloor() error")
             null
         }
     }
