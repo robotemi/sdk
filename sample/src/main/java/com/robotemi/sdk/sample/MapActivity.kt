@@ -280,7 +280,7 @@ class MapActivity : AppCompatActivity() {
             if (path != null) {
                 binding.progressBar.visibility = View.VISIBLE
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val resp = robot.deleteMapLayer(path.layerId, GREEN_PATH)
+                    val resp = robot.deleteMapLayer(path.layerId, GREEN_PATH,0)
                     withContext(Dispatchers.Main) {
                         printLog("Delete path result $resp")
                         binding.refreshMap()
@@ -372,6 +372,10 @@ class MapActivity : AppCompatActivity() {
 
         binding.btnUpsertLocationOnFloor.setOnClickListener {
             showInputDialog("UpsertLocationOnFloor")
+        }
+
+        binding.btnDeletePathOnFloor.setOnClickListener {
+            showInputDialog("DeletePathOnFloor")
         }
 
         binding.refreshMap()
@@ -482,6 +486,10 @@ class MapActivity : AppCompatActivity() {
                 editTextInput.hint = "Please enter a number"
             }
 
+            "DeletePathOnFloor" -> {
+                editTextInput.hint = "Please enter a number"
+            }
+
 
 
         }
@@ -566,8 +574,9 @@ class MapActivity : AppCompatActivity() {
                         }
                     }
                 }
+                "DeletePathOnFloor" -> {
 
-
+                }
             }
             dialog.dismiss()
         }

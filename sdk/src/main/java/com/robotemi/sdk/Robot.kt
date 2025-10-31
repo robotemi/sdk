@@ -3755,59 +3755,6 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-    newFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -405 Cannot call this method when current floor/map is not locked.
-    id（id!=0） Success
-    -408 Failure
-     **/
-    @WorkerThread
-    fun newFloor(floorName: String): Int? {
-        return try {
-            sdkService?.newFloor(applicationInfo.packageName, floorName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "newFloor() error")
-            null
-        }
-    }
-
-    /**
-    deleteFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -409 The current map cannot be deleted
-    200 Success
-    -408 Failure
-     **/
-    @WorkerThread
-    fun deleteFloor(floorId: Int): Int? {
-        return try {
-            sdkService?.deleteFloor(applicationInfo.packageName, floorId)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "deleteFloor() error")
-            null
-        }
-    }
-
-    /**
-    renameFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    200 Success
-    -408 Failure
-     **/
-    @WorkerThread
-    fun renameFloor(floorId: Int, floorName: String): Int? {
-        return try {
-            sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "renameFloor() error")
-            null
-        }
-    }
-
-    /**
     updateLocationOnFloor
     -400 package names are abnormal
     Map permission in package -403 is abnormal
@@ -3815,7 +3762,7 @@ class Robot private constructor(private val context: Context) {
     200 Success
     -408 Failure
      **/
-    fun updateLocationOnFloor(floorId: Int, oldName: String, newName: String): Int? {
+    fun updateLocationOnFloor(@IntRange(from = 1) floorId: Int, oldName: String, newName: String): Int? {
         return try {
             sdkService?.updateLocationOnFloor(applicationInfo.packageName, floorId, oldName, newName)
         } catch (e: RemoteException) {
@@ -3832,7 +3779,7 @@ class Robot private constructor(private val context: Context) {
     200 Success
     -408 Failure
      **/
-    fun deleteLocationOnFloor(floorId: Int, locationName: String): Int? {
+    fun deleteLocationOnFloor(@IntRange(from = 1) floorId: Int, locationName: String): Int? {
         return try {
             sdkService?.deleteLocationOnFloor(applicationInfo.packageName, floorId, locationName)
         } catch (e: RemoteException) {
@@ -4002,7 +3949,7 @@ class Robot private constructor(private val context: Context) {
      *
      */
     @WorkerThread
-    fun upsertMapLayer(layer: Layer, floorId: Int?): Int {
+    fun upsertMapLayer(layer: Layer, @IntRange(from=1) floorId: Int?=null): Int {
         try {
             val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
 
@@ -4032,10 +3979,11 @@ class Robot private constructor(private val context: Context) {
      *         404 target map layer doesn't exist
      */
     @WorkerThread
-    fun deleteMapLayer(layerId: String, layerCategory: Int): Int {
+    fun deleteMapLayer(layerId: String, layerCategory: Int, @IntRange(from=1) floorId: Int?=null): Int {
         try {
+            val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
             val resp =
-                sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory)
+                sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory, targetFloorId)
                     ?.toIntOrNull() ?: 0
             Log.d(TAG, "deleteMapLayer, result $resp")
             return resp

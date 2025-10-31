@@ -164,6 +164,11 @@
                 style="@style/ButtonCommon"
                 android:text="Add / Update Location On Floor"/>
 
+            <Button
+                android:id="@+id/btnDeletePathOnFloor"
+                style="@style/ButtonCommon"
+                android:text="Delete Path On Floor"/>
+
         </LinearLayout>
     </ScrollView>
 
