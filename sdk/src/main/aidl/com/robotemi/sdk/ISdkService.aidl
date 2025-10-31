@@ -415,6 +415,4 @@ interface ISdkService {
     int updateLocationOnFloor(in String packageName, int floorId, String oldName, String newName);
 
     int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
-
-    int updatePathOnFloor(in String packageName, String editedPath, boolean update, int floorId);
 }

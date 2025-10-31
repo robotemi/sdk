@@ -3787,21 +3787,6 @@ class Robot private constructor(private val context: Context) {
             null
         }
     }
-    /**
-    updatePathOnFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    200 Success
-    -408 Failure
-     **/
-    fun updatePathOnFloor(editedPath: String, update: Boolean, floorId: Int): Int? {
-        return try {
-            sdkService?.updatePathOnFloor(applicationInfo.packageName, editedPath, update, floorId)
-        } catch (e: RemoteException) {
-            Log.e(TAG, "updatePathOnFloor() error")
-            null
-        }
-    }
 
     fun getAllFloors(): List<Floor> {
         return try {
