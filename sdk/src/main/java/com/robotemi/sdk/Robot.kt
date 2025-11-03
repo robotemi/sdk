@@ -3414,7 +3414,8 @@ class Robot private constructor(private val context: Context) {
 
         var cursor: Cursor? = null
         try {
-            val uri: Uri = Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/${SdkConstants.PROVIDER_PARAMETER_FLOOR_MAP_DATA}")
+            val uri: Uri =
+                Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/${SdkConstants.PROVIDER_PARAMETER_FLOOR_MAP_DATA}")
 
             val projection = arrayOf(
                 SdkConstants.PROVIDER_PARAMETER_FLOOR_DATA_JSON,
@@ -3762,9 +3763,18 @@ class Robot private constructor(private val context: Context) {
     200 Success
     -408 Failure
      **/
-    fun updateLocationOnFloor(@IntRange(from = 1) floorId: Int, oldName: String, newName: String): Int? {
+    fun updateLocationOnFloor(
+        @IntRange(from = 1) floorId: Int,
+        oldName: String,
+        newName: String
+    ): Int? {
         return try {
-            sdkService?.updateLocationOnFloor(applicationInfo.packageName, floorId, oldName, newName)
+            sdkService?.updateLocationOnFloor(
+                applicationInfo.packageName,
+                floorId,
+                oldName,
+                newName
+            )
         } catch (e: RemoteException) {
             Log.e(TAG, "updateLocationOnFloor() error")
             null
@@ -3926,6 +3936,8 @@ class Robot private constructor(private val context: Context) {
      *
      * @param layer, layer data to be updated or inserted. Use [Layer.upsertLayer] to create the layer
      *
+     * @param floorId, Only used on multiple floors, pass the non-current floor id that needs to be modified
+     *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success
      *         400 invalid parameter
@@ -3934,7 +3946,7 @@ class Robot private constructor(private val context: Context) {
      *
      */
     @WorkerThread
-    fun upsertMapLayer(layer: Layer, @IntRange(from=1) floorId: Int?=null): Int {
+    fun upsertMapLayer(layer: Layer, @IntRange(from = 1) floorId: Int? = null): Int {
         try {
             val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
 
@@ -3957,6 +3969,8 @@ class Robot private constructor(private val context: Context) {
      *
      * @param layerCategory, can only take [GREEN_PATH] and [VIRTUAL_WALL]
      *
+     * @param floorId, Only used on multiple floors, pass the non-current floor id that needs to be modified
+     *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success
      *         400 invalid parameter
@@ -3964,11 +3978,20 @@ class Robot private constructor(private val context: Context) {
      *         404 target map layer doesn't exist
      */
     @WorkerThread
-    fun deleteMapLayer(layerId: String, layerCategory: Int, @IntRange(from=1) floorId: Int?=null): Int {
+    fun deleteMapLayer(
+        layerId: String,
+        layerCategory: Int,
+        @IntRange(from = 1) floorId: Int? = null
+    ): Int {
         try {
             val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
             val resp =
-                sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory, targetFloorId)
+                sdkService?.deleteMapLayer(
+                    applicationInfo.packageName,
+                    layerId,
+                    layerCategory,
+                    targetFloorId
+                )
                     ?.toIntOrNull() ?: 0
             Log.d(TAG, "deleteMapLayer, result $resp")
             return resp
