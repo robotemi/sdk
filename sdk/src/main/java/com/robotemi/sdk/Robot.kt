@@ -3936,7 +3936,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @param layer, layer data to be updated or inserted. Use [Layer.upsertLayer] to create the layer
      *
-     * @param floorId, Only used on multiple floors, pass the non-current floor id that needs to be modified
+     * @param floorId, Only applicable to multiple floors. Enter the id of the non-current floor that needs to be modified - it must be version 1.137.0.5 or above
      *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success
@@ -3969,7 +3969,7 @@ class Robot private constructor(private val context: Context) {
      *
      * @param layerCategory, can only take [GREEN_PATH] and [VIRTUAL_WALL]
      *
-     * @param floorId, Only used on multiple floors, pass the non-current floor id that needs to be modified
+     * @param floorId, Only applicable to multiple floors. Enter the id of the non-current floor that needs to be modified - it must be version 1.137.0.5 or above
      *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success

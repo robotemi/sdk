@@ -575,7 +575,14 @@ class MapActivity : AppCompatActivity() {
                     }
                 }
                 "DeletePathOnFloor" -> {
-
+                    binding.progressBar.visibility = View.VISIBLE
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val resp = robot.deleteMapLayer("office entrance",GREEN_PATH,input.toIntOrNull())
+                        withContext(Dispatchers.Main) {
+                            printLog("Add / Update location result $resp")
+                            binding.progressBar.visibility = View.GONE
+                        }
+                    }
                 }
             }
             dialog.dismiss()
