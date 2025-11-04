@@ -412,7 +412,7 @@ interface ISdkService {
 
     int renameFloor(in String packageName, int floorId, String floorName);
 
-    int updateLocationOnFloor(in String packageName, int floorId, String oldName, String newName);
+    int updateLocationOnFloor(in String packageName, int floorId, String oldName, String newName, String layer);
 
     int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
 }

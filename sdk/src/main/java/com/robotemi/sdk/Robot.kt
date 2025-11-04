@@ -3766,14 +3766,16 @@ class Robot private constructor(private val context: Context) {
     fun updateLocationOnFloor(
         @IntRange(from = 1) floorId: Int,
         oldName: String,
-        newName: String
+        newName: String,
+        layer: String,
     ): Int? {
         return try {
             sdkService?.updateLocationOnFloor(
                 applicationInfo.packageName,
                 floorId,
                 oldName,
-                newName
+                newName,
+                layer
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "updateLocationOnFloor() error")

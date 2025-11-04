@@ -821,8 +821,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog(robot.getFloorAndMapData(floorId)?.toString() ?: "get floor data failed")
     }
 
-    private fun updateLocationOnFloor(floorId: Int, oldName: String, newName: String) {
-        printLog(robot.updateLocationOnFloor(floorId, oldName, newName)?.toString() ?: "updateLocationOnFloor floor failed")
+    private fun updateLocationOnFloor(floorId: Int, oldName: String, newName: String, layer: String,) {
+        printLog(robot.updateLocationOnFloor(floorId, oldName, newName, layer)?.toString() ?: "updateLocationOnFloor floor failed")
     }
 
     private fun deleteLocationOnFloor(floorId: Int, locationName: String) {
@@ -2828,7 +2828,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     if (parts.size < 3) {
                         return@setOnClickListener
                     }
-                    updateLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1],parts[2])
+                    updateLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1],parts[2],"")
                 }
 
                 "deleteLocationOnFloor" -> {
