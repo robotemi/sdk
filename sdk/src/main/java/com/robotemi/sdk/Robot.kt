@@ -3778,6 +3778,7 @@ class Robot private constructor(private val context: Context) {
      * @param floorId, The floor id must be greater than 0
      *
      * @return
+     *      0 if the operation is not supported by current launcher
      *     -400 package names are abnormal
      *     Map permission in package -403 is abnormal
      *     -404 target map layer doesn't exist
@@ -3799,10 +3800,10 @@ class Robot private constructor(private val context: Context) {
                 oldLocationName,
                 newLocationName,
                 gson.toJson(layer?.roundByCategory())
-            ) ?: 408
+            ) ?: 0
         } catch (e: RemoteException) {
             Log.e(TAG, "renameLocationOnFloor() error", e)
-            408
+            0
         }
     }
 
