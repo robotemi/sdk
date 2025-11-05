@@ -3791,7 +3791,7 @@ class Robot private constructor(private val context: Context) {
         oldLocationName: String,
         newLocationName: String,
         layer: Layer? = null
-    ): Int? {
+    ): Int {
         return try {
             sdkService?.renameLocationOnFloor(
                 applicationInfo.packageName,
@@ -3799,10 +3799,10 @@ class Robot private constructor(private val context: Context) {
                 oldLocationName,
                 newLocationName,
                 gson.toJson(layer?.roundByCategory())
-            )
+            ) ?: 408
         } catch (e: RemoteException) {
-            Log.e(TAG, "updateLocationOnFloor() error")
-            null
+            Log.e(TAG, "renameLocationOnFloor() error", e)
+            408
         }
     }
 
