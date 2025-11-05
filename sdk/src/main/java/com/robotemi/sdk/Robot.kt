@@ -3698,15 +3698,19 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    /**
-    newFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -405 Cannot call this method when current floor/map is not locked.
-    id（id!=0） Success
-    -408 Failure
 
-    There is no limit to floors with duplicate names, which depends on the application to control
+    /**
+     * There is no limit to floors with duplicate names, which depends on the application to control
+     *
+     * @param floorName, Floor names must not be empty
+     *
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      -405 Cannot call this method when current floor/map is not locked.
+     *      id（id!=0） Success
+     *      -408 Failure
      **/
     @WorkerThread
     fun newFloor(floorName: String): Int? {
@@ -3719,12 +3723,16 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-    deleteFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -409 The current map cannot be deleted
-    200 Success
-    -408 Failure
+     * There is no limit to floors with duplicate names, which depends on the application to control
+     *
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      -409 The current floor cannot be modified
+     *      200 Success
+     *      -408 Failure
      **/
     @WorkerThread
     fun deleteFloor(@IntRange(from = 1) floorId: Int): Int? {
@@ -3736,14 +3744,19 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    /**
-    renameFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    200 Success
-    -408 Failure
 
-    There is no limit to floors with duplicate names, which depends on the application to control
+    /**
+     * There is no limit to floors with duplicate names, which depends on the application to control
+     *
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @param floorName, Floor names must not be empty
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      200 Success
+     *      -408 Failure
      **/
     @WorkerThread
     fun renameFloor(@IntRange(from = 1) floorId: Int, floorName: String): Int? {
@@ -3756,26 +3769,36 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-    updateLocationOnFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -409 The current floor cannot be modified
-    200 Success
-    -408 Failure
-     **/
-    fun updateLocationOnFloor(
+     * When modifying the map location name of other floors, the floor Id, location new name, and location old name must be uploaded.
+     * When modifying the map location and location name, the layer must also be uploaded.
+     * In case of a conflict between the location name in the layer and the old name, the old name shall prevail
+     *
+     * @param layer, option param, The layerCategory of the layer should be the Location type
+     *
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @return
+     *     -400 package names are abnormal
+     *     Map permission in package -403 is abnormal
+     *     -404 target map layer doesn't exist
+     *     -409 The current floor cannot be modified
+     *     -413 Location data is out of bounds
+     *     200 Success
+     *     -408 Failure
+     */
+    fun renameLocationOnFloor(
         @IntRange(from = 1) floorId: Int,
-        oldName: String,
-        newName: String,
-        layer: String,
+        oldLocationName: String,
+        newLocationName: String,
+        layer: Layer? = null
     ): Int? {
         return try {
-            sdkService?.updateLocationOnFloor(
+            sdkService?.renameLocationOnFloor(
                 applicationInfo.packageName,
                 floorId,
-                oldName,
-                newName,
-                layer
+                oldLocationName,
+                newLocationName,
+                gson.toJson(layer?.roundByCategory())
             )
         } catch (e: RemoteException) {
             Log.e(TAG, "updateLocationOnFloor() error")
@@ -3784,12 +3807,16 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-    deleteLocationOnFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -409 The current floor cannot be modified
-    200 Success
-    -408 Failure
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @param locationName, Floor names must not be empty
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      -409 The current floor cannot be modified
+     *      200 Success
+     *      -408 Failure
      **/
     fun deleteLocationOnFloor(@IntRange(from = 1) floorId: Int, locationName: String): Int? {
         return try {

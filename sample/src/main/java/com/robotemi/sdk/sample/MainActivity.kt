@@ -87,6 +87,7 @@ import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.robotemi.sdk.map.Layer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -821,8 +822,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         printLog(robot.getFloorAndMapData(floorId)?.toString() ?: "get floor data failed")
     }
 
-    private fun updateLocationOnFloor(floorId: Int, oldName: String, newName: String, layer: String,) {
-        printLog(robot.updateLocationOnFloor(floorId, oldName, newName, layer)?.toString() ?: "updateLocationOnFloor floor failed")
+    private fun updateLocationOnFloor(floorId: Int, oldLocationName: String, newLocationName: String, layer: Layer?) {
+        printLog(robot.renameLocationOnFloor(floorId, oldLocationName, newLocationName, layer)?.toString() ?: "updateLocationOnFloor floor failed")
     }
 
     private fun deleteLocationOnFloor(floorId: Int, locationName: String) {
@@ -2828,7 +2829,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     if (parts.size < 3) {
                         return@setOnClickListener
                     }
-                    updateLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1],parts[2],"")
+                    updateLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1],parts[2],null)
                 }
 
                 "deleteLocationOnFloor" -> {
