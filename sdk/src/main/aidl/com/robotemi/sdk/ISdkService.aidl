@@ -384,9 +384,9 @@ interface ISdkService {
 
     String continueMapping(in String packageName);
 
-    String upsertMapLayer(in String packageName, in String layer);
+    String upsertMapLayer(in String packageName, in String layer, int floorId);
 
-    String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
+    String deleteMapLayer(in String packageName, in String layerId, int layerCategory, int floorId);
 
     String getHardButtonStatus(in String packageName, int type);
 
@@ -411,4 +411,8 @@ interface ISdkService {
     int deleteFloor(in String packageName, int floorId);
 
     int renameFloor(in String packageName, int floorId, String floorName);
+
+    int renameLocationOnFloor(in String packageName, int floorId, String oldLocationName, String newLocationName, String layer);
+
+    int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
 }

@@ -87,6 +87,7 @@ import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.robotemi.sdk.map.Layer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -502,6 +503,12 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             btnGetFloorData.setOnClickListener {
                 showInputDialog("getFloorData")
             }
+            btnUpdateLocationOnFloor.setOnClickListener {
+                showInputDialog("updateLocationOnFloor")
+            }
+            btnDeleteLocationOnFloor.setOnClickListener {
+                showInputDialog("deleteLocationOnFloor")
+            }
         }
         groupSettingsAndStatus.apply {
             btnBatteryInfo.setOnClickListener { getBatteryData() }
@@ -813,6 +820,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private fun getFloorData(floorId: Int) {
         printLog(robot.getFloorAndMapData(floorId)?.toString() ?: "get floor data failed")
+    }
+
+    private fun updateLocationOnFloor(floorId: Int, oldLocationName: String, newLocationName: String, layer: Layer?) {
+        printLog(robot.renameLocationOnFloor(floorId, oldLocationName, newLocationName, layer)?.toString() ?: "updateLocationOnFloor floor failed")
+    }
+
+    private fun deleteLocationOnFloor(floorId: Int, locationName: String) {
+        printLog(robot.deleteLocationOnFloor(floorId, locationName)?.toString() ?: "deleteLocationOnFloor floor failed")
     }
 
     private fun loadFloorAtElevator() {
@@ -2773,6 +2788,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 editTextInput.hint = "Please enter a number"
             }
 
+            "updateLocationOnFloor" -> {
+                editTextInput.hint = "Please enter the numbers and oldName and newName, and use  ,  to separate"
+            }
+
+            "deleteLocationOnFloor" -> {
+                editTextInput.hint = "Please enter the numbers and locationName, and use  ,  to separate"
+            }
+
         }
         btnConfirm.setOnClickListener {
             val input = editTextInput.text.toString().trim()
@@ -2799,6 +2822,22 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
                 "getFloorData" -> {
                     getFloorData(input.toIntOrNull() ?: 0)
+                }
+
+                "updateLocationOnFloor" -> {
+                    val parts = input.split(",", limit = 3).map { it.trim() }
+                    if (parts.size < 3) {
+                        return@setOnClickListener
+                    }
+                    updateLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1],parts[2],null)
+                }
+
+                "deleteLocationOnFloor" -> {
+                    val parts = input.split(",", limit = 2).map { it.trim() }
+                    if (parts.size < 2) {
+                        return@setOnClickListener
+                    }
+                    deleteLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1])
                 }
 
             }

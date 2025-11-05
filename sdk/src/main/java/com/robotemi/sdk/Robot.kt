@@ -3414,7 +3414,8 @@ class Robot private constructor(private val context: Context) {
 
         var cursor: Cursor? = null
         try {
-            val uri: Uri = Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/${SdkConstants.PROVIDER_PARAMETER_FLOOR_MAP_DATA}")
+            val uri: Uri =
+                Uri.parse("content://${SdkConstants.PROVIDER_AUTHORITY}/${SdkConstants.PROVIDER_PARAMETER_FLOOR_MAP_DATA}")
 
             val projection = arrayOf(
                 SdkConstants.PROVIDER_PARAMETER_FLOOR_DATA_JSON,
@@ -3697,15 +3698,19 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    /**
-    newFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -405 Cannot call this method when current floor/map is not locked.
-    id（id!=0） Success
-    -408 Failure
 
-    There is no limit to floors with duplicate names, which depends on the application to control
+    /**
+     * There is no limit to floors with duplicate names, which depends on the application to control
+     *
+     * @param floorName, Floor names must not be empty
+     *
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      -405 Cannot call this method when current floor/map is not locked.
+     *      id（id!=0） Success
+     *      -408 Failure
      **/
     @WorkerThread
     fun newFloor(floorName: String): Int? {
@@ -3718,12 +3723,16 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-    deleteFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    -409 The current map cannot be deleted
-    200 Success
-    -408 Failure
+     * There is no limit to floors with duplicate names, which depends on the application to control
+     *
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      -409 The current floor cannot be modified
+     *      200 Success
+     *      -408 Failure
      **/
     @WorkerThread
     fun deleteFloor(@IntRange(from = 1) floorId: Int): Int? {
@@ -3735,14 +3744,19 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    /**
-    renameFloor
-    -400 package names are abnormal
-    Map permission in package -403 is abnormal
-    200 Success
-    -408 Failure
 
-    There is no limit to floors with duplicate names, which depends on the application to control
+    /**
+     * There is no limit to floors with duplicate names, which depends on the application to control
+     *
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @param floorName, Floor names must not be empty
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      200 Success
+     *      -408 Failure
      **/
     @WorkerThread
     fun renameFloor(@IntRange(from = 1) floorId: Int, floorName: String): Int? {
@@ -3750,6 +3764,66 @@ class Robot private constructor(private val context: Context) {
             sdkService?.renameFloor(applicationInfo.packageName, floorId, floorName)
         } catch (e: RemoteException) {
             Log.e(TAG, "renameFloor() error")
+            null
+        }
+    }
+
+    /**
+     * When modifying the map location name of other floors, the floor Id, location new name, and location old name must be uploaded.
+     * When modifying the map location and location name, the layer must also be uploaded.
+     * In case of a conflict between the location name in the layer and the old name, the old name shall prevail
+     *
+     * @param layer, option param, The layerCategory of the layer should be the Location type
+     *
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @return
+     *      0 if the operation is not supported by current launcher
+     *     400 package names are abnormal
+     *     Map permission in package -403 is abnormal
+     *     404 target map layer doesn't exist
+     *     409 The current floor cannot be modified
+     *     413 Location data is out of bounds
+     *     200 Success
+     *     408 Failure
+     */
+    fun renameLocationOnFloor(
+        @IntRange(from = 1) floorId: Int,
+        oldLocationName: String,
+        newLocationName: String,
+        layer: Layer? = null
+    ): Int {
+        return try {
+            sdkService?.renameLocationOnFloor(
+                applicationInfo.packageName,
+                floorId,
+                oldLocationName,
+                newLocationName,
+                gson.toJson(layer?.roundByCategory())
+            ) ?: 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "renameLocationOnFloor() error", e)
+            0
+        }
+    }
+
+    /**
+     * @param floorId, The floor id must be greater than 0
+     *
+     * @param locationName, Floor names must not be empty
+     *
+     * @return
+     *      -400 package names are abnormal
+     *      Map permission in package -403 is abnormal
+     *      -409 The current floor cannot be modified
+     *      200 Success
+     *      -408 Failure
+     **/
+    fun deleteLocationOnFloor(@IntRange(from = 1) floorId: Int, locationName: String): Int? {
+        return try {
+            sdkService?.deleteLocationOnFloor(applicationInfo.packageName, floorId, locationName)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "deleteLocationOnFloor() error")
             null
         }
     }
@@ -3892,6 +3966,8 @@ class Robot private constructor(private val context: Context) {
      *
      * @param layer, layer data to be updated or inserted. Use [Layer.upsertLayer] to create the layer
      *
+     * @param floorId, Only applicable to multiple floors. Enter the id of the non-current floor that needs to be modified - it must be version 1.137.0.5 or above
+     *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success
      *         400 invalid parameter
@@ -3900,24 +3976,30 @@ class Robot private constructor(private val context: Context) {
      *
      */
     @WorkerThread
-    fun upsertMapLayer(layer: Layer): Int {
+    fun upsertMapLayer(layer: Layer, @IntRange(from = 1) floorId: Int? = null): Int {
         try {
+            val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
+
             val resp = sdkService?.upsertMapLayer(
                 applicationInfo.packageName,
-                gson.toJson(layer.roundByCategory())
+                gson.toJson(layer.roundByCategory()),
+                targetFloorId
             )?.toIntOrNull() ?: 0
-            Log.d(TAG, "upsertLayer, result $resp")
+
+            Log.d(TAG, "upsertLayer, result $resp, floorId used: $targetFloorId")
             return resp
         } catch (e: RemoteException) {
-            Log.e(TAG, "upsertLayer() error")
+            Log.e(TAG, "upsertLayer() error", e)
+            return 0
         }
-        return 0
     }
 
     /**
      * Delete map layer, only support deleting virtual wall and path
      *
      * @param layerCategory, can only take [GREEN_PATH] and [VIRTUAL_WALL]
+     *
+     * @param floorId, Only applicable to multiple floors. Enter the id of the non-current floor that needs to be modified - it must be version 1.137.0.5 or above
      *
      * @return 0 if the operation is not supported by current launcher
      *         200 for success
@@ -3926,10 +4008,20 @@ class Robot private constructor(private val context: Context) {
      *         404 target map layer doesn't exist
      */
     @WorkerThread
-    fun deleteMapLayer(layerId: String, layerCategory: Int): Int {
+    fun deleteMapLayer(
+        layerId: String,
+        layerCategory: Int,
+        @IntRange(from = 1) floorId: Int? = null
+    ): Int {
         try {
+            val targetFloorId = if (floorId != null && floorId != 0) floorId else 0
             val resp =
-                sdkService?.deleteMapLayer(applicationInfo.packageName, layerId, layerCategory)
+                sdkService?.deleteMapLayer(
+                    applicationInfo.packageName,
+                    layerId,
+                    layerCategory,
+                    targetFloorId
+                )
                     ?.toIntOrNull() ?: 0
             Log.d(TAG, "deleteMapLayer, result $resp")
             return resp
