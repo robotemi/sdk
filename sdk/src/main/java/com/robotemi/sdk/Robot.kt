@@ -3779,13 +3779,13 @@ class Robot private constructor(private val context: Context) {
      *
      * @return
      *      0 if the operation is not supported by current launcher
-     *     -400 package names are abnormal
+     *     400 package names are abnormal
      *     Map permission in package -403 is abnormal
-     *     -404 target map layer doesn't exist
-     *     -409 The current floor cannot be modified
-     *     -413 Location data is out of bounds
+     *     404 target map layer doesn't exist
+     *     409 The current floor cannot be modified
+     *     413 Location data is out of bounds
      *     200 Success
-     *     -408 Failure
+     *     408 Failure
      */
     fun renameLocationOnFloor(
         @IntRange(from = 1) floorId: Int,
