@@ -7,10 +7,11 @@ enum class SpeedLevel(
     val value: String,
     private var floatValue: Float? = null
 ) {
-
+    VERY_HIGH("veryHigh"), // 1.2 m/s
     HIGH("high"),       // 0.9 m/s
     MEDIUM("medium"),   // 0.7 m/s
-    SLOW("slow");       // 0.5 m/s
+    SLOW("slow"),       // 0.5 m/s
+    VERY_SLOW("verySlow"); // 0.3 m/s
 
     internal val floatSpeedLevel: Float
         get() = floatValue ?: 0.0f
@@ -23,9 +24,11 @@ enum class SpeedLevel(
         @JvmStatic
         fun valueToEnum(value: String): SpeedLevel {
             return when (value) {
+                VERY_SLOW.value -> VERY_SLOW
                 SLOW.value -> SLOW
                 MEDIUM.value -> MEDIUM
                 HIGH.value -> HIGH
+                VERY_HIGH.value -> VERY_HIGH
                 else -> DEFAULT
             }
         }
@@ -42,7 +45,9 @@ enum class SpeedLevel(
          */
         fun customSpeed(@FloatRange(from = 0.1, to = 1.5) floatValue: Float): SpeedLevel {
             return when {
+                floatValue < 0.5f - EPSILON -> VERY_SLOW
                 floatValue < 0.7f - EPSILON -> SLOW
+                floatValue > 1.1f - EPSILON -> VERY_HIGH
                 floatValue > 0.9f - EPSILON -> HIGH
                 else -> MEDIUM
             }.apply { this.floatValue = floatValue.coerceAtLeast(0.1f) }
