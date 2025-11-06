@@ -1550,7 +1550,18 @@ class Robot private constructor(private val context: Context) {
      */
     fun setFollowSpeed(speedLevel: SpeedLevel): Int {
         try {
-            val resp = sdkService?.setFollowSpeed(applicationInfo.packageName, speedLevel.value)
+            val level = when (speedLevel) {
+                SpeedLevel.VERY_HIGH -> {
+                    Log.w(TAG, "VERY_HIGH is not supported for follow speed, set to HIGH instead")
+                    SpeedLevel.HIGH
+                }
+                SpeedLevel.VERY_SLOW -> {
+                    Log.w(TAG, "VERY_LOW is not supported for follow speed, set to LOW instead")
+                    SpeedLevel.SLOW
+                }
+                else -> speedLevel
+            }
+            val resp = sdkService?.setFollowSpeed(applicationInfo.packageName, level.value)
                 ?.toIntOrNull() ?: 0
             Log.d(TAG, "setFollowSpeed() response: $resp")
             return resp
