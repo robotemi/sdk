@@ -45,9 +45,7 @@ enum class SpeedLevel(
          */
         fun customSpeed(@FloatRange(from = 0.1, to = 1.5) floatValue: Float): SpeedLevel {
             return when {
-                floatValue < 0.5f - EPSILON -> VERY_SLOW
                 floatValue < 0.7f - EPSILON -> SLOW
-                floatValue > 1.1f - EPSILON -> VERY_HIGH
                 floatValue > 0.9f - EPSILON -> HIGH
                 else -> MEDIUM
             }.apply { this.floatValue = floatValue.coerceAtLeast(0.1f) }
