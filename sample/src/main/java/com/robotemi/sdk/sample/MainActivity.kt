@@ -1795,9 +1795,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
         printLog("Current go to speed ${robot.goToSpeed}")
         val speedLevels: MutableList<String> = ArrayList()
+        speedLevels.add(SpeedLevel.VERY_HIGH.value)
         speedLevels.add(SpeedLevel.HIGH.value)
         speedLevels.add(SpeedLevel.MEDIUM.value)
         speedLevels.add(SpeedLevel.SLOW.value)
+        speedLevels.add(SpeedLevel.VERY_SLOW.value)
         val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, speedLevels)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Select Go To Speed Level")

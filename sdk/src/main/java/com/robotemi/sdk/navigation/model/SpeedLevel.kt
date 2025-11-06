@@ -7,11 +7,11 @@ enum class SpeedLevel(
     val value: String,
     private var floatValue: Float? = null
 ) {
-    VERY_HIGH("veryHigh"), // 1.2 m/s
+    VERY_HIGH("VeryHigh"), // 1.2 m/s
     HIGH("high"),       // 0.9 m/s
     MEDIUM("medium"),   // 0.7 m/s
     SLOW("slow"),       // 0.5 m/s
-    VERY_SLOW("verySlow"); // 0.3 m/s
+    VERY_SLOW("VerySlow"); // 0.3 m/s
 
     internal val floatSpeedLevel: Float
         get() = floatValue ?: 0.0f
