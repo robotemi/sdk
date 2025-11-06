@@ -7,6 +7,11 @@ enum class SpeedLevel(
     val value: String,
     private var floatValue: Float? = null
 ) {
+    /**
+     * VERY_HIGH and VERY_SLOW are only supported in 137+ version robot.
+     * And They are only supported in Go To Speed settings,
+     * not supported in Follow Speed settings yet.
+     */
     VERY_HIGH("VeryHigh"), // 1.2 m/s
     HIGH("high"),       // 0.9 m/s
     MEDIUM("medium"),   // 0.7 m/s
