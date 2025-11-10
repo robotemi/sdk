@@ -728,6 +728,16 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
+        override fun onSequenceStepChanged(sequenceId: String, stepIndex: Int, totalSteps: Int): Boolean {
+            if (onSequencePlayStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onSequencePlayStatusChangedListeners) {
+                    listener.onSequenceStepChanged(sequenceId, stepIndex, totalSteps)
+                }
+            }
+            return true
+        }
+
         /*****************************************/
         /*            Face Recognition           */
         /*****************************************/

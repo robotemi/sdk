@@ -71,6 +71,8 @@ interface ISdkServiceCallback {
 
     boolean onSequencePlayStatusChanged(int status, String sequenceId);
 
+    boolean onSequenceStepChanged(String sequenceId, int stepIndex, int totalSteps);
+
     boolean onRobotLifted(boolean isRobotLifted, String reason);
 
     boolean onDetectionDataChanged(in DetectionData detectionData);
