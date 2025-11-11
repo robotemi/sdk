@@ -1992,7 +1992,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         stepIndex: Int,
         totalSteps: Int
     ) {
-        TODO("Not yet implemented")
+        printLog("onSequenceStepChanged sequenceId: $sequenceId, stepIndex: $stepIndex, totalSteps: $totalSteps")
     }
 
     override fun onRobotLifted(isLifted: Boolean, reason: String) {
