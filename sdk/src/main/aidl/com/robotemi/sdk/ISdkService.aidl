@@ -406,7 +406,7 @@ interface ISdkService {
 
     String renameLocation(in String packageName, in String oldLocationName, in String newLocationName, in String layer);
 
-    int newFloor(in String packageName, String floorName);
+    int newFloor(in String packageName, String floorName, boolean saveHomeBaseIfCharging);
 
     int deleteFloor(in String packageName, int floorId);
 
