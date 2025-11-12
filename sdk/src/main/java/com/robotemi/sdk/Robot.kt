@@ -3734,9 +3734,9 @@ class Robot private constructor(private val context: Context) {
      *      -408 Failure
      **/
     @WorkerThread
-    fun newFloor(floorName: String): Int? {
+    fun newFloor(floorName: String, saveHomeBaseIfCharging: Boolean = false): Int? {
         return try {
-            sdkService?.newFloor(applicationInfo.packageName, floorName)
+            sdkService?.newFloor(applicationInfo.packageName, floorName, saveHomeBaseIfCharging)
         } catch (e: RemoteException) {
             Log.e(TAG, "newFloor() error")
             null

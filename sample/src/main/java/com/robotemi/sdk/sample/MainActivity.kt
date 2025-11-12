@@ -807,7 +807,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     }
 
     private fun newFloor(name: String) {
-        printLog(robot.newFloor(name)?.toString() ?: "create new floor failed")
+        printLog(robot.newFloor(name, true)?.toString() ?: "create new floor failed")
     }
 
     private fun deleteFloor(floorId: Int) {
