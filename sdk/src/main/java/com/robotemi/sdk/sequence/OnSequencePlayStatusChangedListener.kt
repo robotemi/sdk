@@ -22,7 +22,7 @@ interface OnSequencePlayStatusChangedListener {
      *
      * @param stepIndex The index of the currently executing step (starting from 1).
      *
-     * @param totalSteps This sequence contains the total number of steps.
+     * @param totalSteps The total number of steps in this sequence.
      *
      */
     fun onSequenceStepChanged(sequenceId: String, stepIndex: Int, totalSteps: Int)
