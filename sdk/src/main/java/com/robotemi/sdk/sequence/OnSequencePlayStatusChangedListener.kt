@@ -4,8 +4,27 @@ import androidx.annotation.IntDef
 
 interface OnSequencePlayStatusChangedListener {
 
+    /**
+     * Callback when the playback status of the sequence changes.
+     *
+     * @param status Playback status.
+     *
+     * @param sequenceId The sequence id that has undergone a state change.
+     *
+     */
     fun onSequencePlayStatusChanged(@Status status: Int, sequenceId: String?)
 
+
+    /**
+     * Callback when the current execution step of the sequence changes.
+     *
+     * @param sequenceId The id of the sequence being executed.
+     *
+     * @param stepIndex The index of the currently executing step (starting from 1).
+     *
+     * @param totalSteps This sequence contains the total number of steps.
+     *
+     */
     fun onSequenceStepChanged(sequenceId: String, stepIndex: Int, totalSteps: Int)
 
     @IntDef(IDLE, PREPARING, PLAYING, ERROR)
