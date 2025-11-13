@@ -128,4 +128,6 @@ interface ISdkServiceCallback {
     boolean onMapNameChanged(in String mapName);
 
     boolean onRobotReady(boolean isReady);
+
+    boolean onSequenceStepChanged(String sequenceId, int stepIndex, int totalSteps);
 }

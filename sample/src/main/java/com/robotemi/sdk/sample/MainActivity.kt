@@ -1987,6 +1987,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
     }
 
+    override fun onSequenceStepChanged(
+        sequenceId: String,
+        stepIndex: Int,
+        totalSteps: Int
+    ) {
+        printLog("onSequenceStepChanged sequenceId: $sequenceId, stepIndex: $stepIndex, totalSteps: $totalSteps")
+    }
+
     override fun onRobotLifted(isLifted: Boolean, reason: String) {
         printLog("onRobotLifted: isLifted: $isLifted, reason: $reason")
     }
