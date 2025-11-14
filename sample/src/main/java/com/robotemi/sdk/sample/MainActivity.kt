@@ -1905,6 +1905,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         dialog.listView.onItemClickListener =
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 robot.volume = adapter.getItem(position)!!.toInt()
+
+//                robot.setVolume(adapter.getItem(position)!!.toInt())
+
+//                robot.setVolume(adapter.getItem(position)!!.toInt(),true)
+
                 printLog("Set volume to ${adapter.getItem(position)}")
                 dialog.dismiss()
             }

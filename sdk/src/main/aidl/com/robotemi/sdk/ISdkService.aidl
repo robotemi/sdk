@@ -229,7 +229,7 @@ interface ISdkService {
 
     boolean isAutoReturnOn();
 
-    void setVolume(in String packageName, int volume);
+    void setVolume(in String packageName, int volume, boolean showDrawer);
 
     int getVolume();
 

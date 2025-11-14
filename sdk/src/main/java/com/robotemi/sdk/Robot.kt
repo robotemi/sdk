@@ -2329,6 +2329,7 @@ class Robot private constructor(private val context: Context) {
             }
         }
 
+
     /**
      * Volume of Launcher OS.
      */
@@ -2353,11 +2354,35 @@ class Robot private constructor(private val context: Context) {
                     volume > 10 -> 10
                     else -> volume
                 }
-                sdkService?.setVolume(applicationInfo.packageName, validVolume)
+                setVolume(validVolume, showDrawer = false)
             } catch (e: RemoteException) {
                 Log.e(TAG, "setVolume() error")
             }
         }
+
+    /**
+     * Sets the volume value, with optional control over whether to show the drawer
+     *
+     * @param volume The volume value to be set (automatically clamped between 0-10)
+     * @param showDrawer Whether to display the drawer, default is false
+     *
+     * Examples:
+     * - Set volume only (drawer hidden by default): setVolume(5)
+     * - Set volume and show drawer: setVolume(5, showDrawer = true)
+     *
+     */
+    fun setVolume(volume: Int, showDrawer: Boolean = false) {
+        try {
+            val validVolume = when {
+                volume < 0 -> 0
+                volume > 10 -> 10
+                else -> volume
+            }
+            sdkService?.setVolume(applicationInfo.packageName, validVolume, showDrawer)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setVolume() error")
+        }
+    }
 
     /**
      * Set microphone gain level to X1(default)-X4. Added in 133 version
