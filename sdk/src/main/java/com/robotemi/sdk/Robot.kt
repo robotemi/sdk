@@ -728,7 +728,11 @@ class Robot private constructor(private val context: Context) {
             return true
         }
 
-        override fun onSequenceStepChanged(sequenceId: String, stepIndex: Int, totalSteps: Int): Boolean {
+        override fun onSequenceStepChanged(
+            sequenceId: String,
+            stepIndex: Int,
+            totalSteps: Int
+        ): Boolean {
             if (onSequencePlayStatusChangedListeners.isEmpty()) return false
             uiHandler.post {
                 for (listener in onSequencePlayStatusChangedListeners) {
@@ -1565,10 +1569,12 @@ class Robot private constructor(private val context: Context) {
                     Log.w(TAG, "VERY_HIGH is not supported for follow speed, set to HIGH instead")
                     SpeedLevel.HIGH
                 }
+
                 SpeedLevel.VERY_SLOW -> {
                     Log.w(TAG, "VERY_LOW is not supported for follow speed, set to LOW instead")
                     SpeedLevel.SLOW
                 }
+
                 else -> speedLevel
             }
             val resp = sdkService?.setFollowSpeed(applicationInfo.packageName, level.value)
@@ -3845,7 +3851,7 @@ class Robot private constructor(private val context: Context) {
                 floorId,
                 oldLocationName,
                 newLocationName,
-                gson.toJson(layer?.roundByCategory())
+                layer?.let { gson.toJson(it.roundByCategory()) } ?: ""
             ) ?: 0
         } catch (e: RemoteException) {
             Log.e(TAG, "renameLocationOnFloor() error", e)
@@ -4103,7 +4109,7 @@ class Robot private constructor(private val context: Context) {
                 applicationInfo.packageName,
                 oldLocationName,
                 newLocationName,
-                gson.toJson(layer?.roundByCategory())
+                layer?.let { gson.toJson(it.roundByCategory()) } ?: ""
             )?.toIntOrNull() ?: 0
             Log.d(TAG, "renameLocation, result $resp")
             return resp
