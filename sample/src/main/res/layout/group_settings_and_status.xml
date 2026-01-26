@@ -7,6 +7,11 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/btn137Feature"
+        style="@style/ButtonCommon"
+        android:text="137 New Feature &amp; Bug Fix" />
+
+    <Button
         android:id="@+id/btnIsBackTOFEnabled"
         style="@style/ButtonCommon"
         android:text="Is Back TOF Enabled" />

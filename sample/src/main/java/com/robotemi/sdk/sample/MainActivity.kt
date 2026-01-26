@@ -88,6 +88,7 @@ import kotlin.concurrent.thread
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.robotemi.sdk.map.Layer
+import com.robotemi.sdk.sample.new_feature.Test137Activity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -566,6 +567,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             btnIsFrontTOFEnabled.setOnClickListener { isFrontTOFEnabled() }
             btnToggleBackTOF.setOnClickListener { toggleBackTOF() }
             btnIsBackTOFEnabled.setOnClickListener { isBackTOFEnabled() }
+            btn137Feature.setOnClickListener {
+                val intent = Intent(this@MainActivity, Test137Activity::class.java)
+                startActivity(intent)
+            }
 
             btnMinimumObstacleDistance.setOnClickListener {
                 if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
@@ -2561,11 +2566,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
         // Storage Permissions
         private const val REQUEST_EXTERNAL_STORAGE = 1
-        private const val REQUEST_CODE_NORMAL = 0
+        const val REQUEST_CODE_NORMAL = 0
         private const val REQUEST_CODE_FACE_START = 1
         private const val REQUEST_CODE_FACE_STOP = 2
         private const val REQUEST_CODE_MAP = 3
-        private const val REQUEST_CODE_SEQUENCE_FETCH_ALL = 4
+        const val REQUEST_CODE_SEQUENCE_FETCH_ALL = 4
         private const val REQUEST_CODE_SEQUENCE_PLAY = 5
         private const val REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6
         private const val REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER = 7
