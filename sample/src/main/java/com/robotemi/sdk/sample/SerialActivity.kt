@@ -15,6 +15,7 @@ import com.robotemi.sdk.serial.Serial.dataFrame
 import com.robotemi.sdk.serial.Serial.dataHex
 import com.robotemi.sdk.serial.Serial.getLcdBytes
 import com.robotemi.sdk.serial.Serial.getLcdColorBytes
+import com.robotemi.sdk.serial.Serial.getLcdPersistBytes
 import com.robotemi.sdk.serial.Serial.weight
 
 class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
@@ -165,6 +166,26 @@ class SerialActivity : AppCompatActivity(), OnSerialRawDataListener {
                 Serial.CMD_LCD_TEXT,
                 getLcdColorBytes(color, target = Serial.LCD.TEXT_0_BACKGROUND)
             )
+        }
+
+        binding.btnLcdTextPersist.setOnClickListener {
+            val persist = if (it.tag == true) {
+                it.tag = false
+                false
+            } else {
+                it.tag = true
+                true
+            }
+            val lcdText = if (persist) "PERSIST" else "CLEARED"
+//            Robot.getInstance().sendSerialCommand(
+//                Serial.CMD_LCD_TEXT,
+//                getLcdBytes(lcdText) + getLcdPersistBytes(persist)
+//            )
+
+            //If you want to set the LCD text color and LCD background color, you can refer to the following code
+            val lcdTextColor = if (persist) byteArrayOf(0xFF.toByte(), 0x00, 0x00) else byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0x00)
+            val lcdBackgroundColor = if (persist) byteArrayOf(0x00, 0xFF.toByte(), 0x00) else byteArrayOf(0x00, 0xFF.toByte(), 0xFF.toByte())
+            Robot.getInstance().sendSerialCommand(Serial.CMD_LCD_TEXT, getLcdBytes(lcdText) + getLcdColorBytes(lcdTextColor, target = Serial.LCD.TEXT_0_COLOR) + getLcdColorBytes(lcdBackgroundColor, target = Serial.LCD.TEXT_0_BACKGROUND) + getLcdPersistBytes(persist))
         }
 
         super.onResume()

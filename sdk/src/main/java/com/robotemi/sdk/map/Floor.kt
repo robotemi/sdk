@@ -20,9 +20,9 @@ data class Floor(
     @Suppress("MemberVisibilityCanBePrivate")
     val locations: List<Location>
         get() {
-            val locations = JSONObject(data).getString("locations")
-            return Gson().fromJson<List<Location>>(
-                locations,
+            val locationsJson = JSONObject(data).getString("locations")
+            return Gson().fromJson(
+                locationsJson,
                 object : TypeToken<List<Location>>() {}.type
             )
         }

@@ -9,18 +9,22 @@ import android.os.ParcelFileDescriptor
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.robotemi.sdk.Robot
+import com.robotemi.sdk.TtsRequest.Companion.create
 import com.robotemi.sdk.map.GREEN_PATH
 import com.robotemi.sdk.map.LOCATION
 import com.robotemi.sdk.map.Layer
 import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapDataModel
 import com.robotemi.sdk.navigation.model.Position
+import com.robotemi.sdk.sample.EditDialog.EditorActionListener
 import com.robotemi.sdk.sample.databinding.ActivityMapBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -178,7 +182,7 @@ class MapActivity : AppCompatActivity() {
         binding.btnResetMap.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
-                val resp = robot.resetMap(false)
+                val resp = robot.resetMap(false, saveHomeBaseIfCharging = true)
                 withContext(Dispatchers.Main) {
                     printLog("Reset map result $resp")
                     binding.progressBar.visibility = View.GONE
@@ -186,6 +190,7 @@ class MapActivity : AppCompatActivity() {
                 }
             }
         }
+
         binding.btnFinishMapping.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
@@ -241,6 +246,7 @@ class MapActivity : AppCompatActivity() {
                 }
             }
         }
+
 
         binding.btnMovePath.setOnClickListener {
             val path = mapDataModel?.greenPaths?.firstOrNull() ?: return@setOnClickListener
@@ -303,6 +309,72 @@ class MapActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.GONE
                 }
             }
+        }
+
+        binding.btnRenameLocation.setOnClickListener {
+            val dialog = EditDialog(
+                this,
+                robot.locations.toMutableList(),
+                object : EditorActionListener {
+                    override fun editCompleted(
+                        editDialog: EditDialog,
+                        oldLocationName: String,
+                        newLocationName: String
+                    ) {
+                        if (oldLocationName == newLocationName) return
+                        binding.progressBar.visibility = View.VISIBLE
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            val layer = Layer.upsertLayer(
+                                oldLocationName,
+                                LOCATION,
+                                listOf(LayerPose(1.5f, 1.5f, 1f)),
+                                10
+                            )
+                            if (layer == null) {
+                                // Invalid parameter
+                                withContext(Dispatchers.Main) {
+                                    binding.progressBar.visibility = View.GONE
+                                }
+                                return@launch
+                            }
+
+//                            val resp = robot.renameLocation(oldLocationName, newLocationName)
+                            val resp = robot.renameLocation(oldLocationName, newLocationName, layer)
+                            withContext(Dispatchers.Main) {
+                                binding.progressBar.visibility = View.GONE
+                                if (resp == 200) {
+                                    printLog("rename location success:${robot.getCurrentFloor()?.locations} ")
+                                } else {
+                                    robot.speak(
+                                        create(
+                                            "rename the $newLocationName location failed.",
+                                            true
+                                        )
+                                    )
+                                }
+                                editDialog.dismiss()
+                            }
+                        }
+                    }
+                })
+            dialog.show()
+        }
+
+
+        binding.btnCreatePathOnFloor.setOnClickListener {
+            showInputDialog("CreatePathOnFloor")
+        }
+
+        binding.btnMovePathOnFloor.setOnClickListener {
+            showInputDialog("MovePathOnFloor")
+        }
+
+        binding.btnUpsertLocationOnFloor.setOnClickListener {
+            showInputDialog("UpsertLocationOnFloor")
+        }
+
+        binding.btnDeletePathOnFloor.setOnClickListener {
+            showInputDialog("DeletePathOnFloor")
         }
 
         binding.refreshMap()
@@ -388,5 +460,143 @@ class MapActivity : AppCompatActivity() {
             withoutUI = withoutUI,
             position = position
         )
+    }
+
+    private fun showInputDialog(type: String) {
+        var factor = 1f
+        val dialogView = layoutInflater.inflate(R.layout.dialog_input_loading, null)
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setView(dialogView)
+        val dialog = builder.create()
+        val editTextInput = dialogView.findViewById<EditText>(R.id.editTextInput)
+        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        when (type) {
+            "CreatePathOnFloor" -> {
+                editTextInput.hint = "Please enter a number"
+            }
+
+            "MovePathOnFloor" -> {
+                editTextInput.hint = "Please enter a number"
+            }
+
+            "UpsertLocationOnFloor" -> {
+                editTextInput.hint = "Please enter a number"
+            }
+
+            "DeletePathOnFloor" -> {
+                editTextInput.hint = "Please enter a number"
+            }
+        }
+        btnConfirm.setOnClickListener {
+            val input = editTextInput.text.toString().trim()
+            if (input.isEmpty()) {
+                Toast.makeText(this, "Please enter the content", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            when (type) {
+                "CreatePathOnFloor" -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val layer = Layer.upsertLayer(null, GREEN_PATH, listOf(
+                            LayerPose(0.5f, 0.5f, 0f),
+                            LayerPose(0.5f, 1f * factor, 0f),
+                            LayerPose(1.5f, 1.5f * factor, 0f),
+                            LayerPose(1.5f * factor, 0.5f, 0f),
+                            LayerPose(0.5f, 0.5f, 0f)
+                        ))
+                        factor *= 2
+                        if (layer == null) {
+                            // Invalid parameter
+                            withContext(Dispatchers.Main) {
+                                binding.progressBar.visibility = View.GONE
+                            }
+                            return@launch
+                        }
+                        val resp = robot.upsertMapLayer(layer,input.toIntOrNull())
+                        withContext(Dispatchers.Main) {
+                            printLog("Create path result $resp")
+                            binding.progressBar.visibility = View.GONE
+                        }
+                    }
+                }
+
+                "MovePathOnFloor" -> {
+                    val path = mapDataModel?.greenPaths?.firstOrNull() ?: return@setOnClickListener
+                    binding.progressBar.visibility = View.VISIBLE
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val layer = Layer.upsertLayer(path.layerId, GREEN_PATH, listOf(
+                            LayerPose(2.5f, 2.5f, 0f),
+                            LayerPose(2.5f, 3.5f, 0f),
+                            LayerPose(3.5f, 3.5f, 0f),
+                            LayerPose(3.5f, 2.5f, 0f),
+                            LayerPose(2.5f, 2.5f, 0f)
+                        ))
+                        if (layer == null) {
+                            // Invalid parameter
+                            withContext(Dispatchers.Main) {
+                                binding.progressBar.visibility = View.GONE
+                            }
+                            return@launch
+                        }
+                        val resp = robot.upsertMapLayer(layer,input.toIntOrNull())
+                        withContext(Dispatchers.Main) {
+                            printLog("Update path result $resp")
+                            binding.progressBar.visibility = View.GONE
+                        }
+                    }
+                }
+
+                "UpsertLocationOnFloor" -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val layer = Layer.upsertLayer(
+                            "office entrance",
+                            LOCATION,
+                            listOf(LayerPose(1.5f, 1.5f, 1f)),
+                            tiltAngle = 10)
+                        if (layer == null) {
+                            // Invalid parameter
+                            withContext(Dispatchers.Main) {
+                                binding.progressBar.visibility = View.GONE
+                            }
+                            return@launch
+                        }
+                        val resp = robot.upsertMapLayer(layer,input.toIntOrNull())
+                        withContext(Dispatchers.Main) {
+                            printLog("Add / Update location result $resp")
+                            binding.progressBar.visibility = View.GONE
+                        }
+                    }
+                }
+                "DeletePathOnFloor" -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val pathLayerId = mapDataModel?.greenPaths?.firstOrNull()?.layerId
+                        if (pathLayerId == null) {
+                            withContext(Dispatchers.Main) {
+                                printLog("No GREEN_PATH layer found to delete.")
+                                binding.progressBar.visibility = View.GONE
+                            }
+                            return@launch
+                        }
+                        val resp = robot.deleteMapLayer(pathLayerId,GREEN_PATH,input.toIntOrNull())
+                        withContext(Dispatchers.Main) {
+                            printLog("Add / Update path result $resp")
+                            binding.progressBar.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+            dialog.dismiss()
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.setOnDismissListener {
+        }
+        dialog.show()
     }
 }

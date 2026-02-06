@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="4dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp">
+
+        <ImageButton
+            android:id="@+id/ibBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:scaleType="center"
+            android:src="@drawable/ic_back"
+            android:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="137 New Features Test"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- TTS test -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TTS &amp; Voice"
+                        android:textColor="#666" />
+
+                    <Button
+                        android:id="@+id/btnTtsLanguages"
+                        style="@style/ButtonCommon"
+                        android:text="TTS of all languages" />
+
+                    <Button
+                        android:id="@+id/btnGoogleLongTts"
+                        style="@style/ButtonCommon"
+                        android:text="Google TTS with 900+ words" />
+
+                    <!-- Sequence test -->
+                    <Button
+                        android:id="@+id/btnBreakTag"
+                        style="@style/ButtonCommon"
+                        android:text="TTS with &lt;break/&gt; Tag" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Sequence"
+                        android:textColor="#666" />
+
+                    <TextView
+                        android:id="@+id/tvSequenceStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Status: Idle"
+                        android:textColor="@android:color/holo_blue_dark" />
+
+                    <Button
+                        android:id="@+id/btnSequenceStepListener"
+                        style="@style/ButtonCommon"
+                        android:text="Sequence Step Listener" />
+
+                    <Button
+                        android:id="@+id/btnPlaySequenceRepeat"
+                        style="@style/ButtonCommon"
+                        android:text="Play Sequence (Repeat 3)" />
+
+                    <!-- Map and Floor -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Map &amp; Multi-Floor"
+                        android:textColor="#666" />
+
+                    <Button
+                        android:id="@+id/btnMultiFloor"
+                        style="@style/ButtonCommon"
+                        android:text="MultiFloor" />
+
+                    <Button
+                        android:id="@+id/btnResetMap"
+                        style="@style/ButtonCommon"
+                        android:text="resetMap with saveHomeBaseIfCharging" />
+
+                    <Button
+                        android:id="@+id/btnImportMap"
+                        style="@style/ButtonCommon"
+                        android:text="Import map from SDK provided file" />
+
+                    <!-- System Settings -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="System"
+                        android:textColor="#666" />
+
+                    <Button
+                        android:id="@+id/btnAdjuestVolumewithdrawer"
+                        style="@style/ButtonCommon"
+                        android:text="Adjuest Volume with drawer" />
+
+                    <Button
+                        android:id="@+id/btnSpeedLevel"
+                        style="@style/ButtonCommon"
+                        android:text="Speed Level" />
+
+                    <Button
+                        android:id="@+id/btnLCDTxtPersist"
+                        style="@style/ButtonCommon"
+                        android:text="LCD txt persist" />
+
+                    <Button
+                        android:id="@+id/btnEmergencyButtonBroadcast"
+                        style="@style/ButtonCommon"
+                        android:text="Emergency Button Broadcast" />
+                </LinearLayout>
+            </ScrollView>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#1A1A1A"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/tvLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/btnClearLog"
+                    android:fontFamily="monospace"
+                    android:padding="10dp"
+                    android:scrollbars="vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    tools:text="Logging initialized...\nWaiting for SDK events..." />
+
+                <Button
+                    android:id="@+id/btnClearLog"
+                    style="@style/ButtonCommon"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="Clear Log"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

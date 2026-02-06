@@ -29,6 +29,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
@@ -82,6 +85,13 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import com.robotemi.sdk.map.Layer
+import com.robotemi.sdk.sample.new_feature.Test137Activity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
@@ -98,7 +108,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     OnMovementVelocityChangedListener, OnMovementStatusChangedListener,
     OnContinuousFaceRecognizedListener, ITtsService, OnGreetModeStateChangedListener,
     TextToSpeech.OnInitListener, OnLoadFloorStatusChangedListener,
-    OnDistanceToDestinationChangedListener, OnSdkExceptionListener, OnRobotDragStateChangedListener, OnMapStatusChangedListener,
+    OnDistanceToDestinationChangedListener, OnSdkExceptionListener, OnRobotDragStateChangedListener,
+    OnMapStatusChangedListener,
     OnButtonStatusChangedListener {
 
     private lateinit var robot: Robot
@@ -158,7 +169,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         debugReceiver = TemiBroadcastReceiver()
         registerReceiver(debugReceiver, IntentFilter(TemiBroadcastReceiver.ACTION_DEBUG))
 
-        registerReceiver(assistantReceiver, IntentFilter(AssistantChangeReceiver.ACTION_ASSISTANT_SELECTION))
+        registerReceiver(
+            assistantReceiver,
+            IntentFilter(AssistantChangeReceiver.ACTION_ASSISTANT_SELECTION)
+        )
     }
 
     /**
@@ -442,14 +456,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             btnGetMapElements.setOnClickListener {
                 if (robot.checkSelfPermission(Permission.MAP) == Permission.GRANTED) {
                     printLog("map elements: ${robot.getMapElements()}")
-                }   else {
+                } else {
                     printLog("Map permission not granted")
                 }
             }
             btnGetMapImage.setOnClickListener {
                 if (robot.checkSelfPermission(Permission.MAP) == Permission.GRANTED) {
                     printLog("map image: ${robot.getMapImage()}")
-                }   else {
+                } else {
                     printLog("Map permission not granted")
                 }
 
@@ -477,6 +491,24 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             btnLoadFloorAtElevator.setOnClickListener { loadFloorAtElevator() }
             btnGetCurrentFloor.setOnClickListener {
                 getCurrentFloor()
+            }
+            btnNewFloor.setOnClickListener {
+                showInputDialog("newFloor")
+            }
+            btnDeleteFloor.setOnClickListener {
+                showInputDialog("deleteFloor")
+            }
+            btnRenameFloor.setOnClickListener {
+                showInputDialog("renameFloor")
+            }
+            btnGetFloorData.setOnClickListener {
+                showInputDialog("getFloorData")
+            }
+            btnUpdateLocationOnFloor.setOnClickListener {
+                showInputDialog("updateLocationOnFloor")
+            }
+            btnDeleteLocationOnFloor.setOnClickListener {
+                showInputDialog("deleteLocationOnFloor")
             }
         }
         groupSettingsAndStatus.apply {
@@ -535,13 +567,21 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             btnIsFrontTOFEnabled.setOnClickListener { isFrontTOFEnabled() }
             btnToggleBackTOF.setOnClickListener { toggleBackTOF() }
             btnIsBackTOFEnabled.setOnClickListener { isBackTOFEnabled() }
+            btn137Feature.setOnClickListener {
+                val intent = Intent(this@MainActivity, Test137Activity::class.java)
+                startActivity(intent)
+            }
 
             btnMinimumObstacleDistance.setOnClickListener {
                 if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
                     return@setOnClickListener
                 }
                 if (robot.minimumObstacleDistance == -1) {
-                    Toast.makeText(this@MainActivity, "Minimum Obstacle Distance settings is not supported on your robot.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Minimum Obstacle Distance settings is not supported on your robot.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
 
@@ -551,7 +591,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 val distance = robot.minimumObstacleDistance
                 textMinimumObstacleDistance.text = "$distance"
                 seekbarMinimumObstacleDistance.progress = distance.coerceIn(0, 100)
-                seekbarMinimumObstacleDistance.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+                seekbarMinimumObstacleDistance.setOnSeekBarChangeListener(object :
+                    OnSeekBarChangeListener {
                     override fun onProgressChanged(
                         seekBar: SeekBar?,
                         progress: Int,
@@ -585,7 +626,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 printLog("Emergency Stop button status $status")
             }
             val eStopListener = object : OnButtonStatusChangedListener {
-                override fun onButtonStatusChanged(hardButton: HardButton, status: HardButton.Status) {
+                override fun onButtonStatusChanged(
+                    hardButton: HardButton,
+                    status: HardButton.Status
+                ) {
                     if (hardButton == HardButton.EMERGENCY_STOP) {
                         printLog("Emergency Stop button status changed: $status")
                     }
@@ -710,10 +754,20 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             }
             btnStartPage.setOnClickListener { startPage() }
             btnGetMembersStatus.setOnClickListener { getMembersStatus() }
-            btnSerial.setOnClickListener { startActivity(Intent(this@MainActivity, SerialActivity::class.java)) }
+            btnSerial.setOnClickListener {
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        SerialActivity::class.java
+                    )
+                )
+            }
             btnWebpage.setOnClickListener {
                 val intent =
-                    Intent().setClassName("com.robotemi.browser", "com.robotemi.browser.MainActivity")
+                    Intent().setClassName(
+                        "com.robotemi.browser",
+                        "com.robotemi.browser.MainActivity"
+                    )
                 intent.putExtra("url", "https://github.com")
                 intent.putExtra("source", "intent")
                 intent.putExtra("navBar", "SHOW")
@@ -755,6 +809,30 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     private fun getCurrentFloor() {
         printLog(robot.getCurrentFloor()?.toString() ?: "Get current floor failed")
+    }
+
+    private fun newFloor(name: String) {
+        printLog(robot.newFloor(name, true)?.toString() ?: "create new floor failed")
+    }
+
+    private fun deleteFloor(floorId: Int) {
+        printLog(robot.deleteFloor(floorId)?.toString() ?: "delete floor failed")
+    }
+
+    private fun renameFloor(floorId: Int, name: String) {
+        printLog(robot.renameFloor(floorId, name)?.toString() ?: "rename floor failed")
+    }
+
+    private fun getFloorData(floorId: Int) {
+        printLog(robot.getFloorAndMapData(floorId)?.toString() ?: "get floor data failed")
+    }
+
+    private fun updateLocationOnFloor(floorId: Int, oldLocationName: String, newLocationName: String, layer: Layer?) {
+        printLog(robot.renameLocationOnFloor(floorId, oldLocationName, newLocationName, layer)?.toString() ?: "updateLocationOnFloor floor failed")
+    }
+
+    private fun deleteLocationOnFloor(floorId: Int, locationName: String) {
+        printLog(robot.deleteLocationOnFloor(floorId, locationName)?.toString() ?: "deleteLocationOnFloor floor failed")
     }
 
     private fun loadFloorAtElevator() {
@@ -1048,11 +1126,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     /**
      * Have the robot speak while displaying what is being said.
      */
-    private fun speak(askQuestion : Boolean = false) {
+    private fun speak(askQuestion: Boolean = false) {
         val text = binding.etSpeak.text.toString()
         val languages = ArrayList<TtsRequest.Language>()
-        TtsRequest.Language.values().forEach {
-            language ->  languages.add(language)
+        TtsRequest.Language.values().forEach { language ->
+            languages.add(language)
         }
         val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, languages)
         val dialog = AlertDialog.Builder(this)
@@ -1066,7 +1144,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 if (text == "queue") {
                     // A demonstration of using TTS queue
 
-                    val request = TtsRequest.create("白日依山尽\n", language = TtsRequest.Language.ZH_CN)
+                    val request =
+                        TtsRequest.create("白日依山尽\n", language = TtsRequest.Language.ZH_CN)
                     with(TtsRequest.Language.ZH_CN) {
                         val request1 = request.copy(speech = "黄河入海流\n")
                         val request2 = request.copy(speech = "欲穷千里目\n")
@@ -1078,7 +1157,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     }
 
                     with(TtsRequest.Language.JA_JP) {
-                        val request1 = request.copy(speech = "古池や\n", language = TtsRequest.Language.JA_JP.value)
+                        val request1 = request.copy(
+                            speech = "古池や\n",
+                            language = TtsRequest.Language.JA_JP.value
+                        )
                         val request2 = request1.copy(speech = "蛙飛び込む\n")
                         val request3 = request1.copy(speech = "水の音\n")
                         robot.speak(request1)
@@ -1087,10 +1169,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     }
 
                     with(TtsRequest.Language.EN_US) {
-                        val request1 = request.copy(speech = "It is just as I feared!\n", language = TtsRequest.Language.EN_US.value)
+                        val request1 = request.copy(
+                            speech = "It is just as I feared!\n",
+                            language = TtsRequest.Language.EN_US.value
+                        )
                         val request2 = request1.copy(speech = "Two Owls and a Hen\n")
                         val request3 = request1.copy(speech = "Four Larks and a Wren\n")
-                        val request4 = request1.copy(speech = "Have all built their nests in my beard.\n")
+                        val request4 =
+                            request1.copy(speech = "Have all built their nests in my beard.\n")
                         robot.speak(request1)
                         robot.speak(request2)
                         robot.speak(request3)
@@ -1302,7 +1388,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
     override fun onNlpCompleted(nlpResult: NlpResult) {
         //do something with nlp result. Base the action specified in the AndroidManifest.xml
         Toast.makeText(this@MainActivity, nlpResult.action, Toast.LENGTH_SHORT).show()
-        printLog("NlpCompleted: $nlpResult" )
+        printLog("NlpCompleted: $nlpResult")
         when (nlpResult.action) {
             ACTION_HOME_WELCOME -> robot.tiltAngle(23)
             ACTION_HOME_DANCE -> {
@@ -1312,6 +1398,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     robot.skidJoy(0f, 1f)
                 }
             }
+
             ACTION_HOME_SLEEP -> robot.goTo(HOME_BASE_LOCATION)
         }
     }
@@ -1436,7 +1523,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         if (!robot.isSelectedKioskApp()) {
             return
         }
-        val ret = robot.setAsrLanguages(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
+        val ret =
+            robot.setAsrLanguages(listOf(SttLanguage.SYSTEM, SttLanguage.ZH_HK, SttLanguage.KO_KR))
         printLog("setAsrLanguages: $ret")
     }
 
@@ -1499,24 +1587,29 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             asrResult.equals("Hello", ignoreCase = true) -> {
                 robot.askQuestion("Hello, I'm temi, what can I do for you?")
             }
+
             asrResult.equals("Play music", ignoreCase = true) -> {
                 robot.finishConversation()
                 robot.speak(create("Okay, please enjoy.", false))
                 playMusic()
             }
+
             asrResult.equals("Play movie", ignoreCase = true) -> {
                 robot.finishConversation()
                 robot.speak(create("Okay, please enjoy.", false))
                 playMovie()
             }
+
             asrResult.lowercase().contains("follow me") -> {
                 robot.finishConversation()
                 robot.beWithMe()
             }
+
             asrResult.lowercase().contains("go to home base") -> {
                 robot.finishConversation()
                 robot.goTo("home base")
             }
+
             else -> {
                 robot.askQuestion("Sorry I can't understand you, could you please ask something else?")
             }
@@ -1585,31 +1678,39 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             } else if (requestCode == REQUEST_CODE_FACE_STOP) {
                 robot.stopFaceRecognition()
             }
+
             Permission.SEQUENCE -> when (requestCode) {
                 REQUEST_CODE_SEQUENCE_FETCH_ALL -> {
                     getAllSequences()
                 }
+
                 REQUEST_CODE_SEQUENCE_PLAY -> {
                     playFirstSequence(true)
                 }
+
                 REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER -> {
                     playFirstSequence(false)
                 }
             }
+
             Permission.MAP -> when (requestCode) {
                 REQUEST_CODE_MAP -> {
                     getMap()
                 }
+
                 REQUEST_CODE_GET_MAP_LIST -> {
                     getMapList()
                 }
+
                 REQUEST_CODE_GET_ALL_FLOORS -> {
                     getAllFloors()
                 }
             }
+
             Permission.SETTINGS -> if (requestCode == REQUEST_CODE_START_DETECTION_WITH_DISTANCE) {
                 startDetectionWithDistance()
             }
+
             else -> {
                 // no-op
             }
@@ -1699,9 +1800,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
         printLog("Current go to speed ${robot.goToSpeed}")
         val speedLevels: MutableList<String> = ArrayList()
+        speedLevels.add(SpeedLevel.VERY_HIGH.value)
         speedLevels.add(SpeedLevel.HIGH.value)
         speedLevels.add(SpeedLevel.MEDIUM.value)
         speedLevels.add(SpeedLevel.SLOW.value)
+        speedLevels.add(SpeedLevel.VERY_SLOW.value)
         val adapter = ArrayAdapter(this, R.layout.item_dialog_row, R.id.name, speedLevels)
         val dialog = AlertDialog.Builder(this)
             .setTitle("Select Go To Speed Level")
@@ -1807,6 +1910,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         dialog.listView.onItemClickListener =
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 robot.volume = adapter.getItem(position)!!.toInt()
+
+//                robot.setVolume(adapter.getItem(position)!!.toInt())
+
+//                robot.setVolume(adapter.getItem(position)!!.toInt(),true)
+
                 printLog("Set volume to ${adapter.getItem(position)}")
                 dialog.dismiss()
             }
@@ -1827,7 +1935,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         dialog.listView.onItemClickListener =
             OnItemClickListener { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 val result = robot.setMicGainLevel(adapter.getItem(position)!!.toInt())
-                printLog("Set Microphone Gain Level to X${adapter.getItem(position)!!.toInt()} with result $result")
+                printLog(
+                    "Set Microphone Gain Level to X${
+                        adapter.getItem(position)!!.toInt()
+                    } with result $result"
+                )
                 dialog.dismiss()
             }
         dialog.show()
@@ -1883,6 +1995,14 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         ) {
             robot.showTopBar()
         }
+    }
+
+    override fun onSequenceStepChanged(
+        sequenceId: String,
+        stepIndex: Int,
+        totalSteps: Int
+    ) {
+        printLog("onSequenceStepChanged sequenceId: $sequenceId, stepIndex: $stepIndex, totalSteps: $totalSteps")
     }
 
     override fun onRobotLifted(isLifted: Boolean, reason: String) {
@@ -2044,6 +2164,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 0, 1 -> {
                     printLog("onFaceRecognized: ${contactModel.firstName} ${contactModel.lastName}")
                 }
+
                 2 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
@@ -2051,6 +2172,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     )
                     printLog("onFaceRecognized: VISITOR ${contactModel.userId} ${contactModel.similarity}")
                 }
+
                 3 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
@@ -2058,6 +2180,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     )
                     printLog("onFaceRecognized: SDK Face ${contactModel.userId}, ${contactModel.firstName}, similarity ${contactModel.similarity}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}")
                 }
+
                 -1 -> {
                     printLog("onFaceRecognized: Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}")
                 }
@@ -2090,6 +2213,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 0, 1 -> {
                     "$blinker ${contactModel.firstName} ${contactModel.lastName}\n"
                 }
+
                 2 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
@@ -2097,6 +2221,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     )
                     "$blinker  VISITOR ${contactModel.userId} similarity ${contactModel.similarity}\n"
                 }
+
                 3 -> {
                     Log.d(
                         "SAMPLE_DEBUG",
@@ -2104,6 +2229,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     )
                     "$blinker  SDK Face ${contactModel.userId} -> ${contactModel.firstName}, similarity ${contactModel.similarity}\n"
                 }
+
                 else -> {
                     "$blinker Unknown face, faceId ${contactModel.userId}, age ${contactModel.age}, gender ${contactModel.gender}, faceRect ${contactModel.faceRect}\n"
                 }
@@ -2214,10 +2340,12 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             printLog("target is null.")
             return
         }
-        val resp = robot.startMeeting(listOf(
-            Participant(target.userId, Platform.MOBILE),
-            Participant(target.userId, Platform.TEMI_CENTER),
-        ), firstParticipantJoinedAsHost = true)
+        val resp = robot.startMeeting(
+            listOf(
+                Participant(target.userId, Platform.MOBILE),
+                Participant(target.userId, Platform.TEMI_CENTER),
+            ), firstParticipantJoinedAsHost = true
+        )
         Log.d("MainActivity", "startMeeting result $resp")
     }
 
@@ -2438,11 +2566,11 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
         // Storage Permissions
         private const val REQUEST_EXTERNAL_STORAGE = 1
-        private const val REQUEST_CODE_NORMAL = 0
+        const val REQUEST_CODE_NORMAL = 0
         private const val REQUEST_CODE_FACE_START = 1
         private const val REQUEST_CODE_FACE_STOP = 2
         private const val REQUEST_CODE_MAP = 3
-        private const val REQUEST_CODE_SEQUENCE_FETCH_ALL = 4
+        const val REQUEST_CODE_SEQUENCE_FETCH_ALL = 4
         private const val REQUEST_CODE_SEQUENCE_PLAY = 5
         private const val REQUEST_CODE_START_DETECTION_WITH_DISTANCE = 6
         private const val REQUEST_CODE_SEQUENCE_PLAY_WITHOUT_PLAYER = 7
@@ -2629,7 +2757,8 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     @SuppressLint("SetTextI18n")
     override fun onGreetModeStateChanged(state: Int) {
-        binding.tvGreetMode.text = "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(state)}"
+        binding.tvGreetMode.text =
+            "Greet Mode -> ${OnGreetModeStateChangedListener.State.fromValue(state)}"
     }
 
     override fun onLoadFloorStatusChanged(status: Int) {
@@ -2650,5 +2779,96 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
 
     override fun onButtonStatusChanged(hardButton: HardButton, status: HardButton.Status) {
         Log.d("onButtonStatusChanged", "hardButton: $hardButton, status: $status")
+    }
+
+
+    private fun showInputDialog(type: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_input_loading, null)
+        val builder = AlertDialog.Builder(this)
+        builder.setView(dialogView)
+        val dialog = builder.create()
+        val editTextInput = dialogView.findViewById<EditText>(R.id.editTextInput)
+        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        when (type) {
+            "newFloor" -> {
+                editTextInput.hint = "Please enter the name"
+            }
+
+            "deleteFloor" -> {
+                editTextInput.hint = "Please enter a number"
+            }
+
+            "renameFloor" -> {
+                editTextInput.hint = "Please enter the numbers and names, and use  ,  to separate"
+            }
+
+            "getFloorData" -> {
+                editTextInput.hint = "Please enter a number"
+            }
+
+            "updateLocationOnFloor" -> {
+                editTextInput.hint = "Please enter the numbers and oldName and newName, and use  ,  to separate"
+            }
+
+            "deleteLocationOnFloor" -> {
+                editTextInput.hint = "Please enter the numbers and locationName, and use  ,  to separate"
+            }
+
+        }
+        btnConfirm.setOnClickListener {
+            val input = editTextInput.text.toString().trim()
+            if (input.isEmpty()) {
+                Toast.makeText(this, "Please enter the content", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            when (type) {
+                "newFloor" -> {
+                    newFloor(input)
+                }
+
+                "deleteFloor" -> {
+                    deleteFloor(input.toIntOrNull() ?: 0)
+                }
+
+                "renameFloor" -> {
+                    val parts = input.split(",", limit = 2).map { it.trim() }
+                    if (parts.size < 2) {
+                        return@setOnClickListener
+                    }
+                    renameFloor(parts[0].toIntOrNull() ?: 0, parts[1])
+                }
+
+                "getFloorData" -> {
+                    getFloorData(input.toIntOrNull() ?: 0)
+                }
+
+                "updateLocationOnFloor" -> {
+                    val parts = input.split(",", limit = 3).map { it.trim() }
+                    if (parts.size < 3) {
+                        return@setOnClickListener
+                    }
+                    updateLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1],parts[2],null)
+                }
+
+                "deleteLocationOnFloor" -> {
+                    val parts = input.split(",", limit = 2).map { it.trim() }
+                    if (parts.size < 2) {
+                        return@setOnClickListener
+                    }
+                    deleteLocationOnFloor(parts[0].toIntOrNull() ?: 0, parts[1])
+                }
+
+            }
+            dialog.dismiss()
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.setOnDismissListener {
+        }
+        dialog.show()
     }
 }

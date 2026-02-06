@@ -229,7 +229,7 @@ interface ISdkService {
 
     boolean isAutoReturnOn();
 
-    void setVolume(in String packageName, int volume);
+    void setVolume(in String packageName, int volume, boolean showDrawer);
 
     int getVolume();
 
@@ -376,7 +376,7 @@ interface ISdkService {
 
     int setMicGainLevel(in String packageName, int level);
 
-    String resetMap(in String packageName, boolean allFloor);
+    String resetMap(in String packageName, boolean allFloor, boolean saveHomeBaseIfCharging);
 
     String finishMapping(in String packageName, in String mapName);
 
@@ -384,9 +384,9 @@ interface ISdkService {
 
     String continueMapping(in String packageName);
 
-    String upsertMapLayer(in String packageName, in String layer);
+    String upsertMapLayer(in String packageName, in String layer, int floorId);
 
-    String deleteMapLayer(in String packageName, in String layerId, int layerCategory);
+    String deleteMapLayer(in String packageName, in String layerId, int layerCategory, int floorId);
 
     String getHardButtonStatus(in String packageName, int type);
 
@@ -403,4 +403,16 @@ interface ISdkService {
     int getReposeStatus();
 
     int isReady();
+
+    String renameLocation(in String packageName, in String oldLocationName, in String newLocationName, in String layer);
+
+    int newFloor(in String packageName, String floorName, boolean saveHomeBaseIfCharging);
+
+    int deleteFloor(in String packageName, int floorId);
+
+    int renameFloor(in String packageName, int floorId, String floorName);
+
+    int renameLocationOnFloor(in String packageName, int floorId, String oldLocationName, String newLocationName, String layer);
+
+    int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
 }

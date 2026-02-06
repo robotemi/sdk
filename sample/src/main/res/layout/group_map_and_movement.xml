@@ -142,4 +142,34 @@
         style="@style/ButtonCommon"
         android:text="getMapImage" />
 
+    <Button
+        android:id="@+id/btnNewFloor"
+        style="@style/ButtonCommon"
+        android:text="New Floor" />
+
+    <Button
+        android:id="@+id/btnDeleteFloor"
+        style="@style/ButtonCommon"
+        android:text="Delete Floor" />
+
+    <Button
+        android:id="@+id/btnRenameFloor"
+        style="@style/ButtonCommon"
+        android:text="Rename Floor" />
+
+    <Button
+        android:id="@+id/btnGetFloorData"
+        style="@style/ButtonCommon"
+        android:text="Get Floor Data" />
+
+    <Button
+        android:id="@+id/btnUpdateLocationOnFloor"
+        style="@style/ButtonCommon"
+        android:text="Update Location On Floor" />
+
+    <Button
+        android:id="@+id/btnDeleteLocationOnFloor"
+        style="@style/ButtonCommon"
+        android:text="Delete Location On Floor" />
+
 </LinearLayout>

@@ -6,6 +6,9 @@ repositories {
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots/'
     }
+    maven {
+        url 'https://central.sonatype.com/repository/maven-snapshots/'
+    }
 }
 
 android {
@@ -63,4 +66,5 @@ dependencies {
     implementation project(':sdk')
 //    implementation 'com.robotemi:sdk:1.134.1'
     implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
 }
