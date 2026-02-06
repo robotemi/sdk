@@ -25,7 +25,7 @@ interface OnSequencePlayStatusChangedListener {
      * @param totalSteps The total number of steps in this sequence.
      *
      */
-    fun onSequenceStepChanged(sequenceId: String, stepIndex: Int, totalSteps: Int)
+    fun onSequenceStepChanged(sequenceId: String, stepIndex: Int, totalSteps: Int) {}
 
     @IntDef(IDLE, PREPARING, PLAYING, ERROR)
     @Retention(AnnotationRetention.SOURCE)

@@ -1571,7 +1571,7 @@ class Robot private constructor(private val context: Context) {
                 }
 
                 SpeedLevel.VERY_SLOW -> {
-                    Log.w(TAG, "VERY_LOW is not supported for follow speed, set to LOW instead")
+                    Log.w(TAG, "VERY_SLOW is not supported for follow speed, set to SLOW instead")
                     SpeedLevel.SLOW
                 }
 
@@ -3460,7 +3460,7 @@ class Robot private constructor(private val context: Context) {
     @Throws(IllegalArgumentException::class)
     fun getFloorAndMapData(@IntRange(from = 1) floorId: Int): Pair<Floor, MapDataModel>? {
         if (floorId <= 0) {
-            throw IllegalArgumentException("floorId must not be 0")
+            throw IllegalArgumentException("floorId must be greater than 0")
         }
 
 
@@ -3477,7 +3477,7 @@ class Robot private constructor(private val context: Context) {
             val selection = "${SdkConstants.PROVIDER_PARAMETER_FLOOR_ID} = ?"
             val selectionArgs = arrayOf(floorId.toString())
 
-            val cursor = context.contentResolver.query(
+            cursor = context.contentResolver.query(
                 uri,
                 projection,
                 selection,

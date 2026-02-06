@@ -24,7 +24,6 @@ import com.robotemi.sdk.map.Layer
 import com.robotemi.sdk.map.LayerPose
 import com.robotemi.sdk.map.MapDataModel
 import com.robotemi.sdk.navigation.model.Position
-import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sample.EditDialog.EditorActionListener
 import com.robotemi.sdk.sample.databinding.ActivityMapBinding
 import kotlinx.coroutines.Dispatchers
@@ -489,9 +488,6 @@ class MapActivity : AppCompatActivity() {
             "DeletePathOnFloor" -> {
                 editTextInput.hint = "Please enter a number"
             }
-
-
-
         }
         btnConfirm.setOnClickListener {
             val input = editTextInput.text.toString().trim()
@@ -577,9 +573,17 @@ class MapActivity : AppCompatActivity() {
                 "DeletePathOnFloor" -> {
                     binding.progressBar.visibility = View.VISIBLE
                     lifecycleScope.launch(Dispatchers.IO) {
-                        val resp = robot.deleteMapLayer("office entrance",GREEN_PATH,input.toIntOrNull())
+                        val pathLayerId = mapDataModel?.greenPaths?.firstOrNull()?.layerId
+                        if (pathLayerId == null) {
+                            withContext(Dispatchers.Main) {
+                                printLog("No GREEN_PATH layer found to delete.")
+                                binding.progressBar.visibility = View.GONE
+                            }
+                            return@launch
+                        }
+                        val resp = robot.deleteMapLayer(pathLayerId,GREEN_PATH,input.toIntOrNull())
                         withContext(Dispatchers.Main) {
-                            printLog("Add / Update location result $resp")
+                            printLog("Add / Update path result $resp")
                             binding.progressBar.visibility = View.GONE
                         }
                     }

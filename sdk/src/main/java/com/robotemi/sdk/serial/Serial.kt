@@ -72,7 +72,7 @@ object Serial {
         return content.toByteArray(charset).plus(byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte()))
     }
 
-    fun getLcdPersistBytes(persist: Boolean, target: String = "t0.persist", charset: Charset = Charsets.UTF_8): ByteArray {
+    fun getLcdPersistBytes(persist: Boolean, target: String = LCD.TEXT_0_PERSIST, charset: Charset = Charsets.UTF_8): ByteArray {
         val content = "$target=\"$persist\""
         return content.toByteArray(charset).plus(byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte()))
     }
