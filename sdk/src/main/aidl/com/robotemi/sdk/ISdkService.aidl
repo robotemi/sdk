@@ -178,6 +178,8 @@ interface ISdkService {
 
     void wakeup(in int[] languages, in SttRequest sttRequest, in WakeupRequest wakeupRequest);
 
+    void clearConversationHistory();
+
     String getWakeupWord();
 
      /**
