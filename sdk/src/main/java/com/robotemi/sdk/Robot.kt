@@ -1023,17 +1023,6 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
-     * Clear conversation history
-     */
-    fun clearConversationHistory(){
-        try {
-            sdkService?.clearConversationHistory()
-        } catch (e: RemoteException) {
-            Log.e(TAG, "clearConversationHistory() error")
-        }
-    }
-
-    /**
      * Require Kiosk Permission
      *
      * @param languages - List of languages to be used for ASR while the app is in kiosk.
