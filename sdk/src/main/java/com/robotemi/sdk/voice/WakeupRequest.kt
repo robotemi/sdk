@@ -5,7 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WakeupRequest(
-    val wakeupResponse: Boolean = false
+    val wakeupResponse: Boolean = false,
+    val newSession: Boolean = false
 ): Parcelable
 
 /**
