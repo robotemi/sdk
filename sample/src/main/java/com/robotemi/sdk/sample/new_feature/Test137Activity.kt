@@ -729,7 +729,7 @@ class Test137Activity : AppCompatActivity(), OnRobotReadyListener {
     }
 
     private fun printLog(tag: String, msg: String, show: Boolean = true) {
-        Log.d(tag.ifEmpty { "MainActivity" }, msg)
+        Log.d(tag.ifEmpty { "Test137Activity" }, msg)
         if (!show) return
         runOnUiThread {
             binding.tvLog.gravity = Gravity.BOTTOM

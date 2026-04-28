@@ -415,4 +415,12 @@ interface ISdkService {
     int renameLocationOnFloor(in String packageName, int floorId, String oldLocationName, String newLocationName, String layer);
 
     int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
+
+    List<Layer> getCurrentZones(in String packageName);
+
+    void setCurrentGoToSpeed(in String packageName, float speed);
+
+    void setCurrentGoToBypassObstacles(in String packageName, boolean bypassObstacles);
+
+    void setCurrentGoToObstacleAvoidanceDistance(in String packageName, int obstacleAvoidanceDistance);
 }

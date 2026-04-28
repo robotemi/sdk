@@ -222,6 +222,9 @@ class Robot private constructor(private val context: Context) {
     private val onGoToNavPathChangedListeners =
         CopyOnWriteArraySet<OnGoToNavPathChangedListener>()
 
+    private val onZoneEntranceStatusChangedListeners =
+        CopyOnWriteArraySet<OnZoneEntranceStatusChangedListener>()
+
     private var ttsService: ITtsService? = null
 
     private var activityStreamPublishListener: ActivityStreamPublishListener? = null
@@ -737,6 +740,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onSequencePlayStatusChangedListeners) {
                     listener.onSequenceStepChanged(sequenceId, stepIndex, totalSteps)
+                }
+            }
+            return true
+        }
+
+        override fun onZoneEntranceStatusChanged(layers: MutableList<Layer>): Boolean {
+            if (onZoneEntranceStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onZoneEntranceStatusChangedListeners) {
+                    listener.onZoneEntranceStatusChanged(layers)
                 }
             }
             return true
@@ -1313,6 +1326,14 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnTtsVisualizerFftDataChangedListener(onTtsVisualizerFftDataChangedListener: OnTtsVisualizerFftDataChangedListener) {
         onTtsVisualizerFftDataChangedListeners.remove(onTtsVisualizerFftDataChangedListener)
+    }
+
+    fun addOnZoneEntranceStatusChangedListener(listener: OnZoneEntranceStatusChangedListener) {
+        onZoneEntranceStatusChangedListeners.add(listener)
+    }
+
+    fun removeOnZoneEntranceStatusChangedListener(listener: OnZoneEntranceStatusChangedListener) {
+        onZoneEntranceStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -3439,6 +3460,7 @@ class Robot private constructor(private val context: Context) {
             mapElements?.map {
                 if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
                 if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
+                if (it.layerCategory == ZONE) mapDataModel.zones.add(it)
                 if (it.layerCategory == LOCATION) mapDataModel.locations.add(it)
                 if (it.layerCategory == MAP_ERASER) mapDataModel.mapEraser.add(it)
             }
@@ -4560,6 +4582,48 @@ class Robot private constructor(private val context: Context) {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse json", e)
             null
+        }
+    }
+
+    @WorkerThread
+    fun getAllZones(): List<Layer> {
+        return getMapElements()?.filter { it.layerCategory == ZONE } ?: emptyList()
+    }
+
+    @WorkerThread
+    fun getCurrentZones(): List<Layer> {
+        return try {
+            sdkService?.getCurrentZones(applicationInfo.packageName) ?: emptyList()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentZones() error", e)
+            emptyList()
+        }
+    }
+
+    fun setCurrentGoToSpeed(speed: Float) {
+        try {
+            sdkService?.setCurrentGoToSpeed(applicationInfo.packageName, speed)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setCurrentGoToSpeed() error", e)
+        }
+    }
+
+    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean) {
+        try {
+            sdkService?.setCurrentGoToBypassObstacles(applicationInfo.packageName, bypassObstacles)
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setCurrentGoToBypassObstacles() error", e)
+        }
+    }
+
+    fun setCurrentGoToObstacleAvoidanceDistance(obstacleAvoidanceDistance: Int) {
+        try {
+            sdkService?.setCurrentGoToObstacleAvoidanceDistance(
+                applicationInfo.packageName,
+                obstacleAvoidanceDistance
+            )
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setCurrentGoToObstacleAvoidanceDistance() error", e)
         }
     }
 }

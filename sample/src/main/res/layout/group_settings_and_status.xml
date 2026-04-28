@@ -7,6 +7,10 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/btn138Feature"
+        style="@style/ButtonCommon"
+        android:text="138 New Feature &amp; Bug Fix" />
+    <Button
         android:id="@+id/btn137Feature"
         style="@style/ButtonCommon"
         android:text="137 New Feature &amp; Bug Fix" />

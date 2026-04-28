@@ -6,6 +6,7 @@ import android.util.Base64
 import androidx.annotation.IntDef
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import java.util.zip.GZIPInputStream
 import kotlin.math.round
@@ -17,6 +18,7 @@ data class MapDataModel(
     var mapInfo: MapInfo = MapInfo(),
     var virtualWalls: MutableList<Layer> = mutableListOf(),
     var greenPaths: MutableList<Layer> = mutableListOf(),
+    var zones: MutableList<Layer> = mutableListOf(),
     var locations: MutableList<Layer> = mutableListOf(),
     var mapName: String = "",
     var mapEraser: MutableList<Layer> = mutableListOf(), // This is added in 133 version.
@@ -25,6 +27,7 @@ data class MapDataModel(
         parcel.readParcelable(MapImage::class.java.classLoader)!!,
         parcel.readString() ?: "",
         parcel.readParcelable(MapInfo::class.java.classLoader)!!,
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
@@ -38,6 +41,7 @@ data class MapDataModel(
         parcel.writeParcelable(mapInfo, flags)
         parcel.writeTypedList(virtualWalls)
         parcel.writeTypedList(greenPaths)
+        parcel.writeTypedList(zones)
         parcel.writeTypedList(locations)
         parcel.writeString(mapName)
         parcel.writeTypedList(mapEraser)
@@ -155,6 +159,7 @@ data class Layer internal constructor(
     @SerializedName("layer_status") val layerStatus: Int,
     @SerializedName("layer_poses") val layerPoses: List<LayerPose>?,
     @SerializedName("layer_direction") val layerDirection: Int = 0, // added in version 132 for one-way virtual wall, value can be -1, 0, 1.
+    @JsonAdapter(StringOrObjectAdapter::class)
     @SerializedName("layer_data") val layerData: String, // added in version 133 for map eraser layer
 ) : Parcelable {
 
@@ -177,6 +182,7 @@ data class Layer internal constructor(
             GREEN_PATH -> "greenPath"
             VIRTUAL_WALL -> "virtualWall"
             LOCATION -> "location"
+            ZONE -> "zone"
             MAP_ERASER -> "mapEraser"
             else -> "unknown"
         }
@@ -196,7 +202,7 @@ data class Layer internal constructor(
         } else {
             """
                 
-                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": "Size : ${layerPoses?.size ?: 0}" }
+                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": "Size : ${layerPoses?.size ?: 0}", "data": $layerData}
             """.trimIndent()
         }
     }
@@ -320,6 +326,7 @@ const val GREEN_PATH = 0
 const val VIRTUAL_WALL = 3
 const val LOCATION = 4
 const val MAP_ERASER = 6
+const val ZONE = 7
 
 const val STATUS_CURRENT = 0
 const val STATUS_UPDATE = 1
@@ -334,7 +341,7 @@ const val MAP_IMAGE = "map_image"
 const val MAP_BASE64 = "map_base64"
 
 @Retention(AnnotationRetention.SOURCE)
-@IntDef(LOCATION, GREEN_PATH, VIRTUAL_WALL)
+@IntDef(LOCATION, GREEN_PATH, VIRTUAL_WALL, ZONE)
 annotation class LayerCategory
 
 @Keep
