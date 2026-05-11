@@ -1328,10 +1328,12 @@ class Robot private constructor(private val context: Context) {
         onTtsVisualizerFftDataChangedListeners.remove(onTtsVisualizerFftDataChangedListener)
     }
 
+    @UiThread
     fun addOnZoneEntranceStatusChangedListener(listener: OnZoneEntranceStatusChangedListener) {
         onZoneEntranceStatusChangedListeners.add(listener)
     }
 
+    @UiThread
     fun removeOnZoneEntranceStatusChangedListener(listener: OnZoneEntranceStatusChangedListener) {
         onZoneEntranceStatusChangedListeners.remove(listener)
     }
@@ -4585,11 +4587,24 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Get all zones/layers defined on the current map.
+     *
+     * @return List of all layers filtered by the [Layer.ZONE] category.
+     */
     @WorkerThread
     fun getAllZones(): List<Layer> {
         return getMapElements()?.filter { it.layerCategory == ZONE } ?: emptyList()
     }
 
+    /**
+     * Get all zones that the robot's current position is within.
+     *
+     * Note: This returns a list of [Layer] objects because the robot can be
+     * in multiple overlapping zones simultaneously.
+     *
+     * @return List of layers (zones) currently containing the robot.
+     */
     @WorkerThread
     fun getCurrentZones(): List<Layer> {
         return try {
@@ -4600,7 +4615,14 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    fun setCurrentGoToSpeed(speed: Float) {
+    /**
+     * Dynamically set the speed for the current GoTo navigation session.
+     *
+     * Note: This only applies to the ongoing GoTo session that was triggered by this application.
+     *
+     * @param speed The speed value (0.3 - 1.2).
+     */
+    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.2) speed: Float) {
         try {
             sdkService?.setCurrentGoToSpeed(applicationInfo.packageName, speed)
         } catch (e: RemoteException) {
@@ -4608,6 +4630,13 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Dynamically set the bypass obstacles strategy for the current GoTo navigation session.
+     *
+     * Note: This only applies to the ongoing GoTo session that was triggered by this application.
+     *
+     * @param bypassObstacles true to enable bypassing, false to stop when encountering obstacles.
+     */
     fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean) {
         try {
             sdkService?.setCurrentGoToBypassObstacles(applicationInfo.packageName, bypassObstacles)
@@ -4616,7 +4645,15 @@ class Robot private constructor(private val context: Context) {
         }
     }
 
-    fun setCurrentGoToObstacleAvoidanceDistance(obstacleAvoidanceDistance: Int) {
+    /**
+     * Dynamically set the obstacle avoidance distance for the current GoTo navigation.
+     *
+     * Note: This only applies to the ongoing GoTo session that was triggered by this application.
+     *
+     * @param obstacleAvoidanceDistance The distance in centimeters (cm).
+     *                                  Range: [0, 100] cm (~ [0, 39.37] inches).
+     */
+    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int) {
         try {
             sdkService?.setCurrentGoToObstacleAvoidanceDistance(
                 applicationInfo.packageName,

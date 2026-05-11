@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="138 New Features (Zone &amp; GoTo)"
+            android:text="138 New Features"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />

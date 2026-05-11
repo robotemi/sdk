@@ -8,6 +8,7 @@ import com.robotemi.sdk.Robot
 import com.robotemi.sdk.listeners.OnRobotReadyListener
 import com.robotemi.sdk.listeners.OnZoneEntranceStatusChangedListener
 import com.robotemi.sdk.map.Layer
+import com.robotemi.sdk.permission.Permission
 import com.robotemi.sdk.sample.databinding.ActivityTest138Binding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,31 +40,39 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
     }
 
     override fun onRobotReady(isReady: Boolean) {
-        if (isReady) {
-            printLog("Robot is ready")
-        }
+        if (isReady) robot.hideTopBar()
     }
 
     private fun initTestCases() {
         binding.ibBack.setOnClickListener { finish() }
         binding.btnGetAllZones.setOnClickListener {
+            if (robot.checkSelfPermission(Permission.MAP) != Permission.GRANTED) {
+                printLog("Map permission not granted")
+                return@setOnClickListener
+            }
             lifecycleScope.launch(Dispatchers.IO) {
                 val zones = robot.getAllZones()
-                printLog("--- All Zones Count: ${zones.size} ---")
                 withContext(Dispatchers.Main) {
-                    zones.forEachIndexed { index, layer ->
-                        printLog( "Zone[$index] Full Object: $layer")
+                    if (zones.isEmpty()) {
+                        printLog("Result: No zones found.")
+                    } else {
+                        zones.forEachIndexed { index, layer ->
+                            printLog("Zone[$index] Full Object: $layer")
+                        }
                     }
                 }
             }
         }
         binding.btnGetCurrentZones.setOnClickListener {
+            if (robot.checkSelfPermission(Permission.MAP) != Permission.GRANTED) {
+                printLog("Map permission not granted")
+                return@setOnClickListener
+            }
             lifecycleScope.launch(Dispatchers.IO) {
                 val currentZones = robot.getCurrentZones()
                 withContext(Dispatchers.Main) {
-                    printLog("--- Current Zones Count: ${currentZones.size} ---")
                     if (currentZones.isEmpty()) {
-                        printLog("Result: None")
+                        printLog("Result: No zones found.")
                     } else {
                         currentZones.forEachIndexed { index, layer ->
                             printLog("CurrentZone[$index]: $layer")
@@ -74,7 +83,6 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
         }
 
         binding.btnApplySpeed.setOnClickListener {
-            //0.3f ~ 1.2f
             val speed = 0.7f
             robot.setCurrentGoToSpeed(speed)
             printLog("Applied GoTo Speed: $speed (Only effective during active GoTo)")
@@ -82,13 +90,12 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
         binding.btnApplyBypass.setOnClickListener {
             val bypass = true
             robot.setCurrentGoToBypassObstacles(bypass)
-            printLog("Applied GoTo Bypass: $bypass")
+            printLog("Applied GoTo Bypass: $bypass (Only effective during active GoTo)")
         }
         binding.btnApplyDistance.setOnClickListener {
-            //5cm
-            val distanceMm = 5
-            robot.setCurrentGoToObstacleAvoidanceDistance(distanceMm)
-            printLog("Applied GoTo Avoidance Distance: ${distanceMm}cm")
+            val distanceCm = 5
+            robot.setCurrentGoToObstacleAvoidanceDistance(distanceCm)
+            printLog("Applied GoTo Avoidance Distance: ${distanceCm}cm (Only effective during active GoTo)")
         }
 
         binding.btnClearLog.setOnClickListener { clearLog() }
@@ -96,7 +103,6 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
 
 
     override fun onZoneEntranceStatusChanged(layers: List<Layer>) {
-
         printLog("--- Zone Entrance Event ---")
         if (layers.isEmpty()) {
             printLog("Current Status: Outside of all zones")

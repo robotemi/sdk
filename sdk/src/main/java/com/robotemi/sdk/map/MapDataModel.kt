@@ -6,6 +6,7 @@ import android.util.Base64
 import androidx.annotation.IntDef
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
+import com.google.gson.Gson
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import java.util.zip.GZIPInputStream
@@ -176,6 +177,19 @@ data class Layer internal constructor(
         parcel.readInt(),
         parcel.readString() ?: ""
     )
+
+    @delegate:Transient
+    val zoneProperty: ZoneProperty? by lazy {
+        if (layerCategory == ZONE && layerData.isNotEmpty()) {
+            try {
+                Gson().fromJson(layerData, ZoneProperty::class.java)
+            } catch (e: Exception) {
+                null
+            }
+        } else {
+            null
+        }
+    }
 
     override fun toString(): String {
         val category = when (layerCategory) {
@@ -374,3 +388,11 @@ data class LayerPose(
         }
     }
 }
+
+@Keep
+data class ZoneProperty(
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("speed") val speed: Float? = null,
+    @SerializedName("bypassObstacles") val bypassObstacles: Boolean? = null,
+    @SerializedName("obstacleAvoidanceDistance") val obstacleAvoidanceDistance: Int? = null
+)
