@@ -418,9 +418,9 @@ interface ISdkService {
 
     List<Layer> getCurrentZones(in String packageName);
 
-    void setCurrentGoToSpeed(in String packageName, float speed);
+    int setCurrentGoToSpeed(in String packageName, float speed);
 
-    void setCurrentGoToBypassObstacles(in String packageName, boolean bypassObstacles);
+    int setCurrentGoToBypassObstacles(in String packageName, boolean bypassObstacles);
 
-    void setCurrentGoToObstacleAvoidanceDistance(in String packageName, int obstacleAvoidanceDistance);
+    int setCurrentGoToObstacleAvoidanceDistance(in String packageName, int obstacleAvoidanceDistance);
 }

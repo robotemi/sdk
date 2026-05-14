@@ -173,23 +173,23 @@ data class Layer internal constructor(
         parcel.readString() ?: "",
         parcel.readFloat(),
         parcel.readInt(),
-        parcel.createTypedArrayList(LayerPose),
+        parcel.createTypedArrayList(LayerPose.CREATOR),
         parcel.readInt(),
         parcel.readString() ?: ""
     )
 
-    @delegate:Transient
-    val zoneProperty: ZoneProperty? by lazy {
-        if (layerCategory == ZONE && layerData.isNotEmpty()) {
-            try {
-                Gson().fromJson(layerData, ZoneProperty::class.java)
-            } catch (e: Exception) {
+    val zoneProperty: ZoneProperty?
+        get() {
+            return if (layerCategory == ZONE && !layerData.isNullOrBlank()) {
+                try {
+                    Gson().fromJson(layerData, ZoneProperty::class.java)
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
                 null
             }
-        } else {
-            null
         }
-    }
 
     override fun toString(): String {
         val category = when (layerCategory) {
@@ -227,7 +227,7 @@ data class Layer internal constructor(
         parcel.writeString(layerId)
         parcel.writeFloat(layerThickness)
         parcel.writeInt(layerStatus)
-        parcel.writeList(layerPoses)
+        parcel.writeTypedList(layerPoses)
         parcel.writeInt(layerDirection)
         parcel.writeString(layerData)
     }
@@ -249,17 +249,19 @@ data class Layer internal constructor(
          * For location operation, there must be a valid layerId, which will be taken as location name
          *
          *
-         * @param layerCategory, layer category, [GREEN_PATH], [VIRTUAL_WALL], [LOCATION]
+         * @param layerCategory, layer category, [GREEN_PATH], [VIRTUAL_WALL], [LOCATION], [ZONE]
          * @param tiltAngle, only used when saving location.
          *
          * @param layerPoses, the x, y in the pose will be rounded to 2 digits after decimal.
-         *                  theta will be converted to 0 for [GREEN_PATH] and [VIRTUAL_WALL],
+         *                  theta will be converted to 0 for [GREEN_PATH]、[VIRTUAL_WALL] and [ZONE],
          *                  in [LOCATION] theta will be rounded to 4 digits after decimal.
+         * @param zoneProperty, only used when the category is [ZONE]. If null, a default ZoneProperty will be created.
          */
         fun upsertLayer(layerId: String?,
                         @LayerCategory layerCategory: Int,
                         layerPoses: List<LayerPose>,
-                        @IntRange(from = -30L, to = 50L) tiltAngle: Int? = null
+                        @IntRange(from = -30L, to = 50L) tiltAngle: Int? = null,
+                        zoneProperty: ZoneProperty? = null
         ): Layer? {
             val sessionId = (1000..9999).random().toString()
             var layerThickness = 1f
@@ -288,7 +290,19 @@ data class Layer internal constructor(
                     // Location shall be lower-cased
                     layerId.lowercase()
                 }
+                ZONE -> {
+                    if (layerPoses.size <= 2) {
+                        // ZONE should have more than 2 pose
+                        return null
+                    }
+                    layerId ?: "zone_${System.currentTimeMillis()}_$sessionId"
+                }
                 else -> return null
+            }
+            val finalLayerData = if (layerCategory == ZONE) {
+                Gson().toJson(zoneProperty ?: ZoneProperty())
+            } else {
+                ""
             }
             return Layer(
                 layerCreationUTC = (System.currentTimeMillis() / 1000).toInt(),
@@ -297,13 +311,13 @@ data class Layer internal constructor(
                 layerStatus = STATUS_UPDATE,
                 layerThickness = layerThickness,
                 layerPoses = layerPoses,
-                layerData = ""
+                layerData = finalLayerData
             )
         }
 
         internal fun Layer.roundByCategory(): Layer {
             val layerPosesRounded = when (layerCategory) {
-                GREEN_PATH, VIRTUAL_WALL -> {
+                GREEN_PATH, VIRTUAL_WALL, ZONE -> {
                     layerPoses?.map {
                         LayerPose(
                             it.x.keep2digits(),
@@ -391,8 +405,8 @@ data class LayerPose(
 
 @Keep
 data class ZoneProperty(
-    @SerializedName("name") val name: String? = null,
-    @SerializedName("speed") val speed: Float? = null,
-    @SerializedName("bypassObstacles") val bypassObstacles: Boolean? = null,
-    @SerializedName("obstacleAvoidanceDistance") val obstacleAvoidanceDistance: Int? = null
+    @SerializedName("name") val name: String = "Untitled Zone",
+    @SerializedName("speed") val speed: String = "Medium",
+    @SerializedName("bypassObstacles") val bypassObstacles: Boolean = true,
+    @SerializedName("obstacleAvoidanceDistance") val obstacleAvoidanceDistance: Int = 0
 )

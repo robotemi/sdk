@@ -4593,8 +4593,8 @@ class Robot private constructor(private val context: Context) {
      * @return List of all layers filtered by the [Layer.ZONE] category.
      */
     @WorkerThread
-    fun getAllZones(): List<Layer> {
-        return getMapElements()?.filter { it.layerCategory == ZONE } ?: emptyList()
+    fun getAllZones(): List<Layer>? {
+        return getMapElements()?.filter { it.layerCategory == ZONE }
     }
 
     /**
@@ -4606,8 +4606,12 @@ class Robot private constructor(private val context: Context) {
      * @return List of layers (zones) currently containing the robot.
      */
     @WorkerThread
-    fun getCurrentZones(): List<Layer> {
+    fun getCurrentZones(): List<Layer>?{
         return try {
+            if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
+                Log.e(TAG, "getCurrentZones() - Permission denied")
+                return null
+            }
             sdkService?.getCurrentZones(applicationInfo.packageName) ?: emptyList()
         } catch (e: RemoteException) {
             Log.e(TAG, "getCurrentZones() error", e)
@@ -4621,12 +4625,17 @@ class Robot private constructor(private val context: Context) {
      * Note: This only applies to the ongoing GoTo session that was triggered by this application.
      *
      * @param speed The speed value (0.3 - 1.2).
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 is failed to verify the app package name
+     *         408 Failure
      */
-    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.2) speed: Float) {
-        try {
-            sdkService?.setCurrentGoToSpeed(applicationInfo.packageName, speed)
+    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.2) speed: Float) : Int{
+        return try {
+            sdkService?.setCurrentGoToSpeed(applicationInfo.packageName, speed) ?: 0
         } catch (e: RemoteException) {
             Log.e(TAG, "setCurrentGoToSpeed() error", e)
+            0
         }
     }
 
@@ -4636,12 +4645,17 @@ class Robot private constructor(private val context: Context) {
      * Note: This only applies to the ongoing GoTo session that was triggered by this application.
      *
      * @param bypassObstacles true to enable bypassing, false to stop when encountering obstacles.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 is failed to verify the app package name
+     *         408 Failure
      */
-    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean) {
-        try {
-            sdkService?.setCurrentGoToBypassObstacles(applicationInfo.packageName, bypassObstacles)
+    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean) : Int{
+        return try {
+            sdkService?.setCurrentGoToBypassObstacles(applicationInfo.packageName, bypassObstacles) ?: 0
         } catch (e: RemoteException) {
             Log.e(TAG, "setCurrentGoToBypassObstacles() error", e)
+            0
         }
     }
 
@@ -4652,15 +4666,20 @@ class Robot private constructor(private val context: Context) {
      *
      * @param obstacleAvoidanceDistance The distance in centimeters (cm).
      *                                  Range: [0, 100] cm (~ [0, 39.37] inches).
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 is failed to verify the app package name
+     *         408 Failure
      */
-    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int) {
-        try {
+    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int) : Int{
+        return try {
             sdkService?.setCurrentGoToObstacleAvoidanceDistance(
                 applicationInfo.packageName,
                 obstacleAvoidanceDistance
-            )
+            ) ?: 0
         } catch (e: RemoteException) {
             Log.e(TAG, "setCurrentGoToObstacleAvoidanceDistance() error", e)
+            0
         }
     }
 }
