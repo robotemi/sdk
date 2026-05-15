@@ -3546,10 +3546,6 @@ class Robot private constructor(private val context: Context) {
     @WorkerThread
     @Throws(IllegalArgumentException::class)
     fun getMapElements(): List<Layer>? {
-        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
-            Log.e(TAG, "getMapElements() - Permission denied")
-            return null
-        }
 //        if (isMapLocked() == true) return sdkService?.getMapElements(applicationInfo.packageName)
         var cursor: Cursor? = null
         val uriStr = StringBuffer("content://")
@@ -4588,30 +4584,53 @@ class Robot private constructor(private val context: Context) {
     }
 
     /**
+     * Require [Permission.MAP]
      * Get all zones/layers defined on the current map.
      *
      * @return List of all layers filtered by the [Layer.ZONE] category.
      */
     @WorkerThread
-    fun getAllZones(): List<Layer>? {
-        return getMapElements()?.filter { it.layerCategory == ZONE }
+    fun getAllZones(): List<Layer> {
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(SdkConstants.PROVIDER_PARAMETER_MAP_DATA)
+            .toString()
+        var cursor: Cursor? = null
+        try {
+            cursor = context.contentResolver.query(
+                Uri.parse(uriStr),
+                arrayOf(MAP_ELEMENTS),
+                "${SdkConstants.PROVIDER_PARAMETER_LAYERCATEGORY} = ?",
+                arrayOf(ZONE.toString()),
+                null
+            )
+
+            if (cursor != null && cursor.moveToFirst()) {
+                val json = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ELEMENTS))
+                if (!json.isNullOrBlank()) {
+                    val type = object : TypeToken<List<Layer>>() {}.type
+                    return gson.fromJson<List<Layer>>(json, type) ?: emptyList()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "getAllZones() error", e)
+        } finally {
+            cursor?.close()
+        }
+        return emptyList()
     }
 
     /**
-     * Get all zones that the robot's current position is within.
+     * Require [Permission.MAP]
+     * Get Current zones that the robot's current position is within.
      *
      * Note: This returns a list of [Layer] objects because the robot can be
      * in multiple overlapping zones simultaneously.
-     *
      * @return List of layers (zones) currently containing the robot.
      */
     @WorkerThread
     fun getCurrentZones(): List<Layer>?{
         return try {
-            if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
-                Log.e(TAG, "getCurrentZones() - Permission denied")
-                return null
-            }
             sdkService?.getCurrentZones(applicationInfo.packageName) ?: emptyList()
         } catch (e: RemoteException) {
             Log.e(TAG, "getCurrentZones() error", e)
@@ -4624,13 +4643,13 @@ class Robot private constructor(private val context: Context) {
      *
      * Note: This only applies to the ongoing GoTo session that was triggered by this application.
      *
-     * @param speed The speed value (0.3 - 1.2).
+     * @param speed The speed value (0.3 - 1.5).
      * @return 0 if the operation is not supported by current launcher
      *         200 success
      *         400 is failed to verify the app package name
      *         408 Failure
      */
-    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.2) speed: Float) : Int{
+    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.5) speed: Float) : Int {
         return try {
             sdkService?.setCurrentGoToSpeed(applicationInfo.packageName, speed) ?: 0
         } catch (e: RemoteException) {
@@ -4650,7 +4669,7 @@ class Robot private constructor(private val context: Context) {
      *         400 is failed to verify the app package name
      *         408 Failure
      */
-    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean) : Int{
+    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean) : Int {
         return try {
             sdkService?.setCurrentGoToBypassObstacles(applicationInfo.packageName, bypassObstacles) ?: 0
         } catch (e: RemoteException) {
@@ -4671,7 +4690,7 @@ class Robot private constructor(private val context: Context) {
      *         400 is failed to verify the app package name
      *         408 Failure
      */
-    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int) : Int{
+    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int) : Int {
         return try {
             sdkService?.setCurrentGoToObstacleAvoidanceDistance(
                 applicationInfo.packageName,

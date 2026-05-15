@@ -3,12 +3,14 @@ package com.robotemi.sdk.map
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Base64
+import android.util.Log
 import androidx.annotation.IntDef
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import com.robotemi.sdk.constants.SdkConstants
 import java.util.zip.GZIPInputStream
 import kotlin.math.round
 
@@ -164,9 +166,6 @@ data class Layer internal constructor(
     @SerializedName("layer_data") val layerData: String, // added in version 133 for map eraser layer
 ) : Parcelable {
 
-    /**
-     * FIXME: Using Parcelable to pass layerPoses is not working as expected, the data received is different from data sent.
-     */
     internal constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt(),
@@ -249,19 +248,18 @@ data class Layer internal constructor(
          * For location operation, there must be a valid layerId, which will be taken as location name
          *
          *
-         * @param layerCategory, layer category, [GREEN_PATH], [VIRTUAL_WALL], [LOCATION], [ZONE]
+         * @param layerCategory, layer category, [GREEN_PATH], [VIRTUAL_WALL], [LOCATION]
          * @param tiltAngle, only used when saving location.
          *
          * @param layerPoses, the x, y in the pose will be rounded to 2 digits after decimal.
-         *                  theta will be converted to 0 for [GREEN_PATH]、[VIRTUAL_WALL] and [ZONE],
+         *                  theta will be converted to 0 for [GREEN_PATH] and [VIRTUAL_WALL],
          *                  in [LOCATION] theta will be rounded to 4 digits after decimal.
-         * @param zoneProperty, only used when the category is [ZONE]. If null, a default ZoneProperty will be created.
          */
-        fun upsertLayer(layerId: String?,
-                        @LayerCategory layerCategory: Int,
-                        layerPoses: List<LayerPose>,
-                        @IntRange(from = -30L, to = 50L) tiltAngle: Int? = null,
-                        zoneProperty: ZoneProperty? = null
+        fun upsertLayer(
+            layerId: String?,
+            @LayerCategory layerCategory: Int,
+            layerPoses: List<LayerPose>,
+            @IntRange(from = -30L, to = 50L) tiltAngle: Int? = null,
         ): Layer? {
             val sessionId = (1000..9999).random().toString()
             var layerThickness = 1f
@@ -291,18 +289,33 @@ data class Layer internal constructor(
                     layerId.lowercase()
                 }
                 ZONE -> {
+                    try {
+                        val currentPackageName = Class.forName("android.app.ActivityThread")
+                            .getMethod("currentPackageName")
+                            .invoke(null) as? String
+
+                        val allowedPackages = listOf(SdkConstants.TEMI_USA, SdkConstants.TEMI_CHINA)
+                        if (!allowedPackages.contains(currentPackageName)) {
+                            Log.e("Layer", "Permission Denied: $currentPackageName")
+                            return null
+                        }
+                    } catch (e: Exception) {
+                        Log.w("Layer", "Package verification failed")
+                        return null
+                    }
+
                     if (layerPoses.size <= 2) {
                         // ZONE should have more than 2 pose
                         return null
                     }
+                    if (calculatePolygonArea(layerPoses) < 1e-6) {
+                        Log.e("Layer", "Invalid Zone: Area is too small or points are collinear")
+                        return null
+                    }
+
                     layerId ?: "zone_${System.currentTimeMillis()}_$sessionId"
                 }
                 else -> return null
-            }
-            val finalLayerData = if (layerCategory == ZONE) {
-                Gson().toJson(zoneProperty ?: ZoneProperty())
-            } else {
-                ""
             }
             return Layer(
                 layerCreationUTC = (System.currentTimeMillis() / 1000).toInt(),
@@ -311,7 +324,7 @@ data class Layer internal constructor(
                 layerStatus = STATUS_UPDATE,
                 layerThickness = layerThickness,
                 layerPoses = layerPoses,
-                layerData = finalLayerData
+                layerData = ""
             )
         }
 
@@ -410,3 +423,17 @@ data class ZoneProperty(
     @SerializedName("bypassObstacles") val bypassObstacles: Boolean = true,
     @SerializedName("obstacleAvoidanceDistance") val obstacleAvoidanceDistance: Int = 0
 )
+
+private fun calculatePolygonArea(poses: List<LayerPose>): Double {
+    var area = 0.0
+    val n = poses.size
+    if (n < 3) return 0.0
+
+    for (i in 0 until n) {
+        val j = (i + 1) % n
+        area += poses[i].x.toDouble() * poses[j].y.toDouble()
+        area -= poses[j].x.toDouble() * poses[i].y.toDouble()
+    }
+
+    return Math.abs(area) / 2.0
+}
