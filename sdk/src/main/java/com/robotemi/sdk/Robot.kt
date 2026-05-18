@@ -4609,7 +4609,8 @@ class Robot private constructor(private val context: Context) {
                 val json = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ELEMENTS))
                 if (!json.isNullOrBlank()) {
                     val type = object : TypeToken<List<Layer>>() {}.type
-                    return gson.fromJson<List<Layer>>(json, type) ?: emptyList()
+                    val allLayers: List<Layer> = gson.fromJson(json, type) ?: emptyList()
+                    return allLayers.filter { it.layerCategory == ZONE }
                 }
             }
         } catch (e: Exception) {

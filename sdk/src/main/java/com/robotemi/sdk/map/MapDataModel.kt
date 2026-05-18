@@ -289,30 +289,10 @@ data class Layer internal constructor(
                     layerId.lowercase()
                 }
                 ZONE -> {
-                    try {
-                        val currentPackageName = Class.forName("android.app.ActivityThread")
-                            .getMethod("currentPackageName")
-                            .invoke(null) as? String
-
-                        val allowedPackages = listOf(SdkConstants.TEMI_USA, SdkConstants.TEMI_CHINA)
-                        if (!allowedPackages.contains(currentPackageName)) {
-                            Log.e("Layer", "Permission Denied: $currentPackageName")
-                            return null
-                        }
-                    } catch (e: Exception) {
-                        Log.w("Layer", "Package verification failed")
-                        return null
-                    }
-
                     if (layerPoses.size <= 2) {
                         // ZONE should have more than 2 pose
                         return null
                     }
-                    if (calculatePolygonArea(layerPoses) < 1e-6) {
-                        Log.e("Layer", "Invalid Zone: Area is too small or points are collinear")
-                        return null
-                    }
-
                     layerId ?: "zone_${System.currentTimeMillis()}_$sessionId"
                 }
                 else -> return null
@@ -423,17 +403,3 @@ data class ZoneProperty(
     @SerializedName("bypassObstacles") val bypassObstacles: Boolean = true,
     @SerializedName("obstacleAvoidanceDistance") val obstacleAvoidanceDistance: Int = 0
 )
-
-private fun calculatePolygonArea(poses: List<LayerPose>): Double {
-    var area = 0.0
-    val n = poses.size
-    if (n < 3) return 0.0
-
-    for (i in 0 until n) {
-        val j = (i + 1) % n
-        area += poses[i].x.toDouble() * poses[j].y.toDouble()
-        area -= poses[j].x.toDouble() * poses[i].y.toDouble()
-    }
-
-    return Math.abs(area) / 2.0
-}
