@@ -21,10 +21,10 @@ data class MapDataModel(
     var mapInfo: MapInfo = MapInfo(),
     var virtualWalls: MutableList<Layer> = mutableListOf(),
     var greenPaths: MutableList<Layer> = mutableListOf(),
-    var zones: MutableList<Layer> = mutableListOf(),
     var locations: MutableList<Layer> = mutableListOf(),
     var mapName: String = "",
     var mapEraser: MutableList<Layer> = mutableListOf(), // This is added in 133 version.
+    var zones: MutableList<Layer> = mutableListOf(),
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(MapImage::class.java.classLoader)!!,
@@ -33,8 +33,8 @@ data class MapDataModel(
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
-        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.readString() ?: "",
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
     )
 
@@ -44,10 +44,10 @@ data class MapDataModel(
         parcel.writeParcelable(mapInfo, flags)
         parcel.writeTypedList(virtualWalls)
         parcel.writeTypedList(greenPaths)
-        parcel.writeTypedList(zones)
         parcel.writeTypedList(locations)
         parcel.writeString(mapName)
         parcel.writeTypedList(mapEraser)
+        parcel.writeTypedList(zones)
     }
 
     override fun describeContents() = 0

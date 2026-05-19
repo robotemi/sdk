@@ -1328,6 +1328,9 @@ class Robot private constructor(private val context: Context) {
         onTtsVisualizerFftDataChangedListeners.remove(onTtsVisualizerFftDataChangedListener)
     }
 
+    /**
+     * Require [Permission.MAP] Otherwise, no data can be monitored.
+     */
     @UiThread
     fun addOnZoneEntranceStatusChangedListener(listener: OnZoneEntranceStatusChangedListener) {
         onZoneEntranceStatusChangedListeners.add(listener)
@@ -4647,7 +4650,7 @@ class Robot private constructor(private val context: Context) {
      * @param speed The speed value (0.3 - 1.5).
      * @return 0 if the operation is not supported by current launcher
      *         200 success
-     *         400 is failed to verify the app package name
+     *         400 is failed to verify the app package name or invalid parameter
      *         408 Failure
      */
     fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.5) speed: Float) : Int {
@@ -4688,7 +4691,7 @@ class Robot private constructor(private val context: Context) {
      *                                  Range: [0, 100] cm (~ [0, 39.37] inches).
      * @return 0 if the operation is not supported by current launcher
      *         200 success
-     *         400 is failed to verify the app package name
+     *         400 is failed to verify the app package name or invalid parameter
      *         408 Failure
      */
     fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int) : Int {

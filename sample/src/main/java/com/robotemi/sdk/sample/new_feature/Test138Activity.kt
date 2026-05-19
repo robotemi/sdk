@@ -73,28 +73,34 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
         }
 
         binding.btnApplySpeed.setOnClickListener {
+            // Note: Change "6" to your actual predefined location name on the map.
+            robot.goTo("6")
             val speed = 0.7f
             val result = robot.setCurrentGoToSpeed(speed)
             if (result != 200) {
-                printLog("Apply Speed failed: $result (Ensure robot is in GoTo session)")
+                printLog("Apply Speed failed: $result")
             } else {
                 printLog("Applied GoTo Speed: $speed (Success)")
             }
         }
         binding.btnApplyBypass.setOnClickListener {
+            // Note: Change "6" to your actual predefined location name on the map.
+            robot.goTo("6")
             val bypass = true
             val result = robot.setCurrentGoToBypassObstacles(bypass)
             if (result != 200) {
-                printLog("Apply Bypass failed: $result (Ensure robot is in GoTo session)")
+                printLog("Apply Bypass failed: $result")
             } else {
                 printLog("Applied GoTo Bypass: $bypass (Success)")
             }
         }
         binding.btnApplyDistance.setOnClickListener {
+            // Note: Change "6" to your actual predefined location name on the map.
+            robot.goTo("6")
             val distanceCm = 5
             val result = robot.setCurrentGoToObstacleAvoidanceDistance(distanceCm)
             if (result != 200) {
-                printLog("Apply Distance failed: $result (Ensure robot is in GoTo session)")
+                printLog("Apply Distance failed: $result")
             } else {
                 printLog("Applied GoTo Avoidance Distance: ${distanceCm}cm (Success)")
             }
