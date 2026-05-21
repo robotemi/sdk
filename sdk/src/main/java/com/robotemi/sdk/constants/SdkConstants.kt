@@ -86,7 +86,7 @@ object SdkConstants {
     const val PROVIDER_PARAMETER_FLOOR_DATA_JSON = "floor_data_json"
     const val PROVIDER_PARAMETER_MAP_DATA_JSON = "map_data_json"
     const val PROVIDER_PARAMETER_FLOOR_ID = "floor_id"
-
+    const val PROVIDER_PARAMETER_LAYERCATEGORY = "layerCategory"
 
     const val LOCATION_HOME_BASE = "home base"
 

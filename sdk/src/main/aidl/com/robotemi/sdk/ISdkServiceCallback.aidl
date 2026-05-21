@@ -130,4 +130,6 @@ interface ISdkServiceCallback {
     boolean onRobotReady(boolean isReady);
 
     boolean onSequenceStepChanged(String sequenceId, int stepIndex, int totalSteps);
+
+    boolean onZoneEntranceStatusChanged(in List<Layer> layers);
 }

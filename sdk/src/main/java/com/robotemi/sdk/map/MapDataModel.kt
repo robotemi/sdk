@@ -3,10 +3,14 @@ package com.robotemi.sdk.map
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Base64
+import android.util.Log
 import androidx.annotation.IntDef
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
+import com.google.gson.Gson
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import com.robotemi.sdk.constants.SdkConstants
 import java.util.zip.GZIPInputStream
 import kotlin.math.round
 
@@ -20,6 +24,7 @@ data class MapDataModel(
     var locations: MutableList<Layer> = mutableListOf(),
     var mapName: String = "",
     var mapEraser: MutableList<Layer> = mutableListOf(), // This is added in 133 version.
+    var zones: MutableList<Layer> = mutableListOf(),
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readParcelable(MapImage::class.java.classLoader)!!,
@@ -29,6 +34,7 @@ data class MapDataModel(
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.readString() ?: "",
+        parcel.createTypedArrayList(Layer) ?: mutableListOf(),
         parcel.createTypedArrayList(Layer) ?: mutableListOf(),
     )
 
@@ -41,6 +47,7 @@ data class MapDataModel(
         parcel.writeTypedList(locations)
         parcel.writeString(mapName)
         parcel.writeTypedList(mapEraser)
+        parcel.writeTypedList(zones)
     }
 
     override fun describeContents() = 0
@@ -155,28 +162,40 @@ data class Layer internal constructor(
     @SerializedName("layer_status") val layerStatus: Int,
     @SerializedName("layer_poses") val layerPoses: List<LayerPose>?,
     @SerializedName("layer_direction") val layerDirection: Int = 0, // added in version 132 for one-way virtual wall, value can be -1, 0, 1.
+    @JsonAdapter(StringOrObjectAdapter::class)
     @SerializedName("layer_data") val layerData: String, // added in version 133 for map eraser layer
 ) : Parcelable {
 
-    /**
-     * FIXME: Using Parcelable to pass layerPoses is not working as expected, the data received is different from data sent.
-     */
     internal constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readFloat(),
         parcel.readInt(),
-        parcel.createTypedArrayList(LayerPose),
+        parcel.createTypedArrayList(LayerPose.CREATOR),
         parcel.readInt(),
         parcel.readString() ?: ""
     )
+
+    val zoneProperty: ZoneProperty?
+        get() {
+            return if (layerCategory == ZONE && !layerData.isNullOrBlank()) {
+                try {
+                    Gson().fromJson(layerData, ZoneProperty::class.java)
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
+                null
+            }
+        }
 
     override fun toString(): String {
         val category = when (layerCategory) {
             GREEN_PATH -> "greenPath"
             VIRTUAL_WALL -> "virtualWall"
             LOCATION -> "location"
+            ZONE -> "zone"
             MAP_ERASER -> "mapEraser"
             else -> "unknown"
         }
@@ -196,7 +215,7 @@ data class Layer internal constructor(
         } else {
             """
                 
-                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": "Size : ${layerPoses?.size ?: 0}" }
+                { "layerCategory": $category, "layerId": $layerId, "layerCreationUTC": $layerCreationUTC, "layerStatus": $status, "layerThickness": $layerThickness, "layerPoses": "Size : ${layerPoses?.size ?: 0}", "data": $layerData}
             """.trimIndent()
         }
     }
@@ -207,7 +226,7 @@ data class Layer internal constructor(
         parcel.writeString(layerId)
         parcel.writeFloat(layerThickness)
         parcel.writeInt(layerStatus)
-        parcel.writeList(layerPoses)
+        parcel.writeTypedList(layerPoses)
         parcel.writeInt(layerDirection)
         parcel.writeString(layerData)
     }
@@ -236,10 +255,11 @@ data class Layer internal constructor(
          *                  theta will be converted to 0 for [GREEN_PATH] and [VIRTUAL_WALL],
          *                  in [LOCATION] theta will be rounded to 4 digits after decimal.
          */
-        fun upsertLayer(layerId: String?,
-                        @LayerCategory layerCategory: Int,
-                        layerPoses: List<LayerPose>,
-                        @IntRange(from = -30L, to = 50L) tiltAngle: Int? = null
+        fun upsertLayer(
+            layerId: String?,
+            @LayerCategory layerCategory: Int,
+            layerPoses: List<LayerPose>,
+            @IntRange(from = -30L, to = 50L) tiltAngle: Int? = null,
         ): Layer? {
             val sessionId = (1000..9999).random().toString()
             var layerThickness = 1f
@@ -268,6 +288,13 @@ data class Layer internal constructor(
                     // Location shall be lower-cased
                     layerId.lowercase()
                 }
+                ZONE -> {
+                    if (layerPoses.size <= 2) {
+                        // ZONE should have more than 2 pose
+                        return null
+                    }
+                    layerId ?: "zone_${System.currentTimeMillis()}_$sessionId"
+                }
                 else -> return null
             }
             return Layer(
@@ -283,7 +310,7 @@ data class Layer internal constructor(
 
         internal fun Layer.roundByCategory(): Layer {
             val layerPosesRounded = when (layerCategory) {
-                GREEN_PATH, VIRTUAL_WALL -> {
+                GREEN_PATH, VIRTUAL_WALL, ZONE -> {
                     layerPoses?.map {
                         LayerPose(
                             it.x.keep2digits(),
@@ -320,6 +347,7 @@ const val GREEN_PATH = 0
 const val VIRTUAL_WALL = 3
 const val LOCATION = 4
 const val MAP_ERASER = 6
+const val ZONE = 7
 
 const val STATUS_CURRENT = 0
 const val STATUS_UPDATE = 1
@@ -334,7 +362,7 @@ const val MAP_IMAGE = "map_image"
 const val MAP_BASE64 = "map_base64"
 
 @Retention(AnnotationRetention.SOURCE)
-@IntDef(LOCATION, GREEN_PATH, VIRTUAL_WALL)
+@IntDef(LOCATION, GREEN_PATH, VIRTUAL_WALL, ZONE)
 annotation class LayerCategory
 
 @Keep
@@ -367,3 +395,11 @@ data class LayerPose(
         }
     }
 }
+
+@Keep
+data class ZoneProperty(
+    @SerializedName("name") val name: String = "Untitled Zone",
+    @SerializedName("speed") val speed: String = "Medium",
+    @SerializedName("bypassObstacles") val bypassObstacles: Boolean = true,
+    @SerializedName("obstacleAvoidanceDistance") val obstacleAvoidanceDistance: Int = 0
+)
