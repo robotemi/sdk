@@ -1,12 +1,26 @@
 package com.robotemi.sdk
 
 enum class SttLanguage(val value: Int) {
-    SYSTEM(0), EN_US(1), ZH_CN(2), JA_JP(3), KO_KR(4), ZH_HK(5), ZH_TW(6), DE_DE(7), TH_TH(8), IN_ID(
-        9
-    ),
-    PT_BR(10), AR_EG(11), FR_CA(12), FR_FR(13), ES_ES(14), CA_ES(15), IW_IL(16), IT_IT(17), ET_EE(18), TR_TR(
-        19
-    ),
+    SYSTEM(0),
+    EN_US(1),
+    ZH_CN(2),
+    JA_JP(3),
+    KO_KR(4),
+    ZH_HK(5),
+    ZH_TW(6),
+    DE_DE(7), 
+    TH_TH(8),
+    IN_ID(9),
+    PT_BR(10),
+    AR_EG(11),
+    FR_CA(12),
+    FR_FR(13),
+    ES_ES(14),
+    CA_ES(15),
+    IW_IL(16),
+    IT_IT(17),
+    ET_EE(18),
+    TR_TR(19),
     HI_IN(20), // Supported from 133 version
     EN_IN(21), // Supported from 133 version
     MS_MY(22), // Supported from 134 version
