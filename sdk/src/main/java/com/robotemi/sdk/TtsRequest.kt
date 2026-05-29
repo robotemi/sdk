@@ -121,15 +121,16 @@ data class TtsRequest(
 
     companion object {
         @JvmField
-        internal val CREATOR: Parcelable.Creator<TtsRequest> = object : Parcelable.Creator<TtsRequest> {
-            override fun createFromParcel(source: Parcel): TtsRequest {
-                return TtsRequest(source)
-            }
+        internal val CREATOR: Parcelable.Creator<TtsRequest> =
+            object : Parcelable.Creator<TtsRequest> {
+                override fun createFromParcel(source: Parcel): TtsRequest {
+                    return TtsRequest(source)
+                }
 
-            override fun newArray(size: Int): Array<TtsRequest?> {
-                return arrayOfNulls(size)
+                override fun newArray(size: Int): Array<TtsRequest?> {
+                    return arrayOfNulls(size)
+                }
             }
-        }
 
         /**
          * This is the constructor method of TtsRequest
