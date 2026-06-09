@@ -41,6 +41,7 @@ import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.model.MemberStatusModel
+import com.robotemi.sdk.model.OrganizationInfo
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToDestinationChangedListener
@@ -4703,6 +4704,31 @@ class Robot private constructor(private val context: Context) {
         } catch (e: RemoteException) {
             Log.e(TAG, "setCurrentGoToObstacleAvoidanceDistance() error", e)
             0
+        }
+    }
+
+    /**
+     * Get the organization info of the robot.
+     * There is no live update for this info, only updated once after robot boot.
+     * Added in 138 version
+     *
+     * @return [OrganizationInfo] or null if robot not support this method or parsing failure.
+     */
+    @CheckResult
+    fun getOrganizationInfo(): OrganizationInfo? {
+        return try {
+            val json = sdkService?.organizationInfo
+            if (json.isNullOrBlank()) {
+                null
+            } else {
+                gson.fromJson(json, OrganizationInfo::class.java)
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getOrganizationInfo() error", e)
+            null
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "getOrganizationInfo() JSON parse error", e)
+            null
         }
     }
 }

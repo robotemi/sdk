@@ -27,6 +27,7 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
         private const val ACTION_FACE = "temi.debug.face"
         private const val ACTION_WAKE_UP = "temi.debug.wakeup"
         private const val ACTION_GOTO = "temi.debug.goto"
+        private const val ACTION_TILT = "temi.debug.tilt"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -199,7 +200,14 @@ class TemiBroadcastReceiver : BroadcastReceiver() {
                     13 -> robot.goToPosition(Position(1f, 2f, 3f), speedLevel = SpeedLevel.MEDIUM, highAccuracyArrival = true)
                     14 -> robot.goTo("a", speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
                     15 -> robot.goTo("b", speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
+                    16 -> robot.goTo("home base", speedLevel = SpeedLevel.customSpeed(speed), highAccuracyArrival = true)
                 }
+            }
+            ACTION_TILT -> {
+                // adb shell am broadcast -a temi.debug.sdk --es action "temi.debug.tilt" --ei angle 10
+                val angle = intent.getIntExtra("angle", 1)
+                val robot = Robot.getInstance()
+                robot.tiltAngle(angle)
             }
         }
     }
