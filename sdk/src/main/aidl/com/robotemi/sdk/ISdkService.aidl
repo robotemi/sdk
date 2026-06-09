@@ -423,4 +423,11 @@ interface ISdkService {
     int setCurrentGoToBypassObstacles(in String packageName, boolean bypassObstacles);
 
     int setCurrentGoToObstacleAvoidanceDistance(in String packageName, int obstacleAvoidanceDistance);
+
+    /**
+     * Get the organization info of the robot as a JSON string.
+     *
+     * @return JSON string containing id, name, profileImage, robotCount, region, and rootAccount.
+     */
+    String getOrganizationInfo();
 }
