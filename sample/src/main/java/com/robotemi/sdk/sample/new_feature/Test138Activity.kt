@@ -106,9 +106,43 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
             }
         }
 
+        binding.btnGetOrganizationInfo.setOnClickListener { getOrganizationInfo() }
+
         binding.btnClearLog.setOnClickListener { clearLog() }
     }
 
+    private fun getOrganizationInfo() {
+        val organizationInfo = robot.getOrganizationInfo()
+        if (organizationInfo == null) {
+            printLog("Organization info: unavailable (not supported / parse error)")
+            return
+        }
+        printLog(
+            "Organization info: id=${organizationInfo.id}, " +
+                    "name=${organizationInfo.name}, " +
+                    "profileImage=${organizationInfo.profileImage}, " +
+                    "robotCount=${organizationInfo.robotCount}, " +
+                    "region=${organizationInfo.region}, " +
+                    "rootAccount=${organizationInfo.rootAccount}"
+        )
+        if (organizationInfo.profileImage.isBlank()) {
+            printLog("Organization profile image: empty")
+            return
+        }
+        printLog("Organization profile image mediaKey: ${organizationInfo.profileImage}")
+        Thread {
+            val signedProfileImageUrls = robot.getSignedUrlByMediaKey(listOf(organizationInfo.profileImage))
+            runOnUiThread {
+                if (signedProfileImageUrls.isEmpty()) {
+                    printLog("Organization profile image signed url: failed")
+                } else {
+                    for ((mediaKey, signedUrl) in signedProfileImageUrls) {
+                        printLog("Organization profile image signed url: mediaKey=$mediaKey, url=$signedUrl")
+                    }
+                }
+            }
+        }.start()
+    }
 
     override fun onZoneEntranceStatusChanged(layers: List<Layer>) {
         printLog("onZoneEntranceStatusChanged()  --> layers=$layers")
