@@ -100,6 +100,19 @@
                         style="@style/ButtonCommon"
                         android:text="Current Goto Apply obstacle Avoidance Distance" />
 
+                    <!-- Organization Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Organization"
+                        android:textColor="#666"
+                        android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/btnGetOrganizationInfo"
+                        style="@style/ButtonCommon"
+                        android:text="Get Organization Info" />
+
                     <!-- Additional UI for value input could be added here -->
 
                 </LinearLayout>
