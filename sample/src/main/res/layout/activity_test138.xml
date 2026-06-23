@@ -88,17 +88,17 @@
                     <Button
                         android:id="@+id/btnApplySpeed"
                         style="@style/ButtonCommon"
-                        android:text="Current Goto Apply Speed" />
+                        android:text="Current GoTo - Apply Speed" />
 
                     <Button
                         android:id="@+id/btnApplyBypass"
                         style="@style/ButtonCommon"
-                        android:text="Current Goto Enable Bypass Obstacles" />
+                        android:text="Current GoTo - Enable Bypass Obstacles" />
 
                     <Button
                         android:id="@+id/btnApplyDistance"
                         style="@style/ButtonCommon"
-                        android:text="Current Goto Apply obstacle Avoidance Distance" />
+                        android:text="Current GoTo - Apply obstacle Avoidance Distance" />
 
                     <!-- Organization Section -->
                     <TextView

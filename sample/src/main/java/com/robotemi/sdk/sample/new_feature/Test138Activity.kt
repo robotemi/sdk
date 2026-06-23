@@ -130,9 +130,9 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
             return
         }
         printLog("Organization profile image mediaKey: ${organizationInfo.profileImage}")
-        Thread {
+        lifecycleScope.launch(Dispatchers.IO) {
             val signedProfileImageUrls = robot.getSignedUrlByMediaKey(listOf(organizationInfo.profileImage))
-            runOnUiThread {
+            withContext(Dispatchers.Main) {
                 if (signedProfileImageUrls.isEmpty()) {
                     printLog("Organization profile image signed url: failed")
                 } else {
@@ -141,7 +141,7 @@ class Test138Activity : AppCompatActivity(), OnRobotReadyListener,
                     }
                 }
             }
-        }.start()
+        }
     }
 
     override fun onZoneEntranceStatusChanged(layers: List<Layer>) {

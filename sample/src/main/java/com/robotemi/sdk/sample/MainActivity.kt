@@ -2324,9 +2324,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             return
         }
         printLog("Organization profile image mediaKey: ${organizationInfo.profileImage}")
-        Thread {
+        lifecycleScope.launch(Dispatchers.IO) {
             val signedProfileImageUrls = robot.getSignedUrlByMediaKey(listOf(organizationInfo.profileImage))
-            runOnUiThread {
+            withContext(Dispatchers.Main) {
                 if (signedProfileImageUrls.isEmpty()) {
                     printLog("Organization profile image signed url: failed")
                 } else {
@@ -2335,7 +2335,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                     }
                 }
             }
-        }.start()
+        }
     }
 
     private fun goToPosition() {

@@ -4634,7 +4634,7 @@ class Robot private constructor(private val context: Context) {
      * @return List of layers (zones) currently containing the robot.
      */
     @WorkerThread
-    fun getCurrentZones(): List<Layer>?{
+    fun getCurrentZones(): List<Layer> {
         return try {
             sdkService?.getCurrentZones(applicationInfo.packageName) ?: emptyList()
         } catch (e: RemoteException) {
@@ -4654,7 +4654,7 @@ class Robot private constructor(private val context: Context) {
      *         400 is failed to verify the app package name or invalid parameter
      *         408 Failure
      */
-    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.5) speed: Float) : Int {
+    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.5) speed: Float): Int {
         return try {
             sdkService?.setCurrentGoToSpeed(applicationInfo.packageName, speed) ?: 0
         } catch (e: RemoteException) {
@@ -4674,7 +4674,7 @@ class Robot private constructor(private val context: Context) {
      *         400 is failed to verify the app package name
      *         408 Failure
      */
-    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean) : Int {
+    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean): Int {
         return try {
             sdkService?.setCurrentGoToBypassObstacles(applicationInfo.packageName, bypassObstacles) ?: 0
         } catch (e: RemoteException) {
@@ -4695,7 +4695,7 @@ class Robot private constructor(private val context: Context) {
      *         400 is failed to verify the app package name or invalid parameter
      *         408 Failure
      */
-    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int) : Int {
+    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int): Int {
         return try {
             sdkService?.setCurrentGoToObstacleAvoidanceDistance(
                 applicationInfo.packageName,

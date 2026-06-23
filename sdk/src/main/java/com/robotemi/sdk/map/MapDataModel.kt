@@ -3,14 +3,12 @@ package com.robotemi.sdk.map
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Base64
-import android.util.Log
 import androidx.annotation.IntDef
 import androidx.annotation.IntRange
 import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
-import com.robotemi.sdk.constants.SdkConstants
 import java.util.zip.GZIPInputStream
 import kotlin.math.round
 
