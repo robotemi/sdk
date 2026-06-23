@@ -41,6 +41,7 @@ import com.robotemi.sdk.mediabar.MediaBarData
 import com.robotemi.sdk.model.CallEventModel
 import com.robotemi.sdk.model.DetectionData
 import com.robotemi.sdk.model.MemberStatusModel
+import com.robotemi.sdk.model.OrganizationInfo
 import com.robotemi.sdk.model.RecentCallModel
 import com.robotemi.sdk.navigation.listener.OnCurrentPositionChangedListener
 import com.robotemi.sdk.navigation.listener.OnDistanceToDestinationChangedListener
@@ -221,6 +222,9 @@ class Robot private constructor(private val context: Context) {
 
     private val onGoToNavPathChangedListeners =
         CopyOnWriteArraySet<OnGoToNavPathChangedListener>()
+
+    private val onZoneEntranceStatusChangedListeners =
+        CopyOnWriteArraySet<OnZoneEntranceStatusChangedListener>()
 
     private var ttsService: ITtsService? = null
 
@@ -737,6 +741,16 @@ class Robot private constructor(private val context: Context) {
             uiHandler.post {
                 for (listener in onSequencePlayStatusChangedListeners) {
                     listener.onSequenceStepChanged(sequenceId, stepIndex, totalSteps)
+                }
+            }
+            return true
+        }
+
+        override fun onZoneEntranceStatusChanged(layers: MutableList<Layer>): Boolean {
+            if (onZoneEntranceStatusChangedListeners.isEmpty()) return false
+            uiHandler.post {
+                for (listener in onZoneEntranceStatusChangedListeners) {
+                    listener.onZoneEntranceStatusChanged(layers)
                 }
             }
             return true
@@ -1313,6 +1327,19 @@ class Robot private constructor(private val context: Context) {
     @UiThread
     fun removeOnTtsVisualizerFftDataChangedListener(onTtsVisualizerFftDataChangedListener: OnTtsVisualizerFftDataChangedListener) {
         onTtsVisualizerFftDataChangedListeners.remove(onTtsVisualizerFftDataChangedListener)
+    }
+
+    /**
+     * Require [Permission.MAP] Otherwise, no data can be monitored.
+     */
+    @UiThread
+    fun addOnZoneEntranceStatusChangedListener(listener: OnZoneEntranceStatusChangedListener) {
+        onZoneEntranceStatusChangedListeners.add(listener)
+    }
+
+    @UiThread
+    fun removeOnZoneEntranceStatusChangedListener(listener: OnZoneEntranceStatusChangedListener) {
+        onZoneEntranceStatusChangedListeners.remove(listener)
     }
 
     /*****************************************/
@@ -3439,6 +3466,7 @@ class Robot private constructor(private val context: Context) {
             mapElements?.map {
                 if (it.layerCategory == VIRTUAL_WALL) mapDataModel.virtualWalls.add(it)
                 if (it.layerCategory == GREEN_PATH) mapDataModel.greenPaths.add(it)
+                if (it.layerCategory == ZONE) mapDataModel.zones.add(it)
                 if (it.layerCategory == LOCATION) mapDataModel.locations.add(it)
                 if (it.layerCategory == MAP_ERASER) mapDataModel.mapEraser.add(it)
             }
@@ -3522,10 +3550,6 @@ class Robot private constructor(private val context: Context) {
     @WorkerThread
     @Throws(IllegalArgumentException::class)
     fun getMapElements(): List<Layer>? {
-        if (checkSelfPermission(Permission.MAP) == Permission.DENIED) {
-            Log.e(TAG, "getMapElements() - Permission denied")
-            return null
-        }
 //        if (isMapLocked() == true) return sdkService?.getMapElements(applicationInfo.packageName)
         var cursor: Cursor? = null
         val uriStr = StringBuffer("content://")
@@ -4559,6 +4583,151 @@ class Robot private constructor(private val context: Context) {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse json", e)
+            null
+        }
+    }
+
+    /**
+     * Require [Permission.MAP]
+     * Get all zones/layers defined on the current map.
+     *
+     * @return List of all layers filtered by the [Layer.ZONE] category.
+     */
+    @WorkerThread
+    fun getAllZones(): List<Layer> {
+        val uriStr = StringBuffer("content://")
+            .append(SdkConstants.PROVIDER_AUTHORITY)
+            .append("/").append(SdkConstants.PROVIDER_PARAMETER_MAP_DATA)
+            .toString()
+        var cursor: Cursor? = null
+        try {
+            cursor = context.contentResolver.query(
+                Uri.parse(uriStr),
+                arrayOf(MAP_ELEMENTS),
+                "${SdkConstants.PROVIDER_PARAMETER_LAYERCATEGORY} = ?",
+                arrayOf(ZONE.toString()),
+                null
+            )
+
+            if (cursor != null && cursor.moveToFirst()) {
+                val json = cursor.getString(cursor.getColumnIndexOrThrow(MAP_ELEMENTS))
+                if (!json.isNullOrBlank()) {
+                    val type = object : TypeToken<List<Layer>>() {}.type
+                    val allLayers: List<Layer> = gson.fromJson(json, type) ?: emptyList()
+                    return allLayers.filter { it.layerCategory == ZONE }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "getAllZones() error", e)
+        } finally {
+            cursor?.close()
+        }
+        return emptyList()
+    }
+
+    /**
+     * Require [Permission.MAP]
+     * Get Current zones that the robot's current position is within.
+     *
+     * Note: This returns a list of [Layer] objects because the robot can be
+     * in multiple overlapping zones simultaneously.
+     * @return List of layers (zones) currently containing the robot.
+     */
+    @WorkerThread
+    fun getCurrentZones(): List<Layer> {
+        return try {
+            sdkService?.getCurrentZones(applicationInfo.packageName) ?: emptyList()
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getCurrentZones() error", e)
+            emptyList()
+        }
+    }
+
+    /**
+     * Dynamically set the speed for the current GoTo navigation session.
+     *
+     * Note: This only applies to the ongoing GoTo session that was triggered by this application.
+     *
+     * @param speed The speed value (0.3 - 1.5).
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 is failed to verify the app package name or invalid parameter
+     *         408 Failure
+     */
+    fun setCurrentGoToSpeed(@FloatRange(from = 0.3, to = 1.5) speed: Float): Int {
+        return try {
+            sdkService?.setCurrentGoToSpeed(applicationInfo.packageName, speed) ?: 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setCurrentGoToSpeed() error", e)
+            0
+        }
+    }
+
+    /**
+     * Dynamically set the bypass obstacles strategy for the current GoTo navigation session.
+     *
+     * Note: This only applies to the ongoing GoTo session that was triggered by this application.
+     *
+     * @param bypassObstacles true to enable bypassing, false to stop when encountering obstacles.
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 is failed to verify the app package name
+     *         408 Failure
+     */
+    fun setCurrentGoToBypassObstacles(bypassObstacles: Boolean): Int {
+        return try {
+            sdkService?.setCurrentGoToBypassObstacles(applicationInfo.packageName, bypassObstacles) ?: 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setCurrentGoToBypassObstacles() error", e)
+            0
+        }
+    }
+
+    /**
+     * Dynamically set the obstacle avoidance distance for the current GoTo navigation.
+     *
+     * Note: This only applies to the ongoing GoTo session that was triggered by this application.
+     *
+     * @param obstacleAvoidanceDistance The distance in centimeters (cm).
+     *                                  Range: [0, 100] cm (~ [0, 39.37] inches).
+     * @return 0 if the operation is not supported by current launcher
+     *         200 success
+     *         400 is failed to verify the app package name or invalid parameter
+     *         408 Failure
+     */
+    fun setCurrentGoToObstacleAvoidanceDistance(@IntRange(from = 0, to = 100) obstacleAvoidanceDistance: Int): Int {
+        return try {
+            sdkService?.setCurrentGoToObstacleAvoidanceDistance(
+                applicationInfo.packageName,
+                obstacleAvoidanceDistance
+            ) ?: 0
+        } catch (e: RemoteException) {
+            Log.e(TAG, "setCurrentGoToObstacleAvoidanceDistance() error", e)
+            0
+        }
+    }
+
+    /**
+     * Get the organization info of the robot.
+     * There is no live update for this info, only updated once after robot boot.
+     * Added in 138 version
+     *
+     * @return [OrganizationInfo] or null if robot not support this method or parsing failure.
+     */
+    @CheckResult
+    fun getOrganizationInfo(): OrganizationInfo? {
+        return try {
+            val json = sdkService?.organizationInfo
+            if (json.isNullOrBlank()) {
+                null
+            } else {
+                gson.fromJson(json, OrganizationInfo::class.java)
+            }
+        } catch (e: RemoteException) {
+            Log.e(TAG, "getOrganizationInfo() error", e)
+            null
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "getOrganizationInfo() JSON parse error", e)
             null
         }
     }

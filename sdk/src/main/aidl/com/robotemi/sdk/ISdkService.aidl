@@ -415,4 +415,19 @@ interface ISdkService {
     int renameLocationOnFloor(in String packageName, int floorId, String oldLocationName, String newLocationName, String layer);
 
     int deleteLocationOnFloor(in String packageName, int floorId, String locationName);
+
+    List<Layer> getCurrentZones(in String packageName);
+
+    int setCurrentGoToSpeed(in String packageName, float speed);
+
+    int setCurrentGoToBypassObstacles(in String packageName, boolean bypassObstacles);
+
+    int setCurrentGoToObstacleAvoidanceDistance(in String packageName, int obstacleAvoidanceDistance);
+
+    /**
+     * Get the organization info of the robot as a JSON string.
+     *
+     * @return JSON string containing id, name, profileImage, robotCount, region, and rootAccount.
+     */
+    String getOrganizationInfo();
 }

@@ -72,6 +72,10 @@
         style="@style/ButtonCommon"
         android:text="Get OS Version" />
 
+    <Button
+        android:id="@+id/btnGetOrganizationInfo"
+        style="@style/ButtonCommon"
+        android:text="Get Organization Info" />
 
     <Button
         android:id="@+id/btnStartFaceRecognition"

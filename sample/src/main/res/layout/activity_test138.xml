@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    android:orientation="vertical">
+
+    <!-- Header Bar -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="4dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp">
+
+        <ImageButton
+            android:id="@+id/ibBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:scaleType="center"
+            android:src="@drawable/ic_back"
+            android:tint="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="138 New Features"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <!-- Left Control Panel -->
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Zone Data Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Zone Management"
+                        android:textColor="#666"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btnGetAllZones"
+                        style="@style/ButtonCommon"
+                        android:text="Get All Zones" />
+
+                    <Button
+                        android:id="@+id/btnGetCurrentZones"
+                        style="@style/ButtonCommon"
+                        android:text="Get Current Zones" />
+
+                    <!-- Dynamic GoTo Control Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Dynamic GoTo Control"
+                        android:textColor="#666"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/btnApplySpeed"
+                        style="@style/ButtonCommon"
+                        android:text="Current GoTo - Apply Speed" />
+
+                    <Button
+                        android:id="@+id/btnApplyBypass"
+                        style="@style/ButtonCommon"
+                        android:text="Current GoTo - Enable Bypass Obstacles" />
+
+                    <Button
+                        android:id="@+id/btnApplyDistance"
+                        style="@style/ButtonCommon"
+                        android:text="Current GoTo - Apply obstacle Avoidance Distance" />
+
+                    <!-- Organization Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Organization"
+                        android:textColor="#666"
+                        android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/btnGetOrganizationInfo"
+                        style="@style/ButtonCommon"
+                        android:text="Get Organization Info" />
+
+                    <!-- Additional UI for value input could be added here -->
+
+                </LinearLayout>
+            </ScrollView>
+
+            <!-- Right Log Panel -->
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#1A1A1A"
+                android:padding="5dp">
+
+                <ScrollView
+                    android:id="@+id/svLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/btnClearLog"
+                    android:fadeScrollbars="false"
+                    android:scrollbarStyle="insideOverlay"
+                    android:scrollbars="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLog"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_above="@id/btnClearLog"
+                        android:fontFamily="monospace"
+                        android:padding="10dp"
+                        android:scrollbars="vertical"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        tools:text="Logging initialized...\nWait for Zone events..." />
+                </ScrollView>
+
+                <Button
+                    android:id="@+id/btnClearLog"
+                    style="@style/ButtonCommon"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="Clear Log"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

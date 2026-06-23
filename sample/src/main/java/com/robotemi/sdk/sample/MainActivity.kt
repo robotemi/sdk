@@ -89,6 +89,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.robotemi.sdk.map.Layer
 import com.robotemi.sdk.sample.new_feature.Test137Activity
+import com.robotemi.sdk.sample.new_feature.Test138Activity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -571,6 +572,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
                 val intent = Intent(this@MainActivity, Test137Activity::class.java)
                 startActivity(intent)
             }
+            btn138Feature.setOnClickListener {
+                val intent = Intent(this@MainActivity, Test138Activity::class.java)
+                startActivity(intent)
+            }
 
             btnMinimumObstacleDistance.setOnClickListener {
                 if (requestPermissionIfNeeded(Permission.SETTINGS, REQUEST_CODE_NORMAL)) {
@@ -658,6 +663,7 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             }
             btnPublish.setOnClickListener { publishToActivityStream() }
             btnGetOSVersion.setOnClickListener { getOSVersion() }
+            btnGetOrganizationInfo.setOnClickListener { getOrganizationInfo() }
             btnStartFaceRecognition.setOnClickListener { startFaceRecognition() }
             btnStopFaceRecognition.setOnClickListener { stopFaceRecognition() }
             btnTestFaceRecognition.setOnClickListener { testFaceRecognition() }
@@ -2299,6 +2305,39 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
         }
     }
 
+    private fun getOrganizationInfo() {
+        val organizationInfo = robot.getOrganizationInfo()
+        if (organizationInfo == null) {
+            printLog("Organization info: unavailable (not supported / parse error)")
+            return
+        }
+        printLog(
+            "Organization info: id=${organizationInfo.id}, " +
+                "name=${organizationInfo.name}, " +
+                "profileImage=${organizationInfo.profileImage}, " +
+                "robotCount=${organizationInfo.robotCount}, " +
+                "region=${organizationInfo.region}, " +
+                "rootAccount=${organizationInfo.rootAccount}"
+        )
+        if (organizationInfo.profileImage.isBlank()) {
+            printLog("Organization profile image: empty")
+            return
+        }
+        printLog("Organization profile image mediaKey: ${organizationInfo.profileImage}")
+        lifecycleScope.launch(Dispatchers.IO) {
+            val signedProfileImageUrls = robot.getSignedUrlByMediaKey(listOf(organizationInfo.profileImage))
+            withContext(Dispatchers.Main) {
+                if (signedProfileImageUrls.isEmpty()) {
+                    printLog("Organization profile image signed url: failed")
+                } else {
+                    for ((mediaKey, signedUrl) in signedProfileImageUrls) {
+                        printLog("Organization profile image signed url: mediaKey=$mediaKey, url=$signedUrl")
+                    }
+                }
+            }
+        }
+    }
+
     private fun goToPosition() {
         try {
             val x = binding.etX.text.toString().toFloat()
@@ -2638,6 +2677,9 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             TtsRequest.Language.VI_VN -> Locale("vi", "VN")
             TtsRequest.Language.EL_GR -> Locale("el", "GR")
             TtsRequest.Language.AZ_AZ -> Locale("az", "AZ")
+            TtsRequest.Language.ES_CO -> Locale("es", "CO")
+            TtsRequest.Language.UR_PK -> Locale("ur", "PK")
+            TtsRequest.Language.ES_AR -> Locale("es", "AR")
             else -> if (robot.launcherVersion.contains("china")) {
                 Locale.SIMPLIFIED_CHINESE
             } else {

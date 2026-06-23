@@ -5,7 +5,12 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WakeupRequest(
-    val wakeupResponse: Boolean = false
+    val wakeupResponse: Boolean = false,
+    /**
+     * For kiosk apps that override the conversation layer, set this to true to start a new session
+     * without previous LLM conversation history from the AI and user.
+     */
+    val newSession: Boolean = false
 ): Parcelable
 
 /**

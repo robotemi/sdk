@@ -407,6 +407,8 @@ class MapActivity : AppCompatActivity() {
                 textViewMapElements.append("[map_green_path]: ${mapDataModel!!.greenPaths} \n")
                 Log.i("Map-virtualWalls", mapDataModel!!.virtualWalls.toString())
                 textViewMapElements.append("[map_virtual_walls]: ${mapDataModel!!.virtualWalls} \n")
+                Log.i("Map-zones", mapDataModel!!.zones.toString())
+                textViewMapElements.append("[map_zones]: ${mapDataModel!!.zones} \n")
                 Log.i("Map-locations", mapDataModel!!.locations.toString())
                 textViewMapElements.append("[map_locations]: ${mapDataModel!!.locations} \n")
                 textViewMapElements.append("[map_eraser_data_length]: ${mapDataModel!!.mapEraser.firstOrNull()?.layerData?.length} \n")
