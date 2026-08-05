@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Normalize text with Unicode NFKC before sending it to TTS.
  */
-fun String.cleanForTts(): String {
+private fun String.cleanForTts(): String {
     return Normalizer.normalize(this, Normalizer.Form.NFKC)
 }
 
