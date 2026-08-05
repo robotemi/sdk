@@ -341,7 +341,7 @@ class Robot private constructor(private val context: Context) {
         }
 
         override fun onTtsSpeak(ttsRequest: TtsRequest) {
-            ttsService?.speak(ttsRequest)
+            ttsService?.speak(ttsRequest.cleanSpeechForTts())
         }
 
         override fun onTtsCancel() {
@@ -952,7 +952,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun speak(ttsRequest: TtsRequest) {
         try {
-            sdkService?.speak(ttsRequest.apply { packageName = applicationInfo.packageName })
+            ttsRequest.packageName = applicationInfo.packageName
+            sdkService?.speak(ttsRequest.cleanSpeechForTts())
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to invoke remote call speak()")
         }
