@@ -3,7 +3,20 @@ package com.robotemi.sdk
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import java.text.Normalizer
 import java.util.*
+
+/**
+ * Normalize text with Unicode NFKC before sending it to TTS.
+ */
+private fun String.cleanForTts(): String {
+    return Normalizer.normalize(this, Normalizer.Form.NFKC)
+}
+
+internal fun TtsRequest.cleanSpeechForTts(): TtsRequest {
+    val cleanedSpeech = speech.cleanForTts()
+    return if (cleanedSpeech == speech) this else copy(speech = cleanedSpeech)
+}
 
 /**
  * @param id will remain the same when you create a TtsRequest and when you received it from [onTtsStatusChanged] callback
@@ -156,7 +169,7 @@ data class TtsRequest(
             cached: Boolean = false
         ): TtsRequest {
             return TtsRequest(
-                speech = speech,
+                speech = speech.cleanForTts(),
                 isShowOnConversationLayer = isShowOnConversationLayer,
                 language = language.value,
                 showAnimationOnly = showAnimationOnly,
