@@ -63,99 +63,15 @@
                         android:textColor="#666"
                         android:textSize="12sp" />
 
-                    <EditText
-                        android:id="@+id/etScrollText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Text"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:text="Scrolling text demo 139"
-                        android:textColor="@color/colorWhite"
-                        android:textColorHint="@color/colorGrey" />
+                    <Button
+                        android:id="@+id/btnApplyDefaultLcdText"
+                        style="@style/ButtonCommon"
+                        android:text="Apply Default Text" />
 
                     <Button
-                        android:id="@+id/btnApplyNormalText"
+                        android:id="@+id/btnApplyCustomScrollText"
                         style="@style/ButtonCommon"
-                        android:text="Apply Normal Text" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="Scroll"
-                        android:textColor="#666"
-                        android:textSize="12sp" />
-
-                    <EditText
-                        android:id="@+id/etScrollInterval"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Interval ms"
-                        android:inputType="number"
-                        android:maxLines="1"
-                        android:text="80"
-                        android:textColor="@color/colorWhite"
-                        android:textColorHint="@color/colorGrey" />
-
-                    <EditText
-                        android:id="@+id/etScrollDistance"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Distance px"
-                        android:inputType="number"
-                        android:maxLines="1"
-                        android:text="8"
-                        android:textColor="@color/colorWhite"
-                        android:textColorHint="@color/colorGrey" />
-
-                    <Button
-                        android:id="@+id/btnApplyScrollText"
-                        style="@style/ButtonCommon"
-                        android:text="Apply Scroll Text" />
-
-                    <Button
-                        android:id="@+id/btnApplyScrollSpeed"
-                        style="@style/ButtonCommon"
-                        android:text="Apply Scroll Speed" />
-
-                    <Button
-                        android:id="@+id/btnStartScrollText"
-                        style="@style/ButtonCommon"
-                        android:text="Start Scroll" />
-
-                    <Button
-                        android:id="@+id/btnStopScrollText"
-                        style="@style/ButtonCommon"
-                        android:text="Stop Scroll" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="Direction"
-                        android:textColor="#666"
-                        android:textSize="12sp" />
-
-                    <Button
-                        android:id="@+id/btnLeftToRight"
-                        style="@style/ButtonCommon"
-                        android:text="Left to Right" />
-
-                    <Button
-                        android:id="@+id/btnRightToLeft"
-                        style="@style/ButtonCommon"
-                        android:text="Right to Left" />
-
-                    <Button
-                        android:id="@+id/btnTopToBottom"
-                        style="@style/ButtonCommon"
-                        android:text="Top to Bottom" />
-
-                    <Button
-                        android:id="@+id/btnBottomToTop"
-                        style="@style/ButtonCommon"
-                        android:text="Bottom to Top" />
+                        android:text="Apply Custom Scroll" />
 
                 </LinearLayout>
             </ScrollView>

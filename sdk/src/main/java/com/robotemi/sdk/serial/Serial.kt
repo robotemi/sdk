@@ -62,89 +62,63 @@ object Serial {
     val ByteArray.dataHex: List<String>
         get() = map { String.format("%02X", it) }
 
-    fun getLcdBytes(text: String, target: String = LCD.TEXT_0_TEXT, charset: Charset = Charsets.UTF_8): ByteArray {
-        return getLcdCommandBytes("$target=\"$text\"", charset)
-    }
-
     /**
-     * Generate LCD text command bytes for the default normal or scrolling text component.
-     * @param isScroll true to write to scrolling text component g0, false to write to normal text component t0.
+     * Generate LCD text command bytes for both normal text and scrolling text components.
+     * @param target kept for source compatibility. The LCD text target is fixed internally for firmware compatibility.
      */
     @JvmOverloads
     fun getLcdBytes(
         text: String,
-        isScroll: Boolean,
-        @IntRange(from = 0, to = 3) direction: Int = LCD.SCROLL_DIRECTION_RIGHT_TO_LEFT,
-        @IntRange(from = 80) interval: Int = LCD.SCROLL_INTERVAL_DEFAULT,
-        @IntRange(from = 2, to = 50) distance: Int = LCD.SCROLL_DISTANCE_DEFAULT,
+        @Suppress("UNUSED_PARAMETER") target: String = LCD.TEXT_0_TEXT,
+        scrollConfig: LcdScrollConfig = LcdScrollConfig(),
         charset: Charset = Charsets.UTF_8
     ): ByteArray {
-        return if (isScroll) {
-            getLcdScrollTextBytes(text, direction, interval, distance, charset)
+        val textBytes = getLcdTextBytes(text, LCD.TEXT_0_TEXT, charset) +
+                getLcdTextBytes(text, LCD.SCROLL_TEXT, charset)
+        return if (scrollConfig.isScroll) {
+            textBytes +
+                getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, true, charset) +
+                getLcdVisibleBytes(LCD.TEXT_0, true, charset) +
+                getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_DIRECTION, scrollConfig.direction, charset) +
+                getLcdScrollSpeedBytes(scrollConfig.interval, scrollConfig.distance, charset) +
+                getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_ENABLE, 1, charset)
         } else {
-            getLcdNormalTextBytes(text, charset)
+            textBytes +
+                getLcdVisibleBytes(LCD.TEXT_0, true, charset) +
+                getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, false, charset) +
+                getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_ENABLE, 0, charset)
         }
     }
 
-    @JvmOverloads
-    fun getLcdNormalTextBytes(text: String, charset: Charset = Charsets.UTF_8): ByteArray {
-        return getLcdBytes(text, LCD.TEXT_0_TEXT, charset) +
-                getLcdVisibleBytes(LCD.TEXT_0, true, charset) +
-                getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, false, charset) +
-                getLcdNumberBytes(LCD.SCROLL_TEXT_ENABLE, 0, charset)
-    }
-
-    @JvmOverloads
-    fun getLcdScrollTextBytes(
-        text: String,
-        @IntRange(from = 0, to = 3) direction: Int = LCD.SCROLL_DIRECTION_RIGHT_TO_LEFT,
-        @IntRange(from = 80) interval: Int = LCD.SCROLL_INTERVAL_DEFAULT,
-        @IntRange(from = 2, to = 50) distance: Int = LCD.SCROLL_DISTANCE_DEFAULT,
-        charset: Charset = Charsets.UTF_8
-    ): ByteArray {
-        return getLcdBytes(text, LCD.SCROLL_TEXT, charset) +
-                getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, true, charset) +
-                getLcdVisibleBytes(LCD.TEXT_0, false, charset) +
-                getLcdNumberBytes(LCD.SCROLL_TEXT_DIRECTION, direction, charset) +
-                getLcdScrollSpeedBytes(interval, distance, charset) +
-                getLcdNumberBytes(LCD.SCROLL_TEXT_ENABLE, 1, charset)
+    fun getLcdBytes(text: String, target: String, charset: Charset): ByteArray {
+        return getLcdBytes(text, target, LcdScrollConfig(), charset)
     }
 
     fun getLcdColorBytes(textColor: ByteArray, target: String = LCD.TEXT_0_COLOR, charset: Charset = Charsets.UTF_8): ByteArray {
-        return getLcdNumberBytes(target, RGB565.convertRgb888To565(textColor), charset)
+        return getLcdNumberPropertyBytes(target, RGB565.convertRgb888To565(textColor), charset)
     }
 
     fun getLcdPersistBytes(persist: Boolean, target: String = LCD.TEXT_0_PERSIST, charset: Charset = Charsets.UTF_8): ByteArray {
         return getLcdCommandBytes("$target=\"$persist\"", charset)
     }
 
-    @JvmOverloads
-    fun getLcdScrollSpeedBytes(
+    private fun getLcdScrollSpeedBytes(
         @IntRange(from = 80) interval: Int = LCD.SCROLL_INTERVAL_DEFAULT,
         @IntRange(from = 2, to = 50) distance: Int = LCD.SCROLL_DISTANCE_DEFAULT,
         charset: Charset = Charsets.UTF_8
     ): ByteArray {
         val safeInterval = interval.coerceAtLeast(LCD.SCROLL_INTERVAL_MIN)
         val safeDistance = distance.coerceIn(LCD.SCROLL_DISTANCE_MIN, LCD.SCROLL_DISTANCE_MAX)
-        return getLcdNumberBytes(LCD.SCROLL_TEXT_INTERVAL, safeInterval, charset) +
-                getLcdNumberBytes(LCD.SCROLL_TEXT_DISTANCE, safeDistance, charset)
+        return getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_INTERVAL, safeInterval, charset) +
+                getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_DISTANCE, safeDistance, charset)
     }
 
-    @JvmOverloads
-    fun getLcdScrollEnabledBytes(enabled: Boolean, charset: Charset = Charsets.UTF_8): ByteArray {
-        return getLcdNumberBytes(LCD.SCROLL_TEXT_ENABLE, if (enabled) 1 else 0, charset)
-    }
-
-    @JvmOverloads
-    fun getLcdScrollDirectionBytes(
-        @IntRange(from = 0, to = 3) direction: Int,
-        charset: Charset = Charsets.UTF_8
-    ): ByteArray {
-        return getLcdNumberBytes(LCD.SCROLL_TEXT_DIRECTION, direction, charset)
-    }
-
-    private fun getLcdNumberBytes(target: String, value: Int, charset: Charset = Charsets.UTF_8): ByteArray {
+    private fun getLcdNumberPropertyBytes(target: String, value: Int, charset: Charset = Charsets.UTF_8): ByteArray {
         return getLcdCommandBytes("$target=$value", charset)
+    }
+
+    private fun getLcdTextBytes(text: String, target: String, charset: Charset = Charsets.UTF_8): ByteArray {
+        return getLcdCommandBytes("$target=\"$text\"", charset)
     }
 
     private fun getLcdVisibleBytes(target: String, visible: Boolean, charset: Charset = Charsets.UTF_8): ByteArray {
@@ -178,6 +152,13 @@ object Serial {
         const val SCROLL_DISTANCE_MAX = 50
 
     }
+
+    data class LcdScrollConfig @JvmOverloads constructor(
+        val isScroll: Boolean = true,
+        @IntRange(from = 0, to = 3) val direction: Int = LCD.SCROLL_DIRECTION_RIGHT_TO_LEFT,
+        @IntRange(from = 80) val interval: Int = LCD.SCROLL_INTERVAL_DEFAULT,
+        @IntRange(from = 2, to = 50) val distance: Int = LCD.SCROLL_DISTANCE_DEFAULT
+    )
 
     private val LCD_COMMAND_END = byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte())
 
