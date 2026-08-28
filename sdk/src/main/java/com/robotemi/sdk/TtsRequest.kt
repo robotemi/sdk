@@ -150,7 +150,7 @@ data class TtsRequest(
          *
          * @param speech The text to be spoken
          * @param isShowOnConversationLayer true if you want to it with temi conversation view, default as true
-         * @param language specify a language to speak, default as [Language.SYSTEM] which will follow system language.
+         * @param language specify a language to , default as [Language.SYSTEM] which will follow system language.
          * @param showAnimationOnly true if you want to show a face animation while the speech is ongoing.
          *                          This only works if there is an assigned interaction animation in temi Settings,
          *                          otherwise it will just display the text on screen without a face animation.

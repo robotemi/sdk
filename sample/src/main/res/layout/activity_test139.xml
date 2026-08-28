@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="139 LCD t0 Scrolling Text"
+            android:text="139 LCD Text"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -59,7 +59,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="t0 Scrolling Text"
+                        android:text="LCD Text"
                         android:textColor="#666"
                         android:textSize="12sp" />
 
@@ -67,27 +67,67 @@
                         android:id="@+id/etScrollText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="t0.txt"
+                        android:hint="Text"
                         android:inputType="text"
                         android:maxLines="1"
-                        android:text="newtxt139"
+                        android:text="Scrolling text demo 139"
+                        android:textColor="@color/colorWhite"
+                        android:textColorHint="@color/colorGrey" />
+
+                    <Button
+                        android:id="@+id/btnApplyNormalText"
+                        style="@style/ButtonCommon"
+                        android:text="Apply Normal Text" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Scroll"
+                        android:textColor="#666"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/etScrollInterval"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Interval ms"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:text="80"
+                        android:textColor="@color/colorWhite"
+                        android:textColorHint="@color/colorGrey" />
+
+                    <EditText
+                        android:id="@+id/etScrollDistance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Distance px"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:text="8"
                         android:textColor="@color/colorWhite"
                         android:textColorHint="@color/colorGrey" />
 
                     <Button
                         android:id="@+id/btnApplyScrollText"
                         style="@style/ButtonCommon"
-                        android:text="Apply t0 Scroll" />
+                        android:text="Apply Scroll Text" />
+
+                    <Button
+                        android:id="@+id/btnApplyScrollSpeed"
+                        style="@style/ButtonCommon"
+                        android:text="Apply Scroll Speed" />
 
                     <Button
                         android:id="@+id/btnStartScrollText"
                         style="@style/ButtonCommon"
-                        android:text="Start t0.en=1" />
+                        android:text="Start Scroll" />
 
                     <Button
                         android:id="@+id/btnStopScrollText"
                         style="@style/ButtonCommon"
-                        android:text="Stop t0.en=0" />
+                        android:text="Stop Scroll" />
 
                     <TextView
                         android:layout_width="wrap_content"

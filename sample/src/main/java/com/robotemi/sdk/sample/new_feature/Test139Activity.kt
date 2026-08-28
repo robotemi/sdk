@@ -10,6 +10,7 @@ import com.robotemi.sdk.listeners.OnSerialRawDataListener
 import com.robotemi.sdk.sample.databinding.ActivityTest139Binding
 import com.robotemi.sdk.serial.Serial
 import com.robotemi.sdk.serial.Serial.dataHex
+import kotlin.collections.plus
 
 class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDataListener {
 
@@ -41,8 +42,11 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
     }
 
     private fun initTestCases() {
+        initScrollConfig()
         binding.ibBack.setOnClickListener { finish() }
-        binding.btnApplyScrollText.setOnClickListener { applyScrollingText() }
+        binding.btnApplyNormalText.setOnClickListener { applyNormalText() }
+        binding.btnApplyScrollText.setOnClickListener { applyScrollText() }
+        binding.btnApplyScrollSpeed.setOnClickListener { applyScrollSpeed() }
         binding.btnStartScrollText.setOnClickListener { setScrollingEnabled(true) }
         binding.btnStopScrollText.setOnClickListener { setScrollingEnabled(false) }
         binding.btnLeftToRight.setOnClickListener {
@@ -64,25 +68,53 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
         binding.btnClearLog.setOnClickListener { clearLog() }
     }
 
-    private fun applyScrollingText() {
-        val text = binding.etScrollText.text.toString().ifBlank { SAMPLE_TEXT }
-        val payload = Serial.getLcdBytes(text, target = "$SCROLL_TARGET.txt") +
-                lcdNumberCommand("$SCROLL_TARGET.dir", direction) +
-                lcdNumberCommand("$SCROLL_TARGET.en", 1)
-        sendSingleCommand(payload, "Apply $SCROLL_TARGET scroll text")
+    private fun initScrollConfig() {
+        binding.etScrollInterval.setText(Serial.LCD.SCROLL_INTERVAL_DEFAULT.toString())
+        binding.etScrollDistance.setText(Serial.LCD.SCROLL_DISTANCE_DEFAULT.toString())
+    }
+
+    private fun applyNormalText() {
+        binding.etScrollText.setText(NORMAL_TEXT)
+        sendSingleCommand(Serial.getLcdNormalTextBytes(NORMAL_TEXT) + Serial.getLcdPersistBytes(true), "Apply normal text")
+    }
+
+    private fun applyScrollText() {
+        // The simplest implementation of scrolling text and Persist
+    /*    sendSingleCommand(
+            Serial.getLcdScrollTextBytes(SCROLL_TEXT) + Serial.getLcdPersistBytes(true),
+            "Apply scroll text"
+        )*/
+
+        // Customize the scrolling direction, speed and Persist
+        val interval = scrollInterval()
+        val distance = scrollDistance()
+        binding.etScrollText.setText(SCROLL_TEXT)
+        sendSingleCommand(
+            Serial.getLcdScrollTextBytes(SCROLL_TEXT, direction = direction, interval = interval, distance = distance) + Serial.getLcdPersistBytes(true),
+            "Apply scroll text interval=$interval,distance=$distance"
+        )
+    }
+
+    private fun applyScrollSpeed() {
+        val interval = scrollInterval()
+        val distance = scrollDistance()
+        sendSingleCommand(
+            Serial.getLcdScrollSpeedBytes(interval = interval, distance = distance),
+            "Apply scroll speed interval=$interval,distance=$distance"
+        )
     }
 
     private fun setScrollingEnabled(enabled: Boolean) {
         sendSingleCommand(
-            lcdNumberCommand("$SCROLL_TARGET.en", if (enabled) 1 else 0),
-            "$SCROLL_TARGET ${if (enabled) "start" else "stop"}"
+            Serial.getLcdScrollEnabledBytes(enabled),
+            "Scroll text ${if (enabled) "start" else "stop"}"
         )
     }
 
     private fun setScrollDirection() {
         sendSingleCommand(
-            lcdNumberCommand("$SCROLL_TARGET.dir", direction),
-            "$SCROLL_TARGET.dir=${directionLabel()}"
+            Serial.getLcdScrollDirectionBytes(direction),
+            "Scroll direction=${directionLabel()}"
         )
     }
 
@@ -92,14 +124,6 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
         printLog("$label -> $status ($result), data=${command.dataHex}")
     }
 
-    private fun lcdNumberCommand(target: String, value: Int): ByteArray {
-        return lcdCommand("$target=$value")
-    }
-
-    private fun lcdCommand(command: String): ByteArray {
-        return command.toByteArray().plus(LCD_COMMAND_END)
-    }
-
     private fun directionLabel(): String {
         return when (direction) {
             LEFT_TO_RIGHT -> "left_to_right"
@@ -107,6 +131,24 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
             BOTTOM_TO_TOP -> "bottom_to_top"
             else -> "right_to_left"
         }
+    }
+
+    private fun scrollInterval(): Int {
+        val interval = binding.etScrollInterval.text.toString()
+            .toIntOrNull()
+            ?.coerceAtLeast(Serial.LCD.SCROLL_INTERVAL_MIN)
+            ?: Serial.LCD.SCROLL_INTERVAL_DEFAULT
+        binding.etScrollInterval.setText(interval.toString())
+        return interval
+    }
+
+    private fun scrollDistance(): Int {
+        val distance = binding.etScrollDistance.text.toString()
+            .toIntOrNull()
+            ?.coerceIn(Serial.LCD.SCROLL_DISTANCE_MIN, Serial.LCD.SCROLL_DISTANCE_MAX)
+            ?: Serial.LCD.SCROLL_DISTANCE_DEFAULT
+        binding.etScrollDistance.setText(distance.toString())
+        return distance
     }
 
     override fun onSerialRawData(data: ByteArray) {
@@ -131,12 +173,11 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
     }
 
     companion object {
-        private const val SCROLL_TARGET = "t0"
-        private const val LEFT_TO_RIGHT = 0
-        private const val RIGHT_TO_LEFT = 1
-        private const val TOP_TO_BOTTOM = 2
-        private const val BOTTOM_TO_TOP = 3
-        private const val SAMPLE_TEXT = "newtxt139"
-        private val LCD_COMMAND_END = byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte())
+        private const val LEFT_TO_RIGHT = Serial.LCD.SCROLL_DIRECTION_LEFT_TO_RIGHT
+        private const val RIGHT_TO_LEFT = Serial.LCD.SCROLL_DIRECTION_RIGHT_TO_LEFT
+        private const val TOP_TO_BOTTOM = Serial.LCD.SCROLL_DIRECTION_TOP_TO_BOTTOM
+        private const val BOTTOM_TO_TOP = Serial.LCD.SCROLL_DIRECTION_BOTTOM_TO_TOP
+        private const val NORMAL_TEXT = "Normal text"
+        private const val SCROLL_TEXT = "Scrolling text demo 139"
     }
 }
