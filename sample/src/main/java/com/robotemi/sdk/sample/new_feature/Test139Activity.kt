@@ -48,18 +48,40 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
     }
 
     private fun applyDefaultLcdText() {
-        val command = Serial.getLcdBytes(SCROLL_TEXT) + Serial.getLcdPersistBytes(true)
+        // Simple use case
+//        val command = Serial.getLcdBytes(SCROLL_TEXT) + Serial.getLcdPersistBytes(true)
+
+        // If you want to set the LCD text color and LCD background color, you can refer to the following code
+        val lcdTextColor = byteArrayOf(0xFF.toByte(), 0x00, 0x00)
+        val lcdBackgroundColor = byteArrayOf(0x00, 0xFF.toByte(), 0x00)
+        val command = Serial.getLcdBytes(SCROLL_TEXT) +
+                Serial.getLcdColorBytes(
+                    lcdTextColor, target = Serial.LCD.SCROLL_TEXT_COLOR
+                ) +
+                Serial.getLcdColorBytes(
+                    lcdBackgroundColor, target = Serial.LCD.SCROLL_TEXT_BACKGROUND
+                ) +
+                Serial.getLcdPersistBytes(true)
+
         sendLcdCommand(command, "Apply default LCD text")
     }
 
     private fun applyCustomScrollText() {
         val scrollConfig = Serial.LcdScrollConfig(
             isScroll = true,
-            direction = Serial.LCD.SCROLL_DIRECTION_LEFT_TO_RIGHT,
             interval = CUSTOM_SCROLL_INTERVAL,
             distance = CUSTOM_SCROLL_DISTANCE
         )
-        val command = Serial.getLcdBytes(SCROLL_TEXT, scrollConfig = scrollConfig) + Serial.getLcdPersistBytes(true)
+        val lcdTextColor = byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0x00)
+        val lcdBackgroundColor = byteArrayOf(0x00, 0x00, 0xFF.toByte())
+        val command = Serial.getLcdBytes(SCROLL_TEXT, scrollConfig = scrollConfig) +
+                Serial.getLcdColorBytes(
+                    lcdTextColor, target = Serial.LCD.SCROLL_TEXT_COLOR
+                ) +
+                Serial.getLcdColorBytes(
+                    lcdBackgroundColor, target = Serial.LCD.SCROLL_TEXT_BACKGROUND
+                ) +
+                Serial.getLcdPersistBytes(true)
         sendLcdCommand(command, "Apply custom scroll text interval=$CUSTOM_SCROLL_INTERVAL,distance=$CUSTOM_SCROLL_DISTANCE")
     }
 

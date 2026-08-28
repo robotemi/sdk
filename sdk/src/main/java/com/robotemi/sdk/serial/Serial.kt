@@ -70,16 +70,14 @@ object Serial {
     fun getLcdBytes(
         text: String,
         @Suppress("UNUSED_PARAMETER") target: String = LCD.TEXT_0_TEXT,
-        scrollConfig: LcdScrollConfig = LcdScrollConfig(),
-        charset: Charset = Charsets.UTF_8
+        charset: Charset = Charsets.UTF_8,
+        scrollConfig: LcdScrollConfig = LcdScrollConfig()
     ): ByteArray {
         val textBytes = getLcdTextBytes(text, LCD.TEXT_0_TEXT, charset) +
                 getLcdTextBytes(text, LCD.SCROLL_TEXT, charset)
         return if (scrollConfig.isScroll) {
             textBytes +
                 getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, true, charset) +
-                getLcdVisibleBytes(LCD.TEXT_0, true, charset) +
-                getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_DIRECTION, scrollConfig.direction, charset) +
                 getLcdScrollSpeedBytes(scrollConfig.interval, scrollConfig.distance, charset) +
                 getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_ENABLE, 1, charset)
         } else {
@@ -90,12 +88,11 @@ object Serial {
         }
     }
 
-    fun getLcdBytes(text: String, target: String, charset: Charset): ByteArray {
-        return getLcdBytes(text, target, LcdScrollConfig(), charset)
-    }
-
     fun getLcdColorBytes(textColor: ByteArray, target: String = LCD.TEXT_0_COLOR, charset: Charset = Charsets.UTF_8): ByteArray {
-        return getLcdNumberPropertyBytes(target, RGB565.convertRgb888To565(textColor), charset)
+        val color = RGB565.convertRgb888To565(textColor)
+        return getLcdColorTargets(target)
+            .map { getLcdNumberPropertyBytes(it, color, charset) }
+            .reduce(ByteArray::plus)
     }
 
     fun getLcdPersistBytes(persist: Boolean, target: String = LCD.TEXT_0_PERSIST, charset: Charset = Charsets.UTF_8): ByteArray {
@@ -115,6 +112,16 @@ object Serial {
 
     private fun getLcdNumberPropertyBytes(target: String, value: Int, charset: Charset = Charsets.UTF_8): ByteArray {
         return getLcdCommandBytes("$target=$value", charset)
+    }
+
+    private fun getLcdColorTargets(target: String): List<String> {
+        return when (target) {
+            LCD.TEXT_0_COLOR -> listOf(LCD.TEXT_0_COLOR, LCD.SCROLL_TEXT_COLOR)
+            LCD.TEXT_0_BACKGROUND -> listOf(LCD.TEXT_0_BACKGROUND, LCD.SCROLL_TEXT_BACKGROUND)
+            LCD.SCROLL_TEXT_COLOR -> listOf(LCD.SCROLL_TEXT_COLOR, LCD.TEXT_0_COLOR)
+            LCD.SCROLL_TEXT_BACKGROUND -> listOf(LCD.SCROLL_TEXT_BACKGROUND, LCD.TEXT_0_BACKGROUND)
+            else -> listOf(target)
+        }
     }
 
     private fun getLcdTextBytes(text: String, target: String, charset: Charset = Charsets.UTF_8): ByteArray {
@@ -137,14 +144,11 @@ object Serial {
         const val TEXT_0_PERSIST = "t0.persist"
         const val SCROLL_TEXT_COMPONENT = "g0"
         const val SCROLL_TEXT = "g0.txt"
-        const val SCROLL_TEXT_DIRECTION = "g0.dir"
+        const val SCROLL_TEXT_COLOR = "g0.pco"
+        const val SCROLL_TEXT_BACKGROUND = "g0.bco"
         const val SCROLL_TEXT_INTERVAL = "g0.tim"
         const val SCROLL_TEXT_DISTANCE = "g0.dis"
         const val SCROLL_TEXT_ENABLE = "g0.en"
-        const val SCROLL_DIRECTION_LEFT_TO_RIGHT = 0
-        const val SCROLL_DIRECTION_RIGHT_TO_LEFT = 1
-        const val SCROLL_DIRECTION_TOP_TO_BOTTOM = 2
-        const val SCROLL_DIRECTION_BOTTOM_TO_TOP = 3
         const val SCROLL_INTERVAL_DEFAULT = 80
         const val SCROLL_INTERVAL_MIN = 80
         const val SCROLL_DISTANCE_DEFAULT = 8
@@ -155,7 +159,6 @@ object Serial {
 
     data class LcdScrollConfig @JvmOverloads constructor(
         val isScroll: Boolean = true,
-        @IntRange(from = 0, to = 3) val direction: Int = LCD.SCROLL_DIRECTION_RIGHT_TO_LEFT,
         @IntRange(from = 80) val interval: Int = LCD.SCROLL_INTERVAL_DEFAULT,
         @IntRange(from = 2, to = 50) val distance: Int = LCD.SCROLL_DISTANCE_DEFAULT
     )
