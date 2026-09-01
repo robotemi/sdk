@@ -85,6 +85,8 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
         sendLcdCommand(command, "Apply custom scroll text interval=$CUSTOM_SCROLL_INTERVAL,distance=$CUSTOM_SCROLL_DISTANCE")
     }
 
+    // Click handler: sendSerialCommand is blocking Binder/USB (ANR risk). Do not loop LCD updates;
+    // STM32 CDC can stall on large/frequent CMD_LCD_TEXT until the port is reconnected.
     private fun sendLcdCommand(command: ByteArray, label: String) {
         val result = robot.sendSerialCommand(Serial.CMD_LCD_TEXT, command)
         val status = if (result == 0) "Success" else "Failed"
