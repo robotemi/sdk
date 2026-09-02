@@ -63,7 +63,7 @@ object Serial {
         get() = map { String.format("%02X", it) }
 
     /**
-     * Generate LCD text command bytes for both normal text and scrolling text components.
+     * Generate LCD text command bytes.
      * @param target kept for source compatibility. The LCD text target is fixed internally for firmware compatibility.
      */
     @JvmOverloads
@@ -73,18 +73,16 @@ object Serial {
         charset: Charset = Charsets.UTF_8,
         scrollConfig: LcdScrollConfig = LcdScrollConfig()
     ): ByteArray {
-        val textBytes = getLcdTextBytes(text, LCD.TEXT_0_TEXT, charset) +
-                getLcdTextBytes(text, LCD.SCROLL_TEXT, charset)
         return if (scrollConfig.isScroll) {
-            textBytes +
-                getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, true, charset) +
-                getLcdScrollSpeedBytes(scrollConfig.interval, scrollConfig.distance, charset) +
-                getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_ENABLE, 1, charset)
+            getLcdTextBytes(text, LCD.TEXT_0_TEXT, charset) +
+                    getLcdTextBytes(text, LCD.SCROLL_TEXT, charset) +
+                    getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, true, charset) +
+                    getLcdScrollSpeedBytes(scrollConfig.interval, scrollConfig.distance, charset) +
+                    getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_ENABLE, 1, charset)
         } else {
-            textBytes +
-                getLcdVisibleBytes(LCD.TEXT_0, true, charset) +
-                getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, false, charset) +
-                getLcdNumberPropertyBytes(LCD.SCROLL_TEXT_ENABLE, 0, charset)
+            getLcdTextBytes(text, LCD.TEXT_0_TEXT, charset) +
+                    getLcdVisibleBytes(LCD.TEXT_0, true, charset) +
+                    getLcdVisibleBytes(LCD.SCROLL_TEXT_COMPONENT, false, charset)
         }
     }
 
@@ -158,7 +156,7 @@ object Serial {
     }
 
     data class LcdScrollConfig @JvmOverloads constructor(
-        val isScroll: Boolean = true,
+        val isScroll: Boolean = false,
         @IntRange(from = 80) val interval: Int = LCD.SCROLL_INTERVAL_DEFAULT,
         @IntRange(from = 2, to = 50) val distance: Int = LCD.SCROLL_DISTANCE_DEFAULT
     )

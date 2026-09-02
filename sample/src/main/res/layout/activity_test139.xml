@@ -64,9 +64,14 @@
                         android:textSize="12sp" />
 
                     <Button
-                        android:id="@+id/btnApplyDefaultLcdText"
+                        android:id="@+id/btnApplyLcdText"
                         style="@style/ButtonCommon"
-                        android:text="Apply Default Text" />
+                        android:text="Apply Text" />
+
+                    <Button
+                        android:id="@+id/btnApplyScrollLcdText"
+                        style="@style/ButtonCommon"
+                        android:text="Apply Scroll Text" />
 
                     <Button
                         android:id="@+id/btnApplyCustomScrollText"

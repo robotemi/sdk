@@ -42,44 +42,64 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
 
     private fun initTestCases() {
         binding.ibBack.setOnClickListener { finish() }
-        binding.btnApplyDefaultLcdText.setOnClickListener { applyDefaultLcdText() }
+        binding.btnApplyLcdText.setOnClickListener { applyLcdText() }
+        binding.btnApplyScrollLcdText.setOnClickListener { applyScrollLcdText() }
         binding.btnApplyCustomScrollText.setOnClickListener { applyCustomScrollText() }
         binding.btnClearLog.setOnClickListener { clearLog() }
     }
 
-    private fun applyDefaultLcdText() {
+    private fun applyLcdText() {
         // Simple use case
-//        val command = Serial.getLcdBytes(SCROLL_TEXT) + Serial.getLcdPersistBytes(true)
+//        val command = Serial.getLcdBytes(LCD_TEXT) + Serial.getLcdPersistBytes(true)
 
         // If you want to set the LCD text color and LCD background color, you can refer to the following code
         val lcdTextColor = byteArrayOf(0xFF.toByte(), 0x00, 0x00)
         val lcdBackgroundColor = byteArrayOf(0x00, 0xFF.toByte(), 0x00)
-        val command = Serial.getLcdBytes(SCROLL_TEXT) +
+        val command = Serial.getLcdBytes(LCD_TEXT) +
                 Serial.getLcdColorBytes(
-                    lcdTextColor, target = Serial.LCD.SCROLL_TEXT_COLOR
+                    lcdTextColor, target = Serial.LCD.TEXT_0_COLOR
                 ) +
                 Serial.getLcdColorBytes(
-                    lcdBackgroundColor, target = Serial.LCD.SCROLL_TEXT_BACKGROUND
+                    lcdBackgroundColor, target = Serial.LCD.TEXT_0_BACKGROUND
                 ) +
                 Serial.getLcdPersistBytes(true)
 
-        sendLcdCommand(command, "Apply default LCD text")
+        sendLcdCommand(command, "Apply LCD text")
+    }
+
+    private fun applyScrollLcdText() {
+        val scrollConfig = Serial.LcdScrollConfig(
+            isScroll = true,
+        )
+        val lcdTextColor = byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte())
+        val lcdBackgroundColor = byteArrayOf(0xCC.toByte(), 0x00, 0x66)
+        val command = Serial.getLcdBytes(SCROLL_TEXT, Serial.LCD.SCROLL_TEXT, Charsets.UTF_8, scrollConfig) +
+                Serial.getLcdColorBytes(
+                    lcdTextColor, target = Serial.LCD.TEXT_0_COLOR
+                ) +
+                Serial.getLcdColorBytes(
+                    lcdBackgroundColor, target = Serial.LCD.TEXT_0_BACKGROUND
+                ) +
+                Serial.getLcdPersistBytes(true)
+
+        sendLcdCommand(command, "Apply Scroll LCD text")
     }
 
     private fun applyCustomScrollText() {
+        // Custom Scroll speed: interval distance
         val scrollConfig = Serial.LcdScrollConfig(
             isScroll = true,
             interval = CUSTOM_SCROLL_INTERVAL,
             distance = CUSTOM_SCROLL_DISTANCE
         )
         val lcdTextColor = byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0x00)
-        val lcdBackgroundColor = byteArrayOf(0x00, 0x00, 0xFF.toByte())
-        val command = Serial.getLcdBytes(SCROLL_TEXT, scrollConfig = scrollConfig) +
+        val lcdBackgroundColor = byteArrayOf(0xFF.toByte(), 0xCC.toByte(), 0x00)
+        val command = Serial.getLcdBytes(CUSTOM_SCROLL_TEXT, scrollConfig = scrollConfig) +
                 Serial.getLcdColorBytes(
-                    lcdTextColor, target = Serial.LCD.SCROLL_TEXT_COLOR
+                    lcdTextColor, target = Serial.LCD.TEXT_0_COLOR
                 ) +
                 Serial.getLcdColorBytes(
-                    lcdBackgroundColor, target = Serial.LCD.SCROLL_TEXT_BACKGROUND
+                    lcdBackgroundColor, target = Serial.LCD.TEXT_0_BACKGROUND
                 ) +
                 Serial.getLcdPersistBytes(true)
         sendLcdCommand(command, "Apply custom scroll text interval=$CUSTOM_SCROLL_INTERVAL,distance=$CUSTOM_SCROLL_DISTANCE")
@@ -113,7 +133,9 @@ class Test139Activity : AppCompatActivity(), OnRobotReadyListener, OnSerialRawDa
     }
 
     companion object {
-        private const val SCROLL_TEXT = "Scrolling text demo 139"
+        private const val LCD_TEXT = "Lcd text"
+        private const val SCROLL_TEXT = "Scroll text"
+        private const val CUSTOM_SCROLL_TEXT = "Custom scroll text"
         private const val CUSTOM_SCROLL_INTERVAL = 80
         private const val CUSTOM_SCROLL_DISTANCE = 20
     }
