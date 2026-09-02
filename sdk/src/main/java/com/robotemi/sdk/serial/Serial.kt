@@ -63,7 +63,12 @@ object Serial {
         get() = map { String.format("%02X", it) }
 
     /**
-     * Generate LCD text command bytes.
+     * When isScroll is true, generate LCD text command bytes for both normal text and scrolling text components.
+     * Scroll mode emits t0.txt, g0.txt, vis, and g0.tim/dis/en in one payload. Concatenating
+     * [getLcdColorBytes] and [getLcdPersistBytes] makes the USB frame even longer. Rate-limit
+     * [Robot.sendSerialCommand] with these bytes; the STM32 CDC can stall if updates are too
+     * frequent.
+     *
      * @param target kept for source compatibility. The LCD text target is fixed internally for firmware compatibility.
      */
     @JvmOverloads
