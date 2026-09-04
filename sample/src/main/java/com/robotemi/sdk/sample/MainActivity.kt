@@ -90,6 +90,7 @@ import androidx.lifecycle.lifecycleScope
 import com.robotemi.sdk.map.Layer
 import com.robotemi.sdk.sample.new_feature.Test137Activity
 import com.robotemi.sdk.sample.new_feature.Test138Activity
+import com.robotemi.sdk.sample.new_feature.Test139Activity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -574,6 +575,10 @@ class MainActivity : AppCompatActivity(), NlpListener, OnRobotReadyListener,
             }
             btn138Feature.setOnClickListener {
                 val intent = Intent(this@MainActivity, Test138Activity::class.java)
+                startActivity(intent)
+            }
+            btn139Feature.setOnClickListener {
+                val intent = Intent(this@MainActivity, Test139Activity::class.java)
                 startActivity(intent)
             }
 
