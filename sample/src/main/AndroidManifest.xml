@@ -86,6 +86,7 @@
         <activity android:name=".SerialActivity" />
         <activity android:name=".new_feature.Test137Activity" />
         <activity android:name=".new_feature.Test138Activity" />
+        <activity android:name=".new_feature.Test139Activity" />
 
         <receiver android:name=".BootCompleteReceiver"
             android:exported="true">
