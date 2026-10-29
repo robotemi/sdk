@@ -85,7 +85,7 @@ data class TtsRequest(
         FR_FR(12), FR_CA(13), PT_BR(14), AR_EG(15), AR_AE(16), AR_XA(17),
         RU_RU(18), IT_IT(19), PL_PL(20), ES_ES(21), CA_ES(22), HI_IN(23),
         ET_EE(24), TR_TR(25), EN_IN(26), MS_MY(27), VI_VN(28), EL_GR(29),
-        AZ_AZ(30), ES_CO(31), UR_PK(32), ES_AR(33)
+        AZ_AZ(30), ES_CO(31), UR_PK(32), ES_AR(33), TA_SG(34),
         ;
 
         companion object {
@@ -126,6 +126,7 @@ data class TtsRequest(
                     31 -> ES_CO
                     32 -> UR_PK
                     33 -> ES_AR
+                    34 -> TA_SG
                     else -> SYSTEM
                 }
             }

@@ -30,6 +30,7 @@ enum class SttLanguage(val value: Int) {
     AZ_AZ(26), // Supported from 136 version
     UR_PK(27), // Supported from 138 version
     ES_CO(28), // Supported from 139 version
+    TA_SG(29), // Supported from 139 version
     ;
 
     companion object {
@@ -66,6 +67,7 @@ enum class SttLanguage(val value: Int) {
                 26 -> AZ_AZ
                 27 -> UR_PK
                 28 -> ES_CO
+                29 -> TA_SG
                 else -> SYSTEM
             }
         }
