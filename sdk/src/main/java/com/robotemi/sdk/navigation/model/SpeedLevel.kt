@@ -13,10 +13,10 @@ enum class SpeedLevel(
      * not supported in Follow Speed settings yet.
      */
     VERY_HIGH("VeryHigh"), // 1.2 m/s
-    HIGH("high"),       // 0.9 m/s
-    MEDIUM("medium"),   // 0.7 m/s
-    SLOW("slow"),       // 0.5 m/s
-    VERY_SLOW("VerySlow"); // 0.3 m/s
+    HIGH("High"),       // 0.9 m/s
+    MEDIUM("Medium"),   // 0.7 m/s
+    SLOW("Low"),       // 0.5 m/s
+    VERY_SLOW("VeryLow"); // 0.3 m/s
 
     internal val floatSpeedLevel: Float
         get() = floatValue ?: 0.0f
