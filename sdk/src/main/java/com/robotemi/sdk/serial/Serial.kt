@@ -74,9 +74,15 @@ object Serial {
     @JvmOverloads
     fun getLcdBytes(
         text: String,
+        target: String = LCD.TEXT_0_TEXT,
+        charset: Charset = Charsets.UTF_8
+    ): ByteArray = getLcdBytes(text, target, charset, LcdScrollConfig())
+
+    fun getLcdBytes(
+        text: String,
         @Suppress("UNUSED_PARAMETER") target: String = LCD.TEXT_0_TEXT,
         charset: Charset = Charsets.UTF_8,
-        scrollConfig: LcdScrollConfig = LcdScrollConfig()
+        scrollConfig: LcdScrollConfig
     ): ByteArray {
         return if (scrollConfig.isScroll) {
             getLcdTextBytes(text, LCD.TEXT_0_TEXT, charset) +
