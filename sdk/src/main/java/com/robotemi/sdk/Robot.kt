@@ -341,7 +341,7 @@ class Robot private constructor(private val context: Context) {
         }
 
         override fun onTtsSpeak(ttsRequest: TtsRequest) {
-            ttsService?.speak(ttsRequest)
+            ttsService?.speak(ttsRequest.cleanSpeechForTts())
         }
 
         override fun onTtsCancel() {
@@ -952,7 +952,8 @@ class Robot private constructor(private val context: Context) {
      */
     fun speak(ttsRequest: TtsRequest) {
         try {
-            sdkService?.speak(ttsRequest.apply { packageName = applicationInfo.packageName })
+            ttsRequest.packageName = applicationInfo.packageName
+            sdkService?.speak(ttsRequest.cleanSpeechForTts())
         } catch (e: RemoteException) {
             Log.e(TAG, "Failed to invoke remote call speak()")
         }
@@ -4251,7 +4252,15 @@ class Robot private constructor(private val context: Context) {
      *
      * This is the core api, which exposed the fundamental communication protocol to hardware control board.
      *
+     * Do not call this from the UI thread. The call is synchronous Binder IPC and may wait
+     * on USB serial I/O, which can cause ANR if invoked from click handlers.
+     *
+     * Do not flood [Serial.CMD_LCD_TEXT]: usb2serial writes each call immediately. Large or
+     * frequent Nextion frames (t0+g0+vis/scroll) can stall the STM32 CDC until USB reconnect.
+     *
+     * @return `0` on success, `-1` on failure.
      */
+    @WorkerThread
     fun sendSerialCommand(command: Int, data: ByteArray): Int {
         return try {
             sdkService?.sendSerialCommand(command, data) ?: -1
