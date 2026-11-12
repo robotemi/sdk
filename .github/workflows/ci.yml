@@ -1,0 +1,121 @@
+# Public repository. This file is visible to everyone.
+# Publish credentials stay in GitHub Actions secrets and are never printed.
+#
+# Repository secrets (Settings → Secrets and variables → Actions), or secrets on
+# the maven-central environment:
+#   MAVEN_CENTRAL_USERNAME   Central Portal user token username
+#   MAVEN_CENTRAL_PASSWORD   Central Portal user token password
+#   SIGNING_KEY              Full ASCII-armored PGP secret key, including the
+#                            BEGIN/END lines. Export with:
+#                            gpg --export-secret-keys --armor <key id>
+#   SIGNING_PASSWORD         Passphrase for that key
+#   SIGNING_KEY_ID           Optional. Last 8 hex characters of the key id.
+#                            Required when the armored block contains a subkey.
+#
+# A tag push to robotemi/sdk runs the build, then publishes that version.
+# The tag must be v<major>.<minor>.<patch> and must match VERSION_NAME.
+# Forks and pull requests do not receive these secrets and cannot publish.
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+    tags: ['v[0-9]*']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
+
+      - name: Install Android SDK packages
+        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
+
+      - name: Assemble and test
+        run: ./gradlew :sdk:assembleRelease :sdk:test :sample:assembleDebug --stacktrace
+
+  publish:
+    name: Publish to Maven Central
+    needs: build
+    if: github.event_name == 'push' && github.repository == 'robotemi/sdk' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    environment: maven-central
+    concurrency:
+      group: maven-central-publish
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
+
+      - name: Install Android SDK packages
+        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
+
+      - name: Publish release
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF#refs/tags/}"
+          version="${tag#v}"
+          if ! printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Refusing to publish ${tag}. Expected v<major>.<minor>.<patch>."
+            exit 1
+          fi
+          file_version="$(sed -n 's/^VERSION_NAME=//p' gradle.properties)"
+          if [ "$file_version" != "$version" ]; then
+            echo "Tag ${tag} does not match gradle.properties VERSION_NAME=${file_version}."
+            exit 1
+          fi
+          if [ -z "${ORG_GRADLE_PROJECT_mavenCentralUsername}" ] || [ -z "${ORG_GRADLE_PROJECT_mavenCentralPassword}" ] || [ -z "${ORG_GRADLE_PROJECT_signingInMemoryKey}" ] || [ -z "${ORG_GRADLE_PROJECT_signingInMemoryKeyPassword}" ]; then
+            echo "Maven Central or signing secrets are missing."
+            exit 1
+          fi
+          if [ -z "${ORG_GRADLE_PROJECT_signingInMemoryKeyId}" ]; then
+            unset ORG_GRADLE_PROJECT_signingInMemoryKeyId
+          fi
+          ./gradlew :sdk:publishAndReleaseToMavenCentral --stacktrace -PVERSION_NAME="$version"
